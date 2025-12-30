@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { SITE } from "../lib/constants";
+import { FirstTimeBuyerCalculator } from "@/components/calculators/FirstTimeBuyerCalculator";
+---
+
+<Layout title={`First Time Buyer | ${SITE.name}`}>
+	<div class="container mx-auto px-4 py-12">
+		<div class="max-w-4xl mx-auto">
+			<div class="mb-8">
+				<h1 class="text-3xl font-bold tracking-tight mb-2">First Time Buyer</h1>
+				<p class="text-muted-foreground">
+					Calculate your mortgage options as a first time buyer in Ireland.
+					Find out how much you could borrow and compare offers from different lenders.
+				</p>
+			</div>
+
+			<FirstTimeBuyerCalculator client:load />
+		</div>
+	</div>
+</Layout>
