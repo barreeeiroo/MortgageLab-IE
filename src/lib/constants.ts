@@ -5,10 +5,16 @@ export const SITE = {
 };
 
 export const NAV_ITEMS = [
-	{ label: "First Time Buyer", href: "/first-time-buyer" },
-	{ label: "Home Mover", href: "/home-mover" },
-	{ label: "Remortgage", href: "/remortgage" },
-	{ label: "Buy-to-Let", href: "/buy-to-let" },
+	{
+		label: "Affordability",
+		children: [
+			{ label: "First Time Buyer", href: "/affordability/first-time-buyer" },
+			{ label: "Home Mover", href: "/affordability/home-mover" },
+			{ label: "Buy to Let", href: "/affordability/buy-to-let" },
+		],
+	},
+	{ label: "Rates", href: "/rates" },
+	{ label: "Simulator", href: "/simulator" },
 ] as const;
 
 export const AUTHOR = {

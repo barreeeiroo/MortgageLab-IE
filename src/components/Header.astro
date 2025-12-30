@@ -12,13 +12,40 @@ import { ThemeToggle } from "./ThemeToggle";
 				</a>
 				<ul class="hidden md:flex items-center gap-6">
 					{NAV_ITEMS.map((item) => (
-						<li>
-							<a
-								href={item.href}
-								class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-							>
-								{item.label}
-							</a>
+						<li class="relative group">
+							{"children" in item ? (
+								<>
+									<button
+										class="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+									>
+										{item.label}
+										<svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+										</svg>
+									</button>
+									<ul class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+										<div class="bg-popover border border-border rounded-md shadow-lg py-1 min-w-[160px]">
+											{item.children.map((child) => (
+												<li>
+													<a
+														href={child.href}
+														class="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+													>
+														{child.label}
+													</a>
+												</li>
+											))}
+										</div>
+									</ul>
+								</>
+							) : (
+								<a
+									href={item.href}
+									class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+								>
+									{item.label}
+								</a>
+							)}
 						</li>
 					))}
 				</ul>
@@ -28,7 +55,7 @@ import { ThemeToggle } from "./ThemeToggle";
 					href="/resources"
 					class="text-sm text-muted-foreground hover:text-foreground transition-colors"
 				>
-					Other Tools
+					Resources
 				</a>
 				<ThemeToggle client:load />
 			</div>
