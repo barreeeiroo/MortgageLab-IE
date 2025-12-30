@@ -1,5 +1,6 @@
-import { ExternalLink } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { loadRatesForm, type RatesMode, saveRatesForm } from "@/lib/storage";
 import {
 	calculateStampDuty,
 	ESTIMATED_LEGAL_FEES,
@@ -8,274 +9,313 @@ import {
 	parseCurrency,
 } from "@/lib/utils";
 import { BerSelector } from "../selectors/BerSelector";
+import { BuyerTypeSelector } from "../selectors/BuyerTypeSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
 import { Button } from "../ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardTitle,
-} from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "../ui/tooltip";
 
-const FTB_MAX_LTV = 0.9; // 90% LTV (10% deposit minimum)
+type LtvRange = "below-50" | "50-80" | "80-90" | "above-90";
 
-interface MortgageResult {
-	propertyValue: number;
-	mortgageAmount: number;
-	mortgageTerm: number;
-	berRating: string;
-	ltv: number;
-}
-
-function ResultCard({
-	result,
-	issues = [],
-}: {
-	result: MortgageResult;
-	issues?: string[];
-}) {
-	const hasIssues = issues.length > 0;
-	const stampDuty = calculateStampDuty(result.propertyValue);
-	const legalFees = ESTIMATED_LEGAL_FEES;
-	const totalFees = stampDuty + legalFees;
-	const deposit = result.propertyValue - result.mortgageAmount;
-	const totalCashRequired = deposit + totalFees;
-
-	const cardStyles = hasIssues
-		? "bg-destructive/5 border-destructive/20"
-		: "bg-primary/5 border-primary/20";
-
-	return (
-		<Card className={cardStyles}>
-			<CardContent className="pt-6 pb-4">
-				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
-					<div>
-						<p className="text-sm text-muted-foreground">Property Value</p>
-						<p className="text-xl font-bold">
-							{formatCurrency(result.propertyValue)}
-						</p>
-					</div>
-					<div>
-						<p className="text-sm text-muted-foreground">Mortgage Amount</p>
-						<p className="text-xl font-bold text-primary">
-							{formatCurrency(result.mortgageAmount)}
-						</p>
-					</div>
-					<div>
-						<p className="text-sm text-muted-foreground">Mortgage Term</p>
-						<p className="text-xl font-bold">{result.mortgageTerm} years</p>
-					</div>
-					<div>
-						<p className="text-sm text-muted-foreground">BER Rating</p>
-						<p className="text-xl font-bold">{result.berRating}</p>
-					</div>
-				</div>
-				<div className="pt-4 border-t border-border">
-					<div>
-						<p className="text-sm text-muted-foreground">Loan-to-Value (LTV)</p>
-						<p
-							className={`text-lg font-semibold ${result.ltv > 90 ? "text-destructive" : ""}`}
-						>
-							{result.ltv.toFixed(1)}%
-						</p>
-					</div>
-				</div>
-				<div className="pt-4 border-t border-border mt-4">
-					<p className="text-sm font-medium mb-2">Cash Required</p>
-					<div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 text-sm">
-						<div>
-							<p className="text-muted-foreground">
-								Deposit ({(100 - result.ltv).toFixed(0)}%)
-							</p>
-							<p className="font-semibold">{formatCurrency(deposit)}</p>
-						</div>
-						<div>
-							<p className="text-muted-foreground">Stamp Duty</p>
-							<p className="font-semibold">{formatCurrency(stampDuty)}</p>
-						</div>
-						<div>
-							<p className="text-muted-foreground">Legal Fees (est.)</p>
-							<p className="font-semibold">{formatCurrency(legalFees)}</p>
-						</div>
-						<div>
-							<p className="text-muted-foreground">Total Cash Required</p>
-							<p className="font-semibold text-primary">
-								{formatCurrency(totalCashRequired)}
-							</p>
-						</div>
-					</div>
-					<p className="text-xs text-muted-foreground mt-2">
-						Legal fees typically range from €3,000 to €5,000 and include
-						solicitor fees, searches, and registration.
-					</p>
-				</div>
-				{issues.length > 0 && (
-					<div className="space-y-2 pt-4 border-t border-border mt-4">
-						{issues.map((issue, i) => (
-							<p key={i} className="text-sm text-destructive">
-								{issue}
-							</p>
-						))}
-					</div>
-				)}
-			</CardContent>
-		</Card>
-	);
-}
-
-const STORAGE_KEY = "rates-calculator";
-
-interface FormState {
-	propertyValue: string;
-	deposit: string;
-	mortgageTerm: string;
-	berRating: string;
-}
-
-function loadFormState(): Partial<FormState> {
-	if (typeof window === "undefined") return {};
-	try {
-		const stored = localStorage.getItem(STORAGE_KEY);
-		return stored ? JSON.parse(stored) : {};
-	} catch {
-		return {};
-	}
-}
-
-function saveFormState(state: FormState): void {
-	if (typeof window === "undefined") return;
-	try {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-	} catch {
-		// Ignore storage errors
-	}
+function getLtvRange(ltv: number): LtvRange {
+	if (ltv < 50) return "below-50";
+	if (ltv < 80) return "50-80";
+	if (ltv <= 90) return "80-90";
+	return "above-90";
 }
 
 export function RatesCalculator() {
+	const [mode, setMode] = useState<RatesMode>("first-mortgage");
 	const [propertyValue, setPropertyValue] = useState("");
-	const [deposit, setDeposit] = useState("");
+	const [mortgageAmount, setMortgageAmount] = useState("");
+	const [monthlyRepayment, setMonthlyRepayment] = useState("");
 	const [mortgageTerm, setMortgageTerm] = useState("30");
 	const [berRating, setBerRating] = useState("C1");
-	const [result, setResult] = useState<MortgageResult | null>(null);
-	const [issues, setIssues] = useState<string[]>([]);
+	const [buyerType, setBuyerType] = useState("ftb");
+
+	const isRemortgage = mode === "remortgage";
+
+	// Reset buyer type when switching modes (ftb not valid for remortgage)
+	useEffect(() => {
+		if (isRemortgage && buyerType === "ftb") {
+			setBuyerType("mover");
+		}
+	}, [isRemortgage, buyerType]);
 
 	// Load from localStorage on mount
 	useEffect(() => {
-		const saved = loadFormState();
+		const saved = loadRatesForm();
+		if (saved.mode) setMode(saved.mode);
 		if (saved.propertyValue) setPropertyValue(saved.propertyValue);
-		if (saved.deposit) setDeposit(saved.deposit);
+		if (saved.mortgageAmount) setMortgageAmount(saved.mortgageAmount);
+		if (saved.monthlyRepayment) setMonthlyRepayment(saved.monthlyRepayment);
 		if (saved.mortgageTerm) setMortgageTerm(saved.mortgageTerm);
 		if (saved.berRating) setBerRating(saved.berRating);
+		if (saved.buyerType) setBuyerType(saved.buyerType);
 	}, []);
 
 	// Save to localStorage when form changes
 	useEffect(() => {
-		saveFormState({
+		saveRatesForm({
+			mode,
 			propertyValue,
-			deposit,
+			mortgageAmount,
+			monthlyRepayment,
 			mortgageTerm,
 			berRating,
+			buyerType,
 		});
-	}, [propertyValue, deposit, mortgageTerm, berRating]);
+	}, [
+		mode,
+		propertyValue,
+		mortgageAmount,
+		monthlyRepayment,
+		mortgageTerm,
+		berRating,
+		buyerType,
+	]);
 
-	const calculate = () => {
-		const property = parseCurrency(propertyValue);
-		const dep = parseCurrency(deposit);
+	// Calculated values
+	const property = parseCurrency(propertyValue);
+	const mortgage = parseCurrency(mortgageAmount);
+	const deposit = property > 0 ? property - mortgage : 0;
+	const ltv = property > 0 ? (mortgage / property) * 100 : 0;
+	const ltvRange = getLtvRange(ltv);
+	const stampDuty = calculateStampDuty(property);
+	const legalFees = ESTIMATED_LEGAL_FEES;
 
-		if (property <= 0) return;
-
-		const mortgageAmount = property - dep;
-		const ltv = (mortgageAmount / property) * 100;
-
-		const newIssues: string[] = [];
-		if (ltv > 90) {
-			newIssues.push(
-				`LTV of ${ltv.toFixed(1)}% exceeds the default 90% limit. Some lenders may offer higher LTV.`,
-			);
-		}
-
-		setResult({
-			propertyValue: property,
-			mortgageAmount,
-			mortgageTerm: Number.parseInt(mortgageTerm),
-			berRating,
+	const compare = () => {
+		// TODO: Navigate to results or filter rates
+		console.log("Compare rates", {
+			property,
+			deposit,
+			mortgage,
 			ltv,
+			mortgageTerm,
+			berRating,
+			buyerType,
 		});
-		setIssues(newIssues);
 	};
 
 	return (
-		<div className="space-y-6">
+		<TooltipProvider>
+			<Tabs
+				value={mode}
+				onValueChange={(value) => setMode(value as RatesMode)}
+				className="w-full"
+			>
+				<TabsList className="mb-3">
+					<TabsTrigger value="first-mortgage">First Mortgage</TabsTrigger>
+					<TabsTrigger value="remortgage">Mortgage Switch</TabsTrigger>
+				</TabsList>
+			</Tabs>
 			<Card>
-				<CardContent className="pt-6">
-					<div className="mb-6">
-						<CardTitle className="text-lg mb-1">
-							Enter Your Property Details
-						</CardTitle>
-						<CardDescription>
-							<a
-								href="https://www.centralbank.ie/consumer-hub/explainers/what-are-the-mortgage-measures"
-								target="_blank"
-								rel="noopener noreferrer"
-								className="inline-flex items-center hover:text-foreground"
-								aria-label="Central Bank mortgage measures"
+				<CardContent className="py-2">
+					<div className="flex flex-col gap-3">
+						{/* Row 1: Property Value, Mortgage Amount / Outstanding Balance */}
+						<div className="flex flex-col lg:flex-row gap-3">
+							<div className="flex gap-3 flex-1">
+								<div className="space-y-1 flex-1">
+									<Label htmlFor="propertyValue" className="text-xs">
+										{isRemortgage ? "Current Property Value" : "Property Value"}
+									</Label>
+									<Input
+										id="propertyValue"
+										type="text"
+										inputMode="numeric"
+										placeholder="€350,000"
+										className="h-9"
+										value={formatCurrencyInput(propertyValue)}
+										onChange={(e) =>
+											setPropertyValue(e.target.value.replace(/[^0-9]/g, ""))
+										}
+									/>
+								</div>
+								<div className="space-y-1 flex-1">
+									<Label htmlFor="mortgageAmount" className="text-xs">
+										{isRemortgage ? "Outstanding Balance" : "Mortgage Amount"}
+									</Label>
+									<Input
+										id="mortgageAmount"
+										type="text"
+										inputMode="numeric"
+										placeholder="€315,000"
+										className="h-9"
+										value={formatCurrencyInput(mortgageAmount)}
+										onChange={(e) =>
+											setMortgageAmount(e.target.value.replace(/[^0-9]/g, ""))
+										}
+									/>
+								</div>
+							</div>
+							{/* Mobile Row 2: Deposit/Monthly Repayment, LTV - shown inline on lg */}
+							<div className="flex gap-3 flex-1">
+								{isRemortgage ? (
+									<div className="space-y-1 flex-1">
+										<Label htmlFor="monthlyRepayment" className="text-xs">
+											Current Monthly Repayment
+										</Label>
+										<Input
+											id="monthlyRepayment"
+											type="text"
+											inputMode="numeric"
+											placeholder="€1,500"
+											className="h-9"
+											value={formatCurrencyInput(monthlyRepayment)}
+											onChange={(e) =>
+												setMonthlyRepayment(
+													e.target.value.replace(/[^0-9]/g, ""),
+												)
+											}
+										/>
+									</div>
+								) : (
+									<div className="space-y-1 flex-1">
+										<div className="flex items-center gap-1">
+											<Label htmlFor="deposit" className="text-xs">
+												Deposit
+											</Label>
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<button
+														type="button"
+														className="text-muted-foreground hover:text-foreground"
+													>
+														<HelpCircle className="h-3 w-3" />
+													</button>
+												</TooltipTrigger>
+												<TooltipContent className="max-w-xs">
+													<p className="font-medium mb-2">Additional costs:</p>
+													<div className="space-y-1 text-sm">
+														<div className="flex justify-between gap-4">
+															<span>Stamp Duty:</span>
+															<span className="font-medium">
+																{formatCurrency(stampDuty)}
+															</span>
+														</div>
+														<div className="flex justify-between gap-4">
+															<span>Legal Fees:</span>
+															<span className="font-medium">
+																{formatCurrency(legalFees)}
+															</span>
+														</div>
+														<div className="flex justify-between gap-4 pt-1 border-t">
+															<span>Total Fees:</span>
+															<span className="font-medium">
+																{formatCurrency(stampDuty + legalFees)}
+															</span>
+														</div>
+													</div>
+													{deposit > 0 && (
+														<div className="mt-2 pt-2 border-t text-sm">
+															<div className="flex justify-between gap-4">
+																<span>Total Cash Required:</span>
+																<span className="font-medium">
+																	{formatCurrency(
+																		deposit + stampDuty + legalFees,
+																	)}
+																</span>
+															</div>
+														</div>
+													)}
+												</TooltipContent>
+											</Tooltip>
+										</div>
+										<Input
+											id="deposit"
+											type="text"
+											className="h-9 bg-muted"
+											value={deposit > 0 ? formatCurrency(deposit) : "—"}
+											disabled
+										/>
+									</div>
+								)}
+								<div className="space-y-1 w-20 lg:w-24">
+									<Label htmlFor="ltvRange" className="text-xs">
+										LTV
+									</Label>
+									<Input
+										id="ltvRange"
+										type="text"
+										className={`h-9 bg-muted ${ltvRange === "above-90" ? "text-destructive" : ""}`}
+										value={property > 0 ? `${ltv.toFixed(0)}%` : "—"}
+										disabled
+									/>
+								</div>
+							</div>
+						</div>
+
+						{/* Mobile Row 3: Buyer Type / Remortgage Type (alone) */}
+						<div className="lg:hidden">
+							<div className="space-y-1">
+								<Label htmlFor="buyerTypeMobile" className="text-xs">
+									{isRemortgage ? "Remortgage Type" : "Buyer Type"}
+								</Label>
+								<BuyerTypeSelector
+									value={buyerType}
+									onChange={setBuyerType}
+									id="buyerTypeMobile"
+									compact
+									variant={isRemortgage ? "remortgage" : "purchase"}
+								/>
+							</div>
+						</div>
+
+						{/* Row 2 (lg) / Row 4 (mobile): Buyer Type / Remortgage Type, Term, BER, Compare */}
+						<div className="flex gap-3 items-end">
+							<div className="hidden lg:block space-y-1 flex-[1.5]">
+								<Label htmlFor="buyerType" className="text-xs">
+									{isRemortgage ? "Remortgage Type" : "Buyer Type"}
+								</Label>
+								<BuyerTypeSelector
+									value={buyerType}
+									onChange={setBuyerType}
+									id="buyerType"
+									compact
+									variant={isRemortgage ? "remortgage" : "purchase"}
+								/>
+							</div>
+							<div className="space-y-1 flex-1">
+								<Label htmlFor="mortgageTerm" className="text-xs">
+									Term
+								</Label>
+								<MortgageTermSelector
+									value={mortgageTerm}
+									onChange={setMortgageTerm}
+									id="mortgageTerm"
+									compact
+								/>
+							</div>
+							<div className="space-y-1 flex-1">
+								<Label htmlFor="berRating" className="text-xs">
+									BER
+								</Label>
+								<BerSelector
+									value={berRating}
+									onChange={setBerRating}
+									id="berRating"
+									compact
+								/>
+							</div>
+							<Button
+								onClick={compare}
+								className="h-9 flex-1"
+								disabled={property <= 0 || mortgage <= 0}
 							>
-								Central Bank rules
-								<ExternalLink className="h-3 w-3 ml-1" />
-							</a>{" "}
-							set a default of 4× income and 10% minimum deposit for first time
-							buyers, but some lenders may offer different terms.
-						</CardDescription>
-					</div>
-					<div className="space-y-6">
-						<div className="grid gap-4 sm:grid-cols-2">
-							<div className="space-y-2">
-								<Label htmlFor="propertyValue">Property Value</Label>
-								<Input
-									id="propertyValue"
-									type="text"
-									inputMode="numeric"
-									placeholder="€350,000"
-									value={formatCurrencyInput(propertyValue)}
-									onChange={(e) =>
-										setPropertyValue(e.target.value.replace(/[^0-9]/g, ""))
-									}
-								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="deposit">Your Deposit</Label>
-								<Input
-									id="deposit"
-									type="text"
-									inputMode="numeric"
-									placeholder="€35,000"
-									value={formatCurrencyInput(deposit)}
-									onChange={(e) => setDeposit(e.target.value.replace(/[^0-9]/g, ""))}
-								/>
-							</div>
+								Compare
+							</Button>
 						</div>
-						<div className="grid gap-4 sm:grid-cols-2">
-							<MortgageTermSelector
-								value={mortgageTerm}
-								onChange={setMortgageTerm}
-								id="mortgageTerm"
-							/>
-							<BerSelector
-								value={berRating}
-								onChange={setBerRating}
-								id="berRating"
-							/>
-						</div>
-						<Button onClick={calculate} className="w-full sm:w-auto">
-							Compare Rates
-						</Button>
 					</div>
 				</CardContent>
 			</Card>
-
-			{result && <ResultCard result={result} issues={issues} />}
-		</div>
+		</TooltipProvider>
 	);
 }

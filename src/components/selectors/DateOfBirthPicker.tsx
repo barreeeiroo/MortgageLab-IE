@@ -1,6 +1,6 @@
-import { format, parse, isValid } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import { Input } from "../ui/input";
@@ -43,9 +43,9 @@ export function DateOfBirthPicker({
 
 		// Auto-insert slashes
 		if (val.length === 2 && !val.includes("/")) {
-			val = val + "/";
+			val = `${val}/`;
 		} else if (val.length === 5 && val.split("/").length === 2) {
-			val = val + "/";
+			val = `${val}/`;
 		}
 
 		// Limit length to dd/MM/yyyy format

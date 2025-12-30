@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
+import { loadFtbForm, saveFtbForm, saveRatesForm } from "@/lib/storage";
 import {
 	calculateStampDuty,
 	ESTIMATED_LEGAL_FEES,
@@ -20,12 +21,7 @@ import {
 	AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {
@@ -57,11 +53,7 @@ interface CalculationResult {
 	requiredDeposit?: number;
 }
 
-function ResultCard({
-	data,
-}: {
-	data: CalculationResult;
-}) {
+function ResultCard({ data }: { data: CalculationResult }) {
 	const { result, hasSavingsShortfall } = data;
 	const stampDuty = calculateStampDuty(result.propertyValue);
 	const legalFees = ESTIMATED_LEGAL_FEES;
@@ -78,7 +70,9 @@ function ResultCard({
 			<CardContent className="pt-6 pb-4">
 				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
 					<div>
-						<p className="text-sm text-muted-foreground">Maximum Property Value</p>
+						<p className="text-sm text-muted-foreground">
+							Maximum Property Value
+						</p>
 						<p className="text-xl font-bold">
 							{formatCurrency(result.propertyValue)}
 						</p>
@@ -108,7 +102,9 @@ function ResultCard({
 						</p>
 					</div>
 					<div>
-						<p className="text-sm text-muted-foreground">Loan-to-Income (LTI)</p>
+						<p className="text-sm text-muted-foreground">
+							Loan-to-Income (LTI)
+						</p>
 						<p
 							className={`text-lg font-semibold ${result.lti > FTB_LTI_LIMIT ? "text-destructive" : ""}`}
 						>
@@ -141,8 +137,8 @@ function ResultCard({
 						</div>
 					</div>
 					<p className="text-xs text-muted-foreground mt-2">
-						Legal fees typically range from €3,000 to €5,000 and include solicitor
-						fees, searches, and registration.
+						Legal fees typically range from €3,000 to €5,000 and include
+						solicitor fees, searches, and registration.
 					</p>
 				</div>
 			</CardContent>
@@ -168,51 +164,23 @@ function calculateMaxTermByAge(birthDate: Date | undefined): number | null {
 	return maxTerm > 0 ? maxTerm : 0;
 }
 
-const STORAGE_KEY = "ftb-calculator";
-
-interface FormState {
-	applicationType: "sole" | "joint";
-	income1: string;
-	income2: string;
-	birthDate1: string | null;
-	birthDate2: string | null;
-	savings: string;
-	berRating: string;
-}
-
-function loadFormState(): Partial<FormState> {
-	if (typeof window === "undefined") return {};
-	try {
-		const stored = localStorage.getItem(STORAGE_KEY);
-		return stored ? JSON.parse(stored) : {};
-	} catch {
-		return {};
-	}
-}
-
-function saveFormState(state: FormState): void {
-	if (typeof window === "undefined") return;
-	try {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-	} catch {
-		// Ignore storage errors
-	}
-}
-
 export function FirstTimeBuyerCalculator() {
-	const [applicationType, setApplicationType] = useState<"sole" | "joint">("sole");
+	const [applicationType, setApplicationType] = useState<"sole" | "joint">(
+		"sole",
+	);
 	const [income1, setIncome1] = useState("");
 	const [income2, setIncome2] = useState("");
 	const [birthDate1, setBirthDate1] = useState<Date | undefined>(undefined);
 	const [birthDate2, setBirthDate2] = useState<Date | undefined>(undefined);
 	const [savings, setSavings] = useState("");
 	const [berRating, setBerRating] = useState("C1");
-	const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
+	const [calculationResult, setCalculationResult] =
+		useState<CalculationResult | null>(null);
 	const [showResultDialog, setShowResultDialog] = useState(false);
 
 	// Load from localStorage on mount
 	useEffect(() => {
-		const saved = loadFormState();
+		const saved = loadFtbForm();
 		if (saved.applicationType) setApplicationType(saved.applicationType);
 		if (saved.income1) setIncome1(saved.income1);
 		if (saved.income2) setIncome2(saved.income2);
@@ -224,7 +192,7 @@ export function FirstTimeBuyerCalculator() {
 
 	// Save to localStorage when form changes
 	useEffect(() => {
-		saveFormState({
+		saveFtbForm({
 			applicationType,
 			income1,
 			income2,
@@ -233,7 +201,15 @@ export function FirstTimeBuyerCalculator() {
 			savings,
 			berRating,
 		});
-	}, [applicationType, income1, income2, birthDate1, birthDate2, savings, berRating]);
+	}, [
+		applicationType,
+		income1,
+		income2,
+		birthDate1,
+		birthDate2,
+		savings,
+		berRating,
+	]);
 
 	// Calculate ages and validate
 	const age1 = calculateAge(birthDate1);
@@ -245,7 +221,8 @@ export function FirstTimeBuyerCalculator() {
 
 	// Calculate max term based on oldest applicant (smallest max term)
 	const maxTerm1 = calculateMaxTermByAge(birthDate1);
-	const maxTerm2 = applicationType === "joint" ? calculateMaxTermByAge(birthDate2) : null;
+	const maxTerm2 =
+		applicationType === "joint" ? calculateMaxTermByAge(birthDate2) : null;
 
 	let maxMortgageTerm: number | null = null;
 	if (maxTerm1 !== null && maxTerm2 !== null) {
@@ -255,6 +232,16 @@ export function FirstTimeBuyerCalculator() {
 	} else if (maxTerm2 !== null) {
 		maxMortgageTerm = maxTerm2;
 	}
+
+	// Validate required fields
+	const hasIncome1 = parseCurrency(income1) > 0;
+	const hasIncome2 = parseCurrency(income2) > 0;
+	const hasSavings = parseCurrency(savings) > 0;
+	const isFormComplete =
+		hasIncome1 &&
+		birthDate1 !== undefined &&
+		hasSavings &&
+		(applicationType === "sole" || (hasIncome2 && birthDate2 !== undefined));
 
 	const calculate = () => {
 		const totalIncome =
@@ -299,8 +286,12 @@ export function FirstTimeBuyerCalculator() {
 			},
 			totalIncome,
 			hasSavingsShortfall,
-			maxMortgageByIncome: hasSavingsShortfall ? maxMortgageByIncome : undefined,
-			requiredDeposit: hasSavingsShortfall ? requiredDepositForMaxMortgage : undefined,
+			maxMortgageByIncome: hasSavingsShortfall
+				? maxMortgageByIncome
+				: undefined,
+			requiredDeposit: hasSavingsShortfall
+				? requiredDepositForMaxMortgage
+				: undefined,
 		});
 		setShowResultDialog(true);
 	};
@@ -310,10 +301,12 @@ export function FirstTimeBuyerCalculator() {
 			<Card>
 				<CardContent className="pt-6">
 					<div className="mb-6">
-						<CardTitle className="text-lg mb-1">How Much Can I Borrow?</CardTitle>
+						<CardTitle className="text-lg mb-1">
+							How Much Can I Borrow?
+						</CardTitle>
 						<CardDescription>
-							Enter your income and savings to see the maximum mortgage you could get
-							as a first time buyer.{" "}
+							Enter your income and savings to see the maximum mortgage you
+							could get as a first time buyer.{" "}
 							<a
 								href="https://www.centralbank.ie/consumer-hub/explainers/what-are-the-mortgage-measures"
 								target="_blank"
@@ -366,7 +359,9 @@ export function FirstTimeBuyerCalculator() {
 										inputMode="numeric"
 										placeholder="€50,000"
 										value={formatCurrencyInput(income1)}
-										onChange={(e) => setIncome1(e.target.value.replace(/[^0-9]/g, ""))}
+										onChange={(e) =>
+											setIncome1(e.target.value.replace(/[^0-9]/g, ""))
+										}
 									/>
 								</div>
 								<div>
@@ -392,14 +387,18 @@ export function FirstTimeBuyerCalculator() {
 							{applicationType === "joint" && (
 								<div className="space-y-4">
 									<div className="space-y-2">
-										<Label htmlFor="income2">Second Applicant's Gross Annual Salary</Label>
+										<Label htmlFor="income2">
+											Second Applicant's Gross Annual Salary
+										</Label>
 										<Input
 											id="income2"
 											type="text"
 											inputMode="numeric"
 											placeholder="€50,000"
 											value={formatCurrencyInput(income2)}
-											onChange={(e) => setIncome2(e.target.value.replace(/[^0-9]/g, ""))}
+											onChange={(e) =>
+												setIncome2(e.target.value.replace(/[^0-9]/g, ""))
+											}
 										/>
 									</div>
 									<div>
@@ -421,9 +420,9 @@ export function FirstTimeBuyerCalculator() {
 							)}
 						</div>
 						<p className="text-xs text-muted-foreground">
-							Some lenders may take into account overtime, bonuses, benefit in kind,
-							and other income. As a rule of thumb, only guaranteed salary is
-							considered.
+							Some lenders may take into account overtime, bonuses, benefit in
+							kind, and other income. As a rule of thumb, only guaranteed salary
+							is considered.
 						</p>
 
 						<div className="space-y-2">
@@ -434,11 +433,13 @@ export function FirstTimeBuyerCalculator() {
 								inputMode="numeric"
 								placeholder="€30,000"
 								value={formatCurrencyInput(savings)}
-								onChange={(e) => setSavings(e.target.value.replace(/[^0-9]/g, ""))}
+								onChange={(e) =>
+									setSavings(e.target.value.replace(/[^0-9]/g, ""))
+								}
 							/>
 							<p className="text-xs text-muted-foreground">
-								Include any gifts or Help to Buy funds. Exclude Stamp Duty and legal
-								fees.
+								Include any gifts or Help to Buy funds. Exclude Stamp Duty and
+								legal fees.
 							</p>
 						</div>
 						<div className="grid gap-4 sm:grid-cols-2">
@@ -457,8 +458,8 @@ export function FirstTimeBuyerCalculator() {
 									</SelectContent>
 								</Select>
 								<p className="text-xs text-muted-foreground">
-									Based on age {DEFAULT_MAX_AGE} at end of term. Some lenders may
-									offer longer.
+									Based on age {DEFAULT_MAX_AGE} at end of term. Some lenders
+									may offer longer.
 								</p>
 							</div>
 							<BerSelector
@@ -470,13 +471,13 @@ export function FirstTimeBuyerCalculator() {
 						</div>
 						{isAnyAgeTooOld && (
 							<p className="text-sm text-destructive">
-								Applicants must be {MAX_APPLICANT_AGE} years old or younger to qualify
-								for a first time buyer mortgage.
+								Applicants must be {MAX_APPLICANT_AGE} years old or younger to
+								qualify for a first time buyer mortgage.
 							</p>
 						)}
 						<Button
 							onClick={calculate}
-							disabled={isAnyAgeTooOld}
+							disabled={!isFormComplete || isAnyAgeTooOld}
 							className="w-full sm:w-auto"
 						>
 							Calculate
@@ -511,7 +512,24 @@ export function FirstTimeBuyerCalculator() {
 					{calculationResult && <ResultCard data={calculationResult} />}
 					<AlertDialogFooter>
 						<AlertDialogCancel>Close</AlertDialogCancel>
-						<AlertDialogAction>Compare Mortgage Rates</AlertDialogAction>
+						<AlertDialogAction
+							onClick={() => {
+								if (!calculationResult) return;
+								const { result } = calculationResult;
+								saveRatesForm({
+									mode: "first-mortgage",
+									propertyValue: Math.round(result.propertyValue).toString(),
+									mortgageAmount: Math.round(result.mortgageAmount).toString(),
+									monthlyRepayment: "",
+									mortgageTerm: result.mortgageTerm.toString(),
+									berRating: result.berRating,
+									buyerType: "ftb",
+								});
+								window.location.href = "/rates";
+							}}
+						>
+							Compare Mortgage Rates
+						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>

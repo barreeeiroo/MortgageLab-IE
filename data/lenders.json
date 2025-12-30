@@ -1,0 +1,32 @@
+[
+	{
+		"id": "aib",
+		"name": "AIB",
+		"website": "https://aib.ie/our-products/mortgages",
+		"perks": [
+			{
+				"id": "fee-free-banking",
+				"label": "Fee Free Banking",
+				"description": "No fees on day-to-day banking"
+			}
+		]
+	},
+	{
+		"id": "boi",
+		"name": "Bank of Ireland",
+		"website": "https://www.bankofireland.com/mortgages/",
+		"perks": []
+	},
+	{
+		"id": "ptsb",
+		"name": "Permanent TSB",
+		"website": "https://www.permanenttsb.ie/mortgages/",
+		"perks": []
+	},
+	{
+		"id": "avant",
+		"name": "Avant Money",
+		"website": "https://www.avantmoney.ie/mortgages",
+		"perks": []
+	}
+]

@@ -11,6 +11,7 @@ export const NAV_ITEMS = [
 			{ label: "First Time Buyer", href: "/affordability/first-time-buyer" },
 			{ label: "Home Mover", href: "/affordability/home-mover" },
 			{ label: "Buy to Let", href: "/affordability/buy-to-let" },
+			{ label: "Remortgage", href: "/rates#remortgage" },
 		],
 	},
 	{ label: "Rates", href: "/rates" },
@@ -27,28 +28,33 @@ export const AUTHOR = {
 export const EXTERNAL_RESOURCES = {
 	informational: {
 		title: "Informational Guides",
-		description: "Official guides and information about the home buying process",
+		description:
+			"Official guides and information about the home buying process",
 		items: [
 			{
 				name: "Citizens Information - Steps to Buying a Home",
 				url: "https://www.citizensinformation.ie/en/housing/owning-a-home/buying-a-home/steps-involved-buying-a-home/",
-				description: "Official government guide on the home buying process in Ireland",
+				description:
+					"Official government guide on the home buying process in Ireland",
 			},
 			{
 				name: "Citizens Information - Taking Out a Mortgage",
 				url: "https://www.citizensinformation.ie/en/housing/owning-a-home/help-with-buying-a-home/taking-out-a-mortgage/",
-				description: "Information on mortgage types, approval process, and protections",
+				description:
+					"Information on mortgage types, approval process, and protections",
 			},
 		],
 	},
 	comparators: {
 		title: "Mortgage Comparators",
-		description: "Tools to compare mortgage rates and offers from different lenders",
+		description:
+			"Tools to compare mortgage rates and offers from different lenders",
 		items: [
 			{
 				name: "CCPC - Mortgage Comparisons",
 				url: "https://www.ccpc.ie/consumers/money-tools/mortgage-comparisons/",
-				description: "Official comparison tool from the Competition and Consumer Protection Commission",
+				description:
+					"Official comparison tool from the Competition and Consumer Protection Commission",
 			},
 			{
 				name: "Bonkers.ie - Compare Mortgages",
