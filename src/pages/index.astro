@@ -4,16 +4,16 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="MortgageLab Ireland">
-  <main class="container mx-auto px-4 py-16">
-    <div class="max-w-2xl mx-auto text-center space-y-6">
-      <h1 class="text-4xl font-bold tracking-tight">MortgageLab Ireland</h1>
-      <p class="text-muted-foreground text-lg">
-        Compare and simulate mortgages from Irish lenders
-      </p>
-      <div class="flex gap-4 justify-center">
-        <Button client:load>Get Started</Button>
-        <Button variant="outline" client:load>Learn More</Button>
-      </div>
-    </div>
-  </main>
+	<div class="container mx-auto px-4 py-16">
+		<div class="max-w-2xl mx-auto text-center space-y-6">
+			<h1 class="text-4xl font-bold tracking-tight">MortgageLab Ireland</h1>
+			<p class="text-muted-foreground text-lg">
+				Compare and simulate mortgages from Irish lenders
+			</p>
+			<div class="flex gap-4 justify-center">
+				<Button client:load>Get Started</Button>
+				<Button variant="outline" client:load>Learn More</Button>
+			</div>
+		</div>
+	</div>
 </Layout>
