@@ -174,7 +174,6 @@ export function RatesCalculator() {
 				values={values}
 				onChange={setValues}
 				lenders={lenders}
-				ratesMetadata={ratesMetadata}
 				deposit={deposit}
 				ltv={ltv}
 				isFormValid={isFormValid}
@@ -191,6 +190,7 @@ export function RatesCalculator() {
 					<RatesTable
 						rates={filteredRates}
 						lenders={lenders}
+						ratesMetadata={ratesMetadata}
 						mortgageAmount={mortgage}
 						mortgageTerm={mortgageTerm}
 					/>

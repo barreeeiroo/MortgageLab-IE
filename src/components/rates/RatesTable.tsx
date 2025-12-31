@@ -1,5 +1,5 @@
 import type { Column, ColumnDef, FilterFn } from "@tanstack/react-table";
-import { ArrowUpDown, ListFilter } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ListFilter } from "lucide-react";
 import { useMemo } from "react";
 import {
 	getAvailableFixedTerms,
@@ -7,10 +7,16 @@ import {
 	type Lender,
 	type MortgageRate,
 } from "@/lib/data";
+import { useLocalStorage } from "@/lib/hooks";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
-import { DataTable } from "../ui/data-table";
+import { ColumnVisibilityToggle } from "../ui/column-visibility-toggle";
+import {
+	DataTable,
+	type SortingState,
+	type VisibilityState,
+} from "../ui/data-table";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
@@ -18,10 +24,18 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { RateUpdatesDialog } from "./RateUpdatesDialog";
+
+interface RatesMetadata {
+	lenderId: string;
+	lastScrapedAt: string;
+	lastUpdatedAt: string;
+}
 
 interface RatesTableProps {
 	rates: MortgageRate[];
 	lenders: Lender[];
+	ratesMetadata: RatesMetadata[];
 	mortgageAmount: number;
 	mortgageTerm: number;
 }
@@ -55,11 +69,21 @@ const arrayIncludesFilter: FilterFn<RateRow> = (row, columnId, filterValue) => {
 	return filterValue.includes(value);
 };
 
+function SortIcon({ isSorted }: { isSorted: false | "asc" | "desc" }) {
+	if (isSorted === "asc") {
+		return <ArrowUp className="ml-1.5 h-4 w-4 text-primary" />;
+	}
+	if (isSorted === "desc") {
+		return <ArrowDown className="ml-1.5 h-4 w-4 text-primary" />;
+	}
+	return <ArrowUpDown className="ml-1.5 h-4 w-4" />;
+}
+
 interface ColumnHeaderProps<TData> {
 	column: Column<TData>;
 	title: string;
 	filterOptions?: { label: string; value: string | number }[];
-	align?: "left" | "right";
+	align?: "left" | "center" | "right";
 }
 
 function ColumnHeader<TData>({
@@ -78,6 +102,7 @@ function ColumnHeader<TData>({
 		<div
 			className={cn(
 				"flex items-center gap-0.5",
+				align === "center" && "justify-center",
 				align === "right" && "justify-end",
 			)}
 		>
@@ -88,9 +113,7 @@ function ColumnHeader<TData>({
 				className="h-8 px-2"
 			>
 				{title}
-				<ArrowUpDown
-					className={cn("ml-1.5 h-4 w-4", isSorted && "text-foreground")}
-				/>
+				<SortIcon isSorted={isSorted} />
 			</Button>
 			{filterOptions && (
 				<DropdownMenu>
@@ -173,9 +196,7 @@ function SortableHeader<TData>({
 				className="h-8 px-2"
 			>
 				{title}
-				<ArrowUpDown
-					className={cn("ml-1.5 h-4 w-4", isSorted && "text-foreground")}
-				/>
+				<SortIcon isSorted={isSorted} />
 			</Button>
 		</div>
 	);
@@ -185,6 +206,22 @@ const typeOptions = [
 	{ label: "Fixed", value: "fixed" },
 	{ label: "Variable", value: "variable" },
 ];
+
+const COLUMN_LABELS: Record<string, string> = {
+	lenderId: "Lender",
+	name: "Product",
+	type: "Type",
+	fixedTerm: "Period",
+	rate: "Rate",
+	apr: "APR",
+	monthlyPayment: "Monthly",
+};
+
+const DEFAULT_COLUMN_VISIBILITY: VisibilityState = {};
+
+const DEFAULT_SORTING: SortingState = [{ id: "monthlyPayment", desc: false }];
+
+const STORAGE_KEY = "rates-table-columns";
 
 function createColumns(
 	rates: MortgageRate[],
@@ -222,6 +259,7 @@ function createColumns(
 				);
 			},
 			filterFn: arrayIncludesFilter,
+			enableHiding: false,
 		},
 		{
 			accessorKey: "name",
@@ -235,6 +273,7 @@ function createColumns(
 					</p>
 				</div>
 			),
+			enableHiding: false,
 		},
 		{
 			accessorKey: "type",
@@ -243,10 +282,11 @@ function createColumns(
 					column={column}
 					title="Type"
 					filterOptions={typeOptions}
+					align="center"
 				/>
 			),
 			cell: ({ row }) => (
-				<span className="capitalize">{row.original.type}</span>
+				<div className="text-center capitalize">{row.original.type}</div>
 			),
 			filterFn: arrayIncludesFilter,
 		},
@@ -257,12 +297,16 @@ function createColumns(
 					column={column}
 					title="Period"
 					filterOptions={periodOptions}
+					align="center"
 				/>
 			),
-			cell: ({ row }) =>
-				row.original.type === "fixed" && row.original.fixedTerm
-					? `${row.original.fixedTerm} yr`
-					: "—",
+			cell: ({ row }) => (
+				<div className="text-center">
+					{row.original.type === "fixed" && row.original.fixedTerm
+						? `${row.original.fixedTerm} yr`
+						: "—"}
+				</div>
+			),
 			sortingFn: (rowA, rowB) => {
 				const a = rowA.original.fixedTerm ?? 0;
 				const b = rowB.original.fixedTerm ?? 0;
@@ -314,9 +358,13 @@ function createColumns(
 export function RatesTable({
 	rates,
 	lenders,
+	ratesMetadata,
 	mortgageAmount,
 	mortgageTerm,
 }: RatesTableProps) {
+	const [columnVisibility, setColumnVisibility] =
+		useLocalStorage<VisibilityState>(STORAGE_KEY, DEFAULT_COLUMN_VISIBILITY);
+
 	const columns = useMemo(
 		() => createColumns(rates, lenders),
 		[rates, lenders],
@@ -348,6 +396,15 @@ export function RatesTable({
 			columns={columns}
 			data={data}
 			emptyMessage="No rates match your filters. Try adjusting your selection."
+			initialSorting={DEFAULT_SORTING}
+			columnVisibility={columnVisibility}
+			onColumnVisibilityChange={setColumnVisibility}
+			toolbar={(table) => (
+				<div className="flex justify-between">
+					<RateUpdatesDialog lenders={lenders} ratesMetadata={ratesMetadata} />
+					<ColumnVisibilityToggle table={table} columnLabels={COLUMN_LABELS} />
+				</div>
+			)}
 		/>
 	);
 }
