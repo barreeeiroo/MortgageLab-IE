@@ -19,28 +19,40 @@ let cachedRates: MortgageRate[] | null = null;
 let cachedLenders: Lender[] | null = null;
 let fetchPromise: Promise<void> | null = null;
 
+async function fetchLenderRates(lenderId: string): Promise<MortgageRate[]> {
+	try {
+		const res = await fetch(getPath(`data/rates/${lenderId}.json`));
+		if (!res.ok) {
+			// Silently skip lenders without rate data
+			return [];
+		}
+		const json = await res.json();
+		return RatesFileSchema.parse(json);
+	} catch {
+		// Silently skip lenders with invalid/missing rate data
+		return [];
+	}
+}
+
 async function fetchData(): Promise<{
 	rates: MortgageRate[];
 	lenders: Lender[];
 }> {
-	const [aibRes, boiRes, lendersRes] = await Promise.all([
-		fetch(getPath("data/rates/aib.json")),
-		fetch(getPath("data/rates/boi.json")),
-		fetch(getPath("data/lenders.json")),
-	]);
-
-	if (!aibRes.ok || !boiRes.ok || !lendersRes.ok) {
-		throw new Error("Failed to fetch rate data");
+	// First fetch lenders to know which rate files to load
+	const lendersRes = await fetch(getPath("data/lenders.json"));
+	if (!lendersRes.ok) {
+		throw new Error("Failed to fetch lenders data");
 	}
 
-	const [aibJson, boiJson, lendersJson] = await Promise.all([
-		aibRes.json(),
-		boiRes.json(),
-		lendersRes.json(),
-	]);
-
-	const rates = RatesFileSchema.parse([...aibJson, ...boiJson]);
+	const lendersJson = await lendersRes.json();
 	const lenders = LendersFileSchema.parse(lendersJson);
+
+	// Fetch rates for all lenders in parallel, silently skipping failures
+	const rateArrays = await Promise.all(
+		lenders.map((lender) => fetchLenderRates(lender.id)),
+	);
+
+	const rates = rateArrays.flat();
 
 	return { rates, lenders };
 }
