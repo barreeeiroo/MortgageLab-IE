@@ -1,12 +1,10 @@
+import { GREEN_BER_RATINGS } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
-import type { BerRating, MortgageRate } from "@/lib/schemas/rate";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "ptsb";
 const RATES_URL = "https://www.ptsb.ie/mortgages/mortgage-interest-rates/";
-
-// BER group for green rates (A1-B3)
-const BER_GREEN: BerRating[] = ["A1", "A2", "A3", "B1", "B2", "B3"];
 
 // LTV bands used by PTSB for fixed rates
 const LTV_BANDS_FIXED = [
@@ -169,7 +167,7 @@ function parseGreenRates(): MortgageRate[] {
 				minLtv: r.ltvBand.minLtv,
 				maxLtv: r.ltvBand.maxLtv,
 				buyerTypes,
-				berEligible: BER_GREEN,
+				berEligible: GREEN_BER_RATINGS,
 				perks: ["cashback-2pct"],
 			});
 		}
@@ -255,7 +253,7 @@ function parseHighValueRates(): MortgageRate[] {
 				maxLtv: r.ltvBand.maxLtv,
 				minLoan: 250000,
 				buyerTypes,
-				berEligible: BER_GREEN,
+				berEligible: GREEN_BER_RATINGS,
 				perks: ["cashback-2pct"],
 			});
 		}

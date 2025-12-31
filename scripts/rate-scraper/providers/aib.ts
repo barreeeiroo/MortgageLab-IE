@@ -1,14 +1,11 @@
+import { BER_GROUP_A, GREEN_BER_RATINGS } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
-import type { BerRating, MortgageRate } from "@/lib/schemas/rate";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "aib";
 const RATES_URL =
 	"https://aib.ie/our-products/mortgages/mortgage-interest-rates";
-
-// BER group mappings for green rates
-const BER_GREEN: BerRating[] = ["A1", "A2", "A3", "B1", "B2", "B3"];
-const BER_GREEN_A: BerRating[] = ["A1", "A2", "A3"];
 
 // LTV bands used by AIB
 const LTV_BANDS = [
@@ -176,7 +173,7 @@ function parseGreenRates(): MortgageRate[] {
 			minLtv: r.ltvBand.minLtv,
 			maxLtv: r.ltvBand.maxLtv,
 			buyerTypes,
-			berEligible: BER_GREEN,
+			berEligible: GREEN_BER_RATINGS,
 			perks: ["cashback-2pct"],
 		});
 	}
@@ -200,7 +197,7 @@ function parseGreenRates(): MortgageRate[] {
 			minLtv: r.ltvBand.minLtv,
 			maxLtv: r.ltvBand.maxLtv,
 			buyerTypes,
-			berEligible: BER_GREEN_A,
+			berEligible: BER_GROUP_A,
 			perks: ["cashback-2pct"],
 		});
 	}
@@ -224,7 +221,7 @@ function parseGreenRates(): MortgageRate[] {
 			minLtv: r.ltvBand.minLtv,
 			maxLtv: r.ltvBand.maxLtv,
 			buyerTypes,
-			berEligible: BER_GREEN,
+			berEligible: GREEN_BER_RATINGS,
 			perks: ["cashback-2pct"],
 		});
 	}

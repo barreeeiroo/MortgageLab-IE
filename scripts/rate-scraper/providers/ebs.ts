@@ -1,12 +1,10 @@
+import { GREEN_BER_RATINGS } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
-import type { BerRating, MortgageRate } from "@/lib/schemas/rate";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "ebs";
 const RATES_URL = "https://www.ebs.ie/mortgages/mortgage-interest-rates";
-
-// BER ratings for green mortgages (A1-B3)
-const BER_GREEN: BerRating[] = ["A1", "A2", "A3", "B1", "B2", "B3"];
 
 // PDH buyer types
 const PDH_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
@@ -81,7 +79,7 @@ function parseFixedRates(): MortgageRate[] {
 		minLtv: 0,
 		maxLtv: 90,
 		buyerTypes: PDH_BUYER_TYPES,
-		berEligible: BER_GREEN,
+		berEligible: GREEN_BER_RATINGS,
 		perks: [],
 	});
 
