@@ -36,9 +36,27 @@
 		"perks": []
 	},
 	{
+		"id": "ics",
+		"name": "ICS Mortgages",
+		"website": "https://www.icsmortgages.ie",
+		"perks": []
+	},
+	{
 		"id": "ptsb",
 		"name": "Permanent TSB",
 		"website": "https://www.permanenttsb.ie/mortgages/",
+		"perks": []
+	},
+	{
+		"id": "moco",
+		"name": "MoCo",
+		"website": "https://www.moco.ie/moco/our-rates",
+		"perks": []
+	},
+	{
+		"id": "nua",
+		"name": "Núa Mortgages",
+		"website": "https://nuamoney.com",
 		"perks": []
 	}
 ]

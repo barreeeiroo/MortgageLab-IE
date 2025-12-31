@@ -9,6 +9,9 @@ import { boiProvider } from "./providers/boi";
 import { cuProvider } from "./providers/cu";
 import { ebsProvider } from "./providers/ebs";
 import { havenProvider } from "./providers/haven";
+import { icsProvider } from "./providers/ics";
+import { mocoProvider } from "./providers/moco";
+import { nuaProvider } from "./providers/nua";
 import { ptsbProvider } from "./providers/ptsb";
 import type { LenderProvider } from "./types";
 import { computeRatesHash } from "./utils";
@@ -20,6 +23,9 @@ const providers: Record<string, LenderProvider> = {
 	cu: cuProvider,
 	ebs: ebsProvider,
 	haven: havenProvider,
+	ics: icsProvider,
+	moco: mocoProvider,
+	nua: nuaProvider,
 	ptsb: ptsbProvider,
 };
 
