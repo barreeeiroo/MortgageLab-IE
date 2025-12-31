@@ -8,6 +8,7 @@ import {
 import { BerSelector } from "../selectors/BerSelector";
 import { BuyerTypeSelector } from "../selectors/BuyerTypeSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
+import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -142,6 +143,27 @@ export function RatesInput({
 											)
 										}
 									/>
+									{!isRemortgage && (
+										<div className="flex gap-1 pt-0.5">
+											{[50, 70, 80, 90].map((pct) => (
+												<Button
+													key={pct}
+													type="button"
+													variant="ghost"
+													disabled={property === 0}
+													onClick={() =>
+														updateField(
+															"mortgageAmount",
+															String(Math.round(property * (pct / 100))),
+														)
+													}
+													className="h-5 px-1.5 text-[10px] text-muted-foreground"
+												>
+													{pct}%
+												</Button>
+											))}
+										</div>
+									)}
 								</div>
 							</div>
 							{/* Mobile Row 2: Deposit/Monthly Repayment, LTV - shown inline on lg */}
