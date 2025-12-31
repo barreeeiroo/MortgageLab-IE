@@ -141,6 +141,7 @@ export function RatesCalculator() {
 			ltv,
 			buyerType: values.buyerType as BuyerType,
 			ber: values.berRating as BerRating,
+			currentLender: values.currentLender || undefined,
 		})
 			.filter((rate) => {
 				const lender = lenderMap.get(rate.lenderId);
@@ -155,6 +156,7 @@ export function RatesCalculator() {
 		ltv,
 		values.buyerType,
 		values.berRating,
+		values.currentLender,
 		mortgageTerm,
 	]);
 

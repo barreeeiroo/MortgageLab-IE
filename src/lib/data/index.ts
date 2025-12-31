@@ -53,6 +53,7 @@ export interface RateFilter {
 	lenderId?: string;
 	type?: "fixed" | "variable";
 	fixedTerm?: number;
+	currentLender?: string; // User's current mortgage lender (for newBusiness filtering)
 }
 
 /**
@@ -102,6 +103,22 @@ export function filterRates(
 		if (filter.fixedTerm !== undefined) {
 			if (rate.fixedTerm !== filter.fixedTerm) {
 				return false;
+			}
+		}
+
+		// Filter by newBusiness based on currentLender
+		if (filter.currentLender) {
+			const isCurrentLender = rate.lenderId === filter.currentLender;
+			if (isCurrentLender) {
+				// For current lender: only show existing customer rates (newBusiness: false or undefined)
+				if (rate.newBusiness === true) {
+					return false;
+				}
+			} else {
+				// For other lenders: only show new business rates (newBusiness: true or undefined)
+				if (rate.newBusiness === false) {
+					return false;
+				}
 			}
 		}
 
