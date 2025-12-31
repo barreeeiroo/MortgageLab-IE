@@ -3,13 +3,7 @@
 		"id": "aib",
 		"name": "AIB",
 		"website": "https://aib.ie/our-products/mortgages",
-		"perks": [
-			{
-				"id": "fee-free-banking",
-				"label": "Fee Free Banking",
-				"description": "No fees on day-to-day banking"
-			}
-		]
+		"perks": ["fee-free-banking"]
 	},
 	{
 		"id": "boi",

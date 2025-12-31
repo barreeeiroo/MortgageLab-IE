@@ -1,0 +1,12 @@
+[
+	{
+		"id": "fee-free-banking",
+		"label": "Fee Free Banking",
+		"description": "No fees on day-to-day banking"
+	},
+	{
+		"id": "cashback-2pct",
+		"label": "2% Cashback",
+		"description": "2% cashback on drawdown, up to €10,000"
+	}
+]

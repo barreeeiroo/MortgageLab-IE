@@ -8,13 +8,7 @@
 		"minLtv": 80,
 		"maxLtv": 90,
 		"buyerTypes": ["ftb"],
-		"perks": [
-			{
-				"id": "cashback-2pct",
-				"label": "2% Cashback",
-				"description": "2% cashback on drawdown, up to €10,000"
-			}
-		]
+		"perks": ["cashback-2pct"]
 	},
 	{
 		"id": "aib-ftb-green-fixed-4yr-90",
@@ -26,13 +20,7 @@
 		"maxLtv": 90,
 		"buyerTypes": ["ftb"],
 		"berEligible": ["A1", "A2", "A3", "B1", "B2", "B3"],
-		"perks": [
-			{
-				"id": "cashback-2pct",
-				"label": "2% Cashback",
-				"description": "2% cashback on drawdown, up to €10,000"
-			}
-		]
+		"perks": ["cashback-2pct"]
 	},
 	{
 		"id": "boi-ftb-variable-90",

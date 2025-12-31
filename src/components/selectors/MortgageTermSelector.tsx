@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const MORTGAGE_TERMS = [5, 10, 15, 20, 25, 30, 35] as const;
 const MIN_TERM = 5;
-const MAX_TERM = 35;
+const MAX_TERM = 40;
 
 interface MortgageTermSelectorProps {
 	value: string;

@@ -6,3 +6,5 @@ export const PerkSchema = z.object({
 	description: z.string().optional(),
 });
 export type Perk = z.infer<typeof PerkSchema>;
+
+export const PerksFileSchema = z.array(PerkSchema);

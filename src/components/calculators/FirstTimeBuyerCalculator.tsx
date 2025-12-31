@@ -6,6 +6,7 @@ import {
 	ESTIMATED_LEGAL_FEES,
 	formatCurrency,
 	formatCurrencyInput,
+	getPath,
 	parseCurrency,
 } from "@/lib/utils";
 import { BerSelector } from "../selectors/BerSelector";
@@ -525,7 +526,7 @@ export function FirstTimeBuyerCalculator() {
 									berRating: result.berRating,
 									buyerType: "ftb",
 								});
-								window.location.href = "/rates";
+								window.location.href = getPath("/rates");
 							}}
 						>
 							Compare Mortgage Rates

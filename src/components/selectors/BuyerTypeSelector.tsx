@@ -10,13 +10,13 @@ import {
 
 const BUYER_TYPE_OPTIONS: { value: BuyerType; label: string }[] = [
 	{ value: "ftb", label: "First Time Buyer" },
-	{ value: "mover", label: "Home Mover" },
-	{ value: "btl", label: "Buy to Let" },
+	{ value: "mover", label: "Home Mover (Primary Residence)" },
+	{ value: "btl", label: "Other Buyer (2nd Home, Buy To Let, etc.)" },
 ];
 
 const REMORTGAGE_TYPE_OPTIONS: { value: BuyerType; label: string }[] = [
-	{ value: "mover", label: "Owner Occupied" },
-	{ value: "btl", label: "Other" },
+	{ value: "mover", label: "Owner Occupied (Primary Residence)" },
+	{ value: "btl", label: "Other Switcher (2nd Home, Buy To Let, etc.)" },
 ];
 
 interface BuyerTypeSelectorProps {

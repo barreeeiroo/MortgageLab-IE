@@ -1,0 +1,45 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  lenderId: string;
+  size?: number;
+  class?: string;
+}
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/logos/lenders/*'
+);
+
+const { lenderId, size = 48, class: className } = Astro.props;
+
+// Find matching logo file regardless of extension
+const logoPath = Object.keys(images).find((path) =>
+  path.includes(`/${lenderId}.`)
+);
+
+const logoModule = logoPath ? await images[logoPath]() : null;
+const logo = logoModule?.default;
+---
+
+{logo ? (
+  <div
+    class:list={["bg-white rounded-md flex items-center justify-center p-2", className]}
+    style={`width: ${size}px; height: ${size}px;`}
+  >
+    <Image
+      src={logo}
+      alt={`${lenderId} logo`}
+      class="max-w-full max-h-full object-contain"
+      width={size - 16}
+      height={size - 16}
+    />
+  </div>
+) : (
+  <div
+    class:list={["bg-muted rounded-md flex items-center justify-center", className]}
+    style={`width: ${size}px; height: ${size}px;`}
+  >
+    <span class="text-xs text-muted-foreground font-medium">{lenderId.toUpperCase()}</span>
+  </div>
+)}

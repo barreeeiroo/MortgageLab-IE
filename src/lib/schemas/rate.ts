@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { BER_RATINGS, type BerRating } from "@/lib/constants";
 import { BuyerTypeSchema } from "./buyer";
-import { PerkSchema } from "./perk";
 
 export const BerRatingSchema = z.enum(BER_RATINGS);
 export type { BerRating };
@@ -23,8 +22,8 @@ export const MortgageRateSchema = z.object({
 	buyerTypes: z.array(BuyerTypeSchema).min(1),
 	berEligible: z.array(BerRatingSchema).optional(), // If undefined, all BER ratings eligible
 
-	// Rate-specific perks
-	perks: z.array(PerkSchema).default([]),
+	// Rate-specific perk IDs
+	perks: z.array(z.string()).default([]),
 });
 export type MortgageRate = z.infer<typeof MortgageRateSchema>;
 

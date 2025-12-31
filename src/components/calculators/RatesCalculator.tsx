@@ -1,5 +1,5 @@
 import { HelpCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadRatesForm, type RatesMode, saveRatesForm } from "@/lib/storage";
 import {
 	calculateStampDuty,
@@ -32,6 +32,14 @@ function getLtvRange(ltv: number): LtvRange {
 	return "above-90";
 }
 
+function getModeFromHash(): RatesMode | null {
+	const hash = window.location.hash.slice(1);
+	if (hash === "first-mortgage" || hash === "remortgage") {
+		return hash;
+	}
+	return null;
+}
+
 export function RatesCalculator() {
 	const [mode, setMode] = useState<RatesMode>("first-mortgage");
 	const [propertyValue, setPropertyValue] = useState("");
@@ -42,18 +50,35 @@ export function RatesCalculator() {
 	const [buyerType, setBuyerType] = useState("ftb");
 
 	const isRemortgage = mode === "remortgage";
+	const prevModeRef = useRef<RatesMode | null>(null);
 
-	// Reset buyer type when switching modes (ftb not valid for remortgage)
+	// Map buyer type when switching modes
+	// - Switching to remortgage: ftb/mover → mover (Primary Residence)
+	// - Switching to first mortgage: mover → ftb (First Time Buyer)
 	useEffect(() => {
-		if (isRemortgage && buyerType === "ftb") {
-			setBuyerType("mover");
+		const prevMode = prevModeRef.current;
+		if (prevMode !== null && prevMode !== mode) {
+			if (isRemortgage && (buyerType === "ftb" || buyerType === "mover")) {
+				setBuyerType("mover");
+			} else if (!isRemortgage && buyerType === "mover") {
+				setBuyerType("ftb");
+			}
 		}
-	}, [isRemortgage, buyerType]);
+		prevModeRef.current = mode;
+	}, [mode, isRemortgage, buyerType]);
 
-	// Load from localStorage on mount
+	// Load from localStorage on mount, with URL hash taking priority
 	useEffect(() => {
 		const saved = loadRatesForm();
-		if (saved.mode) setMode(saved.mode);
+		const hashMode = getModeFromHash();
+
+		// URL hash takes priority over localStorage
+		if (hashMode) {
+			setMode(hashMode);
+		} else if (saved.mode) {
+			setMode(saved.mode);
+		}
+
 		if (saved.propertyValue) setPropertyValue(saved.propertyValue);
 		if (saved.mortgageAmount) setMortgageAmount(saved.mortgageAmount);
 		if (saved.monthlyRepayment) setMonthlyRepayment(saved.monthlyRepayment);
@@ -61,6 +86,11 @@ export function RatesCalculator() {
 		if (saved.berRating) setBerRating(saved.berRating);
 		if (saved.buyerType) setBuyerType(saved.buyerType);
 	}, []);
+
+	// Update URL hash when mode changes
+	useEffect(() => {
+		window.history.replaceState(null, "", `#${mode}`);
+	}, [mode]);
 
 	// Save to localStorage when form changes
 	useEffect(() => {
@@ -86,11 +116,29 @@ export function RatesCalculator() {
 	// Calculated values
 	const property = parseCurrency(propertyValue);
 	const mortgage = parseCurrency(mortgageAmount);
+	const monthly = parseCurrency(monthlyRepayment);
 	const deposit = property > 0 ? property - mortgage : 0;
 	const ltv = property > 0 ? (mortgage / property) * 100 : 0;
 	const ltvRange = getLtvRange(ltv);
 	const stampDuty = calculateStampDuty(property);
 	const legalFees = ESTIMATED_LEGAL_FEES;
+
+	// Validation logic
+	const isPrimaryResidence = buyerType === "ftb" || buyerType === "mover";
+	const maxLtv = isPrimaryResidence ? 90 : 70;
+
+	const isMortgageAboveProperty =
+		mortgage > 0 && property > 0 && mortgage > property;
+	const isLtvAboveMax = ltv > maxLtv;
+	const isLtvAbove80Warning =
+		isRemortgage && isPrimaryResidence && ltv > 80 && ltv <= 90;
+
+	const hasError = isMortgageAboveProperty || isLtvAboveMax;
+	const hasWarning = isLtvAbove80Warning;
+
+	// Form validity
+	const isFormValid =
+		property > 0 && mortgage > 0 && !hasError && (!isRemortgage || monthly > 0);
 
 	const compare = () => {
 		// TODO: Navigate to results or filter rates
@@ -308,11 +356,35 @@ export function RatesCalculator() {
 							<Button
 								onClick={compare}
 								className="h-9 flex-1"
-								disabled={property <= 0 || mortgage <= 0}
+								disabled={!isFormValid}
 							>
 								Compare
 							</Button>
 						</div>
+
+						{/* Validation messages */}
+						{isMortgageAboveProperty && (
+							<p className="text-sm text-destructive">
+								{isRemortgage ? "Outstanding balance" : "Mortgage amount"}{" "}
+								cannot exceed property value.
+							</p>
+						)}
+						{isLtvAboveMax && !isMortgageAboveProperty && (
+							<p className="text-sm text-destructive">
+								Maximum LTV for{" "}
+								{isPrimaryResidence ? "primary residence" : "this buyer type"}{" "}
+								is {maxLtv}%.
+								{isPrimaryResidence
+									? " Reduce mortgage amount or increase property value."
+									: " Consider a larger deposit."}
+							</p>
+						)}
+						{hasWarning && !hasError && (
+							<p className="text-sm text-amber-600 dark:text-amber-500">
+								LTV above 80% may limit lender options. Some lenders require
+								lower LTV for mortgage switches.
+							</p>
+						)}
 					</div>
 				</CardContent>
 			</Card>

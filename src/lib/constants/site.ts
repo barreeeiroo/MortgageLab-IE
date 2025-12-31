@@ -11,7 +11,6 @@ export const NAV_ITEMS = [
 			{ label: "First Time Buyer", href: "/affordability/first-time-buyer" },
 			{ label: "Home Mover", href: "/affordability/home-mover" },
 			{ label: "Buy to Let", href: "/affordability/buy-to-let" },
-			{ label: "Remortgage", href: "/rates#remortgage" },
 		],
 	},
 	{ label: "Rates", href: "/rates" },
