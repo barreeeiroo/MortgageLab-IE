@@ -1,0 +1,45 @@
+name: Report Incorrect Rate
+description: Report a mortgage rate that is outdated or incorrect
+title: "[Rate] Incorrect rate for "
+labels: ["rate-data", "bug"]
+body:
+  - type: dropdown
+    id: lender
+    attributes:
+      label: Lender
+      description: Which lender's rate is incorrect?
+      options:
+        - AIB
+        - Bank of Ireland
+        - Permanent TSB
+        - Avant Money
+        - ICS Mortgages
+        - Haven
+        - Finance Ireland
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: rate-name
+    attributes:
+      label: Rate Name or Identifier
+      description: Which rate is incorrect?
+      placeholder: "e.g., 3-year fixed up to 80% LTV"
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Link to the lender's website or other source
+      placeholder: "https://..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other details that might be helpful
