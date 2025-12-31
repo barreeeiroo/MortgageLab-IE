@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
+		"postbuild": "cp -r data dist/data",
 		"preview": "astro preview",
 		"astro": "astro",
 		"lint": "biome check .",

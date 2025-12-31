@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import {
 	getAvailableFixedTerms,
 	getLender,
-	lenders,
+	type Lender,
 	type MortgageRate,
 } from "@/lib/data";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -21,6 +21,7 @@ import {
 
 interface RatesTableProps {
 	rates: MortgageRate[];
+	lenders: Lender[];
 	mortgageAmount: number;
 	mortgageTerm: number;
 }
@@ -185,8 +186,11 @@ const typeOptions = [
 	{ label: "Variable", value: "variable" },
 ];
 
-function createColumns(): ColumnDef<RateRow>[] {
-	const availableFixedTerms = getAvailableFixedTerms();
+function createColumns(
+	rates: MortgageRate[],
+	lenders: Lender[],
+): ColumnDef<RateRow>[] {
+	const availableFixedTerms = getAvailableFixedTerms(rates);
 	const periodOptions = availableFixedTerms.map((term) => ({
 		label: `${term} year`,
 		value: term,
@@ -207,7 +211,7 @@ function createColumns(): ColumnDef<RateRow>[] {
 				/>
 			),
 			cell: ({ row }) => {
-				const lender = getLender(row.original.lenderId);
+				const lender = getLender(lenders, row.original.lenderId);
 				return (
 					<div className="flex items-center gap-2">
 						<LenderLogo lenderId={row.original.lenderId} size={36} />
@@ -309,10 +313,14 @@ function createColumns(): ColumnDef<RateRow>[] {
 
 export function RatesTable({
 	rates,
+	lenders,
 	mortgageAmount,
 	mortgageTerm,
 }: RatesTableProps) {
-	const columns = useMemo(() => createColumns(), []);
+	const columns = useMemo(
+		() => createColumns(rates, lenders),
+		[rates, lenders],
+	);
 
 	const data = useMemo<RateRow[]>(
 		() =>

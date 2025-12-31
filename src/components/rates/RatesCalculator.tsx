@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type BerRating, type BuyerType, filterRates } from "@/lib/data";
+import { useRates } from "@/lib/hooks";
 import { loadRatesForm, saveRatesForm } from "@/lib/storage";
 import { parseCurrency } from "@/lib/utils";
 import {
@@ -8,6 +9,7 @@ import {
 	type RatesMode,
 } from "./RatesInput";
 import { RatesTable } from "./RatesTable";
+import { RatesTableSkeleton } from "./RatesTableSkeleton";
 
 function getModeFromHash(): RatesMode | null {
 	const hash = window.location.hash.slice(1);
@@ -18,6 +20,8 @@ function getModeFromHash(): RatesMode | null {
 }
 
 export function RatesCalculator() {
+	const { rates, lenders, isLoading, error } = useRates();
+
 	const [values, setValues] = useState<RatesInputValues>({
 		mode: "first-mortgage",
 		propertyValue: "",
@@ -122,14 +126,22 @@ export function RatesCalculator() {
 
 	// Filter rates based on inputs (LTV, buyer type, BER)
 	const filteredRates = useMemo(() => {
-		if (!isFormValid) return [];
+		if (!isFormValid || rates.length === 0) return [];
 
-		return filterRates({
+		return filterRates(rates, {
 			ltv,
 			buyerType: values.buyerType as BuyerType,
 			ber: values.berRating as BerRating,
 		}).sort((a, b) => a.rate - b.rate);
-	}, [isFormValid, ltv, values.buyerType, values.berRating]);
+	}, [isFormValid, rates, ltv, values.buyerType, values.berRating]);
+
+	if (error) {
+		return (
+			<div className="text-center py-8 text-destructive">
+				Failed to load rates. Please try refreshing the page.
+			</div>
+		);
+	}
 
 	return (
 		<div className="space-y-4">
@@ -145,12 +157,17 @@ export function RatesCalculator() {
 				warningMessage={warningMessage}
 			/>
 
-			{isFormValid && (
-				<RatesTable
-					rates={filteredRates}
-					mortgageAmount={mortgage}
-					mortgageTerm={mortgageTerm}
-				/>
+			{isLoading ? (
+				<RatesTableSkeleton />
+			) : (
+				isFormValid && (
+					<RatesTable
+						rates={filteredRates}
+						lenders={lenders}
+						mortgageAmount={mortgage}
+						mortgageTerm={mortgageTerm}
+					/>
+				)
 			)}
 		</div>
 	);

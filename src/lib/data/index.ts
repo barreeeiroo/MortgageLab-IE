@@ -2,33 +2,18 @@ import {
 	type BerRating,
 	type BuyerType,
 	type Lender,
-	LendersFileSchema,
 	type MortgageRate,
 	type Perk,
 	PerksFileSchema,
-	RatesFileSchema,
 } from "@/lib/schemas";
 
-import lendersJson from "../../../data/lenders.json";
 import perksJson from "../../../data/perks.json";
 
-// Import per-lender rate files
-import aibRatesJson from "../../../data/rates/aib.json";
-import boiRatesJson from "../../../data/rates/boi.json";
-
-// Parse and validate data at import time
+// Perks are small and static, keep bundled
 export const perks: Perk[] = PerksFileSchema.parse(perksJson);
-export const lenders: Lender[] = LendersFileSchema.parse(lendersJson);
 
-// Aggregate all lender rates
-const allRatesJson = [...aibRatesJson, ...boiRatesJson];
-export const rates: MortgageRate[] = RatesFileSchema.parse(allRatesJson);
-
-// Create maps for quick lookups
+// Create map for quick lookups
 const perkMap = new Map<string, Perk>(perks.map((perk) => [perk.id, perk]));
-const lenderMap = new Map<string, Lender>(
-	lenders.map((lender) => [lender.id, lender]),
-);
 
 /**
  * Get a perk by ID
@@ -45,17 +30,20 @@ export function resolvePerks(perkIds: string[]): Perk[] {
 }
 
 /**
- * Get a lender by ID
+ * Get a lender by ID from an array of lenders
  */
-export function getLender(id: string): Lender | undefined {
-	return lenderMap.get(id);
+export function getLender(lenders: Lender[], id: string): Lender | undefined {
+	return lenders.find((l) => l.id === id);
 }
 
 /**
  * Get the lender for a given rate
  */
-export function getLenderForRate(rate: MortgageRate): Lender | undefined {
-	return lenderMap.get(rate.lenderId);
+export function getLenderForRate(
+	lenders: Lender[],
+	rate: MortgageRate,
+): Lender | undefined {
+	return getLender(lenders, rate.lenderId);
 }
 
 export interface RateFilter {
@@ -70,7 +58,10 @@ export interface RateFilter {
 /**
  * Filter rates based on criteria
  */
-export function filterRates(filter: RateFilter): MortgageRate[] {
+export function filterRates(
+	rates: MortgageRate[],
+	filter: RateFilter,
+): MortgageRate[] {
 	return rates.filter((rate) => {
 		// Filter by LTV
 		if (filter.ltv !== undefined) {
@@ -121,15 +112,18 @@ export function filterRates(filter: RateFilter): MortgageRate[] {
 /**
  * Get rates sorted by rate (lowest first)
  */
-export function getRatesSortedByRate(filter?: RateFilter): MortgageRate[] {
-	const filtered = filter ? filterRates(filter) : rates;
+export function getRatesSortedByRate(
+	rates: MortgageRate[],
+	filter?: RateFilter,
+): MortgageRate[] {
+	const filtered = filter ? filterRates(rates, filter) : rates;
 	return [...filtered].sort((a, b) => a.rate - b.rate);
 }
 
 /**
  * Get all unique fixed terms available
  */
-export function getAvailableFixedTerms(): number[] {
+export function getAvailableFixedTerms(rates: MortgageRate[]): number[] {
 	const terms = new Set<number>();
 	for (const rate of rates) {
 		if (rate.fixedTerm !== undefined) {
