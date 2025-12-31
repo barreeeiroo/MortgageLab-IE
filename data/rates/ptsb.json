@@ -1,0 +1,888 @@
+[
+	{
+		"id": "ptsb-fixed-2yr-60",
+		"name": "2 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 4.05,
+		"apr": 4.45,
+		"fixedTerm": 2,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-2yr-80",
+		"name": "2 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 4.2,
+		"apr": 4.57,
+		"fixedTerm": 2,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-2yr-90",
+		"name": "2 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 4.4,
+		"apr": 4.78,
+		"fixedTerm": 2,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-3yr-60",
+		"name": "3 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.65,
+		"apr": 4.29,
+		"fixedTerm": 3,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-3yr-80",
+		"name": "3 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.8,
+		"apr": 4.41,
+		"fixedTerm": 3,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-3yr-90",
+		"name": "3 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 4.05,
+		"apr": 4.63,
+		"fixedTerm": 3,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-4yr-60",
+		"name": "4 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3,
+		"apr": 3.96,
+		"fixedTerm": 4,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-fixed-4yr-80",
+		"name": "4 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.4,
+		"apr": 4.18,
+		"fixedTerm": 4,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-fixed-4yr-90",
+		"name": "4 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.65,
+		"apr": 4.41,
+		"fixedTerm": 4,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-fixed-5yr-60",
+		"name": "5 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.65,
+		"apr": 4.16,
+		"fixedTerm": 5,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-5yr-80",
+		"name": "5 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.8,
+		"apr": 4.29,
+		"fixedTerm": 5,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-5yr-90",
+		"name": "5 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 4.05,
+		"apr": 4.52,
+		"fixedTerm": 5,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-7yr-60",
+		"name": "7 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.65,
+		"apr": 4.05,
+		"fixedTerm": 7,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-7yr-80",
+		"name": "7 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.8,
+		"apr": 4.18,
+		"fixedTerm": 7,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-fixed-7yr-90",
+		"name": "7 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 4.05,
+		"apr": 4.42,
+		"fixedTerm": 7,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-green-fixed-3yr-60",
+		"name": "Green 3 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.45,
+		"apr": 4.22,
+		"fixedTerm": 3,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-green-fixed-3yr-80",
+		"name": "Green 3 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.6,
+		"apr": 4.34,
+		"fixedTerm": 3,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-green-fixed-3yr-90",
+		"name": "Green 3 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.8,
+		"apr": 4.55,
+		"fixedTerm": 3,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-green-fixed-5yr-60",
+		"name": "Green 5 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.45,
+		"apr": 4.06,
+		"fixedTerm": 5,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-green-fixed-5yr-80",
+		"name": "Green 5 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.6,
+		"apr": 4.19,
+		"fixedTerm": 5,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-green-fixed-5yr-90",
+		"name": "Green 5 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.8,
+		"apr": 4.39,
+		"fixedTerm": 5,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-fixed-3yr-60",
+		"name": "High Value 3 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.45,
+		"apr": 4.22,
+		"fixedTerm": 3,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-fixed-3yr-80",
+		"name": "High Value 3 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.55,
+		"apr": 4.33,
+		"fixedTerm": 3,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-fixed-3yr-90",
+		"name": "High Value 3 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.85,
+		"apr": 4.57,
+		"fixedTerm": 3,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-fixed-5yr-60",
+		"name": "High Value 5 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.45,
+		"apr": 4.06,
+		"fixedTerm": 5,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-fixed-5yr-80",
+		"name": "High Value 5 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.55,
+		"apr": 4.16,
+		"fixedTerm": 5,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-fixed-5yr-90",
+		"name": "High Value 5 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.85,
+		"apr": 4.42,
+		"fixedTerm": 5,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-green-fixed-3yr-60",
+		"name": "High Value Green 3 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.35,
+		"apr": 4.19,
+		"fixedTerm": 3,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-green-fixed-3yr-80",
+		"name": "High Value Green 3 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.5,
+		"apr": 4.31,
+		"fixedTerm": 3,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-green-fixed-3yr-90",
+		"name": "High Value Green 3 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.7,
+		"apr": 4.52,
+		"fixedTerm": 3,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-green-fixed-5yr-60",
+		"name": "High Value Green 5 Year Fixed - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.35,
+		"apr": 4.01,
+		"fixedTerm": 5,
+		"minLtv": 0,
+		"maxLtv": 60,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-green-fixed-5yr-80",
+		"name": "High Value Green 5 Year Fixed - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.5,
+		"apr": 4.14,
+		"fixedTerm": 5,
+		"minLtv": 60,
+		"maxLtv": 80,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-hv-green-fixed-5yr-90",
+		"name": "High Value Green 5 Year Fixed - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 3.7,
+		"apr": 4.34,
+		"fixedTerm": 5,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"minLoan": 250000,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"berEligible": [
+			"A1",
+			"A2",
+			"A3",
+			"B1",
+			"B2",
+			"B3"
+		],
+		"perks": [
+			"cashback-2pct"
+		]
+	},
+	{
+		"id": "ptsb-variable-50",
+		"name": "Managed Variable Rate - LTV ≤50%",
+		"lenderId": "ptsb",
+		"type": "variable",
+		"rate": 4.4,
+		"apr": 4.53,
+		"minLtv": 0,
+		"maxLtv": 50,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-variable-60",
+		"name": "Managed Variable Rate - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "variable",
+		"rate": 4.4,
+		"apr": 4.53,
+		"minLtv": 50,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-variable-70",
+		"name": "Managed Variable Rate - LTV ≤70%",
+		"lenderId": "ptsb",
+		"type": "variable",
+		"rate": 4.5,
+		"apr": 4.64,
+		"minLtv": 60,
+		"maxLtv": 70,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-variable-80",
+		"name": "Managed Variable Rate - LTV ≤80%",
+		"lenderId": "ptsb",
+		"type": "variable",
+		"rate": 4.5,
+		"apr": 4.64,
+		"minLtv": 70,
+		"maxLtv": 80,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-variable-90",
+		"name": "Managed Variable Rate - LTV ≤90%",
+		"lenderId": "ptsb",
+		"type": "variable",
+		"rate": 4.7,
+		"apr": 4.84,
+		"minLtv": 80,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-btl-variable-50",
+		"name": "Buy-to-Let Variable - LTV ≤50%",
+		"lenderId": "ptsb",
+		"type": "variable",
+		"rate": 5.3,
+		"apr": 5.63,
+		"minLtv": 0,
+		"maxLtv": 50,
+		"buyerTypes": [
+			"btl",
+			"switcher-btl"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-btl-variable-60",
+		"name": "Buy-to-Let Variable - LTV ≤60%",
+		"lenderId": "ptsb",
+		"type": "variable",
+		"rate": 5.45,
+		"apr": 5.79,
+		"minLtv": 50,
+		"maxLtv": 60,
+		"buyerTypes": [
+			"btl",
+			"switcher-btl"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-btl-variable-70",
+		"name": "Buy-to-Let Variable - LTV ≤70%",
+		"lenderId": "ptsb",
+		"type": "variable",
+		"rate": 5.55,
+		"apr": 5.9,
+		"minLtv": 60,
+		"maxLtv": 70,
+		"buyerTypes": [
+			"btl",
+			"switcher-btl"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-btl-fixed-3yr",
+		"name": "Buy-to-Let 3 Year Fixed",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 5.65,
+		"apr": 5.93,
+		"fixedTerm": 3,
+		"minLtv": 0,
+		"maxLtv": 70,
+		"buyerTypes": [
+			"btl",
+			"switcher-btl"
+		],
+		"perks": []
+	},
+	{
+		"id": "ptsb-btl-fixed-5yr",
+		"name": "Buy-to-Let 5 Year Fixed",
+		"lenderId": "ptsb",
+		"type": "fixed",
+		"rate": 5.85,
+		"apr": 6.06,
+		"fixedTerm": 5,
+		"minLtv": 0,
+		"maxLtv": 70,
+		"buyerTypes": [
+			"btl",
+			"switcher-btl"
+		],
+		"perks": []
+	}
+]

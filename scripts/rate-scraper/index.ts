@@ -3,12 +3,16 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { aibProvider } from "./providers/aib";
+import { avantProvider } from "./providers/avant";
 import { boiProvider } from "./providers/boi";
+import { ptsbProvider } from "./providers/ptsb";
 import type { LenderProvider } from "./types";
 
 const providers: Record<string, LenderProvider> = {
 	aib: aibProvider,
+	avant: avantProvider,
 	boi: boiProvider,
+	ptsb: ptsbProvider,
 };
 
 async function main() {
