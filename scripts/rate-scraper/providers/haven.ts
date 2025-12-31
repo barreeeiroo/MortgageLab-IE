@@ -117,6 +117,8 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		const tabText = $(tabSelector).text().trim();
 		const sectionType = getSectionTypeFromTab(tabText);
 
+		if (sectionType === "unknown") return;
+
 		$(tabPanel)
 			.find("table")
 			.each((_, table) => {
@@ -139,7 +141,11 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 						if (parsed.isGreen) idParts.push("green");
 						if (isVariable) {
 							idParts.push("variable");
-							if (parsed.maxLtv < 90) idParts.push(String(parsed.maxLtv));
+							if (parsed.maxLtv < 90) {
+								idParts.push(String(parsed.maxLtv));
+							} else if (parsed.minLtv > 0) {
+								idParts.push(String(parsed.maxLtv));
+							}
 						} else if (parsed.term) {
 							idParts.push("fixed", `${parsed.term}yr`);
 						}
@@ -148,7 +154,11 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 						if (parsed.isGreen) nameParts.push("Haven Green");
 						if (isVariable) {
 							nameParts.push("Variable Rate");
-							if (parsed.maxLtv < 90) nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
+							if (parsed.maxLtv < 90) {
+								nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
+							} else if (parsed.minLtv > 0) {
+								nameParts.push(`- LTV >${parsed.minLtv}%`);
+							}
 						} else if (parsed.term) {
 							nameParts.push(`${parsed.term} Year Fixed`);
 						}

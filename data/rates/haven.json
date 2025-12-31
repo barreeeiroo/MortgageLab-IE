@@ -1,8 +1,8 @@
 {
 	"lenderId": "haven",
-	"lastScrapedAt": "2025-12-31T19:43:18.807Z",
-	"lastUpdatedAt": "2025-12-31T19:43:18.807Z",
-	"ratesHash": "3ee778eaaef418e1dedc04ad7188aff43d9d9633572654285c548e0e2db6f654",
+	"lastScrapedAt": "2025-12-31T19:51:09.827Z",
+	"lastUpdatedAt": "2025-12-31T19:51:09.827Z",
+	"ratesHash": "794884498e5b0666d3dceea3de9bc78bab8fd8f3d69ba5046941bccbe0e20710",
 	"rates": [
 		{
 			"id": "haven-variable-50",
@@ -39,19 +39,20 @@
 			"perks": []
 		},
 		{
-			"id": "haven-variable",
-			"name": "Variable Rate",
+			"id": "haven-variable-90",
+			"name": "Variable Rate - LTV >80%",
 			"lenderId": "haven",
 			"type": "variable",
 			"rate": 4.15,
 			"apr": 4.3,
-			"minLtv": 0,
+			"minLtv": 80,
 			"maxLtv": 90,
 			"buyerTypes": [
 				"ftb",
 				"mover",
 				"switcher-pdh"
 			],
+			"newBusiness": true,
 			"perks": []
 		},
 		{
@@ -179,6 +180,23 @@
 				"mover",
 				"switcher-pdh"
 			],
+			"perks": []
+		},
+		{
+			"id": "haven-variable",
+			"name": "Variable Rate",
+			"lenderId": "haven",
+			"type": "variable",
+			"rate": 4.15,
+			"apr": 4.3,
+			"minLtv": 0,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": false,
 			"perks": []
 		}
 	]
