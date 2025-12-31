@@ -1,17 +1,41 @@
-import { AlertCircle, HelpCircle, Info, TriangleAlert } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
+import {
+	AlertCircle,
+	Clock,
+	HelpCircle,
+	Info,
+	TriangleAlert,
+} from "lucide-react";
+import { useState } from "react";
+import type { Lender } from "@/lib/schemas";
 import {
 	calculateStampDuty,
 	ESTIMATED_LEGAL_FEES,
 	formatCurrency,
 	formatCurrencyInput,
 } from "@/lib/utils";
+import { LenderLogo } from "../LenderLogo";
 import { BerSelector } from "../selectors/BerSelector";
 import { BuyerTypeSelector } from "../selectors/BuyerTypeSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../ui/select";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import {
 	Tooltip,
@@ -30,11 +54,20 @@ export interface RatesInputValues {
 	mortgageTerm: string;
 	berRating: string;
 	buyerType: string;
+	currentLender: string;
+}
+
+interface RatesMetadata {
+	lenderId: string;
+	lastScrapedAt: string;
+	lastUpdatedAt: string;
 }
 
 export interface RatesInputProps {
 	values: RatesInputValues;
 	onChange: (values: RatesInputValues) => void;
+	lenders: Lender[];
+	ratesMetadata: RatesMetadata[];
 	// Computed values passed from parent
 	deposit: number;
 	ltv: number;
@@ -54,9 +87,19 @@ function getLtvRange(ltv: number): LtvRange {
 	return "above-90";
 }
 
+function formatDublinTime(isoString: string): string {
+	return format(new Date(isoString), "d MMM yyyy, HH:mm");
+}
+
+function formatRelativeTime(isoString: string): string {
+	return formatDistanceToNow(new Date(isoString), { addSuffix: true });
+}
+
 export function RatesInput({
 	values,
 	onChange,
+	lenders,
+	ratesMetadata,
 	deposit,
 	ltv,
 	isFormValid,
@@ -65,6 +108,8 @@ export function RatesInput({
 	errorMessage,
 	warningMessage,
 }: RatesInputProps) {
+	const [isMetadataOpen, setIsMetadataOpen] = useState(false);
+
 	const {
 		mode,
 		propertyValue,
@@ -73,6 +118,7 @@ export function RatesInput({
 		mortgageTerm,
 		berRating,
 		buyerType,
+		currentLender,
 	} = values;
 
 	const isRemortgage = mode === "remortgage";
@@ -80,6 +126,9 @@ export function RatesInput({
 	const property = Number(propertyValue) || 0;
 	const stampDuty = calculateStampDuty(property);
 	const legalFees = ESTIMATED_LEGAL_FEES;
+
+	// Create a map of lender metadata for easy lookup
+	const metadataByLender = new Map(ratesMetadata.map((m) => [m.lenderId, m]));
 
 	const updateField = <K extends keyof RatesInputValues>(
 		field: K,
@@ -90,16 +139,85 @@ export function RatesInput({
 
 	return (
 		<TooltipProvider>
-			<Tabs
-				value={mode}
-				onValueChange={(value) => updateField("mode", value as RatesMode)}
-				className="w-full"
-			>
-				<TabsList className="mb-3">
-					<TabsTrigger value="first-mortgage">First Mortgage</TabsTrigger>
-					<TabsTrigger value="remortgage">Mortgage Switch</TabsTrigger>
-				</TabsList>
-			</Tabs>
+			<div className="flex items-center justify-between mb-3">
+				<Tabs
+					value={mode}
+					onValueChange={(value) => updateField("mode", value as RatesMode)}
+				>
+					<TabsList>
+						<TabsTrigger value="first-mortgage">First Mortgage</TabsTrigger>
+						<TabsTrigger value="remortgage">Mortgage Switch</TabsTrigger>
+					</TabsList>
+				</Tabs>
+
+				<Dialog open={isMetadataOpen} onOpenChange={setIsMetadataOpen}>
+					<DialogTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="text-muted-foreground hover:text-foreground gap-1.5"
+						>
+							<Clock className="h-4 w-4" />
+							<span className="hidden sm:inline">Rate Updates</span>
+						</Button>
+					</DialogTrigger>
+					<DialogContent className="max-w-lg">
+						<DialogHeader>
+							<DialogTitle>Rate Update Information</DialogTitle>
+						</DialogHeader>
+						<div className="overflow-x-auto">
+							<table className="w-full text-sm">
+								<thead>
+									<tr className="border-b text-muted-foreground">
+										<th className="text-left py-2 font-medium">Lender</th>
+										<th className="text-left py-2 font-medium">Last Checked</th>
+										<th className="text-left py-2 font-medium">
+											Rates Updated
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{lenders.map((lender) => {
+										const metadata = metadataByLender.get(lender.id);
+										if (!metadata) return null;
+
+										return (
+											<tr key={lender.id} className="border-b last:border-0">
+												<td className="py-2">
+													<div className="flex items-center gap-2">
+														<LenderLogo lenderId={lender.id} size={24} />
+														<span className="font-medium">{lender.name}</span>
+													</div>
+												</td>
+												<td className="py-2 text-muted-foreground">
+													<Tooltip>
+														<TooltipTrigger className="cursor-default">
+															{formatRelativeTime(metadata.lastScrapedAt)}
+														</TooltipTrigger>
+														<TooltipContent>
+															{formatDublinTime(metadata.lastScrapedAt)}
+														</TooltipContent>
+													</Tooltip>
+												</td>
+												<td className="py-2 text-muted-foreground">
+													<Tooltip>
+														<TooltipTrigger className="cursor-default">
+															{formatRelativeTime(metadata.lastUpdatedAt)}
+														</TooltipTrigger>
+														<TooltipContent>
+															{formatDublinTime(metadata.lastUpdatedAt)}
+														</TooltipContent>
+													</Tooltip>
+												</td>
+											</tr>
+										);
+									})}
+								</tbody>
+							</table>
+						</div>
+					</DialogContent>
+				</Dialog>
+			</div>
 			<Card>
 				<CardContent className="py-2">
 					<div className="flex flex-col gap-3">
@@ -143,33 +261,34 @@ export function RatesInput({
 											)
 										}
 									/>
-									{!isRemortgage && (
-										<div className="flex gap-1 pt-0.5">
-											{[50, 70, 80, 90].map((pct) => (
-												<Button
-													key={pct}
-													type="button"
-													variant="ghost"
-													disabled={property === 0}
-													onClick={() =>
-														updateField(
-															"mortgageAmount",
-															String(Math.round(property * (pct / 100))),
-														)
-													}
-													className="h-5 px-1.5 text-[10px] text-muted-foreground"
-												>
-													{pct}%
-												</Button>
-											))}
-										</div>
-									)}
+									<div className="flex gap-1 pt-0.5">
+										{(isRemortgage
+											? [25, 50, 60, 70, 80]
+											: [50, 70, 80, 90]
+										).map((pct) => (
+											<Button
+												key={pct}
+												type="button"
+												variant="ghost"
+												disabled={property === 0}
+												onClick={() =>
+													updateField(
+														"mortgageAmount",
+														String(Math.round(property * (pct / 100))),
+													)
+												}
+												className="h-5 px-1.5 text-[10px] text-muted-foreground"
+											>
+												{pct}%
+											</Button>
+										))}
+									</div>
 								</div>
 							</div>
 							{/* Mobile Row 2: Deposit/Monthly Repayment, LTV - shown inline on lg */}
 							<div className="flex gap-3 flex-1">
 								{isRemortgage ? (
-									<div className="space-y-1 flex-1">
+									<div className="space-y-1 flex-2">
 										<Label htmlFor="monthlyRepayment" className="text-xs">
 											Current Monthly Repayment
 										</Label>
@@ -189,7 +308,7 @@ export function RatesInput({
 										/>
 									</div>
 								) : (
-									<div className="space-y-1 flex-1">
+									<div className="space-y-1 flex-2">
 										<div className="flex items-center gap-1">
 											<Label htmlFor="deposit" className="text-xs">
 												Deposit
@@ -249,7 +368,7 @@ export function RatesInput({
 										/>
 									</div>
 								)}
-								<div className="space-y-1 w-20 lg:w-24">
+								<div className="space-y-1 flex-1">
 									<Label htmlFor="ltvRange" className="text-xs">
 										LTV
 									</Label>
@@ -264,36 +383,89 @@ export function RatesInput({
 							</div>
 						</div>
 
-						{/* Mobile Row 3: Buyer Type / Remortgage Type (alone) */}
+						{/* Mobile Row 3: Buyer Type / Remortgage Type */}
 						<div className="lg:hidden">
-							<div className="space-y-1">
-								<Label htmlFor="buyerTypeMobile" className="text-xs">
-									{isRemortgage ? "Remortgage Type" : "Buyer Type"}
-								</Label>
-								<BuyerTypeSelector
-									value={buyerType}
-									onChange={(v) => updateField("buyerType", v)}
-									id="buyerTypeMobile"
-									compact
-									variant={isRemortgage ? "remortgage" : "purchase"}
-								/>
-							</div>
+							{isRemortgage ? (
+								<div className="space-y-1">
+									<Label htmlFor="buyerTypeMobile" className="text-xs">
+										Remortgage Type
+									</Label>
+									<BuyerTypeSelector
+										value={buyerType}
+										onChange={(v) => updateField("buyerType", v)}
+										id="buyerTypeMobile"
+										compact
+										variant="remortgage"
+									/>
+								</div>
+							) : (
+								<div className="space-y-1">
+									<Label htmlFor="buyerTypeMobile" className="text-xs">
+										Buyer Type
+									</Label>
+									<BuyerTypeSelector
+										value={buyerType}
+										onChange={(v) => updateField("buyerType", v)}
+										id="buyerTypeMobile"
+										compact
+										variant="purchase"
+									/>
+								</div>
+							)}
 						</div>
 
-						{/* Row 2 (lg) / Row 4 (mobile): Buyer Type / Remortgage Type, Term, BER */}
+						{/* Row 2 (lg) / Row 4 (mobile): Buyer Type / Remortgage Type + Current Lender, Term, BER */}
 						<div className="flex gap-3 items-end">
-							<div className="hidden lg:block space-y-1 flex-[1.5]">
-								<Label htmlFor="buyerType" className="text-xs">
-									{isRemortgage ? "Remortgage Type" : "Buyer Type"}
-								</Label>
-								<BuyerTypeSelector
-									value={buyerType}
-									onChange={(v) => updateField("buyerType", v)}
-									id="buyerType"
-									compact
-									variant={isRemortgage ? "remortgage" : "purchase"}
-								/>
-							</div>
+							{isRemortgage ? (
+								<>
+									<div className="hidden lg:block space-y-1 flex-1">
+										<Label htmlFor="buyerType" className="text-xs">
+											Remortgage Type
+										</Label>
+										<BuyerTypeSelector
+											value={buyerType}
+											onChange={(v) => updateField("buyerType", v)}
+											id="buyerType"
+											compact
+											variant="remortgage"
+										/>
+									</div>
+									<div className="space-y-1 flex-2 lg:flex-1">
+										<Label htmlFor="currentLender" className="text-xs">
+											Current Lender
+										</Label>
+										<Select
+											value={currentLender}
+											onValueChange={(v) => updateField("currentLender", v)}
+										>
+											<SelectTrigger id="currentLender" className="h-9 w-full">
+												<SelectValue placeholder="Select lender" />
+											</SelectTrigger>
+											<SelectContent>
+												{lenders.map((lender) => (
+													<SelectItem key={lender.id} value={lender.id}>
+														{lender.name}
+													</SelectItem>
+												))}
+												<SelectItem value="other">Other</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+								</>
+							) : (
+								<div className="hidden lg:block space-y-1 flex-[1.5]">
+									<Label htmlFor="buyerType" className="text-xs">
+										Buyer Type
+									</Label>
+									<BuyerTypeSelector
+										value={buyerType}
+										onChange={(v) => updateField("buyerType", v)}
+										id="buyerType"
+										compact
+										variant="purchase"
+									/>
+								</div>
+							)}
 							<div className="space-y-1 flex-1">
 								<Label htmlFor="mortgageTerm" className="text-xs">
 									Term

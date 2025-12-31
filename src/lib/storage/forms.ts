@@ -36,6 +36,7 @@ export interface RatesFormState {
 	mortgageTerm: string;
 	berRating: string;
 	buyerType: string;
+	currentLender: string; // For remortgage mode - which lender they're switching from
 }
 
 export function loadRatesForm(): Partial<RatesFormState> {

@@ -1,3 +1,4 @@
+import * as cheerio from "cheerio";
 import { BER_GROUP_A, GREEN_BER_RATINGS } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
@@ -7,269 +8,203 @@ const LENDER_ID = "aib";
 const RATES_URL =
 	"https://aib.ie/our-products/mortgages/mortgage-interest-rates";
 
-// LTV bands used by AIB
-const LTV_BANDS = [
-	{ id: "50", minLtv: 0, maxLtv: 50 },
-	{ id: "80", minLtv: 50, maxLtv: 80 },
-	{ id: "90", minLtv: 80, maxLtv: 90 },
-];
+const PDH_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
+const BTL_BUYER_TYPES: BuyerType[] = ["btl", "switcher-btl"];
+
+function parsePercentage(text: string): number {
+	const match = text.replace(/\s/g, "").match(/(\d+\.?\d*)/);
+	if (!match) throw new Error(`Could not parse percentage: ${text}`);
+	return Number.parseFloat(match[1]);
+}
+
+function parseTermFromName(name: string): number | undefined {
+	const match = name.match(/(\d+)\s*Year/i);
+	return match ? Number.parseInt(match[1], 10) : undefined;
+}
+
+function parseLtvFromName(name: string): { minLtv: number; maxLtv: number } {
+	const lowerName = name.toLowerCase();
+
+	if (
+		lowerName.includes("≤50%") ||
+		lowerName.includes("<=50%") ||
+		lowerName.includes("up to 50%")
+	) {
+		return { minLtv: 0, maxLtv: 50 };
+	}
+	if (lowerName.includes(">50%") && lowerName.includes("80%")) {
+		return { minLtv: 50, maxLtv: 80 };
+	}
+	if (lowerName.includes(">80%")) {
+		return { minLtv: 80, maxLtv: 90 };
+	}
+
+	return { minLtv: 0, maxLtv: 90 };
+}
+
+interface ParsedRow {
+	name: string;
+	term?: number;
+	rate: number;
+	apr: number;
+	minLtv: number;
+	maxLtv: number;
+	isGreen: boolean;
+	isGreenA: boolean;
+	isHighValue: boolean;
+	isBtl: boolean;
+	isVariable: boolean;
+}
+
+function parseTableRow(
+	$: cheerio.CheerioAPI,
+	row: cheerio.Element,
+): ParsedRow | null {
+	const cells = $(row).find("td").toArray();
+	if (cells.length < 3) return null;
+
+	const name = $(cells[0]).text().trim();
+	const rateText = $(cells[1]).text().trim();
+	const aprText = $(cells[2]).text().trim();
+
+	if (
+		!name ||
+		!rateText.includes("%") ||
+		rateText.toLowerCase().includes("rate")
+	) {
+		return null;
+	}
+
+	try {
+		const rate = parsePercentage(rateText);
+		const apr = parsePercentage(aprText);
+		const term = parseTermFromName(name);
+		const { minLtv, maxLtv } = parseLtvFromName(name);
+		const lowerName = name.toLowerCase();
+
+		return {
+			name,
+			term,
+			rate,
+			apr,
+			minLtv,
+			maxLtv,
+			isGreen: lowerName.includes("green") && !lowerName.includes("greena"),
+			isGreenA: lowerName.includes("greena") || lowerName.includes("green a"),
+			isHighValue:
+				lowerName.includes("high value") || lowerName.includes("higher value"),
+			isBtl: lowerName.includes("buy to let") || lowerName.includes("btl"),
+			isVariable: lowerName.includes("variable") || lowerName.includes("var "),
+		};
+	} catch {
+		return null;
+	}
+}
 
 async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	console.log("Fetching rates page...");
 	const response = await fetch(RATES_URL);
-	const _html = await response.text();
+	const html = await response.text();
 
-	console.log("Parsing HTML content...");
+	console.log("Parsing HTML content with Cheerio...");
+	const $ = cheerio.load(html);
 
-	const rates: MortgageRate[] = [];
+	// Use a Map to deduplicate rates by ID (AIB page has duplicate tables)
+	const ratesMap = new Map<string, MortgageRate>();
 
-	// Standard rates (FTB/Mover/Switcher)
-	rates.push(...parseStandardRates());
+	$("table").each((_, table) => {
+		// Detect section based on tab pane ID
+		// AIB uses: id="owner" for PDH, id="residential" for BTL
+		const tabPaneId = $(table).closest(".tab-pane").attr("id") || "";
+		const isBtlSection = tabPaneId === "residential";
 
-	// Green mortgage rates
-	rates.push(...parseGreenRates());
+		// Also check heading for additional context (green, high value, etc.)
+		const prevHeading = $(table)
+			.prevAll("h2, h3, h4")
+			.first()
+			.text()
+			.toLowerCase();
 
-	// BTL rates
-	rates.push(...parseBtlRates());
+		const isGreenSection = prevHeading.includes("green");
+		const isHighValueSection =
+			prevHeading.includes("high value") ||
+			prevHeading.includes("higher value");
 
-	return rates;
-}
+		$(table)
+			.find("tbody tr, tr")
+			.each((_, row) => {
+				const parsed = parseTableRow($, row);
+				if (!parsed) return;
 
-function parseStandardRates(): MortgageRate[] {
-	const rates: MortgageRate[] = [];
-	const buyerTypes: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
+				const isBtl = parsed.isBtl || isBtlSection;
+				const isGreen = parsed.isGreen || isGreenSection;
+				const isGreenA = parsed.isGreenA;
+				const isHighValue = parsed.isHighValue || isHighValueSection;
+				const buyerTypes = isBtl ? BTL_BUYER_TYPES : PDH_BUYER_TYPES;
 
-	// Variable rates by LTV
-	const variableRates = [
-		{ ltvBand: LTV_BANDS[0], rate: 3.75, apr: 3.84 },
-		{ ltvBand: LTV_BANDS[1], rate: 3.95, apr: 4.04 },
-		{ ltvBand: LTV_BANDS[2], rate: 4.15, apr: 4.25 },
-	];
+				const idParts = [LENDER_ID];
+				if (isBtl) idParts.push("btl");
+				if (isHighValue) idParts.push("hv");
+				if (isGreenA) {
+					idParts.push("green-a");
+				} else if (isGreen) {
+					idParts.push("green");
+				}
+				if (parsed.isVariable) {
+					idParts.push("variable");
+					if (parsed.maxLtv < 90 && !isBtl) idParts.push(String(parsed.maxLtv));
+				} else if (parsed.term) {
+					idParts.push("fixed", `${parsed.term}yr`);
+					if (parsed.maxLtv < 90 && !isBtl) idParts.push(String(parsed.maxLtv));
+				}
 
-	for (const v of variableRates) {
-		rates.push({
-			id: `aib-variable-${v.ltvBand.id}`,
-			name: `Variable Rate - LTV ≤${v.ltvBand.maxLtv}%`,
-			lenderId: LENDER_ID,
-			type: "variable",
-			rate: v.rate,
-			apr: v.apr,
-			minLtv: v.ltvBand.minLtv,
-			maxLtv: v.ltvBand.maxLtv,
-			buyerTypes,
-			perks: ["cashback-2pct"],
-		});
-	}
+				const nameParts: string[] = [];
+				if (isBtl) nameParts.push("Buy-to-Let");
+				if (isHighValue) nameParts.push("Higher Value");
+				if (isGreenA) {
+					nameParts.push("Green A");
+				} else if (isGreen) {
+					nameParts.push("Green");
+				}
+				if (parsed.isVariable) {
+					nameParts.push("Variable Rate");
+					if (parsed.maxLtv < 90 && !isBtl)
+						nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
+				} else if (parsed.term) {
+					nameParts.push(`${parsed.term} Year Fixed`);
+					if (parsed.maxLtv < 90 && !isBtl)
+						nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
+				}
 
-	// Fixed rates by term and LTV
-	const fixedProducts = [
-		{
-			term: 1,
-			rates: [
-				{ ltvBand: LTV_BANDS[0], rate: 3.3, apr: 3.79 },
-				{ ltvBand: LTV_BANDS[1], rate: 3.4, apr: 3.98 },
-				{ ltvBand: LTV_BANDS[2], rate: 3.5, apr: 4.18 },
-			],
-		},
-		{
-			term: 3,
-			rates: [
-				{ ltvBand: LTV_BANDS[0], rate: 3.5, apr: 3.76 },
-				{ ltvBand: LTV_BANDS[1], rate: 3.6, apr: 3.93 },
-				{ ltvBand: LTV_BANDS[2], rate: 3.7, apr: 4.11 },
-			],
-		},
-		{
-			term: 5,
-			rates: [
-				{ ltvBand: LTV_BANDS[0], rate: 3.65, apr: 3.79 },
-				{ ltvBand: LTV_BANDS[1], rate: 3.75, apr: 3.95 },
-				{ ltvBand: LTV_BANDS[2], rate: 3.85, apr: 4.1 },
-			],
-		},
-		{
-			term: 7,
-			rates: [
-				{ ltvBand: LTV_BANDS[0], rate: 3.8, apr: 3.84 },
-				{ ltvBand: LTV_BANDS[1], rate: 3.9, apr: 3.99 },
-				{ ltvBand: LTV_BANDS[2], rate: 4.0, apr: 4.14 },
-			],
-		},
-		{
-			term: 10,
-			rates: [
-				{ ltvBand: LTV_BANDS[0], rate: 4.0, apr: 3.93 },
-				{ ltvBand: LTV_BANDS[1], rate: 4.1, apr: 4.07 },
-				{ ltvBand: LTV_BANDS[2], rate: 4.2, apr: 4.21 },
-			],
-		},
-	];
+				let berEligible: string[] | undefined;
+				if (isGreenA) {
+					berEligible = BER_GROUP_A;
+				} else if (isGreen) {
+					berEligible = GREEN_BER_RATINGS;
+				}
 
-	for (const product of fixedProducts) {
-		for (const r of product.rates) {
-			rates.push({
-				id: `aib-fixed-${product.term}yr-${r.ltvBand.id}`,
-				name: `${product.term} Year Fixed - LTV ≤${r.ltvBand.maxLtv}%`,
-				lenderId: LENDER_ID,
-				type: "fixed",
-				rate: r.rate,
-				apr: r.apr,
-				fixedTerm: product.term,
-				minLtv: r.ltvBand.minLtv,
-				maxLtv: r.ltvBand.maxLtv,
-				buyerTypes,
-				perks: ["cashback-2pct"],
+				const mortgageRate: MortgageRate = {
+					id: idParts.join("-"),
+					name: nameParts.join(" ") || parsed.name,
+					lenderId: LENDER_ID,
+					type: parsed.isVariable ? "variable" : "fixed",
+					rate: parsed.rate,
+					apr: parsed.apr,
+					fixedTerm: parsed.isVariable ? undefined : parsed.term,
+					minLtv: parsed.minLtv,
+					maxLtv: isBtl ? 70 : parsed.maxLtv,
+					minLoan: isHighValue ? 250000 : undefined,
+					buyerTypes,
+					berEligible,
+					perks: !isBtl ? ["cashback-2pct"] : [],
+				};
+
+				ratesMap.set(mortgageRate.id, mortgageRate);
 			});
-		}
-	}
-
-	// Higher Value 4-Year Fixed (€250k+)
-	const hv4YearRates = [
-		{ ltvBand: LTV_BANDS[0], rate: 3.15, apr: 3.78 },
-		{ ltvBand: LTV_BANDS[1], rate: 3.25, apr: 3.95 },
-		{ ltvBand: LTV_BANDS[2], rate: 3.35, apr: 4.12 },
-	];
-
-	for (const r of hv4YearRates) {
-		rates.push({
-			id: `aib-hv-fixed-4yr-${r.ltvBand.id}`,
-			name: `Higher Value 4 Year Fixed - LTV ≤${r.ltvBand.maxLtv}%`,
-			lenderId: LENDER_ID,
-			type: "fixed",
-			rate: r.rate,
-			apr: r.apr,
-			fixedTerm: 4,
-			minLtv: r.ltvBand.minLtv,
-			maxLtv: r.ltvBand.maxLtv,
-			minLoan: 250000,
-			buyerTypes,
-			perks: ["cashback-2pct"],
-		});
-	}
-
-	return rates;
-}
-
-function parseGreenRates(): MortgageRate[] {
-	const rates: MortgageRate[] = [];
-	const buyerTypes: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
-
-	// Green 2-Year Fixed (BER A1-B3)
-	const green2YearRates = [
-		{ ltvBand: LTV_BANDS[0], rate: 3.15, apr: 3.79 },
-		{ ltvBand: LTV_BANDS[1], rate: 3.25, apr: 3.96 },
-		{ ltvBand: LTV_BANDS[2], rate: 3.35, apr: 4.14 },
-	];
-
-	for (const r of green2YearRates) {
-		rates.push({
-			id: `aib-green-fixed-2yr-${r.ltvBand.id}`,
-			name: `Green 2 Year Fixed - LTV ≤${r.ltvBand.maxLtv}%`,
-			lenderId: LENDER_ID,
-			type: "fixed",
-			rate: r.rate,
-			apr: r.apr,
-			fixedTerm: 2,
-			minLtv: r.ltvBand.minLtv,
-			maxLtv: r.ltvBand.maxLtv,
-			buyerTypes,
-			berEligible: GREEN_BER_RATINGS,
-			perks: ["cashback-2pct"],
-		});
-	}
-
-	// GreenA 3-Year Fixed (BER A1-A3 only)
-	const greenA3YearRates = [
-		{ ltvBand: LTV_BANDS[0], rate: 3.0, apr: 3.74 },
-		{ ltvBand: LTV_BANDS[1], rate: 3.1, apr: 3.91 },
-		{ ltvBand: LTV_BANDS[2], rate: 3.2, apr: 4.08 },
-	];
-
-	for (const r of greenA3YearRates) {
-		rates.push({
-			id: `aib-green-a-fixed-3yr-${r.ltvBand.id}`,
-			name: `Green A 3 Year Fixed - LTV ≤${r.ltvBand.maxLtv}%`,
-			lenderId: LENDER_ID,
-			type: "fixed",
-			rate: r.rate,
-			apr: r.apr,
-			fixedTerm: 3,
-			minLtv: r.ltvBand.minLtv,
-			maxLtv: r.ltvBand.maxLtv,
-			buyerTypes,
-			berEligible: BER_GROUP_A,
-			perks: ["cashback-2pct"],
-		});
-	}
-
-	// Green 5-Year Fixed (BER A1-B3)
-	const green5YearRates = [
-		{ ltvBand: LTV_BANDS[0], rate: 3.2, apr: 3.71 },
-		{ ltvBand: LTV_BANDS[1], rate: 3.3, apr: 3.87 },
-		{ ltvBand: LTV_BANDS[2], rate: 3.4, apr: 4.03 },
-	];
-
-	for (const r of green5YearRates) {
-		rates.push({
-			id: `aib-green-fixed-5yr-${r.ltvBand.id}`,
-			name: `Green 5 Year Fixed - LTV ≤${r.ltvBand.maxLtv}%`,
-			lenderId: LENDER_ID,
-			type: "fixed",
-			rate: r.rate,
-			apr: r.apr,
-			fixedTerm: 5,
-			minLtv: r.ltvBand.minLtv,
-			maxLtv: r.ltvBand.maxLtv,
-			buyerTypes,
-			berEligible: GREEN_BER_RATINGS,
-			perks: ["cashback-2pct"],
-		});
-	}
-
-	return rates;
-}
-
-function parseBtlRates(): MortgageRate[] {
-	const rates: MortgageRate[] = [];
-	const buyerTypes: BuyerType[] = ["btl", "switcher-btl"];
-
-	// BTL Variable
-	rates.push({
-		id: "aib-btl-variable",
-		name: "Buy-to-Let Variable Rate",
-		lenderId: LENDER_ID,
-		type: "variable",
-		rate: 5.2,
-		apr: 5.34,
-		minLtv: 0,
-		maxLtv: 70,
-		buyerTypes,
-		perks: [],
 	});
 
-	// BTL Fixed rates
-	const btlFixedProducts = [
-		{ term: 1, rate: 7.3, apr: 5.6 },
-		{ term: 3, rate: 5.5, apr: 5.37 },
-		{ term: 5, rate: 5.6, apr: 5.43 },
-	];
-
-	for (const product of btlFixedProducts) {
-		rates.push({
-			id: `aib-btl-fixed-${product.term}yr`,
-			name: `Buy-to-Let ${product.term} Year Fixed`,
-			lenderId: LENDER_ID,
-			type: "fixed",
-			rate: product.rate,
-			apr: product.apr,
-			fixedTerm: product.term,
-			minLtv: 0,
-			maxLtv: 70,
-			buyerTypes,
-			perks: [],
-		});
-	}
-
+	const rates = Array.from(ratesMap.values());
+	console.log(`Parsed ${rates.length} unique rates from HTML`);
 	return rates;
 }
 

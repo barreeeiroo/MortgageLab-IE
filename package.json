@@ -13,7 +13,8 @@
 		"format": "biome format --write .",
 		"test": "vitest",
 		"test:run": "vitest run --passWithNoTests",
-		"scrape:rates": "bun run scripts/rate-scraper/index.ts"
+		"scrape:rates": "bun run scripts/rate-scraper/index.ts",
+		"scrape:validate": "bun run scripts/rate-scraper/validator.ts"
 	},
 	"dependencies": {
 		"@astrojs/react": "^4.4.2",
@@ -32,6 +33,7 @@
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",
 		"astro": "^5.16.6",
+		"cheerio": "^1.1.2",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",

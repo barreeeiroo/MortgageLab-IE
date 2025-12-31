@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import type { RatesFile } from "../../src/lib/schemas/rate";
 import { aibProvider } from "./providers/aib";
 import { avantProvider } from "./providers/avant";
 import { boiProvider } from "./providers/boi";
@@ -10,6 +11,7 @@ import { ebsProvider } from "./providers/ebs";
 import { havenProvider } from "./providers/haven";
 import { ptsbProvider } from "./providers/ptsb";
 import type { LenderProvider } from "./types";
+import { computeRatesHash } from "./utils";
 
 const providers: Record<string, LenderProvider> = {
 	aib: aibProvider,
@@ -20,6 +22,24 @@ const providers: Record<string, LenderProvider> = {
 	haven: havenProvider,
 	ptsb: ptsbProvider,
 };
+
+async function readExistingRatesFile(
+	filePath: string,
+): Promise<RatesFile | null> {
+	try {
+		const content = await readFile(filePath, "utf-8");
+		const parsed = JSON.parse(content);
+
+		// Handle old format (plain array) for backward compatibility
+		if (Array.isArray(parsed)) {
+			return null; // Treat as no existing file, will create new format
+		}
+
+		return parsed as RatesFile;
+	} catch {
+		return null;
+	}
+}
 
 async function main() {
 	const lenderId = process.argv[2];
@@ -42,7 +62,9 @@ async function main() {
 	console.log(`URL: ${provider.url}\n`);
 
 	try {
-		const rates = await provider.scrape();
+		const newRates = await provider.scrape();
+		const now = new Date().toISOString();
+		const newHash = computeRatesHash(newRates);
 
 		const outputPath = join(
 			import.meta.dir,
@@ -50,9 +72,46 @@ async function main() {
 			`${lenderId}.json`,
 		);
 
-		await writeFile(outputPath, JSON.stringify(rates, null, "\t"));
+		// Read existing file to check for changes
+		const existing = await readExistingRatesFile(outputPath);
 
-		console.log(`\nSuccessfully scraped ${rates.length} rates`);
+		let lastUpdatedAt: string;
+		let hashChanged = false;
+
+		if (!existing) {
+			// First time scraping this lender
+			lastUpdatedAt = now;
+			console.log("No existing rates file found, creating new one");
+		} else if (existing.ratesHash !== newHash) {
+			// Rates have changed
+			lastUpdatedAt = now;
+			hashChanged = true;
+			console.log("Rates have CHANGED since last scrape");
+			console.log(`  Old hash: ${existing.ratesHash}`);
+			console.log(`  New hash: ${newHash}`);
+		} else {
+			// Rates unchanged, keep the old timestamp
+			lastUpdatedAt = existing.lastUpdatedAt;
+			console.log("Rates UNCHANGED since last scrape");
+			console.log(`  Hash: ${newHash}`);
+		}
+
+		const ratesFile: RatesFile = {
+			lenderId,
+			lastScrapedAt: now,
+			lastUpdatedAt,
+			ratesHash: newHash,
+			rates: newRates,
+		};
+
+		await writeFile(outputPath, JSON.stringify(ratesFile, null, "\t"));
+
+		console.log(`\nSuccessfully scraped ${newRates.length} rates`);
+		console.log(`Last scraped at: ${ratesFile.lastScrapedAt}`);
+		console.log(
+			`Last updated at: ${ratesFile.lastUpdatedAt}${hashChanged ? " (UPDATED)" : ""}`,
+		);
+		console.log(`Rates hash: ${ratesFile.ratesHash}`);
 		console.log(`Output written to: ${outputPath}`);
 	} catch (error) {
 		console.error("Failed to scrape rates:", error);

@@ -1,3 +1,4 @@
+import * as cheerio from "cheerio";
 import type { BuyerType, MortgageRate } from "@/lib/schemas";
 import type { LenderProvider } from "../types";
 
@@ -17,179 +18,180 @@ const BER_GROUPS: Record<string, string[]> = {
 	Exempt: ["Exempt"],
 };
 
+const PDH_NEW_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
+const PDH_EXISTING_BUYER_TYPES: BuyerType[] = ["switcher-pdh"];
+const BTL_NEW_BUYER_TYPES: BuyerType[] = ["btl"];
+const BTL_EXISTING_BUYER_TYPES: BuyerType[] = ["switcher-btl"];
+
+function parseTermFromDescription(desc: string): number | undefined {
+	const match = desc.match(/(\d+)\s*Year/i);
+	return match ? Number.parseInt(match[1], 10) : undefined;
+}
+
+function normalizeBer(ber: string): string | null {
+	const upper = ber.toUpperCase().trim();
+	if (upper === "NO BER") return null;
+	if (upper === "BER EXEMPT" || upper === "EXEMPT") return "Exempt";
+	if (/^[A-G]$/.test(upper)) return upper;
+	return null;
+}
+
+interface ParsedRow {
+	buyerType: string;
+	ber: string | null;
+	description: string;
+	rateType: string;
+	rate: number;
+	apr: number;
+	term?: number;
+	isHvm: boolean;
+	isBtl: boolean;
+	isVariable: boolean;
+	isExisting: boolean;
+}
+
+function parseMainTableRow(
+	$: cheerio.CheerioAPI,
+	row: cheerio.Element,
+): ParsedRow | null {
+	const cells = $(row).find("td").toArray();
+	// Main table has 6 columns: buyer type, BER, description, rate type, rate, apr
+	if (cells.length < 6) return null;
+
+	const buyerType = $(cells[0]).text().trim();
+	const berText = $(cells[1]).text().trim();
+	const description = $(cells[2]).text().trim();
+	const rateType = $(cells[3]).text().trim().toLowerCase();
+	const rateText = $(cells[4]).text().trim();
+	const aprText = $(cells[5]).text().trim();
+
+	// Skip header rows or invalid rows
+	if (!buyerType || !description || !rateText) return null;
+	if (buyerType.toLowerCase().includes("mortgage type")) return null;
+
+	// Rate should be numeric (without %)
+	const rate = Number.parseFloat(rateText);
+	const apr = Number.parseFloat(aprText);
+	if (Number.isNaN(rate) || Number.isNaN(apr)) return null;
+
+	const term = parseTermFromDescription(description);
+	const ber = normalizeBer(berText);
+	const lowerDesc = description.toLowerCase();
+	const lowerBuyer = buyerType.toLowerCase();
+
+	return {
+		buyerType,
+		ber,
+		description,
+		rateType,
+		rate,
+		apr,
+		term,
+		isHvm: lowerDesc.includes("hvm"),
+		isBtl: lowerDesc.includes("btl") || lowerBuyer.includes("investor"),
+		isVariable: rateType === "variable" || lowerDesc.includes("variable"),
+		isExisting: lowerBuyer.includes("existing"),
+	};
+}
+
 async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	console.log("Fetching rates page...");
 	const response = await fetch(RATES_URL);
 	const html = await response.text();
 
-	console.log("Parsing HTML content...");
+	console.log("Parsing HTML content with Cheerio...");
+	const $ = cheerio.load(html);
 
-	const rates: MortgageRate[] = [];
+	// Use a Map to deduplicate rates by ID
+	const ratesMap = new Map<string, MortgageRate>();
 
-	// Standard rates for FTB/Mover/Switcher
-	const standardRates = parseStandardRates(html);
-	rates.push(...standardRates);
+	// Find the main data table (first table with 6+ columns)
+	$("table").each((_, table) => {
+		const firstRow = $(table).find("tr").first();
+		const colCount = firstRow.find("td, th").length;
 
-	// HVM rates
-	const hvmRates = parseHvmRates(html);
-	rates.push(...hvmRates);
+		// Only process the main data table with 6 columns
+		if (colCount < 6) return;
 
-	// BTL rates
-	const btlRates = parseBtlRates(html);
-	rates.push(...btlRates);
+		$(table)
+			.find("tr")
+			.each((_, row) => {
+				const parsed = parseMainTableRow($, row);
+				if (!parsed) return;
 
-	return rates;
-}
+				// Skip "No BER" entries as they're duplicates of Exempt
+				if (parsed.ber === null) return;
 
-function parseStandardRates(_html: string): MortgageRate[] {
-	const rates: MortgageRate[] = [];
-	const buyerTypes: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
+				const isBtl = parsed.isBtl;
+				const isExisting = parsed.isExisting;
+				const isHvm = parsed.isHvm;
 
-	// Standard fixed rates from BOI (as of last scrape)
-	const standardProducts = [
-		{ term: 2, baseRate: 3.8, apr: 4.3 },
-		{ term: 3, baseRate: 3.9, apr: 4.4 },
-		{ term: 5, baseRate: 3.9, apr: 4.4 },
-		{ term: 10, baseRate: 4.2, apr: 4.7 },
-	];
+				// Determine buyer types
+				let buyerTypes: BuyerType[];
+				if (isBtl) {
+					buyerTypes = isExisting
+						? BTL_EXISTING_BUYER_TYPES
+						: BTL_NEW_BUYER_TYPES;
+				} else {
+					buyerTypes = isExisting
+						? PDH_EXISTING_BUYER_TYPES
+						: PDH_NEW_BUYER_TYPES;
+				}
 
-	const berGroups = ["A", "B", "C", "D", "E", "F", "G", "Exempt"];
-	const rateIncrement = 0.05;
+				// Generate unique ID
+				const idParts = [LENDER_ID];
+				if (isBtl) idParts.push("btl");
+				if (isExisting) idParts.push("existing");
+				if (isHvm) idParts.push("hvm");
+				if (parsed.isVariable) {
+					idParts.push("variable");
+				} else if (parsed.term) {
+					idParts.push("fixed", `${parsed.term}yr`);
+				}
+				if (parsed.ber) {
+					idParts.push("ber", parsed.ber.toLowerCase());
+				}
 
-	for (const product of standardProducts) {
-		for (let i = 0; i < berGroups.length; i++) {
-			const berGroup = berGroups[i];
-			const rate = Number((product.baseRate + i * rateIncrement).toFixed(2));
+				// Generate name
+				const nameParts: string[] = [];
+				if (isBtl) nameParts.push("Buy-to-Let");
+				if (isExisting) nameParts.push("Existing");
+				if (isHvm) nameParts.push("High Value");
+				if (parsed.isVariable) {
+					nameParts.push("Variable Rate");
+				} else if (parsed.term) {
+					nameParts.push(`${parsed.term} Year Fixed`);
+				}
+				if (parsed.ber) {
+					nameParts.push(`- BER ${parsed.ber}`);
+				}
 
-			rates.push({
-				id: `boi-fixed-${product.term}yr-ber-${berGroup.toLowerCase()}`,
-				name: `${product.term} Year Fixed - BER ${berGroup}`,
-				lenderId: LENDER_ID,
-				type: "fixed",
-				rate,
-				apr: product.apr,
-				fixedTerm: product.term,
-				minLtv: 0,
-				maxLtv: 90,
-				buyerTypes,
-				berEligible: BER_GROUPS[berGroup],
-				perks: ["cashback-3pct"],
+				const mortgageRate: MortgageRate = {
+					id: idParts.join("-"),
+					name: nameParts.join(" ") || parsed.description,
+					lenderId: LENDER_ID,
+					type: parsed.isVariable ? "variable" : "fixed",
+					rate: parsed.rate,
+					apr: parsed.apr,
+					fixedTerm: parsed.isVariable ? undefined : parsed.term,
+					minLtv: 0,
+					maxLtv: isBtl ? 70 : 90,
+					minLoan: isHvm ? 250000 : undefined,
+					buyerTypes,
+					berEligible: parsed.ber ? BER_GROUPS[parsed.ber] : undefined,
+					newBusiness: !isExisting,
+					perks:
+						!isBtl && !isExisting && !parsed.isVariable
+							? ["cashback-3pct"]
+							: [],
+				};
+
+				ratesMap.set(mortgageRate.id, mortgageRate);
 			});
-		}
-	}
-
-	// Variable rate
-	rates.push({
-		id: "boi-variable",
-		name: "Variable Rate",
-		lenderId: LENDER_ID,
-		type: "variable",
-		rate: 4.15,
-		apr: 4.3,
-		minLtv: 0,
-		maxLtv: 90,
-		buyerTypes,
-		perks: [],
 	});
 
-	return rates;
-}
-
-function parseHvmRates(_html: string): MortgageRate[] {
-	const rates: MortgageRate[] = [];
-	const buyerTypes: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
-
-	// HVM products (€250k+ loans)
-	const hvmProducts = [
-		{ term: 1, baseRate: 3.3, apr: 4.2 },
-		{ term: 4, baseRate: 3.1, apr: 4.0 },
-		{ term: 5, baseRate: 3.4, apr: 4.1 },
-		{ term: 7, baseRate: 3.45, apr: 4.0 },
-	];
-
-	const berGroups = ["A", "B", "C", "D", "E", "F", "G", "Exempt"];
-	const rateIncrement = 0.05;
-
-	for (const product of hvmProducts) {
-		for (let i = 0; i < berGroups.length; i++) {
-			const berGroup = berGroups[i];
-			const rate = Number((product.baseRate + i * rateIncrement).toFixed(2));
-
-			rates.push({
-				id: `boi-hvm-fixed-${product.term}yr-ber-${berGroup.toLowerCase()}`,
-				name: `High Value ${product.term} Year Fixed - BER ${berGroup}`,
-				lenderId: LENDER_ID,
-				type: "fixed",
-				rate,
-				apr: product.apr,
-				fixedTerm: product.term,
-				minLtv: 0,
-				maxLtv: 90,
-				minLoan: 250000,
-				buyerTypes,
-				berEligible: BER_GROUPS[berGroup],
-				perks: [],
-			});
-		}
-	}
-
-	return rates;
-}
-
-function parseBtlRates(_html: string): MortgageRate[] {
-	const rates: MortgageRate[] = [];
-	const buyerTypes: BuyerType[] = ["btl", "switcher-btl"];
-
-	// BTL fixed rates
-	const btlProducts = [
-		{ term: 2, baseRate: 5.65, apr: 6.4 },
-		{ term: 5, baseRate: 5.8, apr: 6.5 },
-	];
-
-	// BTL only goes up to BER E, then Exempt (F and G not eligible)
-	const btlBerGroups = ["A", "B", "C", "D", "E", "Exempt"];
-	const rateIncrement = 0.05;
-
-	for (const product of btlProducts) {
-		for (let i = 0; i < btlBerGroups.length; i++) {
-			const berGroup = btlBerGroups[i];
-			// Exempt has a larger jump
-			const rate =
-				berGroup === "Exempt"
-					? Number((product.baseRate + 0.35).toFixed(2))
-					: Number((product.baseRate + i * rateIncrement).toFixed(2));
-
-			rates.push({
-				id: `boi-btl-fixed-${product.term}yr-ber-${berGroup.toLowerCase()}`,
-				name: `Buy-to-Let ${product.term} Year Fixed - BER ${berGroup}`,
-				lenderId: LENDER_ID,
-				type: "fixed",
-				rate,
-				apr: product.apr,
-				fixedTerm: product.term,
-				minLtv: 0,
-				maxLtv: 70,
-				buyerTypes,
-				berEligible: BER_GROUPS[berGroup],
-				perks: [],
-			});
-		}
-	}
-
-	// BTL Variable rate
-	rates.push({
-		id: "boi-btl-variable",
-		name: "Buy-to-Let Variable Rate",
-		lenderId: LENDER_ID,
-		type: "variable",
-		rate: 4.85,
-		apr: 5.1,
-		minLtv: 0,
-		maxLtv: 70,
-		buyerTypes,
-		perks: [],
-	});
-
+	const rates = Array.from(ratesMap.values());
+	console.log(`Parsed ${rates.length} unique rates from HTML`);
 	return rates;
 }
 

@@ -1,3 +1,4 @@
+import * as cheerio from "cheerio";
 import { GREEN_BER_RATINGS } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
@@ -6,153 +7,208 @@ import type { LenderProvider } from "../types";
 const LENDER_ID = "ebs";
 const RATES_URL = "https://www.ebs.ie/mortgages/mortgage-interest-rates";
 
-// PDH buyer types
 const PDH_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
-
-// BTL buyer types
 const BTL_BUYER_TYPES: BuyerType[] = ["btl", "switcher-btl"];
 
-// LTV bands for variable rates
-const LTV_BANDS_VARIABLE = [
-	{ id: "50", minLtv: 0, maxLtv: 50 },
-	{ id: "80", minLtv: 50, maxLtv: 80 },
-	{ id: "90", minLtv: 80, maxLtv: 90 },
-];
+function parsePercentage(text: string): number {
+	const match = text.replace(/\s/g, "").match(/(\d+\.?\d*)/);
+	if (!match) throw new Error(`Could not parse percentage: ${text}`);
+	return Number.parseFloat(match[1]);
+}
+
+function parseTermFromName(name: string): number | undefined {
+	const match = name.match(/(\d+)\s*Year/i);
+	return match ? Number.parseInt(match[1], 10) : undefined;
+}
+
+function parseLtvFromName(name: string): { minLtv: number; maxLtv: number } {
+	const lowerName = name.toLowerCase();
+
+	if (
+		lowerName.includes("≤50%") ||
+		lowerName.includes("<=50%") ||
+		lowerName.includes("less than or equal to 50%")
+	) {
+		return { minLtv: 0, maxLtv: 50 };
+	}
+	if (lowerName.includes(">50%") && lowerName.includes("80%")) {
+		return { minLtv: 50, maxLtv: 80 };
+	}
+	if (lowerName.includes(">80%") || lowerName.includes("greater than 80%")) {
+		return { minLtv: 80, maxLtv: 90 };
+	}
+
+	return { minLtv: 0, maxLtv: 90 };
+}
+
+interface ParsedRow {
+	name: string;
+	term?: number;
+	rate: number;
+	apr: number;
+	minLtv: number;
+	maxLtv: number;
+	isGreen: boolean;
+	isBtl: boolean;
+	isVariable: boolean;
+}
+
+function parseTableRow(
+	$: cheerio.CheerioAPI,
+	row: cheerio.Element,
+): ParsedRow | null {
+	const cells = $(row).find("td").toArray();
+	if (cells.length < 3) return null;
+
+	const name = $(cells[0]).text().trim();
+	const rateText = $(cells[1]).text().trim();
+	const aprText = $(cells[2]).text().trim();
+
+	if (
+		!name ||
+		!rateText.includes("%") ||
+		rateText.toLowerCase().includes("rate")
+	) {
+		return null;
+	}
+
+	try {
+		const rate = parsePercentage(rateText);
+		const apr = parsePercentage(aprText);
+		const term = parseTermFromName(name);
+		const { minLtv, maxLtv } = parseLtvFromName(name);
+		const lowerName = name.toLowerCase();
+
+		return {
+			name,
+			term,
+			rate,
+			apr,
+			minLtv,
+			maxLtv,
+			isGreen: lowerName.includes("green"),
+			isBtl: lowerName.includes("buy to let") || lowerName.includes("btl"),
+			isVariable: lowerName.includes("variable"),
+		};
+	} catch {
+		return null;
+	}
+}
+
+type SectionType =
+	| "new-fixed"
+	| "new-variable"
+	| "existing"
+	| "topup"
+	| "btl"
+	| "unknown";
+
+function getSectionType(heading: string): SectionType {
+	const lower = heading.toLowerCase();
+	if (lower.includes("buy to let")) return "btl";
+	if (lower.includes("top up")) return "topup";
+	if (lower.includes("existing business")) return "existing";
+	if (lower.includes("new business variable")) return "new-variable";
+	if (lower.includes("new business fixed")) return "new-fixed";
+	return "unknown";
+}
 
 async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	console.log("Fetching rates page...");
 	const response = await fetch(RATES_URL);
-	const _html = await response.text();
+	const html = await response.text();
 
-	console.log("Parsing HTML content...");
+	console.log("Parsing HTML content with Cheerio...");
+	const $ = cheerio.load(html);
 
-	const rates: MortgageRate[] = [];
+	// Use a Map to deduplicate rates by ID
+	const ratesMap = new Map<string, MortgageRate>();
 
-	// PDH Fixed rates
-	rates.push(...parseFixedRates());
+	// Track current section by parsing h2, h3, and tables in document order
+	let currentSection: SectionType = "unknown";
 
-	// PDH Variable rates
-	rates.push(...parseVariableRates());
+	$("h2, h3, table").each((_, el) => {
+		const tagName = el.tagName.toLowerCase();
 
-	// BTL rates
-	rates.push(...parseBtlRates());
+		if (tagName === "h2" || tagName === "h3") {
+			const heading = $(el).text().trim();
+			const section = getSectionType(heading);
+			if (section !== "unknown") {
+				currentSection = section;
+			}
+			return;
+		}
 
-	return rates;
-}
+		// Skip sections we don't want (existing, topup are duplicates)
+		if (
+			currentSection === "unknown" ||
+			currentSection === "existing" ||
+			currentSection === "topup"
+		) {
+			return;
+		}
 
-function parseFixedRates(): MortgageRate[] {
-	const rates: MortgageRate[] = [];
+		const isBtlSection = currentSection === "btl";
+		const isVariableSection = currentSection === "new-variable";
 
-	// Standard fixed rates (no LTV differentiation, up to 90%)
-	const fixedProducts = [
-		{ term: 1, rate: 3.85, apr: 4.3 },
-		{ term: 2, rate: 3.9, apr: 4.2 },
-		{ term: 3, rate: 4.3, apr: 4.3 },
-		{ term: 5, rate: 4.4, apr: 4.4 },
-	];
+		$(el)
+			.find("tbody tr, tr")
+			.each((_, row) => {
+				const parsed = parseTableRow($, row);
+				if (!parsed) return;
 
-	for (const product of fixedProducts) {
-		rates.push({
-			id: `ebs-fixed-${product.term}yr`,
-			name: `${product.term} Year Fixed`,
-			lenderId: LENDER_ID,
-			type: "fixed",
-			rate: product.rate,
-			apr: product.apr,
-			fixedTerm: product.term,
-			minLtv: 0,
-			maxLtv: 90,
-			buyerTypes: PDH_BUYER_TYPES,
-			perks: [],
-		});
-	}
+				// Detect variable rates: explicit "variable" in name, OR
+				// LTV-only rows (no term, name is just LTV pattern), OR in variable section
+				const ltvPattern = /^[<>=≤≥\s\d%-]+$/;
+				const isLtvOnlyRow = !parsed.term && ltvPattern.test(parsed.name);
+				const isVariable =
+					parsed.isVariable || isLtvOnlyRow || isVariableSection;
 
-	// 4 Year Green Fixed (requires BER A1-B3)
-	rates.push({
-		id: "ebs-green-fixed-4yr",
-		name: "4 Year Green Fixed",
-		lenderId: LENDER_ID,
-		type: "fixed",
-		rate: 3.2,
-		apr: 3.9,
-		fixedTerm: 4,
-		minLtv: 0,
-		maxLtv: 90,
-		buyerTypes: PDH_BUYER_TYPES,
-		berEligible: GREEN_BER_RATINGS,
-		perks: [],
+				const isBtl = parsed.isBtl || isBtlSection;
+				const buyerTypes = isBtl ? BTL_BUYER_TYPES : PDH_BUYER_TYPES;
+
+				const idParts = [LENDER_ID];
+				if (isBtl) idParts.push("btl");
+				if (parsed.isGreen) idParts.push("green");
+				if (isVariable) {
+					idParts.push("variable");
+					if (parsed.maxLtv < 90) idParts.push(String(parsed.maxLtv));
+				} else if (parsed.term) {
+					idParts.push("fixed", `${parsed.term}yr`);
+				}
+
+				const nameParts: string[] = [];
+				if (isBtl) nameParts.push("Buy-to-Let");
+				if (parsed.isGreen) nameParts.push("Green");
+				if (isVariable) {
+					nameParts.push("Variable Rate");
+					if (parsed.maxLtv < 90) nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
+				} else if (parsed.term) {
+					nameParts.push(`${parsed.term} Year Fixed`);
+				}
+
+				const mortgageRate: MortgageRate = {
+					id: idParts.join("-"),
+					name: nameParts.join(" ") || parsed.name,
+					lenderId: LENDER_ID,
+					type: isVariable ? "variable" : "fixed",
+					rate: parsed.rate,
+					apr: parsed.apr,
+					fixedTerm: isVariable ? undefined : parsed.term,
+					minLtv: parsed.minLtv,
+					maxLtv: isBtl ? 70 : parsed.maxLtv,
+					buyerTypes,
+					berEligible: parsed.isGreen ? GREEN_BER_RATINGS : undefined,
+					newBusiness: true,
+					perks: [],
+				};
+
+				ratesMap.set(mortgageRate.id, mortgageRate);
+			});
 	});
 
-	return rates;
-}
-
-function parseVariableRates(): MortgageRate[] {
-	const rates: MortgageRate[] = [];
-
-	// Variable rates by LTV
-	const variableRates = [
-		{ ltvBand: LTV_BANDS_VARIABLE[0], rate: 3.75, apr: 3.9 }, // ≤50%
-		{ ltvBand: LTV_BANDS_VARIABLE[1], rate: 3.95, apr: 4.1 }, // 50-80%
-		{ ltvBand: LTV_BANDS_VARIABLE[2], rate: 4.15, apr: 4.3 }, // 80-90%
-	];
-
-	for (const v of variableRates) {
-		rates.push({
-			id: `ebs-variable-${v.ltvBand.id}`,
-			name: `Variable Rate - LTV ≤${v.ltvBand.maxLtv}%`,
-			lenderId: LENDER_ID,
-			type: "variable",
-			rate: v.rate,
-			apr: v.apr,
-			minLtv: v.ltvBand.minLtv,
-			maxLtv: v.ltvBand.maxLtv,
-			buyerTypes: PDH_BUYER_TYPES,
-			perks: [],
-		});
-	}
-
-	return rates;
-}
-
-function parseBtlRates(): MortgageRate[] {
-	const rates: MortgageRate[] = [];
-
-	// BTL Variable rate
-	rates.push({
-		id: "ebs-btl-variable",
-		name: "Buy-to-Let Variable",
-		lenderId: LENDER_ID,
-		type: "variable",
-		rate: 5.43,
-		apr: 5.6,
-		minLtv: 0,
-		maxLtv: 70,
-		buyerTypes: BTL_BUYER_TYPES,
-		perks: [],
-	});
-
-	// BTL Fixed rates
-	const btlFixedProducts = [
-		{ term: 3, rate: 7.15, apr: 7.3 },
-		{ term: 5, rate: 7.55, apr: 7.6 },
-	];
-
-	for (const product of btlFixedProducts) {
-		rates.push({
-			id: `ebs-btl-fixed-${product.term}yr`,
-			name: `Buy-to-Let ${product.term} Year Fixed`,
-			lenderId: LENDER_ID,
-			type: "fixed",
-			rate: product.rate,
-			apr: product.apr,
-			fixedTerm: product.term,
-			minLtv: 0,
-			maxLtv: 70,
-			buyerTypes: BTL_BUYER_TYPES,
-			perks: [],
-		});
-	}
-
+	const rates = Array.from(ratesMap.values());
+	console.log(`Parsed ${rates.length} unique rates from HTML`);
 	return rates;
 }
 

@@ -3,6 +3,7 @@ import avantLogo from "@/assets/logos/lenders/avant.png";
 import boiLogo from "@/assets/logos/lenders/boi.png";
 import cuLogo from "@/assets/logos/lenders/cu.png";
 import ebsLogo from "@/assets/logos/lenders/ebs.webp";
+import havenLogo from "@/assets/logos/lenders/haven.png";
 import ptsbLogo from "@/assets/logos/lenders/ptsb.png";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,7 @@ const logos: Record<string, ImageMetadata> = {
 	boi: boiLogo,
 	cu: cuLogo,
 	ebs: ebsLogo,
+	haven: havenLogo,
 	ptsb: ptsbLogo,
 };
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type BerRating, type BuyerType, filterRates } from "@/lib/data";
 import { useRates } from "@/lib/hooks";
+import { DEFAULT_MAX_TERM } from "@/lib/schemas/lender";
 import { loadRatesForm, saveRatesForm } from "@/lib/storage";
 import { parseCurrency } from "@/lib/utils";
 import {
@@ -20,7 +21,7 @@ function getModeFromHash(): RatesMode | null {
 }
 
 export function RatesCalculator() {
-	const { rates, lenders, isLoading, error } = useRates();
+	const { rates, lenders, ratesMetadata, isLoading, error } = useRates();
 
 	const [values, setValues] = useState<RatesInputValues>({
 		mode: "first-mortgage",
@@ -30,6 +31,7 @@ export function RatesCalculator() {
 		mortgageTerm: "30",
 		berRating: "C1",
 		buyerType: "ftb",
+		currentLender: "",
 	});
 
 	const prevModeRef = useRef<RatesMode | null>(null);
@@ -65,6 +67,7 @@ export function RatesCalculator() {
 			mortgageTerm: saved.mortgageTerm ?? v.mortgageTerm,
 			berRating: saved.berRating ?? v.berRating,
 			buyerType: saved.buyerType ?? v.buyerType,
+			currentLender: saved.currentLender ?? v.currentLender,
 		}));
 	}, []);
 
@@ -83,6 +86,7 @@ export function RatesCalculator() {
 			mortgageTerm: values.mortgageTerm,
 			berRating: values.berRating,
 			buyerType: values.buyerType,
+			currentLender: values.currentLender,
 		});
 	}, [values]);
 
@@ -122,18 +126,37 @@ export function RatesCalculator() {
 
 	// Form validity
 	const isFormValid =
-		property > 0 && mortgage > 0 && !hasError && (!isRemortgage || monthly > 0);
+		property > 0 &&
+		mortgage > 0 &&
+		!hasError &&
+		(!isRemortgage || (monthly > 0 && values.currentLender !== ""));
 
-	// Filter rates based on inputs (LTV, buyer type, BER)
+	// Filter rates based on inputs (LTV, buyer type, BER, term)
 	const filteredRates = useMemo(() => {
 		if (!isFormValid || rates.length === 0) return [];
+
+		const lenderMap = new Map(lenders.map((l) => [l.id, l]));
 
 		return filterRates(rates, {
 			ltv,
 			buyerType: values.buyerType as BuyerType,
 			ber: values.berRating as BerRating,
-		}).sort((a, b) => a.rate - b.rate);
-	}, [isFormValid, rates, ltv, values.buyerType, values.berRating]);
+		})
+			.filter((rate) => {
+				const lender = lenderMap.get(rate.lenderId);
+				const maxTerm = lender?.maxTerm ?? DEFAULT_MAX_TERM;
+				return mortgageTerm <= maxTerm;
+			})
+			.sort((a, b) => a.rate - b.rate);
+	}, [
+		isFormValid,
+		rates,
+		lenders,
+		ltv,
+		values.buyerType,
+		values.berRating,
+		mortgageTerm,
+	]);
 
 	if (error) {
 		return (
@@ -148,6 +171,8 @@ export function RatesCalculator() {
 			<RatesInput
 				values={values}
 				onChange={setValues}
+				lenders={lenders}
+				ratesMetadata={ratesMetadata}
 				deposit={deposit}
 				ltv={ltv}
 				isFormValid={isFormValid}

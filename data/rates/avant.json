@@ -1,566 +1,728 @@
-[
-	{
-		"id": "avant-flex-80",
-		"name": "Flex Mortgage - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "variable",
-		"rate": 3.12,
-		"apr": 3.19,
-		"minLtv": 0,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": []
-	},
-	{
-		"id": "avant-flex-90",
-		"name": "Flex Mortgage - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "variable",
-		"rate": 3.32,
-		"apr": 3.39,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": []
-	},
-	{
-		"id": "avant-fixed-3yr-60",
-		"name": "3 Year Fixed - LTV ≤60%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.6,
-		"apr": 3.79,
-		"fixedTerm": 3,
-		"minLtv": 0,
-		"maxLtv": 60,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-3yr-70",
-		"name": "3 Year Fixed - LTV ≤70%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.6,
-		"apr": 3.79,
-		"fixedTerm": 3,
-		"minLtv": 60,
-		"maxLtv": 70,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-3yr-80",
-		"name": "3 Year Fixed - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.6,
-		"apr": 3.93,
-		"fixedTerm": 3,
-		"minLtv": 70,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-3yr-90",
-		"name": "3 Year Fixed - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.95,
-		"apr": 4.05,
-		"fixedTerm": 3,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-4yr-60",
-		"name": "4 Year Fixed - LTV ≤60%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.4,
-		"apr": 3.7,
-		"fixedTerm": 4,
-		"minLtv": 0,
-		"maxLtv": 60,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-4yr-70",
-		"name": "4 Year Fixed - LTV ≤70%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.4,
-		"apr": 3.7,
-		"fixedTerm": 4,
-		"minLtv": 60,
-		"maxLtv": 70,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-4yr-80",
-		"name": "4 Year Fixed - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.4,
-		"apr": 3.82,
-		"fixedTerm": 4,
-		"minLtv": 70,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-4yr-90",
-		"name": "4 Year Fixed - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.98,
-		"fixedTerm": 4,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-5yr-60",
-		"name": "5 Year Fixed - LTV ≤60%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.86,
-		"fixedTerm": 5,
-		"minLtv": 0,
-		"maxLtv": 60,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-5yr-70",
-		"name": "5 Year Fixed - LTV ≤70%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.86,
-		"fixedTerm": 5,
-		"minLtv": 60,
-		"maxLtv": 70,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-5yr-80",
-		"name": "5 Year Fixed - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.97,
-		"fixedTerm": 5,
-		"minLtv": 70,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-5yr-90",
-		"name": "5 Year Fixed - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.95,
-		"apr": 4.05,
-		"fixedTerm": 5,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-7yr-60",
-		"name": "7 Year Fixed - LTV ≤60%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.87,
-		"fixedTerm": 7,
-		"minLtv": 0,
-		"maxLtv": 60,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-7yr-70",
-		"name": "7 Year Fixed - LTV ≤70%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.87,
-		"fixedTerm": 7,
-		"minLtv": 60,
-		"maxLtv": 70,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-7yr-80",
-		"name": "7 Year Fixed - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.95,
-		"fixedTerm": 7,
-		"minLtv": 70,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-7yr-90",
-		"name": "7 Year Fixed - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.95,
-		"apr": 4.05,
-		"fixedTerm": 7,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-10yr-60",
-		"name": "10 Year Fixed - LTV ≤60%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.88,
-		"fixedTerm": 10,
-		"minLtv": 0,
-		"maxLtv": 60,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-10yr-70",
-		"name": "10 Year Fixed - LTV ≤70%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.88,
-		"fixedTerm": 10,
-		"minLtv": 60,
-		"maxLtv": 70,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-10yr-80",
-		"name": "10 Year Fixed - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.92,
-		"fixedTerm": 10,
-		"minLtv": 70,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-fixed-10yr-90",
-		"name": "10 Year Fixed - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.95,
-		"apr": 4.05,
-		"fixedTerm": 10,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-one-15yr-80",
-		"name": "One Mortgage 15 Year - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.4,
-		"apr": 3.48,
-		"fixedTerm": 15,
-		"minLtv": 0,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-one-15yr-90",
-		"name": "One Mortgage 15 Year - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.9,
-		"fixedTerm": 15,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-one-20yr-80",
-		"name": "One Mortgage 20 Year - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.4,
-		"apr": 3.48,
-		"fixedTerm": 20,
-		"minLtv": 0,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-one-20yr-90",
-		"name": "One Mortgage 20 Year - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.89,
-		"fixedTerm": 20,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-one-25yr-80",
-		"name": "One Mortgage 25 Year - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.4,
-		"apr": 3.47,
-		"fixedTerm": 25,
-		"minLtv": 0,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-one-25yr-90",
-		"name": "One Mortgage 25 Year - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.89,
-		"fixedTerm": 25,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-one-30yr-80",
-		"name": "One Mortgage 30 Year - LTV ≤80%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.4,
-		"apr": 3.47,
-		"fixedTerm": 30,
-		"minLtv": 0,
-		"maxLtv": 80,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	},
-	{
-		"id": "avant-one-30yr-90",
-		"name": "One Mortgage 30 Year - LTV ≤90%",
-		"lenderId": "avant",
-		"type": "fixed",
-		"rate": 3.8,
-		"apr": 3.88,
-		"fixedTerm": 30,
-		"minLtv": 80,
-		"maxLtv": 90,
-		"buyerTypes": [
-			"ftb",
-			"mover",
-			"switcher-pdh"
-		],
-		"perks": [
-			"cashback-1pct"
-		]
-	}
-]
+{
+	"lenderId": "avant",
+	"lastScrapedAt": "2025-12-31T16:58:25.441Z",
+	"lastUpdatedAt": "2025-12-31T16:50:35.684Z",
+	"ratesHash": "b091ef09cdeb904e536003e86d6e2ae1f7e269cb05a2ff2710233ac012df42b9",
+	"rates": [
+		{
+			"id": "avant-fixed-3yr-60",
+			"name": "3 Year Fixed - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.6,
+			"apr": 3.79,
+			"fixedTerm": 3,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-3yr-70",
+			"name": "3 Year Fixed - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.6,
+			"apr": 3.79,
+			"fixedTerm": 3,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-3yr-80",
+			"name": "3 Year Fixed - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.6,
+			"apr": 3.93,
+			"fixedTerm": 3,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-3yr-90",
+			"name": "3 Year Fixed - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.95,
+			"apr": 4.05,
+			"fixedTerm": 3,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-4yr-60",
+			"name": "4 Year Fixed - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.7,
+			"fixedTerm": 4,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-4yr-70",
+			"name": "4 Year Fixed - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.7,
+			"fixedTerm": 4,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-4yr-80",
+			"name": "4 Year Fixed - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.82,
+			"fixedTerm": 4,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-4yr-90",
+			"name": "4 Year Fixed - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.98,
+			"fixedTerm": 4,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-5yr-60",
+			"name": "5 Year Fixed - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.86,
+			"fixedTerm": 5,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-5yr-70",
+			"name": "5 Year Fixed - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.86,
+			"fixedTerm": 5,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-5yr-80",
+			"name": "5 Year Fixed - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.97,
+			"fixedTerm": 5,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-5yr-90",
+			"name": "5 Year Fixed - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.95,
+			"apr": 4.05,
+			"fixedTerm": 5,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-7yr-60",
+			"name": "7 Year Fixed - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.87,
+			"fixedTerm": 7,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-7yr-70",
+			"name": "7 Year Fixed - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.87,
+			"fixedTerm": 7,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-7yr-80",
+			"name": "7 Year Fixed - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.95,
+			"fixedTerm": 7,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-7yr-90",
+			"name": "7 Year Fixed - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.95,
+			"apr": 4.05,
+			"fixedTerm": 7,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-10yr-60",
+			"name": "10 Year Fixed - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.88,
+			"fixedTerm": 10,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-10yr-70",
+			"name": "10 Year Fixed - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.88,
+			"fixedTerm": 10,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-10yr-80",
+			"name": "10 Year Fixed - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.92,
+			"fixedTerm": 10,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-fixed-10yr-90",
+			"name": "10 Year Fixed - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.95,
+			"apr": 4.05,
+			"fixedTerm": 10,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-15yr-60",
+			"name": "One Mortgage 15 Year - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.48,
+			"fixedTerm": 15,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-15yr-70",
+			"name": "One Mortgage 15 Year - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.48,
+			"fixedTerm": 15,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-15yr-80",
+			"name": "One Mortgage 15 Year - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.48,
+			"fixedTerm": 15,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-15yr-90",
+			"name": "One Mortgage 15 Year - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.9,
+			"fixedTerm": 15,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-20yr-60",
+			"name": "One Mortgage 20 Year - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.48,
+			"fixedTerm": 20,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-20yr-70",
+			"name": "One Mortgage 20 Year - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.48,
+			"fixedTerm": 20,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-20yr-80",
+			"name": "One Mortgage 20 Year - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.48,
+			"fixedTerm": 20,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-20yr-90",
+			"name": "One Mortgage 20 Year - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.89,
+			"fixedTerm": 20,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-25yr-60",
+			"name": "One Mortgage 25 Year - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.47,
+			"fixedTerm": 25,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-25yr-70",
+			"name": "One Mortgage 25 Year - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.47,
+			"fixedTerm": 25,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-25yr-80",
+			"name": "One Mortgage 25 Year - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.47,
+			"fixedTerm": 25,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-25yr-90",
+			"name": "One Mortgage 25 Year - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.89,
+			"fixedTerm": 25,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-30yr-60",
+			"name": "One Mortgage 30 Year - LTV ≤60%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.47,
+			"fixedTerm": 30,
+			"minLtv": 0,
+			"maxLtv": 60,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-30yr-70",
+			"name": "One Mortgage 30 Year - LTV ≤70%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.47,
+			"fixedTerm": 30,
+			"minLtv": 60,
+			"maxLtv": 70,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-30yr-80",
+			"name": "One Mortgage 30 Year - LTV ≤80%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.47,
+			"fixedTerm": 30,
+			"minLtv": 70,
+			"maxLtv": 80,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		},
+		{
+			"id": "avant-one-30yr-90",
+			"name": "One Mortgage 30 Year - LTV ≤90%",
+			"lenderId": "avant",
+			"type": "fixed",
+			"rate": 3.8,
+			"apr": 3.88,
+			"fixedTerm": 30,
+			"minLtv": 80,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": true,
+			"perks": [
+				"cashback-1pct"
+			]
+		}
+	]
+}

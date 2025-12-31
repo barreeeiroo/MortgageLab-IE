@@ -24,10 +24,19 @@ export const MortgageRateSchema = z.object({
 	minLoan: z.number().positive().optional(), // Minimum loan amount (e.g., for HVM products)
 	buyerTypes: z.array(BuyerTypeSchema).min(1),
 	berEligible: z.array(BerRatingSchema).optional(), // If undefined, all BER ratings eligible
+	newBusiness: z.boolean().optional(), // true = new business only, false = existing customers only, undefined = both
 
 	// Rate-specific perk IDs
 	perks: z.array(z.string()).default([]),
 });
 export type MortgageRate = z.infer<typeof MortgageRateSchema>;
 
-export const RatesFileSchema = z.array(MortgageRateSchema);
+// Schema for individual rate files (data/rates/{lender}.json)
+export const RatesFileSchema = z.object({
+	lenderId: z.string(),
+	lastScrapedAt: z.string().datetime(),
+	lastUpdatedAt: z.string().datetime(),
+	ratesHash: z.string(),
+	rates: z.array(MortgageRateSchema),
+});
+export type RatesFile = z.infer<typeof RatesFileSchema>;
