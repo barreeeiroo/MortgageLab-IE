@@ -10,12 +10,10 @@ body:
       description: Which lender offers this rate?
       options:
         - AIB
-        - Bank of Ireland
-        - Permanent TSB
         - Avant Money
-        - ICS Mortgages
-        - Haven
-        - Finance Ireland
+        - Bank of Ireland
+        - Credit Union Mortgages
+        - Permanent TSB
         - Other
     validations:
       required: true

@@ -1,6 +1,7 @@
 import aibLogo from "@/assets/logos/lenders/aib.webp";
 import avantLogo from "@/assets/logos/lenders/avant.png";
 import boiLogo from "@/assets/logos/lenders/boi.png";
+import cuLogo from "@/assets/logos/lenders/cu.png";
 import ptsbLogo from "@/assets/logos/lenders/ptsb.png";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +9,7 @@ const logos: Record<string, ImageMetadata> = {
 	aib: aibLogo,
 	avant: avantLogo,
 	boi: boiLogo,
+	cu: cuLogo,
 	ptsb: ptsbLogo,
 };
 

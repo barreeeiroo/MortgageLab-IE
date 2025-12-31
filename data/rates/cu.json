@@ -1,0 +1,18 @@
+[
+	{
+		"id": "cu-capped-variable",
+		"name": "Capped Variable Rate (3yr cap)",
+		"lenderId": "cu",
+		"type": "variable",
+		"rate": 3.85,
+		"apr": 3.92,
+		"minLtv": 0,
+		"maxLtv": 90,
+		"buyerTypes": [
+			"ftb",
+			"mover",
+			"switcher-pdh"
+		],
+		"perks": []
+	}
+]

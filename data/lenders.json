@@ -6,21 +6,27 @@
 		"perks": ["fee-free-banking"]
 	},
 	{
+		"id": "avant",
+		"name": "Avant Money",
+		"website": "https://www.avantmoney.ie/mortgages",
+		"perks": []
+	},
+	{
 		"id": "boi",
 		"name": "Bank of Ireland",
 		"website": "https://www.bankofireland.com/mortgages/",
 		"perks": []
 	},
 	{
-		"id": "ptsb",
-		"name": "Permanent TSB",
-		"website": "https://www.permanenttsb.ie/mortgages/",
+		"id": "cu",
+		"name": "Credit Union Mortgages",
+		"website": "https://creditunionmortgages.com/our-mortgage/",
 		"perks": []
 	},
 	{
-		"id": "avant",
-		"name": "Avant Money",
-		"website": "https://www.avantmoney.ie/mortgages",
+		"id": "ptsb",
+		"name": "Permanent TSB",
+		"website": "https://www.permanenttsb.ie/mortgages/",
 		"perks": []
 	}
 ]
