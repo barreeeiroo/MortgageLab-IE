@@ -2,6 +2,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import {
 	AlertCircle,
 	Clock,
+	ExternalLink,
 	HelpCircle,
 	Info,
 	TriangleAlert,
@@ -161,7 +162,7 @@ export function RatesInput({
 							<span className="hidden sm:inline">Rate Updates</span>
 						</Button>
 					</DialogTrigger>
-					<DialogContent className="max-w-lg">
+					<DialogContent className="sm:max-w-2xl">
 						<DialogHeader>
 							<DialogTitle>Rate Update Information</DialogTitle>
 						</DialogHeader>
@@ -174,6 +175,7 @@ export function RatesInput({
 										<th className="text-left py-2 font-medium">
 											Rates Updated
 										</th>
+										<th className="text-center py-2 font-medium">View Rates</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -184,10 +186,15 @@ export function RatesInput({
 										return (
 											<tr key={lender.id} className="border-b last:border-0">
 												<td className="py-2">
-													<div className="flex items-center gap-2">
+													<a
+														href={lender.mortgagesUrl}
+														target="_blank"
+														rel="noopener noreferrer"
+														className="flex items-center gap-2 hover:text-primary transition-colors"
+													>
 														<LenderLogo lenderId={lender.id} size={24} />
 														<span className="font-medium">{lender.name}</span>
-													</div>
+													</a>
 												</td>
 												<td className="py-2 text-muted-foreground">
 													<Tooltip>
@@ -208,6 +215,27 @@ export function RatesInput({
 															{formatDublinTime(metadata.lastUpdatedAt)}
 														</TooltipContent>
 													</Tooltip>
+												</td>
+												<td className="py-2">
+													<div className="flex justify-center">
+														{lender.ratesUrl && (
+															<Tooltip>
+																<TooltipTrigger asChild>
+																	<a
+																		href={lender.ratesUrl}
+																		target="_blank"
+																		rel="noopener noreferrer"
+																		className="text-muted-foreground hover:text-primary transition-colors"
+																	>
+																		<ExternalLink className="h-4 w-4" />
+																	</a>
+																</TooltipTrigger>
+																<TooltipContent>
+																	View rates on website
+																</TooltipContent>
+															</Tooltip>
+														)}
+													</div>
 												</td>
 											</tr>
 										);

@@ -2,61 +2,71 @@
 	{
 		"id": "aib",
 		"name": "Allied Irish Banks",
-		"website": "https://aib.ie/our-products/mortgages",
+		"mortgagesUrl": "https://aib.ie/our-products/mortgages",
+		"ratesUrl": "https://aib.ie/our-products/mortgages/mortgage-interest-rates",
 		"perks": ["fee-free-banking"]
 	},
 	{
 		"id": "avant",
 		"name": "Avant Money",
-		"website": "https://www.avantmoney.ie/mortgages",
+		"mortgagesUrl": "https://www.avantmoney.ie/mortgages",
+		"ratesUrl": "https://www.avantmoney.ie/mortgages/products-and-rates",
 		"perks": []
 	},
 	{
 		"id": "boi",
 		"name": "Bank of Ireland",
-		"website": "https://www.bankofireland.com/mortgages/",
+		"mortgagesUrl": "https://www.bankofireland.com/mortgages/",
+		"ratesUrl": "https://personalbanking.bankofireland.com/borrow/mortgages/mortgage-interest-rates/",
 		"perks": []
 	},
 	{
 		"id": "cu",
 		"name": "Credit Union Mortgages",
-		"website": "https://creditunionmortgages.com/our-mortgage/",
+		"mortgagesUrl": "https://creditunionmortgages.com/our-mortgage/",
+		"ratesUrl": "https://creditunionmortgages.com/our-mortgage/",
 		"perks": []
 	},
 	{
 		"id": "ebs",
 		"name": "EBS",
-		"website": "https://www.ebs.ie/mortgages",
+		"mortgagesUrl": "https://www.ebs.ie/mortgages",
+		"ratesUrl": "https://www.ebs.ie/mortgages/mortgage-interest-rates",
 		"perks": []
 	},
 	{
 		"id": "haven",
 		"name": "Haven Mortgages",
-		"website": "https://www.havenmortgages.ie",
+		"mortgagesUrl": "https://www.havenmortgages.ie",
+		"ratesUrl": "https://www.havenmortgages.ie/mortgage-centre/mortgage-rates",
 		"perks": []
 	},
 	{
 		"id": "ics",
 		"name": "ICS Mortgages",
-		"website": "https://www.icsmortgages.ie",
+		"mortgagesUrl": "https://www.icsmortgages.ie",
+		"ratesUrl": "https://www.icsmortgages.ie/mortgages/owner-occupier-rates",
 		"perks": []
 	},
 	{
 		"id": "moco",
 		"name": "MoCo",
-		"website": "https://www.moco.ie/moco/our-rates",
+		"mortgagesUrl": "https://www.moco.ie",
+		"ratesUrl": "https://www.moco.ie/moco/our-rates",
 		"perks": []
 	},
 	{
 		"id": "nua",
 		"name": "Núa Mortgages",
-		"website": "https://nuamoney.com",
+		"mortgagesUrl": "https://nuamoney.com",
+		"ratesUrl": "https://nuamoney.com/mortgage-rates",
 		"perks": []
 	},
 	{
 		"id": "ptsb",
 		"name": "Permanent TSB",
-		"website": "https://www.permanenttsb.ie/mortgages/",
+		"mortgagesUrl": "https://www.ptsb.ie/mortgages/",
+		"ratesUrl": "https://www.ptsb.ie/mortgages/mortgage-interest-rates/",
 		"perks": []
 	}
 ]
