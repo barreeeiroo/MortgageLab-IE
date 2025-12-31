@@ -13,6 +13,7 @@ import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
 import { ColumnVisibilityToggle } from "../ui/column-visibility-toggle";
 import {
+	type ColumnFiltersState,
 	DataTable,
 	type SortingState,
 	type VisibilityState,
@@ -217,11 +218,15 @@ const COLUMN_LABELS: Record<string, string> = {
 	monthlyPayment: "Monthly",
 };
 
-const DEFAULT_COLUMN_VISIBILITY: VisibilityState = {};
-
+const DEFAULT_VISIBILITY: VisibilityState = {};
 const DEFAULT_SORTING: SortingState = [{ id: "monthlyPayment", desc: false }];
+const DEFAULT_FILTERS: ColumnFiltersState = [];
 
-const STORAGE_KEY = "rates-table-columns";
+const STORAGE_KEYS = {
+	columns: "rates-table-columns",
+	sorting: "rates-table-sorting",
+	filters: "rates-table-filters",
+} as const;
 
 function createColumns(
 	rates: MortgageRate[],
@@ -362,8 +367,16 @@ export function RatesTable({
 	mortgageAmount,
 	mortgageTerm,
 }: RatesTableProps) {
+	const [sorting, setSorting] = useLocalStorage<SortingState>(
+		STORAGE_KEYS.sorting,
+		DEFAULT_SORTING,
+	);
+	const [columnFilters, setColumnFilters] = useLocalStorage<ColumnFiltersState>(
+		STORAGE_KEYS.filters,
+		DEFAULT_FILTERS,
+	);
 	const [columnVisibility, setColumnVisibility] =
-		useLocalStorage<VisibilityState>(STORAGE_KEY, DEFAULT_COLUMN_VISIBILITY);
+		useLocalStorage<VisibilityState>(STORAGE_KEYS.columns, DEFAULT_VISIBILITY);
 
 	const columns = useMemo(
 		() => createColumns(rates, lenders),
@@ -396,7 +409,10 @@ export function RatesTable({
 			columns={columns}
 			data={data}
 			emptyMessage="No rates match your filters. Try adjusting your selection."
-			initialSorting={DEFAULT_SORTING}
+			sorting={sorting}
+			onSortingChange={setSorting}
+			columnFilters={columnFilters}
+			onColumnFiltersChange={setColumnFilters}
 			columnVisibility={columnVisibility}
 			onColumnVisibilityChange={setColumnVisibility}
 			toolbar={(table) => (

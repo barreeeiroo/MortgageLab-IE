@@ -11,7 +11,12 @@ import {
 	type VisibilityState,
 } from "@tanstack/react-table";
 
-export type { SortingState, TanstackTable, VisibilityState };
+export type {
+	ColumnFiltersState,
+	SortingState,
+	TanstackTable,
+	VisibilityState,
+};
 
 import { type ReactNode, useState } from "react";
 import {
@@ -27,7 +32,10 @@ interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 	emptyMessage?: string;
-	initialSorting?: SortingState;
+	sorting?: SortingState;
+	onSortingChange?: (sorting: SortingState) => void;
+	columnFilters?: ColumnFiltersState;
+	onColumnFiltersChange?: (filters: ColumnFiltersState) => void;
 	columnVisibility?: VisibilityState;
 	onColumnVisibilityChange?: (visibility: VisibilityState) => void;
 	toolbar?: (table: TanstackTable<TData>) => ReactNode;
@@ -37,21 +45,46 @@ export function DataTable<TData, TValue>({
 	columns,
 	data,
 	emptyMessage = "No results.",
-	initialSorting = [],
+	sorting: sortingProp,
+	onSortingChange,
+	columnFilters: columnFiltersProp,
+	onColumnFiltersChange,
 	columnVisibility,
 	onColumnVisibilityChange,
 	toolbar,
 }: DataTableProps<TData, TValue>) {
-	const [sorting, setSorting] = useState<SortingState>(initialSorting);
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+	// Use internal state if not controlled
+	const [internalSorting, setInternalSorting] = useState<SortingState>([]);
+	const [internalFilters, setInternalFilters] = useState<ColumnFiltersState>(
+		[],
+	);
+
+	const sorting = sortingProp ?? internalSorting;
+	const columnFilters = columnFiltersProp ?? internalFilters;
 
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
-		onSortingChange: setSorting,
+		onSortingChange: (updater) => {
+			const newSorting =
+				typeof updater === "function" ? updater(sorting) : updater;
+			if (onSortingChange) {
+				onSortingChange(newSorting);
+			} else {
+				setInternalSorting(newSorting);
+			}
+		},
 		getSortedRowModel: getSortedRowModel(),
-		onColumnFiltersChange: setColumnFilters,
+		onColumnFiltersChange: (updater) => {
+			const newFilters =
+				typeof updater === "function" ? updater(columnFilters) : updater;
+			if (onColumnFiltersChange) {
+				onColumnFiltersChange(newFilters);
+			} else {
+				setInternalFilters(newFilters);
+			}
+		},
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: (updater) => {
 			if (!onColumnVisibilityChange) return;
