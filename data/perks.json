@@ -13,5 +13,10 @@
 		"id": "cashback-3pct",
 		"label": "3% Cashback",
 		"description": "2% cashback on drawdown + 1% after 5 years, up to €15,000"
+	},
+	{
+		"id": "cashback-5k",
+		"label": "€5,000 Cashback",
+		"description": "€5,000 cashback on drawdown (€3,000 for switchers), min €250k loan"
 	}
 ]

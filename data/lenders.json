@@ -30,6 +30,12 @@
 		"perks": []
 	},
 	{
+		"id": "haven",
+		"name": "Haven Mortgages",
+		"website": "https://www.havenmortgages.ie",
+		"perks": []
+	},
+	{
 		"id": "ptsb",
 		"name": "Permanent TSB",
 		"website": "https://www.permanenttsb.ie/mortgages/",
