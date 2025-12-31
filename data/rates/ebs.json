@@ -1,8 +1,8 @@
 {
 	"lenderId": "ebs",
-	"lastScrapedAt": "2025-12-31T16:58:28.069Z",
-	"lastUpdatedAt": "2025-12-31T16:50:35.684Z",
-	"ratesHash": "2405450630b859f1bba91a13096348609ad56b4d0ac84503a5ff1f90da410a0e",
+	"lastScrapedAt": "2025-12-31T19:28:36.061Z",
+	"lastUpdatedAt": "2025-12-31T19:28:36.061Z",
+	"ratesHash": "3dd66c36eda1f5d8bc93e0513548ecbb8f6e592d75ac1ee5b21c08112679c7e3",
 	"rates": [
 		{
 			"id": "ebs-fixed-1yr",
@@ -143,30 +143,29 @@
 			"type": "variable",
 			"rate": 4.15,
 			"apr": 4.3,
-			"minLtv": 80,
+			"minLtv": 0,
 			"maxLtv": 90,
 			"buyerTypes": [
 				"ftb",
 				"mover",
 				"switcher-pdh"
 			],
-			"newBusiness": true,
+			"newBusiness": false,
 			"perks": []
 		},
 		{
-			"id": "ebs-btl",
-			"name": "Buy-to-Let",
+			"id": "ebs-btl-variable",
+			"name": "Buy-to-Let Variable Rate",
 			"lenderId": "ebs",
-			"type": "fixed",
-			"rate": 5.6,
-			"apr": 8.13,
+			"type": "variable",
+			"rate": 5.43,
+			"apr": 5.6,
 			"minLtv": 0,
 			"maxLtv": 70,
 			"buyerTypes": [
 				"btl",
 				"switcher-btl"
 			],
-			"newBusiness": true,
 			"perks": []
 		},
 		{

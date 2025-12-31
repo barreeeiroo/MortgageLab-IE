@@ -139,17 +139,58 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 			return;
 		}
 
-		// Skip sections we don't want (existing, topup are duplicates)
-		if (
-			currentSection === "unknown" ||
-			currentSection === "existing" ||
-			currentSection === "topup"
-		) {
+		// Skip sections we don't want
+		if (currentSection === "unknown" || currentSection === "topup") {
 			return;
 		}
 
 		const isBtlSection = currentSection === "btl";
-		const isVariableSection = currentSection === "new-variable";
+		const isNewVariableSection = currentSection === "new-variable";
+		const isExistingSection = currentSection === "existing";
+
+		// Check if this is a BTL variable rate table (rate in first column, no name)
+		// The "Standard Variable" text is in a preceding sibling
+		const prevSiblings = $(el).prevAll().text().toLowerCase();
+		const isBtlVariableTable =
+			isBtlSection && prevSiblings.includes("standard variable");
+
+		if (isBtlVariableTable) {
+			$(el)
+				.find("tbody tr, tr")
+				.each((_, row) => {
+					const cells = $(row).find("td").toArray();
+					if (cells.length < 2) return;
+
+					const rateText = $(cells[0]).text().trim();
+					const aprText = $(cells[1]).text().trim();
+
+					if (!rateText.includes("%") || rateText.toLowerCase().includes("rate"))
+						return;
+
+					try {
+						const rate = parsePercentage(rateText);
+						const apr = parsePercentage(aprText);
+
+						const mortgageRate: MortgageRate = {
+							id: "ebs-btl-variable",
+							name: "Buy-to-Let Variable Rate",
+							lenderId: LENDER_ID,
+							type: "variable",
+							rate,
+							apr,
+							minLtv: 0,
+							maxLtv: 70,
+							buyerTypes: BTL_BUYER_TYPES,
+							perks: [],
+						};
+
+						ratesMap.set(mortgageRate.id, mortgageRate);
+					} catch {
+						// Skip
+					}
+				});
+			return;
+		}
 
 		$(el)
 			.find("tbody tr, tr")
@@ -158,11 +199,11 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 				if (!parsed) return;
 
 				// Detect variable rates: explicit "variable" in name, OR
-				// LTV-only rows (no term, name is just LTV pattern), OR in variable section
+				// LTV-only rows (no term, name is just LTV pattern), OR in new-variable section
 				const ltvPattern = /^[<>=≤≥\s\d%-]+$/;
 				const isLtvOnlyRow = !parsed.term && ltvPattern.test(parsed.name);
 				const isVariable =
-					parsed.isVariable || isLtvOnlyRow || isVariableSection;
+					parsed.isVariable || isLtvOnlyRow || isNewVariableSection;
 
 				const isBtl = parsed.isBtl || isBtlSection;
 				const buyerTypes = isBtl ? BTL_BUYER_TYPES : PDH_BUYER_TYPES;
@@ -187,6 +228,11 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 					nameParts.push(`${parsed.term} Year Fixed`);
 				}
 
+				// Skip fixed rates from existing section (duplicates)
+				if (isExistingSection && !isVariable) {
+					return;
+				}
+
 				const mortgageRate: MortgageRate = {
 					id: idParts.join("-"),
 					name: nameParts.join(" ") || parsed.name,
@@ -199,7 +245,7 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 					maxLtv: isBtl ? 70 : parsed.maxLtv,
 					buyerTypes,
 					berEligible: parsed.isGreen ? GREEN_BER_RATINGS : undefined,
-					newBusiness: true,
+					newBusiness: isExistingSection ? false : true,
 					perks: [],
 				};
 
