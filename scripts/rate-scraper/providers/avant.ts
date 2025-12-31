@@ -52,14 +52,11 @@ function parseTermFromHeading(heading: string): number | undefined {
 	return match ? Number.parseInt(match[1], 10) : undefined;
 }
 
-function parseFlexMortgageTable(
-	$: cheerio.CheerioAPI,
-	container: cheerio.Cheerio<cheerio.Element>,
-): MortgageRate[] {
+function parseFlexMortgageTable($: cheerio.CheerioAPI): MortgageRate[] {
 	const rates: MortgageRate[] = [];
 
-	// Find the Flex Mortgage table by looking for tables with benchmark rate column
-	container.find("table, .am-figures-table").each((_, table) => {
+	// Find tables with "Flex Mortgage" or "Benchmark Rate" headers
+	$("table").each((_, table) => {
 		const tableText = $(table).text().toLowerCase();
 		if (
 			!tableText.includes("flex mortgage") &&
@@ -69,10 +66,10 @@ function parseFlexMortgageTable(
 		}
 
 		$(table)
-			.find("tr, .am-figures-table__section-row")
+			.find("tbody tr")
 			.each((_, row) => {
-				const cells = $(row).find("td, div").toArray();
-				if (cells.length < 4) return;
+				const cells = $(row).find("td").toArray();
+				if (cells.length < 5) return;
 
 				const ltvText = $(cells[0]).text().trim();
 				const rateText = $(cells[3]).text().trim(); // Flex Mortgage Rate column
@@ -95,8 +92,7 @@ function parseFlexMortgageTable(
 						minLtv,
 						maxLtv,
 						buyerTypes: BUYER_TYPES,
-						newBusiness: false, // Existing customers rolling off fixed rate
-						perks: [], // No cashback on Flex
+						perks: [],
 					});
 				} catch {
 					// Skip unparseable rows
@@ -229,15 +225,9 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 
 	const rates: MortgageRate[] = [];
 
-	// Find Flex Mortgage section
-	const flexSection = $('[id*="flex-mortgage-rates"]')
-		.closest(".portlet, section")
-		.nextAll()
-		.first();
-	if (flexSection.length) {
-		console.log("Parsing Flex Mortgage rates...");
-		rates.push(...parseFlexMortgageTable($, flexSection));
-	}
+	// Parse Flex Mortgage (variable) rates
+	console.log("Parsing Flex Mortgage rates...");
+	rates.push(...parseFlexMortgageTable($));
 
 	// Find Fixed Term Rates section
 	$(".journal-content-article").each((_, article) => {
@@ -254,11 +244,10 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		}
 	});
 
-	// If we couldn't find rates via the structured approach, try a broader search
-	if (rates.length === 0) {
-		console.log("Trying broader search for rate tables...");
+	// If we couldn't find fixed rates via the structured approach, try a broader search
+	if (rates.filter((r) => r.type === "fixed").length === 0) {
+		console.log("Trying broader search for fixed rate tables...");
 
-		// Look for Fixed Term tables
 		$(".am-figures-table").each((_, table) => {
 			const tableTitle = $(table)
 				.find("h3")
@@ -271,50 +260,6 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 				rates.push(...parseFixedTermTable($, $(table)));
 			} else if (tableTitle.includes("one mortgage")) {
 				rates.push(...parseOneMortgageTable($, $(table)));
-			}
-		});
-
-		// Look for Flex table (simple HTML table)
-		$("table").each((_, table) => {
-			const tableText = $(table).text().toLowerCase();
-			if (
-				tableText.includes("flex mortgage") ||
-				tableText.includes("benchmark rate")
-			) {
-				$(table)
-					.find("tbody tr")
-					.each((_, row) => {
-						const cells = $(row).find("td").toArray();
-						if (cells.length >= 5) {
-							const ltvText = $(cells[0]).text().trim();
-							const rateText = $(cells[3]).text().trim();
-							const aprText = $(cells[4]).text().trim();
-
-							if (ltvText && rateText.includes("%")) {
-								try {
-									const { minLtv, maxLtv } = parseLtvFromText(ltvText);
-									const rate = parsePercentage(rateText);
-									const apr = parsePercentage(aprText);
-
-									rates.push({
-										id: `avant-flex-${maxLtv}`,
-										name: `Flex Mortgage - LTV ≤${maxLtv}%`,
-										lenderId: LENDER_ID,
-										type: "variable",
-										rate,
-										apr,
-										minLtv,
-										maxLtv,
-										buyerTypes: BUYER_TYPES,
-										newBusiness: false,
-										perks: [],
-									});
-								} catch {
-									// Skip
-								}
-							}
-						}
-					});
 			}
 		});
 	}
