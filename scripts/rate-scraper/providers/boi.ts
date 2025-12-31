@@ -1,5 +1,4 @@
-import type { BuyerType } from "../../../src/lib/schemas/buyer";
-import type { MortgageRate } from "../../../src/lib/schemas/rate";
+import type { BuyerType, MortgageRate } from "@/lib/schemas";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "boi";

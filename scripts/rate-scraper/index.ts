@@ -2,10 +2,12 @@
 
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { aibProvider } from "./providers/aib";
 import { boiProvider } from "./providers/boi";
 import type { LenderProvider } from "./types";
 
 const providers: Record<string, LenderProvider> = {
+	aib: aibProvider,
 	boi: boiProvider,
 };
 
