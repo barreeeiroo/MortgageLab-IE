@@ -1,16 +1,8 @@
-name: Request New Rate
+name: ➕ Request New Rate
 description: Request a new mortgage rate or lender to be added
 title: "[Rate] Add rate from "
 labels: ["rate-data", "enhancement"]
 body:
-  - type: checkboxes
-    id: publicly-available
-    attributes:
-      label: Confirmation
-      options:
-        - label: This rate is publicly available and not a privately offered rate from a lender
-          required: true
-
   - type: dropdown
     id: lender
     attributes:
@@ -51,3 +43,11 @@ body:
     attributes:
       label: Additional Context
       description: Any other details about this rate (BER requirements, minimum loan, etc.)
+
+  - type: checkboxes
+    id: publicly-available
+    attributes:
+      label: Confirmation
+      options:
+        - label: This rate is publicly available and not a privately offered rate from a lender
+          required: true

@@ -1,16 +1,8 @@
-name: Feature Request
+name: ✨ Feature Request
 description: Suggest a new feature or improvement
 title: "[Feature] "
 labels: ["enhancement"]
 body:
-  - type: checkboxes
-    id: not-rate-request
-    attributes:
-      label: Confirmation
-      options:
-        - label: This is not a request to add new rate data (use "Request New Rate" template for that)
-          required: true
-
   - type: textarea
     id: description
     attributes:
@@ -32,3 +24,11 @@ body:
     attributes:
       label: Additional Context
       description: Mockups, examples, or any other details
+
+  - type: checkboxes
+    id: not-rate-request
+    attributes:
+      label: Confirmation
+      options:
+        - label: This is not a request to add new rate data (use "Request New Rate" template for that)
+          required: true

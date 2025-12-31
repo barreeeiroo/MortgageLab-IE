@@ -1,4 +1,4 @@
-name: Report Incorrect Rate
+name: ⚠️ Report Incorrect Rate
 description: Report a mortgage rate that is outdated or incorrect
 title: "[Rate] Incorrect rate for "
 labels: ["rate-data", "bug"]

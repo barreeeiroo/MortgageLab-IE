@@ -1,16 +1,8 @@
-name: Bug Report
+name: 🐛 Bug Report
 description: Report something that isn't working correctly
 title: "[Bug] "
 labels: ["bug"]
 body:
-  - type: checkboxes
-    id: not-rate-issue
-    attributes:
-      label: Confirmation
-      options:
-        - label: This is not about incorrect rate data (use "Report Incorrect Rate" template for that)
-          required: true
-
   - type: textarea
     id: current-behaviour
     attributes:
@@ -50,3 +42,11 @@ body:
     attributes:
       label: Additional Context
       description: Screenshots, error messages, or anything else helpful
+
+  - type: checkboxes
+    id: not-rate-issue
+    attributes:
+      label: Confirmation
+      options:
+        - label: This is not about incorrect rate data (use "Report Incorrect Rate" template for that)
+          required: true
