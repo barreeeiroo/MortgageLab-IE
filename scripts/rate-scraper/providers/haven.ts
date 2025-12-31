@@ -90,6 +90,17 @@ function parseTableRow(
 	}
 }
 
+type SectionType = "new-variable" | "existing-variable" | "fixed" | "unknown";
+
+function getSectionTypeFromTab(tabText: string): SectionType {
+	const lower = tabText.toLowerCase();
+	if (lower.includes("variable") && lower.includes("existing"))
+		return "existing-variable";
+	if (lower.includes("variable") && lower.includes("new")) return "new-variable";
+	if (lower.includes("fixed")) return "fixed";
+	return "unknown";
+}
+
 async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	console.log("Fetching rates page...");
 	const response = await fetch(RATES_URL);
@@ -98,57 +109,72 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	console.log("Parsing HTML content with Cheerio...");
 	const $ = cheerio.load(html);
 
-	// Use a Map to deduplicate rates by ID (page may have duplicate tables)
 	const ratesMap = new Map<string, MortgageRate>();
 
-	$("table").each((_, table) => {
-		$(table)
-			.find("tbody tr, tr")
-			.each((_, row) => {
-				const parsed = parseTableRow($, row);
-				if (!parsed) return;
+	$('[role="tabpanel"]').each((_, tabPanel) => {
+		const panelId = $(tabPanel).attr("id") || "";
+		const tabSelector = `[aria-controls="${panelId}"]`;
+		const tabText = $(tabSelector).text().trim();
+		const sectionType = getSectionTypeFromTab(tabText);
 
-				// Detect variable rates: explicitly named "variable" OR
-				// LTV-only rows (no term, name is just LTV pattern) which are variable rates by LTV band
-				const ltvPatterns = /^[<>=≤≥\s\d%]+$/;
-				const isLtvOnlyRow = !parsed.term && ltvPatterns.test(parsed.name);
-				const isVariable = parsed.isVariable || isLtvOnlyRow;
+		$(tabPanel)
+			.find("table")
+			.each((_, table) => {
+				$(table)
+					.find("tbody tr, tr")
+					.each((_, row) => {
+						const parsed = parseTableRow($, row);
+						if (!parsed) return;
 
-				const idParts = [LENDER_ID];
-				if (parsed.isGreen) idParts.push("green");
-				if (isVariable) {
-					idParts.push("variable");
-					if (parsed.maxLtv < 90) idParts.push(String(parsed.maxLtv));
-				} else if (parsed.term) {
-					idParts.push("fixed", `${parsed.term}yr`);
-				}
+						const ltvPatterns = /^[<>=≤≥\s\d%]+$/;
+						const isLtvOnlyRow = !parsed.term && ltvPatterns.test(parsed.name);
+						const isVariable = parsed.isVariable || isLtvOnlyRow;
 
-				const nameParts: string[] = [];
-				if (parsed.isGreen) nameParts.push("Haven Green");
-				if (isVariable) {
-					nameParts.push("Variable Rate");
-					if (parsed.maxLtv < 90) nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
-				} else if (parsed.term) {
-					nameParts.push(`${parsed.term} Year Fixed`);
-				}
+						const isNewBusinessVariable =
+							isVariable && sectionType === "new-variable";
+						const isExistingBusinessVariable =
+							isVariable && sectionType === "existing-variable";
 
-				const mortgageRate: MortgageRate = {
-					id: idParts.join("-"),
-					name: nameParts.join(" ") || parsed.name,
-					lenderId: LENDER_ID,
-					type: isVariable ? "variable" : "fixed",
-					rate: parsed.rate,
-					apr: parsed.apr,
-					fixedTerm: isVariable ? undefined : parsed.term,
-					minLtv: parsed.minLtv,
-					maxLtv: parsed.maxLtv,
-					buyerTypes: BUYER_TYPES,
-					berEligible: parsed.isGreen ? GREEN_BER_RATINGS : undefined,
-					newBusiness: isVariable ? true : undefined,
-					perks: [],
-				};
+						const idParts = [LENDER_ID];
+						if (parsed.isGreen) idParts.push("green");
+						if (isVariable) {
+							idParts.push("variable");
+							if (parsed.maxLtv < 90) idParts.push(String(parsed.maxLtv));
+						} else if (parsed.term) {
+							idParts.push("fixed", `${parsed.term}yr`);
+						}
 
-				ratesMap.set(mortgageRate.id, mortgageRate);
+						const nameParts: string[] = [];
+						if (parsed.isGreen) nameParts.push("Haven Green");
+						if (isVariable) {
+							nameParts.push("Variable Rate");
+							if (parsed.maxLtv < 90) nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
+						} else if (parsed.term) {
+							nameParts.push(`${parsed.term} Year Fixed`);
+						}
+
+						const mortgageRate: MortgageRate = {
+							id: idParts.join("-"),
+							name: nameParts.join(" ") || parsed.name,
+							lenderId: LENDER_ID,
+							type: isVariable ? "variable" : "fixed",
+							rate: parsed.rate,
+							apr: parsed.apr,
+							fixedTerm: isVariable ? undefined : parsed.term,
+							minLtv: parsed.minLtv,
+							maxLtv: parsed.maxLtv,
+							buyerTypes: BUYER_TYPES,
+							berEligible: parsed.isGreen ? GREEN_BER_RATINGS : undefined,
+							newBusiness: isNewBusinessVariable
+								? true
+								: isExistingBusinessVariable
+									? false
+									: undefined,
+							perks: [],
+						};
+
+						ratesMap.set(mortgageRate.id, mortgageRate);
+					});
 			});
 	});
 

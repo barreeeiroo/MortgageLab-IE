@@ -1,8 +1,8 @@
 {
 	"lenderId": "haven",
-	"lastScrapedAt": "2025-12-31T16:58:29.092Z",
-	"lastUpdatedAt": "2025-12-31T16:50:35.684Z",
-	"ratesHash": "436d986324c8ab5566177945432ea291c84d107f2c934cfdd2193e263989e435",
+	"lastScrapedAt": "2025-12-31T19:43:18.807Z",
+	"lastUpdatedAt": "2025-12-31T19:43:18.807Z",
+	"ratesHash": "3ee778eaaef418e1dedc04ad7188aff43d9d9633572654285c548e0e2db6f654",
 	"rates": [
 		{
 			"id": "haven-variable-50",
@@ -52,7 +52,6 @@
 				"mover",
 				"switcher-pdh"
 			],
-			"newBusiness": true,
 			"perks": []
 		},
 		{
