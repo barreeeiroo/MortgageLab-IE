@@ -1,17 +1,13 @@
-import { HelpCircle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { loadRatesForm, type RatesMode, saveRatesForm } from "@/lib/storage";
+import { AlertCircle, HelpCircle, Info, TriangleAlert } from "lucide-react";
 import {
 	calculateStampDuty,
 	ESTIMATED_LEGAL_FEES,
 	formatCurrency,
 	formatCurrencyInput,
-	parseCurrency,
 } from "@/lib/utils";
 import { BerSelector } from "../selectors/BerSelector";
 import { BuyerTypeSelector } from "../selectors/BuyerTypeSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
-import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -23,6 +19,31 @@ import {
 	TooltipTrigger,
 } from "../ui/tooltip";
 
+export type RatesMode = "first-mortgage" | "remortgage";
+
+export interface RatesInputValues {
+	mode: RatesMode;
+	propertyValue: string;
+	mortgageAmount: string;
+	monthlyRepayment: string;
+	mortgageTerm: string;
+	berRating: string;
+	buyerType: string;
+}
+
+export interface RatesInputProps {
+	values: RatesInputValues;
+	onChange: (values: RatesInputValues) => void;
+	// Computed values passed from parent
+	deposit: number;
+	ltv: number;
+	isFormValid: boolean;
+	hasError: boolean;
+	hasWarning: boolean;
+	errorMessage?: string;
+	warningMessage?: string;
+}
+
 type LtvRange = "below-50" | "50-80" | "80-90" | "above-90";
 
 function getLtvRange(ltv: number): LtvRange {
@@ -32,78 +53,18 @@ function getLtvRange(ltv: number): LtvRange {
 	return "above-90";
 }
 
-function getModeFromHash(): RatesMode | null {
-	const hash = window.location.hash.slice(1);
-	if (hash === "first-mortgage" || hash === "remortgage") {
-		return hash;
-	}
-	return null;
-}
-
-export function RatesCalculator() {
-	const [mode, setMode] = useState<RatesMode>("first-mortgage");
-	const [propertyValue, setPropertyValue] = useState("");
-	const [mortgageAmount, setMortgageAmount] = useState("");
-	const [monthlyRepayment, setMonthlyRepayment] = useState("");
-	const [mortgageTerm, setMortgageTerm] = useState("30");
-	const [berRating, setBerRating] = useState("C1");
-	const [buyerType, setBuyerType] = useState("ftb");
-
-	const isRemortgage = mode === "remortgage";
-	const prevModeRef = useRef<RatesMode | null>(null);
-
-	// Map buyer type when switching modes
-	// - Switching to remortgage: ftb/mover → mover (Primary Residence)
-	// - Switching to first mortgage: mover → ftb (First Time Buyer)
-	useEffect(() => {
-		const prevMode = prevModeRef.current;
-		if (prevMode !== null && prevMode !== mode) {
-			if (isRemortgage && (buyerType === "ftb" || buyerType === "mover")) {
-				setBuyerType("mover");
-			} else if (!isRemortgage && buyerType === "mover") {
-				setBuyerType("ftb");
-			}
-		}
-		prevModeRef.current = mode;
-	}, [mode, isRemortgage, buyerType]);
-
-	// Load from localStorage on mount, with URL hash taking priority
-	useEffect(() => {
-		const saved = loadRatesForm();
-		const hashMode = getModeFromHash();
-
-		// URL hash takes priority over localStorage
-		if (hashMode) {
-			setMode(hashMode);
-		} else if (saved.mode) {
-			setMode(saved.mode);
-		}
-
-		if (saved.propertyValue) setPropertyValue(saved.propertyValue);
-		if (saved.mortgageAmount) setMortgageAmount(saved.mortgageAmount);
-		if (saved.monthlyRepayment) setMonthlyRepayment(saved.monthlyRepayment);
-		if (saved.mortgageTerm) setMortgageTerm(saved.mortgageTerm);
-		if (saved.berRating) setBerRating(saved.berRating);
-		if (saved.buyerType) setBuyerType(saved.buyerType);
-	}, []);
-
-	// Update URL hash when mode changes
-	useEffect(() => {
-		window.history.replaceState(null, "", `#${mode}`);
-	}, [mode]);
-
-	// Save to localStorage when form changes
-	useEffect(() => {
-		saveRatesForm({
-			mode,
-			propertyValue,
-			mortgageAmount,
-			monthlyRepayment,
-			mortgageTerm,
-			berRating,
-			buyerType,
-		});
-	}, [
+export function RatesInput({
+	values,
+	onChange,
+	deposit,
+	ltv,
+	isFormValid,
+	hasError,
+	hasWarning,
+	errorMessage,
+	warningMessage,
+}: RatesInputProps) {
+	const {
 		mode,
 		propertyValue,
 		mortgageAmount,
@@ -111,53 +72,26 @@ export function RatesCalculator() {
 		mortgageTerm,
 		berRating,
 		buyerType,
-	]);
+	} = values;
 
-	// Calculated values
-	const property = parseCurrency(propertyValue);
-	const mortgage = parseCurrency(mortgageAmount);
-	const monthly = parseCurrency(monthlyRepayment);
-	const deposit = property > 0 ? property - mortgage : 0;
-	const ltv = property > 0 ? (mortgage / property) * 100 : 0;
+	const isRemortgage = mode === "remortgage";
 	const ltvRange = getLtvRange(ltv);
+	const property = Number(propertyValue) || 0;
 	const stampDuty = calculateStampDuty(property);
 	const legalFees = ESTIMATED_LEGAL_FEES;
 
-	// Validation logic
-	const isPrimaryResidence = buyerType === "ftb" || buyerType === "mover";
-	const maxLtv = isPrimaryResidence ? 90 : 70;
-
-	const isMortgageAboveProperty =
-		mortgage > 0 && property > 0 && mortgage > property;
-	const isLtvAboveMax = ltv > maxLtv;
-	const isLtvAbove80Warning =
-		isRemortgage && isPrimaryResidence && ltv > 80 && ltv <= 90;
-
-	const hasError = isMortgageAboveProperty || isLtvAboveMax;
-	const hasWarning = isLtvAbove80Warning;
-
-	// Form validity
-	const isFormValid =
-		property > 0 && mortgage > 0 && !hasError && (!isRemortgage || monthly > 0);
-
-	const compare = () => {
-		// TODO: Navigate to results or filter rates
-		console.log("Compare rates", {
-			property,
-			deposit,
-			mortgage,
-			ltv,
-			mortgageTerm,
-			berRating,
-			buyerType,
-		});
+	const updateField = <K extends keyof RatesInputValues>(
+		field: K,
+		value: RatesInputValues[K],
+	) => {
+		onChange({ ...values, [field]: value });
 	};
 
 	return (
 		<TooltipProvider>
 			<Tabs
 				value={mode}
-				onValueChange={(value) => setMode(value as RatesMode)}
+				onValueChange={(value) => updateField("mode", value as RatesMode)}
 				className="w-full"
 			>
 				<TabsList className="mb-3">
@@ -183,7 +117,10 @@ export function RatesCalculator() {
 										className="h-9"
 										value={formatCurrencyInput(propertyValue)}
 										onChange={(e) =>
-											setPropertyValue(e.target.value.replace(/[^0-9]/g, ""))
+											updateField(
+												"propertyValue",
+												e.target.value.replace(/[^0-9]/g, ""),
+											)
 										}
 									/>
 								</div>
@@ -199,7 +136,10 @@ export function RatesCalculator() {
 										className="h-9"
 										value={formatCurrencyInput(mortgageAmount)}
 										onChange={(e) =>
-											setMortgageAmount(e.target.value.replace(/[^0-9]/g, ""))
+											updateField(
+												"mortgageAmount",
+												e.target.value.replace(/[^0-9]/g, ""),
+											)
 										}
 									/>
 								</div>
@@ -219,7 +159,8 @@ export function RatesCalculator() {
 											className="h-9"
 											value={formatCurrencyInput(monthlyRepayment)}
 											onChange={(e) =>
-												setMonthlyRepayment(
+												updateField(
+													"monthlyRepayment",
 													e.target.value.replace(/[^0-9]/g, ""),
 												)
 											}
@@ -309,7 +250,7 @@ export function RatesCalculator() {
 								</Label>
 								<BuyerTypeSelector
 									value={buyerType}
-									onChange={setBuyerType}
+									onChange={(v) => updateField("buyerType", v)}
 									id="buyerTypeMobile"
 									compact
 									variant={isRemortgage ? "remortgage" : "purchase"}
@@ -317,7 +258,7 @@ export function RatesCalculator() {
 							</div>
 						</div>
 
-						{/* Row 2 (lg) / Row 4 (mobile): Buyer Type / Remortgage Type, Term, BER, Compare */}
+						{/* Row 2 (lg) / Row 4 (mobile): Buyer Type / Remortgage Type, Term, BER */}
 						<div className="flex gap-3 items-end">
 							<div className="hidden lg:block space-y-1 flex-[1.5]">
 								<Label htmlFor="buyerType" className="text-xs">
@@ -325,7 +266,7 @@ export function RatesCalculator() {
 								</Label>
 								<BuyerTypeSelector
 									value={buyerType}
-									onChange={setBuyerType}
+									onChange={(v) => updateField("buyerType", v)}
 									id="buyerType"
 									compact
 									variant={isRemortgage ? "remortgage" : "purchase"}
@@ -337,7 +278,7 @@ export function RatesCalculator() {
 								</Label>
 								<MortgageTermSelector
 									value={mortgageTerm}
-									onChange={setMortgageTerm}
+									onChange={(v) => updateField("mortgageTerm", v)}
 									id="mortgageTerm"
 									compact
 								/>
@@ -348,46 +289,48 @@ export function RatesCalculator() {
 								</Label>
 								<BerSelector
 									value={berRating}
-									onChange={setBerRating}
+									onChange={(v) => updateField("berRating", v)}
 									id="berRating"
 									compact
 								/>
 							</div>
-							<Button
-								onClick={compare}
-								className="h-9 flex-1"
-								disabled={!isFormValid}
-							>
-								Compare
-							</Button>
 						</div>
-
-						{/* Validation messages */}
-						{isMortgageAboveProperty && (
-							<p className="text-sm text-destructive">
-								{isRemortgage ? "Outstanding balance" : "Mortgage amount"}{" "}
-								cannot exceed property value.
-							</p>
-						)}
-						{isLtvAboveMax && !isMortgageAboveProperty && (
-							<p className="text-sm text-destructive">
-								Maximum LTV for{" "}
-								{isPrimaryResidence ? "primary residence" : "this buyer type"}{" "}
-								is {maxLtv}%.
-								{isPrimaryResidence
-									? " Reduce mortgage amount or increase property value."
-									: " Consider a larger deposit."}
-							</p>
-						)}
-						{hasWarning && !hasError && (
-							<p className="text-sm text-amber-600 dark:text-amber-500">
-								LTV above 80% may limit lender options. Some lenders require
-								lower LTV for mortgage switches.
-							</p>
-						)}
 					</div>
 				</CardContent>
 			</Card>
+
+			{/* Status alerts below the input card */}
+			{hasError && errorMessage && (
+				<Card className="bg-destructive/10 border-destructive/30">
+					<CardContent className="py-3 flex items-center gap-3">
+						<AlertCircle className="h-5 w-5 text-destructive shrink-0" />
+						<p className="text-sm text-destructive">{errorMessage}</p>
+					</CardContent>
+				</Card>
+			)}
+
+			{hasWarning && !hasError && warningMessage && (
+				<Card className="bg-amber-500/10 border-amber-500/30">
+					<CardContent className="py-3 flex items-center gap-3">
+						<TriangleAlert className="h-5 w-5 text-amber-600 dark:text-amber-500 shrink-0" />
+						<p className="text-sm text-amber-600 dark:text-amber-500">
+							{warningMessage}
+						</p>
+					</CardContent>
+				</Card>
+			)}
+
+			{!isFormValid && !hasError && !hasWarning && (
+				<Card className="bg-blue-500/10 border-blue-500/30">
+					<CardContent className="py-3 flex items-center gap-3">
+						<Info className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
+						<p className="text-sm text-blue-600 dark:text-blue-400">
+							Enter your property details above to compare mortgage rates from
+							Irish lenders.
+						</p>
+					</CardContent>
+				</Card>
+			)}
 		</TooltipProvider>
 	);
 }

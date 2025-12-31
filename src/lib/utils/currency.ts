@@ -1,8 +1,12 @@
-export function formatCurrency(value: number): string {
+export function formatCurrency(
+	value: number,
+	options?: { showCents?: boolean },
+): string {
 	return new Intl.NumberFormat("en-IE", {
 		style: "currency",
 		currency: "EUR",
-		maximumFractionDigits: 0,
+		minimumFractionDigits: options?.showCents ? 2 : 0,
+		maximumFractionDigits: options?.showCents ? 2 : 0,
 	}).format(value);
 }
 

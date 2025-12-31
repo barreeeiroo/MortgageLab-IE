@@ -11,12 +11,18 @@ import {
 
 import lendersJson from "../../../data/lenders.json";
 import perksJson from "../../../data/perks.json";
-import ratesJson from "../../../data/rates.json";
+
+// Import per-lender rate files
+import aibRatesJson from "../../../data/rates/aib.json";
+import boiRatesJson from "../../../data/rates/boi.json";
 
 // Parse and validate data at import time
 export const perks: Perk[] = PerksFileSchema.parse(perksJson);
 export const lenders: Lender[] = LendersFileSchema.parse(lendersJson);
-export const rates: MortgageRate[] = RatesFileSchema.parse(ratesJson);
+
+// Aggregate all lender rates
+const allRatesJson = [...aibRatesJson, ...boiRatesJson];
+export const rates: MortgageRate[] = RatesFileSchema.parse(allRatesJson);
 
 // Create maps for quick lookups
 const perkMap = new Map<string, Perk>(perks.map((perk) => [perk.id, perk]));
