@@ -13,6 +13,7 @@ body:
         - Avant Money
         - Bank of Ireland
         - Credit Union Mortgages
+        - EBS
         - Permanent TSB
         - Other
     validations:

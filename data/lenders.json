@@ -24,6 +24,12 @@
 		"perks": []
 	},
 	{
+		"id": "ebs",
+		"name": "EBS",
+		"website": "https://www.ebs.ie/mortgages",
+		"perks": []
+	},
+	{
 		"id": "ptsb",
 		"name": "Permanent TSB",
 		"website": "https://www.permanenttsb.ie/mortgages/",

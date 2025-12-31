@@ -6,6 +6,7 @@ import { aibProvider } from "./providers/aib";
 import { avantProvider } from "./providers/avant";
 import { boiProvider } from "./providers/boi";
 import { cuProvider } from "./providers/cu";
+import { ebsProvider } from "./providers/ebs";
 import { ptsbProvider } from "./providers/ptsb";
 import type { LenderProvider } from "./types";
 
@@ -14,6 +15,7 @@ const providers: Record<string, LenderProvider> = {
 	avant: avantProvider,
 	boi: boiProvider,
 	cu: cuProvider,
+	ebs: ebsProvider,
 	ptsb: ptsbProvider,
 };
 
