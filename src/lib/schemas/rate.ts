@@ -11,14 +11,17 @@ export type RateType = z.infer<typeof RateTypeSchema>;
 
 export const MortgageRateSchema = z.object({
 	id: z.string(),
+	name: z.string(), // Human-readable rate name
 	lenderId: z.string(),
 	type: RateTypeSchema,
 	rate: z.number().positive(), // e.g., 3.45 for 3.45%
+	apr: z.number().positive().optional(), // Annual Percentage Rate
 	fixedTerm: z.number().int().positive().optional(), // Years, only for fixed rates
 
 	// Eligibility constraints
 	minLtv: z.number().min(0).max(100).default(0), // e.g., 0 for <60% bracket
 	maxLtv: z.number().min(0).max(100), // e.g., 90 for 90% LTV
+	minLoan: z.number().positive().optional(), // Minimum loan amount (e.g., for HVM products)
 	buyerTypes: z.array(BuyerTypeSchema).min(1),
 	berEligible: z.array(BerRatingSchema).optional(), // If undefined, all BER ratings eligible
 
