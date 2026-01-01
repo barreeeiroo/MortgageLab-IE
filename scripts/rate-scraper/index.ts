@@ -91,12 +91,9 @@ async function readExistingRatesFile(
 async function scrapeProvider(
 	lenderId: string,
 	provider: LenderProvider,
-	jsonFormat: boolean,
 ): Promise<LenderResult> {
-	if (!jsonFormat) {
-		console.log(`Scraping rates from ${provider.name}...`);
-		console.log(`URL: ${provider.url}\n`);
-	}
+	console.log(`Scraping rates from ${provider.name}...`);
+	console.log(`URL: ${provider.url}\n`);
 
 	try {
 		const newRates = await provider.scrape();
@@ -119,25 +116,19 @@ async function scrapeProvider(
 			// First time scraping this lender
 			lastUpdatedAt = now;
 			diff = { added: newRates.length, removed: 0, updated: 0 };
-			if (!jsonFormat) {
-				console.log("No existing rates file found, creating new one");
-			}
+			console.log("No existing rates file found, creating new one");
 		} else if (existing.ratesHash !== newHash) {
 			// Rates have changed
 			lastUpdatedAt = now;
 			diff = computeRateDiff(existing.rates, newRates);
-			if (!jsonFormat) {
-				console.log("Rates have CHANGED since last scrape");
-				console.log(`  Old hash: ${existing.ratesHash}`);
-				console.log(`  New hash: ${newHash}`);
-			}
+			console.log("Rates have CHANGED since last scrape");
+			console.log(`  Old hash: ${existing.ratesHash}`);
+			console.log(`  New hash: ${newHash}`);
 		} else {
 			// Rates unchanged, keep the old timestamp
 			lastUpdatedAt = existing.lastUpdatedAt;
-			if (!jsonFormat) {
-				console.log("Rates UNCHANGED since last scrape");
-				console.log(`  Hash: ${newHash}`);
-			}
+			console.log("Rates UNCHANGED since last scrape");
+			console.log(`  Hash: ${newHash}`);
 		}
 
 		const ratesFile: RatesFile = {
@@ -150,21 +141,17 @@ async function scrapeProvider(
 
 		await writeFile(outputPath, JSON.stringify(ratesFile, null, "\t"));
 
-		if (!jsonFormat) {
-			console.log(`\nSuccessfully scraped ${newRates.length} rates`);
-			console.log(`Last scraped at: ${ratesFile.lastScrapedAt}`);
-			console.log(
-				`Last updated at: ${ratesFile.lastUpdatedAt}${diff ? " (UPDATED)" : ""}`,
-			);
-			console.log(`Rates hash: ${ratesFile.ratesHash}`);
-			console.log(`Output written to: ${outputPath}`);
-		}
+		console.log(`\nSuccessfully scraped ${newRates.length} rates`);
+		console.log(`Last scraped at: ${ratesFile.lastScrapedAt}`);
+		console.log(
+			`Last updated at: ${ratesFile.lastUpdatedAt}${diff ? " (UPDATED)" : ""}`,
+		);
+		console.log(`Rates hash: ${ratesFile.ratesHash}`);
+		console.log(`Output written to: ${outputPath}`);
 
 		return { lenderId, success: true, diff };
 	} catch (error) {
-		if (!jsonFormat) {
-			console.error("Failed to scrape rates:", error);
-		}
+		console.error("Failed to scrape rates:", error);
 		return { lenderId, success: false, diff: null };
 	}
 }
@@ -192,8 +179,7 @@ function formatCommitDescription(results: LenderResult[]): string {
 async function main() {
 	const args = process.argv.slice(2);
 	const hasAll = args.includes("--all");
-	const formatArg = args.find((a) => a.startsWith("--format="));
-	const format = formatArg?.split("=")[1] ?? "text";
+	const writeUpdates = args.includes("--write-updates");
 	const lenderId = args.find((a) => !a.startsWith("--"));
 
 	if (hasAll && lenderId) {
@@ -201,38 +187,34 @@ async function main() {
 		process.exit(1);
 	}
 
-	const quiet = format !== "text";
-
 	if (hasAll) {
 		// Scrape all providers sequentially
-		if (!quiet) {
-			console.log("Scraping all providers...\n");
-		}
+		console.log("Scraping all providers...\n");
 		const results: LenderResult[] = [];
 
 		for (const [lenderId, provider] of Object.entries(providers)) {
-			if (!quiet) {
-				console.log(`\n${"=".repeat(60)}`);
-			}
-			const result = await scrapeProvider(lenderId, provider, quiet);
+			console.log(`\n${"=".repeat(60)}`);
+			const result = await scrapeProvider(lenderId, provider);
 			results.push(result);
 		}
 
-		if (format === "json") {
-			console.log(JSON.stringify(results));
-		} else if (format === "commit") {
-			console.log(formatCommitDescription(results));
-		} else {
-			// Print summary
-			console.log(`\n${"=".repeat(60)}`);
-			console.log("SUMMARY");
-			console.log("=".repeat(60));
-			const successful = results.filter((r) => r.success);
-			const failed = results.filter((r) => !r.success);
-			console.log(`Successful: ${successful.length}/${results.length}`);
-			if (failed.length > 0) {
-				console.log(`Failed: ${failed.map((r) => r.lenderId).join(", ")}`);
-			}
+		// Print summary
+		console.log(`\n${"=".repeat(60)}`);
+		console.log("SUMMARY");
+		console.log("=".repeat(60));
+		const successful = results.filter((r) => r.success);
+		const failed = results.filter((r) => !r.success);
+		console.log(`Successful: ${successful.length}/${results.length}`);
+		if (failed.length > 0) {
+			console.log(`Failed: ${failed.map((r) => r.lenderId).join(", ")}`);
+		}
+
+		// Write updates file if requested
+		if (writeUpdates) {
+			const updatesPath = join(import.meta.dir, "../../updates.txt");
+			const description = formatCommitDescription(results);
+			await writeFile(updatesPath, description);
+			console.log(`\nUpdates written to: ${updatesPath}`);
 		}
 
 		if (results.some((r) => !r.success)) {
@@ -243,7 +225,7 @@ async function main() {
 
 	if (!lenderId) {
 		console.error("Usage: bun run rates:scrape <lender-id>");
-		console.error("       bun run rates:scrape --all [--format=json|commit]");
+		console.error("       bun run rates:scrape --all [--write-updates]");
 		console.error(`Available lenders: ${Object.keys(providers).join(", ")}`);
 		process.exit(1);
 	}
@@ -256,12 +238,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	const result = await scrapeProvider(lenderId, provider, quiet);
-	if (format === "json") {
-		console.log(JSON.stringify([result]));
-	} else if (format === "commit") {
-		console.log(formatCommitDescription([result]));
-	}
+	const result = await scrapeProvider(lenderId, provider);
 	if (!result.success) {
 		process.exit(1);
 	}

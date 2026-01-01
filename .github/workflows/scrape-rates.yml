@@ -22,12 +22,7 @@ jobs:
         run: bun install
 
       - name: Scrape all rates
-        id: scrape
-        run: |
-          DESCRIPTION=$(bun run rates:scrape-all --format=commit)
-          echo "description<<EOF" >> $GITHUB_OUTPUT
-          echo "$DESCRIPTION" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+        run: bun run rates:scrape-all --write-updates
 
       - name: Commit changes
         run: |
@@ -37,9 +32,8 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
+            DESCRIPTION=$(cat updates.txt)
             printf -v MSG "Sync Mortgage Rates\n\n%s" "$DESCRIPTION"
             git commit -m "$MSG"
             git push
           fi
-        env:
-          DESCRIPTION: ${{ steps.scrape.outputs.description }}
