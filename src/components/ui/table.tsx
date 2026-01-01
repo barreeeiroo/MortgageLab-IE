@@ -1,4 +1,4 @@
-import type * as React from "react";
+import * as React from "react";
 
 import { cn } from "@/lib/utils/index";
 
@@ -63,9 +63,13 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
 	);
 }
 
-function TableHead({ className, ...props }: React.ComponentProps<"th">) {
+const TableHead = React.forwardRef<
+	HTMLTableCellElement,
+	React.ComponentProps<"th">
+>(({ className, ...props }, ref) => {
 	return (
 		<th
+			ref={ref}
 			data-slot="table-head"
 			className={cn(
 				"text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
@@ -74,7 +78,8 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
 			{...props}
 		/>
 	);
-}
+});
+TableHead.displayName = "TableHead";
 
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
 	return (

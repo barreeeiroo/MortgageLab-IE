@@ -22,7 +22,8 @@ export type {
 };
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useCallback, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import {
 	Select,
@@ -140,6 +141,103 @@ export function DataTable<TData, TValue>({
 	const pageSize = table.getState().pagination.pageSize;
 	const pageCount = table.getPageCount();
 
+	// Track sticky column widths for calculating left offsets
+	const stickyWidthsRef = useRef<Map<string, number>>(new Map());
+	const [stickyOffsets, setStickyOffsets] = useState<Map<string, number>>(
+		new Map(),
+	);
+
+	// Find sticky column IDs and the last one for shadow styling
+	const stickyLeftColumnIds = columns
+		.filter((col) => (col.meta as { sticky?: boolean } | undefined)?.sticky)
+		.map((col) =>
+			"accessorKey" in col
+				? String(col.accessorKey)
+				: "id" in col
+					? String(col.id)
+					: "",
+		);
+	const lastStickyLeftColumnId =
+		stickyLeftColumnIds[stickyLeftColumnIds.length - 1];
+
+	// Find sticky-right column IDs
+	const stickyRightColumnIds = columns
+		.filter(
+			(col) => (col.meta as { stickyRight?: boolean } | undefined)?.stickyRight,
+		)
+		.map((col) =>
+			"accessorKey" in col
+				? String(col.accessorKey)
+				: "id" in col
+					? String(col.id)
+					: "",
+		);
+	const firstStickyRightColumnId = stickyRightColumnIds[0];
+
+	// Callback to measure sticky column widths
+	const measureStickyColumn = useCallback(
+		(columnId: string, element: HTMLTableCellElement | null) => {
+			if (!element) return;
+			const width = element.offsetWidth;
+			const currentWidth = stickyWidthsRef.current.get(columnId);
+			if (currentWidth !== width) {
+				stickyWidthsRef.current.set(columnId, width);
+				// Recalculate all offsets
+				const newOffsets = new Map<string, number>();
+				let cumulative = 0;
+				for (const col of columns) {
+					const colId =
+						"accessorKey" in col
+							? String(col.accessorKey)
+							: "id" in col
+								? String(col.id)
+								: "";
+					const meta = col.meta as { sticky?: boolean } | undefined;
+					if (meta?.sticky) {
+						newOffsets.set(colId, cumulative);
+						cumulative += stickyWidthsRef.current.get(colId) ?? 0;
+					}
+				}
+				setStickyOffsets(newOffsets);
+			}
+		},
+		[columns],
+	);
+
+	// Helper to get sticky styles for a column
+	const getStickyStyles = (
+		columnId: string,
+		meta: { sticky?: boolean; stickyRight?: boolean } | undefined,
+		isHeader: boolean,
+	): React.CSSProperties | undefined => {
+		if (meta?.sticky) {
+			const left = stickyOffsets.get(columnId) ?? 0;
+			return {
+				position: "sticky",
+				left,
+				zIndex: isHeader ? 2 : 1,
+			};
+		}
+		if (meta?.stickyRight) {
+			return {
+				position: "sticky",
+				right: 0,
+				zIndex: isHeader ? 2 : 1,
+			};
+		}
+		return undefined;
+	};
+
+	// Check if column is the last sticky-left column (for shadow on right)
+	const isLastStickyLeftColumn = (columnId: string): boolean => {
+		return columnId === lastStickyLeftColumnId;
+	};
+
+	// Check if column is the first sticky-right column (for shadow on left)
+	const isFirstStickyRightColumn = (columnId: string): boolean => {
+		return columnId === firstStickyRightColumnId;
+	};
+
 	// Generate page numbers to display (with ellipsis for many pages)
 	const getPageNumbers = (): (number | "ellipsis")[] => {
 		const pages: (number | "ellipsis")[] = [];
@@ -187,16 +285,48 @@ export function DataTable<TData, TValue>({
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<TableHead key={header.id}>
-									{header.isPlaceholder
-										? null
-										: flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-											)}
-								</TableHead>
-							))}
+							{headerGroup.headers.map((header) => {
+								const meta = header.column.columnDef.meta as
+									| { sticky?: boolean; stickyRight?: boolean }
+									| undefined;
+								const isSticky = meta?.sticky || meta?.stickyRight;
+								const isLastStickyLeft = isLastStickyLeftColumn(
+									header.column.id,
+								);
+								const isFirstStickyRight = isFirstStickyRightColumn(
+									header.column.id,
+								);
+								const stickyStyles = getStickyStyles(
+									header.column.id,
+									meta,
+									true,
+								);
+								return (
+									<TableHead
+										key={header.id}
+										ref={
+											meta?.sticky
+												? (el) => measureStickyColumn(header.column.id, el)
+												: undefined
+										}
+										className={cn(
+											isSticky && "bg-background",
+											isLastStickyLeft &&
+												"shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]",
+											isFirstStickyRight &&
+												"shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.1)]",
+										)}
+										style={stickyStyles}
+									>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
+									</TableHead>
+								);
+							})}
 						</TableRow>
 					))}
 				</TableHeader>
@@ -206,12 +336,44 @@ export function DataTable<TData, TValue>({
 							<TableRow
 								key={row.id}
 								data-state={row.getIsSelected() && "selected"}
+								className="group"
 							>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
-								))}
+								{row.getVisibleCells().map((cell) => {
+									const meta = cell.column.columnDef.meta as
+										| { sticky?: boolean; stickyRight?: boolean }
+										| undefined;
+									const isSticky = meta?.sticky || meta?.stickyRight;
+									const isLastStickyLeft = isLastStickyLeftColumn(
+										cell.column.id,
+									);
+									const isFirstStickyRight = isFirstStickyRightColumn(
+										cell.column.id,
+									);
+									const stickyStyles = getStickyStyles(
+										cell.column.id,
+										meta,
+										false,
+									);
+									return (
+										<TableCell
+											key={cell.id}
+											className={cn(
+												isSticky &&
+													"bg-background transition-colors group-hover:bg-muted",
+												isLastStickyLeft &&
+													"shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]",
+												isFirstStickyRight &&
+													"shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.1)]",
+											)}
+											style={stickyStyles}
+										>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</TableCell>
+									);
+								})}
 							</TableRow>
 						))
 					) : (

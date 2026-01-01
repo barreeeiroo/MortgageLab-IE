@@ -33,6 +33,7 @@ import { getMissingVariableRateUrl } from "@/lib/constants";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
 import { ColumnVisibilityToggle } from "../ui/column-visibility-toggle";
 import {
 	type ColumnFiltersState,
@@ -283,6 +284,7 @@ function createColumns(
 	lenders: Lender[],
 	perks: Perk[],
 	inputValues: RatesInputValues,
+	onProductClick: (rate: RateRow) => void,
 ): ColumnDef<RateRow>[] {
 	const availableFixedTerms = getAvailableFixedTerms(rates);
 	const periodOptions = availableFixedTerms.map((term) => ({
@@ -321,14 +323,18 @@ function createColumns(
 			},
 			filterFn: arrayIncludesFilter,
 			enableHiding: false,
+			meta: { sticky: true },
 		},
 		{
 			accessorKey: "name",
 			header: "Product",
 			cell: ({ row }) => (
-				<div className="flex items-start gap-1.5">
+				<div
+					className="flex items-start gap-1.5 cursor-pointer"
+					onClick={() => onProductClick(row.original)}
+				>
 					<div>
-						<p className="font-medium">{row.original.name}</p>
+						<p className="font-medium hover:underline">{row.original.name}</p>
 						<p className="text-xs text-muted-foreground">
 							LTV {row.original.minLtv > 0 ? `${row.original.minLtv}-` : "≤"}
 							{row.original.maxLtv}%
@@ -347,6 +353,7 @@ function createColumns(
 				</div>
 			),
 			enableHiding: false,
+			meta: { sticky: true },
 		},
 		{
 			accessorKey: "perks",
@@ -598,6 +605,22 @@ function createColumns(
 				return a - b;
 			},
 		},
+		{
+			id: "actions",
+			header: () => <div className="text-center">Compare</div>,
+			cell: ({ row }) => (
+				<div className="flex justify-center">
+					<Checkbox
+						checked={row.getIsSelected()}
+						onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+						aria-label="Select row for comparison"
+					/>
+				</div>
+			),
+			enableHiding: false,
+			enableSorting: false,
+			meta: { stickyRight: true },
+		},
 	];
 }
 
@@ -623,9 +646,14 @@ export function RatesTable({
 	const [columnVisibility, setColumnVisibility] =
 		useLocalStorage<VisibilityState>(STORAGE_KEYS.columns, DEFAULT_VISIBILITY);
 	const [copied, setCopied] = useState(false);
+	const [selectedRate, setSelectedRate] = useState<RateRow | null>(null);
+
+	const handleProductClick = (rate: RateRow) => {
+		setSelectedRate(rate);
+	};
 
 	const columns = useMemo(
-		() => createColumns(rates, lenders, perks, inputValues),
+		() => createColumns(rates, lenders, perks, inputValues, handleProductClick),
 		[rates, lenders, perks, inputValues],
 	);
 
@@ -705,6 +733,7 @@ export function RatesTable({
 	}
 
 	return (
+		<>
 		<DataTable
 			columns={columns}
 			data={data}
@@ -783,5 +812,21 @@ export function RatesTable({
 				);
 			}}
 		/>
+
+		{/* Rate Details Modal */}
+		<Dialog open={selectedRate !== null} onOpenChange={(open) => !open && setSelectedRate(null)}>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>{selectedRate?.name}</DialogTitle>
+					<DialogDescription>
+						View detailed information about this mortgage rate.
+					</DialogDescription>
+				</DialogHeader>
+				<div className="py-4 text-muted-foreground text-center">
+					Coming soon...
+				</div>
+			</DialogContent>
+		</Dialog>
+		</>
 	);
 }
