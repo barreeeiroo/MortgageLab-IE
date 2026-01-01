@@ -13,8 +13,9 @@
 		"format": "biome format --write .",
 		"test": "vitest",
 		"test:run": "vitest run --passWithNoTests",
-		"scrape:rates": "bun run scripts/rate-scraper/index.ts",
-		"scrape:validate": "bun run scripts/rate-scraper/validator.ts"
+		"rates:scrape": "bun run scripts/rate-scraper/index.ts",
+		"rates:scrape-all": "bun run scripts/rate-scraper/index.ts --all",
+		"rates:validate": "bun run scripts/rate-scraper/validator.ts"
 	},
 	"dependencies": {
 		"@astrojs/react": "^4.4.2",

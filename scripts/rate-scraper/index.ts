@@ -47,23 +47,7 @@ async function readExistingRatesFile(
 	}
 }
 
-async function main() {
-	const lenderId = process.argv[2];
-
-	if (!lenderId) {
-		console.error("Usage: bun run scrape:rates <lender-id>");
-		console.error(`Available lenders: ${Object.keys(providers).join(", ")}`);
-		process.exit(1);
-	}
-
-	const provider = providers[lenderId];
-
-	if (!provider) {
-		console.error(`Unknown lender: ${lenderId}`);
-		console.error(`Available lenders: ${Object.keys(providers).join(", ")}`);
-		process.exit(1);
-	}
-
+async function scrapeProvider(lenderId: string, provider: LenderProvider): Promise<boolean> {
 	console.log(`Scraping rates from ${provider.name}...`);
 	console.log(`URL: ${provider.url}\n`);
 
@@ -119,8 +103,65 @@ async function main() {
 		);
 		console.log(`Rates hash: ${ratesFile.ratesHash}`);
 		console.log(`Output written to: ${outputPath}`);
+		return true;
 	} catch (error) {
 		console.error("Failed to scrape rates:", error);
+		return false;
+	}
+}
+
+async function main() {
+	const args = process.argv.slice(2);
+	const hasAll = args.includes("--all");
+	const lenderId = args.find((a) => !a.startsWith("--"));
+
+	if (hasAll && lenderId) {
+		console.error("Error: Cannot use --all with a specific lender");
+		process.exit(1);
+	}
+
+	if (hasAll) {
+		// Scrape all providers sequentially
+		console.log("Scraping all providers...\n");
+		const results: { lenderId: string; success: boolean }[] = [];
+
+		for (const [lenderId, provider] of Object.entries(providers)) {
+			console.log(`\n${"=".repeat(60)}`);
+			const success = await scrapeProvider(lenderId, provider);
+			results.push({ lenderId, success });
+		}
+
+		// Print summary
+		console.log(`\n${"=".repeat(60)}`);
+		console.log("SUMMARY");
+		console.log("=".repeat(60));
+		const successful = results.filter((r) => r.success);
+		const failed = results.filter((r) => !r.success);
+		console.log(`Successful: ${successful.length}/${results.length}`);
+		if (failed.length > 0) {
+			console.log(`Failed: ${failed.map((r) => r.lenderId).join(", ")}`);
+			process.exit(1);
+		}
+		return;
+	}
+
+	if (!lenderId) {
+		console.error("Usage: bun run rates:scrape <lender-id>");
+		console.error("       bun run rates:scrape --all");
+		console.error(`Available lenders: ${Object.keys(providers).join(", ")}`);
+		process.exit(1);
+	}
+
+	const provider = providers[lenderId];
+
+	if (!provider) {
+		console.error(`Unknown lender: ${lenderId}`);
+		console.error(`Available lenders: ${Object.keys(providers).join(", ")}`);
+		process.exit(1);
+	}
+
+	const success = await scrapeProvider(lenderId, provider);
+	if (!success) {
 		process.exit(1);
 	}
 }
