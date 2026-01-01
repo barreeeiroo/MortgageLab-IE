@@ -211,7 +211,7 @@ async function main() {
 
 		// Write updates file if requested
 		if (writeUpdates) {
-			const updatesPath = join(import.meta.dir, "../../updates.txt");
+			const updatesPath = join(import.meta.dir, "../../data/rates/updates.txt");
 			const description = formatCommitDescription(results);
 			await writeFile(updatesPath, description);
 			console.log(`\nUpdates written to: ${updatesPath}`);
