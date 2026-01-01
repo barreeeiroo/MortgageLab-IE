@@ -4,6 +4,15 @@ import { useRates } from "@/lib/hooks";
 import { DEFAULT_MAX_TERM } from "@/lib/schemas/lender";
 import { loadRatesForm, saveRatesForm } from "@/lib/storage";
 import { parseCurrency } from "@/lib/utils";
+import { clearRatesShareParam, parseRatesShareState } from "./share";
+
+// Storage keys for table state (must match RatesTable)
+const TABLE_STORAGE_KEYS = {
+	columns: "rates-table-columns",
+	sorting: "rates-table-sorting",
+	filters: "rates-table-filters",
+} as const;
+
 import {
 	RatesInput,
 	type RatesInputValues,
@@ -53,22 +62,53 @@ export function RatesCalculator() {
 		prevModeRef.current = values.mode;
 	}, [values.mode, isRemortgage, values.buyerType]);
 
-	// Load from localStorage on mount
+	// Load from URL params (priority) or localStorage on mount
 	useEffect(() => {
-		const saved = loadRatesForm();
-		const hashMode = getModeFromHash();
+		const sharedState = parseRatesShareState();
 
-		setValues((v) => ({
-			...v,
-			mode: hashMode ?? saved.mode ?? v.mode,
-			propertyValue: saved.propertyValue ?? v.propertyValue,
-			mortgageAmount: saved.mortgageAmount ?? v.mortgageAmount,
-			monthlyRepayment: saved.monthlyRepayment ?? v.monthlyRepayment,
-			mortgageTerm: saved.mortgageTerm ?? v.mortgageTerm,
-			berRating: saved.berRating ?? v.berRating,
-			buyerType: saved.buyerType ?? v.buyerType,
-			currentLender: saved.currentLender ?? v.currentLender,
-		}));
+		if (sharedState) {
+			// URL params take priority - load shared state
+			setValues(sharedState.input);
+
+			// Save table state to localStorage so RatesTable picks it up
+			if (Object.keys(sharedState.table.columnVisibility).length > 0) {
+				localStorage.setItem(
+					TABLE_STORAGE_KEYS.columns,
+					JSON.stringify(sharedState.table.columnVisibility),
+				);
+			}
+			if (sharedState.table.columnFilters.length > 0) {
+				localStorage.setItem(
+					TABLE_STORAGE_KEYS.filters,
+					JSON.stringify(sharedState.table.columnFilters),
+				);
+			}
+			if (sharedState.table.sorting.length > 0) {
+				localStorage.setItem(
+					TABLE_STORAGE_KEYS.sorting,
+					JSON.stringify(sharedState.table.sorting),
+				);
+			}
+
+			// Clear URL params after loading
+			clearRatesShareParam();
+		} else {
+			// Fall back to localStorage
+			const saved = loadRatesForm();
+			const hashMode = getModeFromHash();
+
+			setValues((v) => ({
+				...v,
+				mode: hashMode ?? saved.mode ?? v.mode,
+				propertyValue: saved.propertyValue ?? v.propertyValue,
+				mortgageAmount: saved.mortgageAmount ?? v.mortgageAmount,
+				monthlyRepayment: saved.monthlyRepayment ?? v.monthlyRepayment,
+				mortgageTerm: saved.mortgageTerm ?? v.mortgageTerm,
+				berRating: saved.berRating ?? v.berRating,
+				buyerType: saved.buyerType ?? v.buyerType,
+				currentLender: saved.currentLender ?? v.currentLender,
+			}));
+		}
 	}, []);
 
 	// Update URL hash when mode changes
@@ -198,6 +238,7 @@ export function RatesCalculator() {
 						mortgageAmount={mortgage}
 						mortgageTerm={mortgageTerm}
 						ltv={ltv}
+						inputValues={values}
 					/>
 				)
 			)}

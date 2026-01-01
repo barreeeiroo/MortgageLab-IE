@@ -123,3 +123,30 @@ export function calculateMonthlyFollowUp(
 		remainingMonths,
 	);
 }
+
+/**
+ * Calculate the total amount repayable over the full mortgage term.
+ * For fixed rates, includes both the fixed period and follow-up variable period.
+ *
+ * @param rate - The mortgage rate
+ * @param monthlyPayment - Monthly payment during initial period
+ * @param monthlyFollowUp - Monthly payment during follow-up period (for fixed rates)
+ * @param totalTermYears - Total mortgage term in years
+ * @returns Total amount repayable over the full term
+ */
+export function calculateTotalRepayable(
+	rate: MortgageRate,
+	monthlyPayment: number,
+	monthlyFollowUp: number | undefined,
+	totalTermYears: number,
+): number {
+	const totalMonths = totalTermYears * 12;
+
+	if (rate.type === "fixed" && rate.fixedTerm && monthlyFollowUp) {
+		const fixedMonths = rate.fixedTerm * 12;
+		const remainingMonths = totalMonths - fixedMonths;
+		return monthlyPayment * fixedMonths + monthlyFollowUp * remainingMonths;
+	}
+
+	return monthlyPayment * totalMonths;
+}

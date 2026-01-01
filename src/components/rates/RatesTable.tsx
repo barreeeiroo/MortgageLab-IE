@@ -3,10 +3,12 @@ import {
 	ArrowDown,
 	ArrowUp,
 	ArrowUpDown,
+	Check,
 	ListFilter,
+	Share2,
 	TriangleAlert,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
 	getAvailableFixedTerms,
 	getLender,
@@ -18,6 +20,7 @@ import {
 	calculateMonthlyFollowUp,
 	calculateMonthlyPayment,
 	calculateRemainingBalance,
+	calculateTotalRepayable,
 	findVariableRate,
 } from "@/lib/mortgage";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -38,7 +41,9 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import type { RatesInputValues } from "./RatesInput";
 import { RateUpdatesDialog } from "./RateUpdatesDialog";
+import { generateRatesShareUrl } from "./share";
 
 interface RatesMetadata {
 	lenderId: string;
@@ -54,12 +59,14 @@ interface RatesTableProps {
 	mortgageAmount: number;
 	mortgageTerm: number;
 	ltv: number;
+	inputValues: RatesInputValues;
 }
 
 interface RateRow extends MortgageRate {
 	monthlyPayment: number;
 	followUpRate?: MortgageRate;
 	monthlyFollowUp?: number;
+	totalRepayable?: number;
 }
 
 // Custom filter function for array-based multi-select filtering
@@ -217,6 +224,7 @@ const COLUMN_LABELS: Record<string, string> = {
 	monthlyPayment: "Monthly",
 	followUpProduct: "Follow-Up Product",
 	monthlyFollowUp: "Follow-Up Monthly",
+	totalRepayable: "Total Repayable",
 };
 
 const DEFAULT_VISIBILITY: VisibilityState = {
@@ -412,6 +420,24 @@ function createColumns(
 				return a - b;
 			},
 		},
+		{
+			accessorKey: "totalRepayable",
+			header: ({ column }) => (
+				<SortableHeader column={column} title="Total Repayable" align="right" />
+			),
+			cell: ({ row }) => (
+				<div className="text-right">
+					{row.original.totalRepayable
+						? formatCurrency(row.original.totalRepayable, { showCents: true })
+						: "—"}
+				</div>
+			),
+			sortingFn: (rowA, rowB) => {
+				const a = rowA.original.totalRepayable ?? 0;
+				const b = rowB.original.totalRepayable ?? 0;
+				return a - b;
+			},
+		},
 	];
 }
 
@@ -423,6 +449,7 @@ export function RatesTable({
 	mortgageAmount,
 	mortgageTerm,
 	ltv,
+	inputValues,
 }: RatesTableProps) {
 	const [sorting, setSorting] = useLocalStorage<SortingState>(
 		STORAGE_KEYS.sorting,
@@ -434,6 +461,7 @@ export function RatesTable({
 	);
 	const [columnVisibility, setColumnVisibility] =
 		useLocalStorage<VisibilityState>(STORAGE_KEYS.columns, DEFAULT_VISIBILITY);
+	const [copied, setCopied] = useState(false);
 
 	const columns = useMemo(
 		() => createColumns(rates, lenders),
@@ -464,18 +492,29 @@ export function RatesTable({
 					rate.type === "fixed"
 						? findVariableRate(rate, allRates, followUpLtv)
 						: undefined;
+
+				const totalMonths = mortgageTerm * 12;
+				const monthlyPayment = calculateMonthlyPayment(
+					mortgageAmount,
+					rate.rate,
+					totalMonths,
+				);
+				const monthlyFollowUp = calculateMonthlyFollowUp(
+					rate,
+					followUpRate,
+					mortgageAmount,
+					mortgageTerm,
+				);
+
 				return {
 					...rate,
-					monthlyPayment: calculateMonthlyPayment(
-						mortgageAmount,
-						rate.rate,
-						mortgageTerm * 12,
-					),
+					monthlyPayment,
 					followUpRate,
-					monthlyFollowUp: calculateMonthlyFollowUp(
+					monthlyFollowUp,
+					totalRepayable: calculateTotalRepayable(
 						rate,
-						followUpRate,
-						mortgageAmount,
+						monthlyPayment,
+						monthlyFollowUp,
 						mortgageTerm,
 					),
 				};
@@ -502,12 +541,49 @@ export function RatesTable({
 			onColumnFiltersChange={setColumnFilters}
 			columnVisibility={columnVisibility}
 			onColumnVisibilityChange={setColumnVisibility}
-			toolbar={(table) => (
-				<div className="flex justify-between">
-					<RateUpdatesDialog lenders={lenders} ratesMetadata={ratesMetadata} />
-					<ColumnVisibilityToggle table={table} columnLabels={COLUMN_LABELS} />
-				</div>
-			)}
+			toolbar={(table) => {
+				const handleShare = async () => {
+					const url = generateRatesShareUrl({
+						input: inputValues,
+						table: {
+							columnVisibility,
+							columnFilters,
+							sorting,
+						},
+					});
+					await navigator.clipboard.writeText(url);
+					setCopied(true);
+					setTimeout(() => setCopied(false), 2000);
+				};
+
+				return (
+					<div className="flex justify-between">
+						<ColumnVisibilityToggle
+							table={table}
+							columnLabels={COLUMN_LABELS}
+						/>
+						<div className="flex gap-2">
+							<RateUpdatesDialog
+								lenders={lenders}
+								ratesMetadata={ratesMetadata}
+							/>
+							<Button
+								variant="outline"
+								size="sm"
+								className="h-8 gap-1.5"
+								onClick={handleShare}
+							>
+								{copied ? (
+									<Check className="h-4 w-4" />
+								) : (
+									<Share2 className="h-4 w-4" />
+								)}
+								{copied ? "Copied!" : "Share"}
+							</Button>
+						</div>
+					</div>
+				);
+			}}
 		/>
 	);
 }

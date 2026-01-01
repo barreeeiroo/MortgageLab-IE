@@ -7,5 +7,6 @@ export {
 	calculateMonthlyFollowUp,
 	calculateMonthlyPayment,
 	calculateRemainingBalance,
+	calculateTotalRepayable,
 	findVariableRate,
 } from "./payments";
