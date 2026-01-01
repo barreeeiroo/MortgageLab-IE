@@ -60,6 +60,7 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { RateInfoModal } from "./RateInfoModal";
 import { RateUpdatesDialog } from "./RateUpdatesDialog";
 import { generateRatesShareUrl } from "./share";
 
@@ -858,22 +859,21 @@ export function RatesTable({
 			/>
 
 			{/* Rate Details Modal */}
-			<Dialog
+			<RateInfoModal
+				rate={selectedRate}
+				lender={
+					selectedRate ? getLender(lenders, selectedRate.lenderId) : undefined
+				}
+				allRates={allRates}
+				perks={perks}
+				combinedPerks={selectedRate?.combinedPerks ?? []}
+				mortgageAmount={mortgageAmount}
+				mortgageTerm={mortgageTerm}
+				ltv={ltv}
+				berRating={inputValues.berRating}
 				open={selectedRate !== null}
 				onOpenChange={(open) => !open && setSelectedRate(null)}
-			>
-				<DialogContent>
-					<DialogHeader>
-						<DialogTitle>{selectedRate?.name}</DialogTitle>
-						<DialogDescription>
-							View detailed information about this mortgage rate.
-						</DialogDescription>
-					</DialogHeader>
-					<div className="py-4 text-muted-foreground text-center">
-						Coming soon...
-					</div>
-				</DialogContent>
-			</Dialog>
+			/>
 		</>
 	);
 }

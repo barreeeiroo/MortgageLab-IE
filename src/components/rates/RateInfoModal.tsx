@@ -1,0 +1,569 @@
+import { Coins, type LucideIcon, PiggyBank, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+	DEFAULT_MAX_TERM,
+	type Lender,
+	type MortgageRate,
+	type Perk,
+	resolvePerks,
+} from "@/lib/data";
+import {
+	calculateAprc,
+	calculateMonthlyFollowUp,
+	calculateMonthlyPayment,
+	calculateRemainingBalance,
+	calculateTotalRepayable,
+	findVariableRate,
+} from "@/lib/mortgage";
+import type { AprcConfig } from "@/lib/mortgage/aprc";
+import { formatCurrency } from "@/lib/utils";
+import { LenderLogo } from "../LenderLogo";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "../ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+
+// Map perk icon names to lucide components
+const PERK_ICONS: Record<string, LucideIcon> = {
+	PiggyBank,
+	Coins,
+};
+
+interface RateInfoModalProps {
+	rate: MortgageRate | null;
+	lender: Lender | undefined;
+	allRates: MortgageRate[];
+	perks: Perk[];
+	combinedPerks: string[];
+	mortgageAmount: number;
+	mortgageTerm: number;
+	ltv: number;
+	berRating?: string;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+}
+
+interface RateCalculations {
+	monthlyPayment: number;
+	followUpRate?: MortgageRate;
+	followUpLtv: number;
+	monthlyFollowUp?: number;
+	remainingBalance?: number;
+	remainingBalancePct?: number;
+	totalRepayable: number;
+	costOfCredit: number;
+	costOfCreditPct: number;
+	indicativeAprc?: number;
+	followOnTerm?: number;
+}
+
+/**
+ * Generate available term options based on current term and lender maxTerm
+ */
+function getTermOptions(
+	currentTerm: number,
+	maxTerm: number,
+): { value: number; label: string }[] {
+	const options: number[] = [];
+
+	// Always include current term
+	options.push(currentTerm);
+
+	if (currentTerm === 5) {
+		// If 5, show 10 and 15
+		options.push(10, 15);
+	} else if (currentTerm >= maxTerm) {
+		// If at max (35 or 40), show max-5 and max-10
+		options.push(maxTerm - 5, maxTerm - 10);
+	} else {
+		// Otherwise show ±5
+		if (currentTerm - 5 >= 5) {
+			options.push(currentTerm - 5);
+		}
+		if (currentTerm + 5 <= maxTerm) {
+			options.push(currentTerm + 5);
+		}
+	}
+
+	// Sort and dedupe
+	const uniqueOptions = [...new Set(options)].sort((a, b) => a - b);
+
+	return uniqueOptions.map((term) => ({
+		value: term,
+		label: `${term} years`,
+	}));
+}
+
+/**
+ * Calculate all rate info for a given term
+ */
+function calculateRateInfo(
+	rate: MortgageRate,
+	allRates: MortgageRate[],
+	mortgageAmount: number,
+	termYears: number,
+	ltv: number,
+	berRating?: string,
+): RateCalculations {
+	const totalMonths = termYears * 12;
+
+	// Calculate LTV after fixed term ends
+	let followUpLtv = ltv;
+	let remainingBalance: number | undefined;
+
+	if (rate.type === "fixed" && rate.fixedTerm) {
+		const fixedMonths = rate.fixedTerm * 12;
+		remainingBalance = calculateRemainingBalance(
+			mortgageAmount,
+			rate.rate,
+			totalMonths,
+			fixedMonths,
+		);
+		// Remaining LTV = remainingBalance / propertyValue * 100
+		// propertyValue = mortgageAmount / (ltv / 100)
+		followUpLtv = (remainingBalance / mortgageAmount) * ltv;
+	}
+
+	// Find follow-up variable rate
+	const followUpRate =
+		rate.type === "fixed"
+			? findVariableRate(
+					rate,
+					allRates,
+					followUpLtv,
+					berRating as Parameters<typeof findVariableRate>[3],
+				)
+			: undefined;
+
+	// Calculate monthly payment
+	const monthlyPayment = calculateMonthlyPayment(
+		mortgageAmount,
+		rate.rate,
+		totalMonths,
+	);
+
+	// Calculate follow-up monthly payment
+	const monthlyFollowUp = calculateMonthlyFollowUp(
+		rate,
+		followUpRate,
+		mortgageAmount,
+		termYears,
+	);
+
+	// Calculate total repayable
+	const totalRepayable = calculateTotalRepayable(
+		rate,
+		monthlyPayment,
+		monthlyFollowUp,
+		termYears,
+	);
+
+	// Cost of credit
+	const costOfCredit = totalRepayable - mortgageAmount;
+	const costOfCreditPct = (costOfCredit / mortgageAmount) * 100;
+
+	// Use existing APR if available (consistent with table display)
+	// Only calculate APRC if no APR is provided
+	let indicativeAprc: number | undefined = rate.apr;
+	if (
+		!indicativeAprc &&
+		rate.type === "fixed" &&
+		rate.fixedTerm &&
+		followUpRate
+	) {
+		const aprcConfig: AprcConfig = {
+			loanAmount: mortgageAmount,
+			termYears,
+			valuationFee: 150, // Standard estimate
+			securityReleaseFee: 35, // Standard estimate
+		};
+		indicativeAprc = calculateAprc(
+			rate.rate,
+			rate.fixedTerm * 12,
+			followUpRate.rate,
+			aprcConfig,
+		);
+	}
+
+	// Follow-on term (remaining after fixed)
+	const followOnTerm =
+		rate.type === "fixed" && rate.fixedTerm
+			? termYears - rate.fixedTerm
+			: undefined;
+
+	// Remaining balance as percentage of mortgage amount
+	const remainingBalancePct =
+		remainingBalance !== undefined
+			? (remainingBalance / mortgageAmount) * 100
+			: undefined;
+
+	return {
+		monthlyPayment,
+		followUpRate,
+		followUpLtv,
+		monthlyFollowUp,
+		remainingBalance,
+		remainingBalancePct,
+		totalRepayable,
+		costOfCredit,
+		costOfCreditPct,
+		indicativeAprc,
+		followOnTerm,
+	};
+}
+
+function InfoRow({
+	label,
+	value,
+	muted = false,
+	highlight = false,
+}: {
+	label: string;
+	value: string | React.ReactNode;
+	muted?: boolean;
+	highlight?: boolean;
+}) {
+	return (
+		<tr className="border-b border-border/50 last:border-0">
+			<td className="py-2 pr-4 text-muted-foreground text-sm">{label}</td>
+			<td
+				className={`py-2 text-right font-medium transition-colors duration-700 ${
+					highlight ? "text-primary" : muted ? "text-muted-foreground" : ""
+				}`}
+			>
+				{value}
+			</td>
+		</tr>
+	);
+}
+
+export function RateInfoModal({
+	rate,
+	lender,
+	allRates,
+	perks,
+	combinedPerks,
+	mortgageAmount,
+	mortgageTerm,
+	ltv,
+	berRating,
+	open,
+	onOpenChange,
+}: RateInfoModalProps) {
+	const [selectedTerm, setSelectedTerm] = useState(mortgageTerm);
+	const [highlightedFields, setHighlightedFields] = useState<Set<string>>(
+		new Set(),
+	);
+	const prevCalculationsRef = useRef<RateCalculations | null>(null);
+
+	// Reset selected term when modal opens with new rate
+	useMemo(() => {
+		if (rate) {
+			setSelectedTerm(mortgageTerm);
+			prevCalculationsRef.current = null;
+		}
+	}, [rate, mortgageTerm]);
+
+	// Get term options based on lender's maxTerm
+	const maxTerm = lender?.maxTerm ?? DEFAULT_MAX_TERM;
+	const termOptions = useMemo(
+		() => getTermOptions(mortgageTerm, maxTerm),
+		[mortgageTerm, maxTerm],
+	);
+
+	// Calculate rate info for selected term
+	const calculations = useMemo(() => {
+		if (!rate) return null;
+		return calculateRateInfo(
+			rate,
+			allRates,
+			mortgageAmount,
+			selectedTerm,
+			ltv,
+			berRating,
+		);
+	}, [rate, allRates, mortgageAmount, selectedTerm, ltv, berRating]);
+
+	// Highlight fields that changed when term changes
+	useEffect(() => {
+		const prev = prevCalculationsRef.current;
+		if (!prev || !calculations) {
+			prevCalculationsRef.current = calculations;
+			return;
+		}
+
+		const changed = new Set<string>();
+		changed.add("term"); // Term always changes
+		if (prev.monthlyPayment !== calculations.monthlyPayment)
+			changed.add("monthlyPayment");
+		if (prev.totalRepayable !== calculations.totalRepayable)
+			changed.add("totalRepayable");
+		if (prev.costOfCredit !== calculations.costOfCredit)
+			changed.add("costOfCredit");
+		if (prev.remainingBalance !== calculations.remainingBalance)
+			changed.add("remainingBalance");
+		if (prev.remainingBalancePct !== calculations.remainingBalancePct)
+			changed.add("remainingBalancePct");
+		if (prev.followUpLtv !== calculations.followUpLtv)
+			changed.add("followUpLtv");
+		if (prev.followOnTerm !== calculations.followOnTerm)
+			changed.add("followOnTerm");
+		if (prev.monthlyFollowUp !== calculations.monthlyFollowUp)
+			changed.add("monthlyFollowUp");
+		if (prev.followUpRate?.id !== calculations.followUpRate?.id) {
+			changed.add("followUpRate");
+			changed.add("followUpProduct");
+		}
+
+		setHighlightedFields(changed);
+		prevCalculationsRef.current = calculations;
+
+		const timer = setTimeout(() => setHighlightedFields(new Set()), 700);
+		return () => clearTimeout(timer);
+	}, [calculations]);
+
+	if (!rate || !calculations) return null;
+
+	const isFixed = rate.type === "fixed";
+	const hasFollowUp = isFixed && calculations.followUpRate;
+	const resolvedPerks = resolvePerks(perks, combinedPerks);
+
+	return (
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			<DialogContent
+				className="sm:max-w-3xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0"
+				showCloseButton={false}
+			>
+				{/* Sticky Header */}
+				<div className="sticky top-0 bg-background z-10 px-6 pt-6 pb-4 border-b space-y-4">
+					<DialogHeader>
+						<div className="flex items-start justify-between gap-3">
+							<div className="flex items-center gap-3">
+								<LenderLogo lenderId={rate.lenderId} size={40} />
+								<div>
+									<DialogTitle>{rate.name}</DialogTitle>
+									<DialogDescription>
+										{lender?.name ?? rate.lenderId} •{" "}
+										{isFixed ? `${rate.fixedTerm} Year Fixed` : "Variable Rate"}
+									</DialogDescription>
+								</div>
+							</div>
+							{/* Perks and Close button */}
+							<div className="flex items-center gap-3">
+								{resolvedPerks.length > 0 && (
+									<div className="flex flex-wrap gap-1.5 justify-end">
+										{resolvedPerks.map((perk) => {
+											const IconComponent = PERK_ICONS[perk.icon];
+											return (
+												<Tooltip key={perk.id}>
+													<TooltipTrigger asChild>
+														<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted text-xs cursor-help">
+															{IconComponent && (
+																<IconComponent className="h-3 w-3 text-muted-foreground" />
+															)}
+															<span>{perk.label}</span>
+														</span>
+													</TooltipTrigger>
+													{perk.description && (
+														<TooltipContent>
+															<p className="text-xs">{perk.description}</p>
+														</TooltipContent>
+													)}
+												</Tooltip>
+											);
+										})}
+									</div>
+								)}
+								<DialogClose className="cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+									<X className="h-4 w-4" />
+									<span className="sr-only">Close</span>
+								</DialogClose>
+							</div>
+						</div>
+					</DialogHeader>
+
+					{/* Term Selector */}
+					{termOptions.length > 1 && (
+						<Tabs
+							value={String(selectedTerm)}
+							onValueChange={(v) => setSelectedTerm(Number(v))}
+						>
+							<TabsList>
+								{termOptions.map((option) => (
+									<TabsTrigger key={option.value} value={String(option.value)}>
+										{option.label}
+									</TabsTrigger>
+								))}
+							</TabsList>
+						</Tabs>
+					)}
+				</div>
+
+				{/* Scrollable Content */}
+				<div className="flex-1 overflow-y-auto px-6 pb-6 pt-4">
+					{/* Two-column grid layout */}
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						{/* Left Column: Mortgage Details */}
+						<div className="space-y-4">
+							<div>
+								<h4 className="text-sm font-semibold text-muted-foreground mb-2">
+									Mortgage Details
+								</h4>
+								<table className="w-full">
+									<tbody>
+										<InfoRow
+											label="Mortgage Amount"
+											value={formatCurrency(mortgageAmount)}
+										/>
+										<InfoRow
+											label="Full Term"
+											value={`${selectedTerm} years`}
+											highlight={highlightedFields.has("term")}
+										/>
+										<InfoRow
+											label="Monthly Repayments"
+											value={formatCurrency(calculations.monthlyPayment, {
+												showCents: true,
+											})}
+											highlight={highlightedFields.has("monthlyPayment")}
+										/>
+										<InfoRow
+											label="Total Repayable"
+											value={formatCurrency(calculations.totalRepayable, {
+												showCents: true,
+											})}
+											highlight={highlightedFields.has("totalRepayable")}
+										/>
+										<InfoRow
+											label="Cost of Credit"
+											value={`${formatCurrency(calculations.costOfCredit)} (${calculations.costOfCreditPct.toFixed(1)}%)`}
+											highlight={highlightedFields.has("costOfCredit")}
+										/>
+									</tbody>
+								</table>
+							</div>
+
+							{/* Follow-On Period (only for fixed rates) */}
+							{isFixed && (
+								<div>
+									<h4 className="text-sm font-semibold text-muted-foreground mb-2">
+										Follow-On Period
+									</h4>
+									<table className="w-full">
+										<tbody>
+											{calculations.followOnTerm !== undefined &&
+												calculations.followOnTerm > 0 && (
+													<InfoRow
+														label="Term"
+														value={`${calculations.followOnTerm} years`}
+														highlight={highlightedFields.has("followOnTerm")}
+													/>
+												)}
+											<InfoRow
+												label="Interest Rate"
+												value={
+													hasFollowUp
+														? `${calculations.followUpRate?.rate.toFixed(2)}%`
+														: "—"
+												}
+												muted={!hasFollowUp}
+												highlight={highlightedFields.has("followUpRate")}
+											/>
+											<InfoRow
+												label="Product"
+												value={
+													hasFollowUp ? calculations.followUpRate?.name : "—"
+												}
+												muted={!hasFollowUp}
+												highlight={highlightedFields.has("followUpProduct")}
+											/>
+											<InfoRow
+												label="Monthly Repayments"
+												value={
+													calculations.monthlyFollowUp
+														? formatCurrency(calculations.monthlyFollowUp, {
+																showCents: true,
+															})
+														: "—"
+												}
+												muted={!calculations.monthlyFollowUp}
+												highlight={highlightedFields.has("monthlyFollowUp")}
+											/>
+										</tbody>
+									</table>
+								</div>
+							)}
+						</div>
+
+						{/* Right Column: Rate Details */}
+						<div className="space-y-4">
+							<div>
+								<h4 className="text-sm font-semibold text-muted-foreground mb-2">
+									Rate Details
+								</h4>
+								<table className="w-full">
+									<tbody>
+										<InfoRow
+											label="Interest Rate"
+											value={`${rate.rate.toFixed(2)}%`}
+										/>
+										{isFixed && rate.fixedTerm && (
+											<InfoRow
+												label="Fixed Period"
+												value={`${rate.fixedTerm} years`}
+											/>
+										)}
+										{calculations.indicativeAprc && (
+											<InfoRow
+												label="APRC"
+												value={`${calculations.indicativeAprc.toFixed(2)}%`}
+											/>
+										)}
+										<InfoRow
+											label="Early Repayment Fee"
+											value={isFixed ? "Yes" : "No"}
+										/>
+									</tbody>
+								</table>
+							</div>
+
+							{/* End of Fixed Period Details */}
+							{isFixed && calculations.remainingBalance !== undefined && (
+								<div>
+									<h4 className="text-sm font-semibold text-muted-foreground mb-2">
+										At End of Fixed Period
+									</h4>
+									<table className="w-full">
+										<tbody>
+											<InfoRow
+												label="Remaining Balance"
+												value={formatCurrency(calculations.remainingBalance)}
+												highlight={highlightedFields.has("remainingBalance")}
+											/>
+											<InfoRow
+												label="% of Original"
+												value={`${calculations.remainingBalancePct?.toFixed(1)}%`}
+												highlight={highlightedFields.has("remainingBalancePct")}
+											/>
+											<InfoRow
+												label="LTV"
+												value={`${calculations.followUpLtv.toFixed(1)}%`}
+												highlight={highlightedFields.has("followUpLtv")}
+											/>
+										</tbody>
+									</table>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
+			</DialogContent>
+		</Dialog>
+	);
+}
