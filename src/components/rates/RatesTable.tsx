@@ -651,7 +651,7 @@ export function RatesTable({
 				// Use allRates to find follow-up rate (includes newBusiness: false rates)
 				const followUpRate =
 					rate.type === "fixed"
-						? findVariableRate(rate, allRates, followUpLtv)
+						? findVariableRate(rate, allRates, followUpLtv, inputValues.berRating)
 						: undefined;
 
 				const totalMonths = mortgageTerm * 12;
@@ -693,7 +693,7 @@ export function RatesTable({
 					combinedPerks,
 				};
 			}),
-		[rates, allRates, lenders, mortgageAmount, mortgageTerm, ltv],
+		[rates, allRates, lenders, mortgageAmount, mortgageTerm, ltv, inputValues.berRating],
 	);
 
 	if (rates.length === 0) {

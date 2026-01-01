@@ -2,7 +2,7 @@
  * Mortgage payment calculations
  */
 
-import type { MortgageRate } from "@/lib/schemas";
+import type { BerRating, MortgageRate } from "@/lib/schemas";
 
 /**
  * Calculate monthly payment for a loan using the standard amortization formula.
@@ -53,22 +53,31 @@ export function calculateRemainingBalance(
 
 /**
  * Find the best matching variable rate for a fixed rate.
- * Matches by lender and overlapping LTV range.
+ * Matches by lender, overlapping LTV range, and BER eligibility.
  * Prefers follow-on rates (newBusiness: false) over new business rates,
  * since customers rolling off fixed terms typically get the follow-on rate.
  *
  * @param fixedRate - The fixed rate to find a follow-up for
  * @param allRates - All available rates to search through
+ * @param ltv - The LTV to match against (optional)
+ * @param ber - The BER rating to match against (optional)
  * @returns The matching variable rate, or undefined if none found
  */
 export function findVariableRate(
 	fixedRate: MortgageRate,
 	allRates: MortgageRate[],
 	ltv?: number,
+	ber?: BerRating,
 ): MortgageRate | undefined {
 	const matchingVariables = allRates.filter((r) => {
 		if (r.type !== "variable" || r.lenderId !== fixedRate.lenderId) {
 			return false;
+		}
+		// Filter by BER eligibility if provided
+		if (ber !== undefined && r.berEligible !== undefined) {
+			if (!r.berEligible.includes(ber)) {
+				return false;
+			}
 		}
 		if (ltv !== undefined) {
 			return ltv >= r.minLtv && ltv <= r.maxLtv;
