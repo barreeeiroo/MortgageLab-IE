@@ -3,6 +3,8 @@ import {
 	type Lender,
 	LendersFileSchema,
 	type MortgageRate,
+	type Perk,
+	PerksFileSchema,
 	type RatesFile,
 	RatesFileSchema,
 } from "@/lib/schemas";
@@ -17,6 +19,7 @@ interface RatesMetadata {
 interface UseRatesResult {
 	rates: MortgageRate[];
 	lenders: Lender[];
+	perks: Perk[];
 	ratesMetadata: RatesMetadata[];
 	isLoading: boolean;
 	error: Error | null;
@@ -25,6 +28,7 @@ interface UseRatesResult {
 // Cache to avoid refetching on every component mount
 let cachedRates: MortgageRate[] | null = null;
 let cachedLenders: Lender[] | null = null;
+let cachedPerks: Perk[] | null = null;
 let cachedMetadata: RatesMetadata[] | null = null;
 let fetchPromise: Promise<void> | null = null;
 
@@ -56,16 +60,29 @@ async function fetchLenderRates(
 async function fetchData(): Promise<{
 	rates: MortgageRate[];
 	lenders: Lender[];
+	perks: Perk[];
 	metadata: RatesMetadata[];
 }> {
-	// First fetch lenders to know which rate files to load
-	const lendersRes = await fetch(getPath("data/lenders.json"));
+	// Fetch lenders and perks in parallel
+	const [lendersRes, perksRes] = await Promise.all([
+		fetch(getPath("data/lenders.json")),
+		fetch(getPath("data/perks.json")),
+	]);
+
 	if (!lendersRes.ok) {
 		throw new Error("Failed to fetch lenders data");
 	}
+	if (!perksRes.ok) {
+		throw new Error("Failed to fetch perks data");
+	}
 
-	const lendersJson = await lendersRes.json();
+	const [lendersJson, perksJson] = await Promise.all([
+		lendersRes.json(),
+		perksRes.json(),
+	]);
+
 	const lenders = LendersFileSchema.parse(lendersJson);
+	const perks = PerksFileSchema.parse(perksJson);
 
 	// Fetch rates for all lenders in parallel, silently skipping failures
 	const results = await Promise.all(
@@ -77,12 +94,13 @@ async function fetchData(): Promise<{
 		.map((r) => r.metadata)
 		.filter((m): m is RatesMetadata => m !== null);
 
-	return { rates, lenders, metadata };
+	return { rates, lenders, perks, metadata };
 }
 
 export function useRates(): UseRatesResult {
 	const [rates, setRates] = useState<MortgageRate[]>(cachedRates ?? []);
 	const [lenders, setLenders] = useState<Lender[]>(cachedLenders ?? []);
+	const [perks, setPerks] = useState<Perk[]>(cachedPerks ?? []);
 	const [ratesMetadata, setRatesMetadata] = useState<RatesMetadata[]>(
 		cachedMetadata ?? [],
 	);
@@ -91,9 +109,10 @@ export function useRates(): UseRatesResult {
 
 	useEffect(() => {
 		// Already have cached data
-		if (cachedRates && cachedLenders && cachedMetadata) {
+		if (cachedRates && cachedLenders && cachedPerks && cachedMetadata) {
 			setRates(cachedRates);
 			setLenders(cachedLenders);
+			setPerks(cachedPerks);
 			setRatesMetadata(cachedMetadata);
 			setIsLoading(false);
 			return;
@@ -102,9 +121,10 @@ export function useRates(): UseRatesResult {
 		// Fetch is already in progress, wait for it
 		if (fetchPromise) {
 			fetchPromise.then(() => {
-				if (cachedRates && cachedLenders && cachedMetadata) {
+				if (cachedRates && cachedLenders && cachedPerks && cachedMetadata) {
 					setRates(cachedRates);
 					setLenders(cachedLenders);
+					setPerks(cachedPerks);
 					setRatesMetadata(cachedMetadata);
 				}
 				setIsLoading(false);
@@ -114,12 +134,14 @@ export function useRates(): UseRatesResult {
 
 		// Start fetching
 		fetchPromise = fetchData()
-			.then(({ rates, lenders, metadata }) => {
+			.then(({ rates, lenders, perks, metadata }) => {
 				cachedRates = rates;
 				cachedLenders = lenders;
+				cachedPerks = perks;
 				cachedMetadata = metadata;
 				setRates(rates);
 				setLenders(lenders);
+				setPerks(perks);
 				setRatesMetadata(metadata);
 				setIsLoading(false);
 			})
@@ -129,5 +151,5 @@ export function useRates(): UseRatesResult {
 			});
 	}, []);
 
-	return { rates, lenders, ratesMetadata, isLoading, error };
+	return { rates, lenders, perks, ratesMetadata, isLoading, error };
 }

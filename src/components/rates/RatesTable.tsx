@@ -19,7 +19,6 @@ import {
 	type Lender,
 	type MortgageRate,
 	type Perk,
-	perks,
 	resolvePerks,
 } from "@/lib/data";
 import { useLocalStorage } from "@/lib/hooks";
@@ -70,6 +69,7 @@ interface RatesTableProps {
 	rates: MortgageRate[];
 	allRates: MortgageRate[]; // Unfiltered rates for follow-up calculation
 	lenders: Lender[];
+	perks: Perk[];
 	ratesMetadata: RatesMetadata[];
 	mortgageAmount: number;
 	mortgageTerm: number;
@@ -279,6 +279,7 @@ const STORAGE_KEYS = {
 function createColumns(
 	rates: MortgageRate[],
 	lenders: Lender[],
+	perks: Perk[],
 ): ColumnDef<RateRow>[] {
 	const availableFixedTerms = getAvailableFixedTerms(rates);
 	const periodOptions = availableFixedTerms.map((term) => ({
@@ -355,7 +356,7 @@ function createColumns(
 				/>
 			),
 			cell: ({ row }) => {
-				const allPerks = resolvePerks(row.original.combinedPerks);
+				const allPerks = resolvePerks(perks, row.original.combinedPerks);
 
 				if (allPerks.length === 0) {
 					return <div className="text-center text-muted-foreground">—</div>;
@@ -552,6 +553,7 @@ export function RatesTable({
 	rates,
 	allRates,
 	lenders,
+	perks,
 	ratesMetadata,
 	mortgageAmount,
 	mortgageTerm,
@@ -571,8 +573,8 @@ export function RatesTable({
 	const [copied, setCopied] = useState(false);
 
 	const columns = useMemo(
-		() => createColumns(rates, lenders),
-		[rates, lenders],
+		() => createColumns(rates, lenders, perks),
+		[rates, lenders, perks],
 	);
 
 	const data = useMemo<RateRow[]>(

@@ -4,28 +4,20 @@ import {
 	type Lender,
 	type MortgageRate,
 	type Perk,
-	PerksFileSchema,
 } from "@/lib/schemas";
 
-import perksJson from "../../../data/perks.json";
-
-// Perks are small and static, keep bundled
-export const perks: Perk[] = PerksFileSchema.parse(perksJson);
-
-// Create map for quick lookups
-const perkMap = new Map<string, Perk>(perks.map((perk) => [perk.id, perk]));
-
 /**
- * Get a perk by ID
+ * Get a perk by ID from a perks array
  */
-export function getPerk(id: string): Perk | undefined {
-	return perkMap.get(id);
+export function getPerk(perks: Perk[], id: string): Perk | undefined {
+	return perks.find((p) => p.id === id);
 }
 
 /**
  * Resolve an array of perk IDs to full Perk objects
  */
-export function resolvePerks(perkIds: string[]): Perk[] {
+export function resolvePerks(perks: Perk[], perkIds: string[]): Perk[] {
+	const perkMap = new Map<string, Perk>(perks.map((perk) => [perk.id, perk]));
 	return perkIds.map((id) => perkMap.get(id)).filter((p): p is Perk => !!p);
 }
 

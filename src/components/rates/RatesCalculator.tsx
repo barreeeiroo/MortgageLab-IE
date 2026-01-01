@@ -30,7 +30,7 @@ function getModeFromHash(): RatesMode | null {
 }
 
 export function RatesCalculator() {
-	const { rates, lenders, ratesMetadata, isLoading, error } = useRates();
+	const { rates, lenders, perks, ratesMetadata, isLoading, error } = useRates();
 
 	const [values, setValues] = useState<RatesInputValues>({
 		mode: "first-mortgage",
@@ -234,6 +234,7 @@ export function RatesCalculator() {
 						rates={filteredRates}
 						allRates={rates}
 						lenders={lenders}
+						perks={perks}
 						ratesMetadata={ratesMetadata}
 						mortgageAmount={mortgage}
 						mortgageTerm={mortgageTerm}
