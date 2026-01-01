@@ -1,3 +1,4 @@
+import { type AprcConfig, calculateAprc } from "@/lib/mortgage";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type { LenderProvider } from "../types";
@@ -8,128 +9,17 @@ const PRODUCTS_API_URL =
 const SVR_API_URL = "https://backend.nuamoney.com/v1/dictionaries/svr/current";
 
 // APRC calculation parameters (per Núa's disclosure)
-const APRC_LOAN_AMOUNT = 100000;
-const APRC_TERM_YEARS = 20;
-const APRC_TERM_MONTHS = APRC_TERM_YEARS * 12;
-const APRC_VALUATION_FEE = 199; // Paid upfront (deducted from loan)
-const APRC_SECURITY_RELEASE_FEE = 80; // Paid at end of loan term
+const APRC_CONFIG: AprcConfig = {
+	loanAmount: 100000,
+	termYears: 20,
+	valuationFee: 199,
+	securityReleaseFee: 80,
+};
 
 interface NuaSvr {
 	_id: string;
 	rate: number; // Decimal format (e.g., 0.0485 = 4.85%)
 	validFrom: string;
-}
-
-/**
- * Calculate monthly payment for a loan
- */
-function calculateMonthlyPayment(
-	principal: number,
-	annualRate: number,
-	months: number,
-): number {
-	if (annualRate === 0) return principal / months;
-	const monthlyRate = annualRate / 100 / 12;
-	return (
-		(principal * monthlyRate * (1 + monthlyRate) ** months) /
-		((1 + monthlyRate) ** months - 1)
-	);
-}
-
-/**
- * Calculate remaining balance after a number of payments
- */
-function calculateRemainingBalance(
-	principal: number,
-	annualRate: number,
-	totalMonths: number,
-	paidMonths: number,
-): number {
-	if (paidMonths >= totalMonths) return 0;
-	const monthlyRate = annualRate / 100 / 12;
-	const payment = calculateMonthlyPayment(principal, annualRate, totalMonths);
-	return (
-		principal * (1 + monthlyRate) ** paidMonths -
-		(payment * ((1 + monthlyRate) ** paidMonths - 1)) / monthlyRate
-	);
-}
-
-/**
- * Calculate APRC for a fixed rate product
- * Uses Newton-Raphson method to find the rate that makes NPV = 0
- *
- * Per EU Consumer Credit Directive, APRC is calculated such that:
- * Sum of drawdowns = Sum of (repayments / (1 + APRC)^t)
- * where t is time in years from drawdown
- */
-function calculateAprc(
-	fixedRate: number,
-	fixedTermMonths: number,
-	svrRate: number,
-): number {
-	const totalMonths = APRC_TERM_MONTHS;
-	const variableMonths = totalMonths - fixedTermMonths;
-
-	// Calculate payment schedule (rounded to cents as in practice)
-	const fixedPayment =
-		Math.round(
-			calculateMonthlyPayment(APRC_LOAN_AMOUNT, fixedRate, totalMonths) * 100,
-		) / 100;
-	const balanceAfterFixed = calculateRemainingBalance(
-		APRC_LOAN_AMOUNT,
-		fixedRate,
-		totalMonths,
-		fixedTermMonths,
-	);
-	const variablePayment =
-		Math.round(
-			calculateMonthlyPayment(balanceAfterFixed, svrRate, variableMonths) * 100,
-		) / 100;
-
-	// Build cash flows: drawdown (negative), then repayments (positive)
-	// Per EU directive: net amount = loan amount - fees deducted at drawdown
-	// Only valuation fee is paid upfront; security release fee is paid at end
-	const netLoanAmount = APRC_LOAN_AMOUNT - APRC_VALUATION_FEE;
-	const cashFlows: number[] = [-netLoanAmount];
-	for (let i = 0; i < fixedTermMonths; i++) {
-		cashFlows.push(fixedPayment);
-	}
-	for (let i = 0; i < variableMonths - 1; i++) {
-		cashFlows.push(variablePayment);
-	}
-	// Final payment includes the security release fee
-	cashFlows.push(variablePayment + APRC_SECURITY_RELEASE_FEE);
-
-	// Newton-Raphson to find monthly rate where NPV = 0
-	let monthlyRate = fixedRate / 100 / 12; // Initial guess
-	const tolerance = 1e-12;
-	const maxIterations = 200;
-
-	for (let iter = 0; iter < maxIterations; iter++) {
-		let npv = 0;
-		let npvDerivative = 0;
-
-		for (let i = 0; i < cashFlows.length; i++) {
-			const discountFactor = (1 + monthlyRate) ** i;
-			npv += cashFlows[i] / discountFactor;
-			if (i > 0) {
-				npvDerivative -= (i * cashFlows[i]) / (1 + monthlyRate) ** (i + 1);
-			}
-		}
-
-		if (Math.abs(npv) < tolerance) break;
-		if (Math.abs(npvDerivative) < tolerance) break;
-
-		monthlyRate = monthlyRate - npv / npvDerivative;
-	}
-
-	// Convert to effective annual rate (compounded) per EU directive
-	const effectiveAnnualRate = (1 + monthlyRate) ** 12 - 1;
-
-	// Convert to percentage and round up to 2 decimal places
-	// Note: Small discrepancy (~0.02%) from website values may exist due to
-	// internal rounding differences in payment calculations
-	return Math.ceil(effectiveAnnualRate * 10000) / 100;
 }
 
 interface NuaProduct {
@@ -237,7 +127,12 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		const termYears = product.fixedRateTerm / 12;
 		// Round rate to 2 decimal places to handle floating-point precision issues
 		const fixedRate = Math.round(product.fixedRate * 100) / 100;
-		const aprc = calculateAprc(fixedRate, product.fixedRateTerm, svrRate);
+		const aprc = calculateAprc(
+			fixedRate,
+			product.fixedRateTerm,
+			svrRate,
+			APRC_CONFIG,
+		);
 
 		return {
 			id: generateRateId(product),
@@ -256,7 +151,6 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	});
 
 	// Add SVR for existing customers (after fixed period ends)
-
 	rates.push({
 		id: `${LENDER_ID}-variable-svr`,
 		name: "Standard Variable Rate",

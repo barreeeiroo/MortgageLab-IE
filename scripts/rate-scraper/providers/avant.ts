@@ -1,6 +1,11 @@
 import * as cheerio from "cheerio";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
+import {
+	parseLtvFromName,
+	parsePercentageOrThrow,
+	parseTermFromText,
+} from "../lib/parsing";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "avant";
@@ -8,49 +13,6 @@ const RATES_URL = "https://www.avantmoney.ie/mortgages/products-and-rates";
 
 // Avant Money only offers PDH mortgages (no BTL)
 const BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
-
-function parsePercentage(text: string): number {
-	const match = text.replace(/\s/g, "").match(/(\d+\.?\d*)/);
-	if (!match) throw new Error(`Could not parse percentage: ${text}`);
-	return Number.parseFloat(match[1]);
-}
-
-function parseLtvFromText(text: string): { minLtv: number; maxLtv: number } {
-	const lowerText = text.toLowerCase().replace(/\s/g, "");
-
-	// Handle various LTV formats
-	if (
-		lowerText.includes("<=60%") ||
-		lowerText.includes("≤60%") ||
-		lowerText === "<60%"
-	) {
-		return { minLtv: 0, maxLtv: 60 };
-	}
-	if (lowerText.includes(">60%") && lowerText.includes("70%")) {
-		return { minLtv: 60, maxLtv: 70 };
-	}
-	if (lowerText.includes(">70%") && lowerText.includes("80%")) {
-		return { minLtv: 70, maxLtv: 80 };
-	}
-	if (lowerText.includes("<=80%") || lowerText.includes("≤80%")) {
-		return { minLtv: 0, maxLtv: 80 };
-	}
-	if (lowerText.includes(">80%") && lowerText.includes("90%")) {
-		return { minLtv: 80, maxLtv: 90 };
-	}
-	if (lowerText.includes(">80%")) {
-		return { minLtv: 80, maxLtv: 90 };
-	}
-
-	// Default
-	return { minLtv: 0, maxLtv: 90 };
-}
-
-function parseTermFromHeading(heading: string): number | undefined {
-	// Handle "3 years", "UP TO 15 YEARS", etc.
-	const match = heading.match(/(\d+)\s*years?/i);
-	return match ? Number.parseInt(match[1], 10) : undefined;
-}
 
 function parseFlexMortgageTable($: cheerio.CheerioAPI): MortgageRate[] {
 	const rates: MortgageRate[] = [];
@@ -78,9 +40,9 @@ function parseFlexMortgageTable($: cheerio.CheerioAPI): MortgageRate[] {
 				if (!ltvText || !rateText.includes("%")) return;
 
 				try {
-					const { minLtv, maxLtv } = parseLtvFromText(ltvText);
-					const rate = parsePercentage(rateText);
-					const apr = parsePercentage(aprText);
+					const { minLtv, maxLtv } = parseLtvFromName(ltvText);
+					const rate = parsePercentageOrThrow(rateText);
+					const apr = parsePercentageOrThrow(aprText);
 
 					rates.push({
 						id: `avant-flex-${maxLtv}`,
@@ -115,7 +77,7 @@ function parseFixedTermTable(
 			.find(".am-figures-table__section-heading")
 			.first();
 		const heading = headingEl.text().trim();
-		const term = parseTermFromHeading(heading);
+		const term = parseTermFromText(heading);
 
 		if (!term) return;
 
@@ -132,9 +94,9 @@ function parseFixedTermTable(
 				if (!ltvText || !rateText.includes("%")) return;
 
 				try {
-					const { minLtv, maxLtv } = parseLtvFromText(ltvText);
-					const rate = parsePercentage(rateText);
-					const apr = parsePercentage(aprText);
+					const { minLtv, maxLtv } = parseLtvFromName(ltvText);
+					const rate = parsePercentageOrThrow(rateText);
+					const apr = parsePercentageOrThrow(aprText);
 
 					rates.push({
 						id: `avant-fixed-${term}yr-${maxLtv}`,
@@ -171,7 +133,7 @@ function parseOneMortgageTable(
 			.find(".am-figures-table__section-heading")
 			.first();
 		const heading = headingEl.text().trim();
-		const term = parseTermFromHeading(heading);
+		const term = parseTermFromText(heading);
 
 		if (!term) return;
 
@@ -188,9 +150,9 @@ function parseOneMortgageTable(
 				if (!ltvText || !rateText.includes("%")) return;
 
 				try {
-					const { minLtv, maxLtv } = parseLtvFromText(ltvText);
-					const rate = parsePercentage(rateText);
-					const apr = parsePercentage(aprText);
+					const { minLtv, maxLtv } = parseLtvFromName(ltvText);
+					const rate = parsePercentageOrThrow(rateText);
+					const apr = parsePercentageOrThrow(aprText);
 
 					rates.push({
 						id: `avant-one-${term}yr-${maxLtv}`,

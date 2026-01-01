@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
+import { parsePercentage } from "../lib/parsing";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "ics";
@@ -12,12 +13,6 @@ const BTL_URL = `${BASE_URL}/mortgages/buy-to-let-rates`;
 const PDH_NEW_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
 const PDH_EXISTING_BUYER_TYPES: BuyerType[] = ["switcher-pdh"];
 const BTL_BUYER_TYPES: BuyerType[] = ["btl", "switcher-btl"];
-
-function parsePercentage(text: string): number | null {
-	const match = text.replace(/\s/g, "").match(/(\d+\.?\d*)/);
-	if (!match) return null;
-	return Number.parseFloat(match[1]);
-}
 
 function parseLtvFromText(text: string): number | null {
 	const match = text.match(/≤?\s*(\d+)%/);

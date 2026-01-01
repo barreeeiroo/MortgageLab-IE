@@ -2,6 +2,11 @@ import * as cheerio from "cheerio";
 import { GREEN_BER_RATINGS } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
+import {
+	parseLtvFromName,
+	parsePercentageOrThrow,
+	parseTermFromText,
+} from "../lib/parsing";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "haven";
@@ -10,33 +15,6 @@ const RATES_URL =
 
 // Haven only offers PDH mortgages (no BTL)
 const BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
-
-function parsePercentage(text: string): number {
-	const match = text.replace(/\s/g, "").match(/(\d+\.?\d*)/);
-	if (!match) throw new Error(`Could not parse percentage: ${text}`);
-	return Number.parseFloat(match[1]);
-}
-
-function parseTermFromName(name: string): number | undefined {
-	const match = name.match(/(\d+)\s*Year/i);
-	return match ? Number.parseInt(match[1], 10) : undefined;
-}
-
-function parseLtvFromName(name: string): { minLtv: number; maxLtv: number } {
-	const lowerName = name.toLowerCase();
-
-	if (lowerName.includes("≤50%") || lowerName.includes("<=50%")) {
-		return { minLtv: 0, maxLtv: 50 };
-	}
-	if (lowerName.includes(">50%") && lowerName.includes("80%")) {
-		return { minLtv: 50, maxLtv: 80 };
-	}
-	if (lowerName.includes(">80%")) {
-		return { minLtv: 80, maxLtv: 90 };
-	}
-
-	return { minLtv: 0, maxLtv: 90 };
-}
 
 interface ParsedRow {
 	name: string;
@@ -69,9 +47,9 @@ function parseTableRow(
 	}
 
 	try {
-		const rate = parsePercentage(rateText);
-		const apr = parsePercentage(aprText);
-		const term = parseTermFromName(name);
+		const rate = parsePercentageOrThrow(rateText);
+		const apr = parsePercentageOrThrow(aprText);
+		const term = parseTermFromText(name) ?? undefined;
 		const { minLtv, maxLtv } = parseLtvFromName(name);
 		const lowerName = name.toLowerCase();
 

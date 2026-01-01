@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import type { BuyerType, MortgageRate } from "@/lib/schemas";
+import { parseTermFromText } from "../lib/parsing";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "boi";
@@ -22,11 +23,6 @@ const PDH_NEW_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
 const PDH_EXISTING_BUYER_TYPES: BuyerType[] = ["switcher-pdh"];
 const BTL_NEW_BUYER_TYPES: BuyerType[] = ["btl"];
 const BTL_EXISTING_BUYER_TYPES: BuyerType[] = ["switcher-btl"];
-
-function parseTermFromDescription(desc: string): number | undefined {
-	const match = desc.match(/(\d+)\s*Year/i);
-	return match ? Number.parseInt(match[1], 10) : undefined;
-}
 
 function normalizeBer(ber: string): string | null {
 	const upper = ber.toUpperCase().trim();
@@ -74,7 +70,7 @@ function parseMainTableRow(
 	const apr = Number.parseFloat(aprText);
 	if (Number.isNaN(rate) || Number.isNaN(apr)) return null;
 
-	const term = parseTermFromDescription(description);
+	const term = parseTermFromText(description) ?? undefined;
 	const ber = normalizeBer(berText);
 	const lowerDesc = description.toLowerCase();
 	const lowerBuyer = buyerType.toLowerCase();

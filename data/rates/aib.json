@@ -1,8 +1,8 @@
 {
 	"lenderId": "aib",
-	"lastScrapedAt": "2025-12-31T16:58:24.762Z",
-	"lastUpdatedAt": "2025-12-31T16:50:35.684Z",
-	"ratesHash": "81dbdecc1790876bb1dfab6f0c28975c71e4b99b0d25d1ccf7b649d95f4b5fbe",
+	"lastScrapedAt": "2026-01-01T01:15:09.899Z",
+	"lastUpdatedAt": "2026-01-01T01:15:09.899Z",
+	"ratesHash": "999135f7eb133c19755703207af2c7dc91ed8158b26ae7677da14a380bad1472",
 	"rates": [
 		{
 			"id": "aib-variable-50",
@@ -563,12 +563,13 @@
 			]
 		},
 		{
-			"id": "aib-green-a",
-			"name": "Green A",
+			"id": "aib-green-a-fixed-3yr-80",
+			"name": "Green A 3 Year Fixed - LTV ≤80%",
 			"lenderId": "aib",
 			"type": "fixed",
 			"rate": 3.1,
 			"apr": 3.86,
+			"fixedTerm": 3,
 			"minLtv": 50,
 			"maxLtv": 80,
 			"buyerTypes": [
@@ -691,12 +692,53 @@
 			]
 		},
 		{
-			"id": "aib-hv",
-			"name": "Higher Value",
+			"id": "aib-hv-fixed-4yr-50",
+			"name": "Higher Value 4 Year Fixed - LTV ≤50%",
+			"lenderId": "aib",
+			"type": "fixed",
+			"rate": 3.4,
+			"apr": 3.73,
+			"fixedTerm": 4,
+			"minLtv": 0,
+			"maxLtv": 50,
+			"minLoan": 250000,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"perks": [
+				"cashback-2pct"
+			]
+		},
+		{
+			"id": "aib-hv-fixed-4yr-80",
+			"name": "Higher Value 4 Year Fixed - LTV ≤80%",
+			"lenderId": "aib",
+			"type": "fixed",
+			"rate": 3.5,
+			"apr": 3.91,
+			"fixedTerm": 4,
+			"minLtv": 50,
+			"maxLtv": 80,
+			"minLoan": 250000,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"perks": [
+				"cashback-2pct"
+			]
+		},
+		{
+			"id": "aib-hv-fixed-4yr",
+			"name": "Higher Value 4 Year Fixed",
 			"lenderId": "aib",
 			"type": "fixed",
 			"rate": 3.6,
 			"apr": 4.09,
+			"fixedTerm": 4,
 			"minLtv": 80,
 			"maxLtv": 90,
 			"minLoan": 250000,
