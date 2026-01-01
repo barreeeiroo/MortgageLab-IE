@@ -14,6 +14,10 @@ body:
         - Bank of Ireland
         - Credit Union Mortgages
         - EBS
+        - Haven Mortgages
+        - ICS Mortgages
+        - MoCo
+        - Núa Mortgages
         - Permanent TSB
         - Other
     validations:

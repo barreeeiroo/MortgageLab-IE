@@ -29,6 +29,7 @@ import {
 	calculateTotalRepayable,
 	findVariableRate,
 } from "@/lib/mortgage";
+import { getMissingVariableRateUrl } from "@/lib/constants";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
@@ -80,6 +81,7 @@ interface RatesTableProps {
 interface RateRow extends MortgageRate {
 	monthlyPayment: number;
 	followUpRate?: MortgageRate;
+	followUpLtv: number; // LTV after fixed term ends (for variable rate matching)
 	monthlyFollowUp?: number;
 	totalRepayable?: number;
 	costOfCreditPct?: number; // (totalRepayable - mortgageAmount) / mortgageAmount * 100
@@ -280,6 +282,7 @@ function createColumns(
 	rates: MortgageRate[],
 	lenders: Lender[],
 	perks: Perk[],
+	inputValues: RatesInputValues,
 ): ColumnDef<RateRow>[] {
 	const availableFixedTerms = getAvailableFixedTerms(rates);
 	const periodOptions = availableFixedTerms.map((term) => ({
@@ -473,7 +476,56 @@ function createColumns(
 			header: "Follow-Up Product",
 			cell: ({ row }) => {
 				const followUpRate = row.original.followUpRate;
-				if (!followUpRate) return <div className="text-center">—</div>;
+				const isFixed = row.original.type === "fixed";
+
+				// For variable rates, no follow-up product is expected
+				if (!isFixed) {
+					return <div className="text-center text-muted-foreground">—</div>;
+				}
+
+				// For fixed rates without a matching variable rate, show warning
+				if (!followUpRate) {
+					const lender = getLender(lenders, row.original.lenderId);
+					const reportUrl = getMissingVariableRateUrl({
+						lenderId: row.original.lenderId,
+						lenderName: lender?.name ?? row.original.lenderId,
+						fixedRateId: row.original.id,
+						fixedRateName: row.original.name,
+						fixedRate: row.original.rate,
+						fixedTerm: row.original.fixedTerm,
+						ltv: row.original.followUpLtv,
+						minLtv: row.original.minLtv,
+						maxLtv: row.original.maxLtv,
+						ratesUrl: lender?.ratesUrl,
+						mode: inputValues.mode,
+						buyerType: inputValues.buyerType,
+						berRating: inputValues.berRating,
+					});
+
+					return (
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<a
+									href={reportUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="flex items-center gap-1.5 text-destructive hover:underline"
+								>
+									<TriangleAlert className="h-4 w-4 shrink-0" />
+									<span className="text-xs">Not found</span>
+								</a>
+							</TooltipTrigger>
+							<TooltipContent className="max-w-xs">
+								<p className="font-medium">Missing Variable Rate</p>
+								<p className="text-xs text-muted-foreground">
+									Could not find a matching variable rate for this fixed product.
+									Click to report this issue.
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					);
+				}
+
 				return (
 					<div>
 						<p className="font-medium">{followUpRate.name}</p>
@@ -573,8 +625,8 @@ export function RatesTable({
 	const [copied, setCopied] = useState(false);
 
 	const columns = useMemo(
-		() => createColumns(rates, lenders, perks),
-		[rates, lenders, perks],
+		() => createColumns(rates, lenders, perks, inputValues),
+		[rates, lenders, perks, inputValues],
 	);
 
 	const data = useMemo<RateRow[]>(
@@ -634,6 +686,7 @@ export function RatesTable({
 					...rate,
 					monthlyPayment,
 					followUpRate,
+					followUpLtv,
 					monthlyFollowUp,
 					totalRepayable,
 					costOfCreditPct,
