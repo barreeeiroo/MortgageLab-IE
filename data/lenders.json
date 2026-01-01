@@ -60,7 +60,8 @@
 		"name": "Núa Mortgages",
 		"mortgagesUrl": "https://nuamoney.com",
 		"ratesUrl": "https://nuamoney.com/mortgage-rates",
-		"perks": []
+		"perks": [],
+		"maxTerm": 40
 	},
 	{
 		"id": "ptsb",
