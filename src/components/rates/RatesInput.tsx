@@ -96,7 +96,8 @@ export function RatesInput({
 
 	// Local state for currency inputs (update parent on blur)
 	const [localPropertyValue, setLocalPropertyValue] = useState(propertyValue);
-	const [localMortgageAmount, setLocalMortgageAmount] = useState(mortgageAmount);
+	const [localMortgageAmount, setLocalMortgageAmount] =
+		useState(mortgageAmount);
 	const [localMonthlyRepayment, setLocalMonthlyRepayment] =
 		useState(monthlyRepayment);
 
@@ -159,7 +160,9 @@ export function RatesInput({
 										placeholder="€350,000"
 										className="h-9"
 										value={formatCurrencyInput(localPropertyValue)}
-										onFocus={() => (focusedField.current = "propertyValue")}
+										onFocus={() => {
+											focusedField.current = "propertyValue";
+										}}
 										onChange={(e) =>
 											setLocalPropertyValue(
 												e.target.value.replace(/[^0-9]/g, ""),
@@ -182,7 +185,9 @@ export function RatesInput({
 										placeholder="€315,000"
 										className="h-9"
 										value={formatCurrencyInput(localMortgageAmount)}
-										onFocus={() => (focusedField.current = "mortgageAmount")}
+										onFocus={() => {
+											focusedField.current = "mortgageAmount";
+										}}
 										onChange={(e) =>
 											setLocalMortgageAmount(
 												e.target.value.replace(/[^0-9]/g, ""),
@@ -234,7 +239,9 @@ export function RatesInput({
 											placeholder="€1,500"
 											className="h-9"
 											value={formatCurrencyInput(localMonthlyRepayment)}
-											onFocus={() => (focusedField.current = "monthlyRepayment")}
+											onFocus={() => {
+												focusedField.current = "monthlyRepayment";
+											}}
 											onChange={(e) =>
 												setLocalMonthlyRepayment(
 													e.target.value.replace(/[^0-9]/g, ""),

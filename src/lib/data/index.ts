@@ -1,9 +1,9 @@
-import {
-	type BerRating,
-	type BuyerType,
-	type Lender,
-	type MortgageRate,
-	type Perk,
+import type {
+	BerRating,
+	BuyerType,
+	Lender,
+	MortgageRate,
+	Perk,
 } from "@/lib/schemas";
 
 /**

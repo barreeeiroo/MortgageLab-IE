@@ -22,7 +22,13 @@ export type {
 };
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import {
@@ -438,10 +444,10 @@ export function DataTable<TData, TValue>({
 							>
 								<ChevronLeft className="h-4 w-4" />
 							</Button>
-							{getPageNumbers().map((page, idx) =>
+							{getPageNumbers().map((page, idx, arr) =>
 								page === "ellipsis" ? (
 									<span
-										key={`ellipsis-${idx}`}
+										key={`ellipsis-after-${arr[idx - 1]}`}
 										className="px-2 text-muted-foreground"
 									>
 										...
@@ -452,9 +458,7 @@ export function DataTable<TData, TValue>({
 										variant="ghost"
 										size="sm"
 										className={`h-8 w-8 p-0 ${
-											currentPage === page
-												? "bg-muted font-medium"
-												: ""
+											currentPage === page ? "bg-muted font-medium" : ""
 										}`}
 										onClick={() => table.setPageIndex(page)}
 									>

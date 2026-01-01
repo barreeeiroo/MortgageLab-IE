@@ -7,13 +7,14 @@ import {
 	ChevronRight,
 	Coins,
 	ListFilter,
+	type LucideIcon,
 	PiggyBank,
 	Plus,
 	Share2,
 	TriangleAlert,
-	type LucideIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { getMissingVariableRateUrl } from "@/lib/constants";
 import {
 	getAvailableFixedTerms,
 	getLender,
@@ -30,7 +31,6 @@ import {
 	calculateTotalRepayable,
 	findVariableRate,
 } from "@/lib/mortgage";
-import { getMissingVariableRateUrl } from "@/lib/constants";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
@@ -98,7 +98,11 @@ const arrayIncludesFilter: FilterFn<RateRow> = (row, columnId, filterValue) => {
 };
 
 // Custom filter function for perks (uses combinedPerks which includes lender + rate perks)
-const perksIncludesFilter: FilterFn<RateRow> = (row, columnId, filterValue) => {
+const perksIncludesFilter: FilterFn<RateRow> = (
+	row,
+	_columnId,
+	filterValue,
+) => {
 	if (!filterValue || filterValue.length === 0) return true;
 	const combinedPerks = row.original.combinedPerks;
 	if (!combinedPerks || combinedPerks.length === 0) return false;
@@ -340,8 +344,9 @@ function createColumns(
 			accessorKey: "name",
 			header: "Product",
 			cell: ({ row }) => (
-				<div
-					className="flex w-full items-center justify-between gap-2 cursor-pointer rounded-md px-2 py-1 -ml-2 hover:ring-1 hover:ring-primary/50"
+				<Button
+					variant="ghost"
+					className="h-auto w-full justify-between gap-2 px-2 py-1 -ml-2 text-left hover:ring-1 hover:ring-primary/50"
 					onClick={() => onProductClick(row.original)}
 				>
 					<div className="flex items-start gap-1.5">
@@ -364,7 +369,7 @@ function createColumns(
 						)}
 					</div>
 					<ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-				</div>
+				</Button>
 			),
 			enableHiding: false,
 			meta: { sticky: true },
@@ -541,8 +546,8 @@ function createColumns(
 							<TooltipContent className="max-w-xs">
 								<p className="font-medium">Missing Variable Rate</p>
 								<p className="text-xs text-muted-foreground">
-									Could not find a matching variable rate for this fixed product.
-									Click to report this issue.
+									Could not find a matching variable rate for this fixed
+									product. Click to report this issue.
 								</p>
 							</TooltipContent>
 						</Tooltip>
@@ -669,13 +674,13 @@ export function RatesTable({
 	const [copied, setCopied] = useState(false);
 	const [selectedRate, setSelectedRate] = useState<RateRow | null>(null);
 
-	const handleProductClick = (rate: RateRow) => {
+	const handleProductClick = useCallback((rate: RateRow) => {
 		setSelectedRate(rate);
-	};
+	}, []);
 
 	const columns = useMemo(
 		() => createColumns(rates, lenders, perks, inputValues, handleProductClick),
-		[rates, lenders, perks, inputValues],
+		[rates, lenders, perks, inputValues, handleProductClick],
 	);
 
 	const data = useMemo<RateRow[]>(
@@ -700,7 +705,12 @@ export function RatesTable({
 				// Use allRates to find follow-up rate (includes newBusiness: false rates)
 				const followUpRate =
 					rate.type === "fixed"
-						? findVariableRate(rate, allRates, followUpLtv, inputValues.berRating)
+						? findVariableRate(
+								rate,
+								allRates,
+								followUpLtv,
+								inputValues.berRating,
+							)
 						: undefined;
 
 				const totalMonths = mortgageTerm * 12;
@@ -742,7 +752,15 @@ export function RatesTable({
 					combinedPerks,
 				};
 			}),
-		[rates, allRates, lenders, mortgageAmount, mortgageTerm, ltv, inputValues.berRating],
+		[
+			rates,
+			allRates,
+			lenders,
+			mortgageAmount,
+			mortgageTerm,
+			ltv,
+			inputValues.berRating,
+		],
 	);
 
 	if (rates.length === 0) {
@@ -755,109 +773,112 @@ export function RatesTable({
 
 	return (
 		<>
-		<DataTable
-			columns={columns}
-			data={data}
-			emptyMessage="No rates match your filters. Try adjusting your selection."
-			sorting={sorting}
-			onSortingChange={setSorting}
-			columnFilters={columnFilters}
-			onColumnFiltersChange={(filters) => {
-				setColumnFilters(filters);
-				setPageIndex(0);
-			}}
-			columnVisibility={columnVisibility}
-			onColumnVisibilityChange={setColumnVisibility}
-			pagination={{ pageIndex, pageSize }}
-			onPaginationChange={(newPagination) => {
-				setPageIndex(newPagination.pageIndex);
-				if (newPagination.pageSize !== pageSize) {
-					setPageSize(newPagination.pageSize);
-				}
-			}}
-			toolbar={(table) => {
-				const handleShare = async () => {
-					const url = generateRatesShareUrl({
-						input: inputValues,
-						table: {
-							columnVisibility,
-							columnFilters,
-							sorting,
-						},
-					});
-					await navigator.clipboard.writeText(url);
-					setCopied(true);
-					setTimeout(() => setCopied(false), 2000);
-				};
+			<DataTable
+				columns={columns}
+				data={data}
+				emptyMessage="No rates match your filters. Try adjusting your selection."
+				sorting={sorting}
+				onSortingChange={setSorting}
+				columnFilters={columnFilters}
+				onColumnFiltersChange={(filters) => {
+					setColumnFilters(filters);
+					setPageIndex(0);
+				}}
+				columnVisibility={columnVisibility}
+				onColumnVisibilityChange={setColumnVisibility}
+				pagination={{ pageIndex, pageSize }}
+				onPaginationChange={(newPagination) => {
+					setPageIndex(newPagination.pageIndex);
+					if (newPagination.pageSize !== pageSize) {
+						setPageSize(newPagination.pageSize);
+					}
+				}}
+				toolbar={(table) => {
+					const handleShare = async () => {
+						const url = generateRatesShareUrl({
+							input: inputValues,
+							table: {
+								columnVisibility,
+								columnFilters,
+								sorting,
+							},
+						});
+						await navigator.clipboard.writeText(url);
+						setCopied(true);
+						setTimeout(() => setCopied(false), 2000);
+					};
 
-				return (
-					<div className="flex justify-between">
-						<div className="flex gap-2">
-							<Dialog>
-								<DialogTrigger asChild>
-									<Button size="sm" className="h-8 gap-1.5">
-										<Plus className="h-4 w-4" />
-										<span className="hidden sm:inline">Add</span> Custom Rate
-									</Button>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>Add Custom Rate</DialogTitle>
-										<DialogDescription>
-											Add a custom mortgage rate to compare against lender
-											rates.
-										</DialogDescription>
-									</DialogHeader>
-									<div className="py-4 text-muted-foreground text-center">
-										Coming soon...
-									</div>
-								</DialogContent>
-							</Dialog>
-							<ColumnVisibilityToggle
-								table={table}
-								columnLabels={COLUMN_LABELS}
-							/>
+					return (
+						<div className="flex justify-between">
+							<div className="flex gap-2">
+								<Dialog>
+									<DialogTrigger asChild>
+										<Button size="sm" className="h-8 gap-1.5">
+											<Plus className="h-4 w-4" />
+											<span className="hidden sm:inline">Add</span> Custom Rate
+										</Button>
+									</DialogTrigger>
+									<DialogContent>
+										<DialogHeader>
+											<DialogTitle>Add Custom Rate</DialogTitle>
+											<DialogDescription>
+												Add a custom mortgage rate to compare against lender
+												rates.
+											</DialogDescription>
+										</DialogHeader>
+										<div className="py-4 text-muted-foreground text-center">
+											Coming soon...
+										</div>
+									</DialogContent>
+								</Dialog>
+								<ColumnVisibilityToggle
+									table={table}
+									columnLabels={COLUMN_LABELS}
+								/>
+							</div>
+							<div className="flex gap-2">
+								<RateUpdatesDialog
+									lenders={lenders}
+									ratesMetadata={ratesMetadata}
+								/>
+								<Button
+									variant="outline"
+									size="sm"
+									className="h-8 gap-1.5"
+									onClick={handleShare}
+								>
+									{copied ? (
+										<Check className="h-4 w-4" />
+									) : (
+										<Share2 className="h-4 w-4" />
+									)}
+									<span className="hidden sm:inline">
+										{copied ? "Copied!" : "Share"}
+									</span>
+								</Button>
+							</div>
 						</div>
-						<div className="flex gap-2">
-							<RateUpdatesDialog
-								lenders={lenders}
-								ratesMetadata={ratesMetadata}
-							/>
-							<Button
-								variant="outline"
-								size="sm"
-								className="h-8 gap-1.5"
-								onClick={handleShare}
-							>
-								{copied ? (
-									<Check className="h-4 w-4" />
-								) : (
-									<Share2 className="h-4 w-4" />
-								)}
-								<span className="hidden sm:inline">
-									{copied ? "Copied!" : "Share"}
-								</span>
-							</Button>
-						</div>
+					);
+				}}
+			/>
+
+			{/* Rate Details Modal */}
+			<Dialog
+				open={selectedRate !== null}
+				onOpenChange={(open) => !open && setSelectedRate(null)}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>{selectedRate?.name}</DialogTitle>
+						<DialogDescription>
+							View detailed information about this mortgage rate.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="py-4 text-muted-foreground text-center">
+						Coming soon...
 					</div>
-				);
-			}}
-		/>
-
-		{/* Rate Details Modal */}
-		<Dialog open={selectedRate !== null} onOpenChange={(open) => !open && setSelectedRate(null)}>
-			<DialogContent>
-				<DialogHeader>
-					<DialogTitle>{selectedRate?.name}</DialogTitle>
-					<DialogDescription>
-						View detailed information about this mortgage rate.
-					</DialogDescription>
-				</DialogHeader>
-				<div className="py-4 text-muted-foreground text-center">
-					Coming soon...
-				</div>
-			</DialogContent>
-		</Dialog>
+				</DialogContent>
+			</Dialog>
 		</>
 	);
 }

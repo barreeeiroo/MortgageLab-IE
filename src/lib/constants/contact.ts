@@ -34,7 +34,7 @@ interface IncorrectRateParams {
  * Generate a URL for reporting an incorrect rate
  */
 export function getIncorrectRateUrl({
-	lenderId,
+	lenderId: _lenderId,
 	rateName,
 	rateId,
 	sourceUrl,
