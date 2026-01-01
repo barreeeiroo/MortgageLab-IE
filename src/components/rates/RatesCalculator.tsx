@@ -50,13 +50,20 @@ export function RatesCalculator() {
 	useEffect(() => {
 		const prevMode = prevModeRef.current;
 		if (prevMode !== null && prevMode !== values.mode) {
-			if (
-				isRemortgage &&
-				(values.buyerType === "ftb" || values.buyerType === "mover")
-			) {
-				setValues((v) => ({ ...v, buyerType: "mover" }));
-			} else if (!isRemortgage && values.buyerType === "mover") {
-				setValues((v) => ({ ...v, buyerType: "ftb" }));
+			if (isRemortgage) {
+				// Switching to remortgage: map to switcher types
+				if (values.buyerType === "ftb" || values.buyerType === "mover") {
+					setValues((v) => ({ ...v, buyerType: "switcher-pdh" }));
+				} else if (values.buyerType === "btl") {
+					setValues((v) => ({ ...v, buyerType: "switcher-btl" }));
+				}
+			} else {
+				// Switching to first-mortgage: map from switcher types
+				if (values.buyerType === "switcher-pdh") {
+					setValues((v) => ({ ...v, buyerType: "mover" }));
+				} else if (values.buyerType === "switcher-btl") {
+					setValues((v) => ({ ...v, buyerType: "btl" }));
+				}
 			}
 		}
 		prevModeRef.current = values.mode;
@@ -140,7 +147,9 @@ export function RatesCalculator() {
 
 	// Validation logic
 	const isPrimaryResidence =
-		values.buyerType === "ftb" || values.buyerType === "mover";
+		values.buyerType === "ftb" ||
+		values.buyerType === "mover" ||
+		values.buyerType === "switcher-pdh";
 	const maxLtv = isPrimaryResidence ? 90 : 70;
 
 	const isMortgageAboveProperty =
@@ -157,7 +166,8 @@ export function RatesCalculator() {
 	if (isMortgageAboveProperty) {
 		errorMessage = `${isRemortgage ? "Outstanding balance" : "Mortgage amount"} cannot exceed property value.`;
 	} else if (isLtvAboveMax) {
-		errorMessage = `Maximum LTV for ${isPrimaryResidence ? "primary residence" : "this buyer type"} is ${maxLtv}%. ${isPrimaryResidence ? "Reduce mortgage amount or increase property value." : "Consider a larger deposit."}`;
+		const amountTerm = isRemortgage ? "outstanding balance" : "mortgage amount";
+		errorMessage = `Maximum LTV for ${isPrimaryResidence ? "primary residence" : "this buyer type"} is ${maxLtv}%. Consider a smaller ${amountTerm} or higher property value.`;
 	}
 
 	const warningMessage = hasWarning

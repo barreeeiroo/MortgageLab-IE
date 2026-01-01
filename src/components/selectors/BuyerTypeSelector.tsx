@@ -15,8 +15,8 @@ const BUYER_TYPE_OPTIONS: { value: BuyerType; label: string }[] = [
 ];
 
 const REMORTGAGE_TYPE_OPTIONS: { value: BuyerType; label: string }[] = [
-	{ value: "mover", label: "Owner Occupied (Primary Residence)" },
-	{ value: "btl", label: "Other Switcher (2nd Home, Buy To Let, etc.)" },
+	{ value: "switcher-pdh", label: "Owner Occupied (Primary Residence)" },
+	{ value: "switcher-btl", label: "Other Switcher (2nd Home, Buy To Let, etc.)" },
 ];
 
 interface BuyerTypeSelectorProps {
