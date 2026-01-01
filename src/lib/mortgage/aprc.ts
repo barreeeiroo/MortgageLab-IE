@@ -49,34 +49,44 @@ export function calculateAprc(
 			calculateMonthlyPayment(config.loanAmount, fixedRate, totalMonths) * 100,
 		) / 100;
 
-	const balanceAfterFixed = calculateRemainingBalance(
-		config.loanAmount,
-		fixedRate,
-		totalMonths,
-		fixedTermMonths,
-	);
-
-	const variablePayment =
-		Math.round(
-			calculateMonthlyPayment(balanceAfterFixed, followOnRate, variableMonths) *
-				100,
-		) / 100;
-
 	// Build cash flows: drawdown (negative), then repayments (positive)
 	// Per EU directive: net amount = loan amount - fees deducted at drawdown
 	const netLoanAmount = config.loanAmount - config.valuationFee;
 	const cashFlows: number[] = [-netLoanAmount];
 
-	for (let i = 0; i < fixedTermMonths; i++) {
-		cashFlows.push(fixedPayment);
-	}
+	if (variableMonths <= 0) {
+		// Pure fixed/variable rate for entire term - no rate change
+		for (let i = 0; i < totalMonths - 1; i++) {
+			cashFlows.push(fixedPayment);
+		}
+		// Final payment includes the security release fee
+		cashFlows.push(fixedPayment + config.securityReleaseFee);
+	} else {
+		// Fixed period followed by variable period
+		const balanceAfterFixed = calculateRemainingBalance(
+			config.loanAmount,
+			fixedRate,
+			totalMonths,
+			fixedTermMonths,
+		);
 
-	for (let i = 0; i < variableMonths - 1; i++) {
-		cashFlows.push(variablePayment);
-	}
+		const variablePayment =
+			Math.round(
+				calculateMonthlyPayment(balanceAfterFixed, followOnRate, variableMonths) *
+					100,
+			) / 100;
 
-	// Final payment includes the security release fee
-	cashFlows.push(variablePayment + config.securityReleaseFee);
+		for (let i = 0; i < fixedTermMonths; i++) {
+			cashFlows.push(fixedPayment);
+		}
+
+		for (let i = 0; i < variableMonths - 1; i++) {
+			cashFlows.push(variablePayment);
+		}
+
+		// Final payment includes the security release fee
+		cashFlows.push(variablePayment + config.securityReleaseFee);
+	}
 
 	// Newton-Raphson to find monthly rate where NPV = 0
 	let monthlyRate = fixedRate / 100 / 12; // Initial guess

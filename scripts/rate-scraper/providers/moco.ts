@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { type AprcConfig, inferFollowOnRate } from "@/lib/mortgage";
+import { type AprcConfig, calculateAprc, inferFollowOnRate } from "@/lib/mortgage";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
@@ -131,6 +131,11 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		const medianSvr = inferredSvrs[Math.floor(inferredSvrs.length / 2)];
 		console.log(`Inferred median SVR: ${medianSvr}%`);
 
+		// Calculate APRC for variable rate (same rate for entire term)
+		const fullTermMonths = APRC_CONFIG.termYears * 12;
+		const svrAprc = calculateAprc(medianSvr, fullTermMonths, medianSvr, APRC_CONFIG);
+		console.log(`Calculated SVR APRC: ${svrAprc}%`);
+
 		// Add the SVR as a variable rate product
 		rates.push({
 			id: `${LENDER_ID}-variable-svr`,
@@ -138,6 +143,7 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 			lenderId: LENDER_ID,
 			type: "variable",
 			rate: medianSvr,
+			apr: svrAprc,
 			minLtv: 0,
 			maxLtv: 90,
 			buyerTypes: BUYER_TYPES,

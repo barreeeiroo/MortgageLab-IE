@@ -1,8 +1,8 @@
 {
 	"lenderId": "moco",
-	"lastScrapedAt": "2026-01-01T01:14:03.253Z",
-	"lastUpdatedAt": "2026-01-01T00:47:39.025Z",
-	"ratesHash": "7a88da0cb8627c3be007d3800ba64c7d81e64faea230d5491277f21c3ceaa9ba",
+	"lastScrapedAt": "2026-01-01T01:17:58.046Z",
+	"lastUpdatedAt": "2026-01-01T01:17:58.046Z",
+	"ratesHash": "315d229b4141e463ea358b89c25df9b3a2ec2327d9e6f1133207d1510e0fccd9",
 	"rates": [
 		{
 			"id": "moco-fixed-3yr-50",
@@ -180,6 +180,7 @@
 			"lenderId": "moco",
 			"type": "variable",
 			"rate": 3.96,
+			"apr": 4.04,
 			"minLtv": 0,
 			"maxLtv": 90,
 			"buyerTypes": [
