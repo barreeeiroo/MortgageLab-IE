@@ -5,6 +5,7 @@ import {
 	ArrowUpDown,
 	Check,
 	ListFilter,
+	Plus,
 	Share2,
 	TriangleAlert,
 } from "lucide-react";
@@ -33,6 +34,14 @@ import {
 	type SortingState,
 	type VisibilityState,
 } from "../ui/data-table";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "../ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
@@ -558,10 +567,32 @@ export function RatesTable({
 
 				return (
 					<div className="flex justify-between">
-						<ColumnVisibilityToggle
-							table={table}
-							columnLabels={COLUMN_LABELS}
-						/>
+						<div className="flex gap-2">
+							<Dialog>
+								<DialogTrigger asChild>
+									<Button size="sm" className="h-8 gap-1.5">
+										<Plus className="h-4 w-4" />
+										<span className="hidden sm:inline">Add</span> Custom Rate
+									</Button>
+								</DialogTrigger>
+								<DialogContent>
+									<DialogHeader>
+										<DialogTitle>Add Custom Rate</DialogTitle>
+										<DialogDescription>
+											Add a custom mortgage rate to compare against lender
+											rates.
+										</DialogDescription>
+									</DialogHeader>
+									<div className="py-4 text-muted-foreground text-center">
+										Coming soon...
+									</div>
+								</DialogContent>
+							</Dialog>
+							<ColumnVisibilityToggle
+								table={table}
+								columnLabels={COLUMN_LABELS}
+							/>
+						</div>
 						<div className="flex gap-2">
 							<RateUpdatesDialog
 								lenders={lenders}
@@ -578,7 +609,9 @@ export function RatesTable({
 								) : (
 									<Share2 className="h-4 w-4" />
 								)}
-								{copied ? "Copied!" : "Share"}
+								<span className="hidden sm:inline">
+									{copied ? "Copied!" : "Share"}
+								</span>
 							</Button>
 						</div>
 					</div>

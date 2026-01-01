@@ -28,7 +28,7 @@ export function ColumnVisibilityToggle<TData>({
 			<DropdownMenuTrigger asChild>
 				<Button variant="outline" size="sm" className="h-8 gap-1.5">
 					<Settings2 className="h-4 w-4" />
-					Columns
+					<span className="hidden sm:inline">Columns</span>
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-40">
