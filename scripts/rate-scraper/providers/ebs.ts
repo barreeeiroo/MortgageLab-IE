@@ -164,7 +164,10 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 					const rateText = $(cells[0]).text().trim();
 					const aprText = $(cells[1]).text().trim();
 
-					if (!rateText.includes("%") || rateText.toLowerCase().includes("rate"))
+					if (
+						!rateText.includes("%") ||
+						rateText.toLowerCase().includes("rate")
+					)
 						return;
 
 					try {

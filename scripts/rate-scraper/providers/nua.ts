@@ -268,6 +268,8 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		buyerTypes: ["ftb", "mover", "switcher-pdh"],
 		newBusiness: false, // SVR is for existing customers after fixed period ends
 		perks: [],
+		warning:
+			"This rate is not publicly listed on their website, but is used as part of the APRC calculation.",
 	});
 
 	console.log(`Parsed ${rates.length} rates from Núa (including SVR)`);

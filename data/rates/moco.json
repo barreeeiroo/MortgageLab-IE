@@ -1,8 +1,8 @@
 {
 	"lenderId": "moco",
-	"lastScrapedAt": "2025-12-31T17:20:17.742Z",
-	"lastUpdatedAt": "2025-12-31T17:20:17.742Z",
-	"ratesHash": "48f341f2e9e1e873d57ef7a25e0ec16f9afeecad4f5c7d647953305c0d9f0ae1",
+	"lastScrapedAt": "2026-01-01T00:47:39.025Z",
+	"lastUpdatedAt": "2026-01-01T00:47:39.025Z",
+	"ratesHash": "7a88da0cb8627c3be007d3800ba64c7d81e64faea230d5491277f21c3ceaa9ba",
 	"rates": [
 		{
 			"id": "moco-fixed-3yr-50",
@@ -173,6 +173,23 @@
 				"switcher-pdh"
 			],
 			"perks": []
+		},
+		{
+			"id": "moco-variable-svr",
+			"name": "Standard Variable Rate",
+			"lenderId": "moco",
+			"type": "variable",
+			"rate": 3.96,
+			"minLtv": 0,
+			"maxLtv": 90,
+			"buyerTypes": [
+				"ftb",
+				"mover",
+				"switcher-pdh"
+			],
+			"newBusiness": false,
+			"perks": [],
+			"warning": "This rate is not publicly disclosed. It has been inferred from APRC values."
 		}
 	]
 }

@@ -120,6 +120,11 @@ export function filterRates(
 					return false;
 				}
 			}
+		} else {
+			// No current lender (new mortgage): exclude existing customer only rates
+			if (rate.newBusiness === false) {
+				return false;
+			}
 		}
 
 		return true;

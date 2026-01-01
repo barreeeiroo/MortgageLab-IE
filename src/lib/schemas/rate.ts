@@ -28,6 +28,9 @@ export const MortgageRateSchema = z.object({
 
 	// Rate-specific perk IDs
 	perks: z.array(z.string()).default([]),
+
+	// Optional warning message (e.g., for inferred rates)
+	warning: z.string().optional(),
 });
 export type MortgageRate = z.infer<typeof MortgageRateSchema>;
 

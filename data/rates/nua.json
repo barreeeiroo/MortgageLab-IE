@@ -1,6 +1,6 @@
 {
 	"lenderId": "nua",
-	"lastScrapedAt": "2025-12-31T17:56:55.409Z",
+	"lastScrapedAt": "2026-01-01T00:48:07.211Z",
 	"lastUpdatedAt": "2025-12-31T17:55:03.377Z",
 	"ratesHash": "6ebeb622ce78d4ab2a5adc7e0425b14e266ea40b09d6697c78a91edd82623bb8",
 	"rates": [
@@ -722,7 +722,8 @@
 				"switcher-pdh"
 			],
 			"newBusiness": false,
-			"perks": []
+			"perks": [],
+			"warning": "This rate is not publicly listed on their website, but is used as part of the APRC calculation."
 		}
 	]
 }

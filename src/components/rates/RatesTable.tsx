@@ -1,5 +1,11 @@
 import type { Column, ColumnDef, FilterFn } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, ListFilter } from "lucide-react";
+import {
+	ArrowDown,
+	ArrowUp,
+	ArrowUpDown,
+	ListFilter,
+	TriangleAlert,
+} from "lucide-react";
 import { useMemo } from "react";
 import {
 	getAvailableFixedTerms,
@@ -25,6 +31,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "../ui/tooltip";
 import { RateUpdatesDialog } from "./RateUpdatesDialog";
 
 interface RatesMetadata {
@@ -270,12 +281,24 @@ function createColumns(
 			accessorKey: "name",
 			header: "Product",
 			cell: ({ row }) => (
-				<div>
-					<p className="font-medium">{row.original.name}</p>
-					<p className="text-xs text-muted-foreground">
-						LTV {row.original.minLtv > 0 ? `${row.original.minLtv}-` : "≤"}
-						{row.original.maxLtv}%
-					</p>
+				<div className="flex items-start gap-1.5">
+					<div>
+						<p className="font-medium">{row.original.name}</p>
+						<p className="text-xs text-muted-foreground">
+							LTV {row.original.minLtv > 0 ? `${row.original.minLtv}-` : "≤"}
+							{row.original.maxLtv}%
+						</p>
+					</div>
+					{row.original.warning && (
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<TriangleAlert className="h-4 w-4 text-yellow-500 shrink-0 mt-0.5" />
+							</TooltipTrigger>
+							<TooltipContent className="max-w-xs">
+								{row.original.warning}
+							</TooltipContent>
+						</Tooltip>
+					)}
 				</div>
 			),
 			enableHiding: false,

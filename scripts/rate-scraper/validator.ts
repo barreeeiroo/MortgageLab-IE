@@ -5,6 +5,7 @@ import { join } from "node:path";
 import type { MortgageRate, RatesFile } from "../../src/lib/schemas/rate";
 
 const RATES_DIR = join(import.meta.dir, "../../data/rates");
+const LENDERS_FILE = join(import.meta.dir, "../../data/lenders.json");
 
 interface DuplicateIdError {
 	lenderId: string;
@@ -30,12 +31,35 @@ interface MixedBuyerTypesError {
 	buyerTypes: string[];
 }
 
-type ValidationError = DuplicateIdError | BtlLtvError | MixedBuyerTypesError;
+interface FollowOnRateError {
+	lenderId: string;
+	type: "follow-on-rate";
+	message: string;
+	rateId: string;
+	matchingVariableRates: string[];
+}
+
+interface FollowOnRateWarning {
+	lenderId: string;
+	type: "follow-on-rate-ltv-dependent";
+	message: string;
+	rateId: string;
+	matchingVariableRates: string[];
+}
+
+type ValidationError =
+	| DuplicateIdError
+	| BtlLtvError
+	| MixedBuyerTypesError
+	| FollowOnRateError;
+
+type ValidationWarning = FollowOnRateWarning;
 
 interface ValidationResult {
 	lenderId: string;
 	totalRates: number;
 	errors: ValidationError[];
+	warnings: ValidationWarning[];
 	isValid: boolean;
 }
 
@@ -44,6 +68,7 @@ async function validateLenderRates(
 	rates: MortgageRate[],
 ): Promise<ValidationResult> {
 	const errors: ValidationError[] = [];
+	const warnings: ValidationWarning[] = [];
 
 	// Check for duplicate IDs
 	const idCounts = new Map<string, number>();
@@ -94,10 +119,105 @@ async function validateLenderRates(
 		}
 	}
 
+	// Check each fixed rate has exactly one corresponding variable rate for follow-on
+	const fixedRates = rates.filter((r) => r.type === "fixed");
+	const variableRates = rates.filter((r) => r.type === "variable");
+
+	const arraysEqual = (a: string[], b: string[]) => {
+		const sortedA = [...a].sort();
+		const sortedB = [...b].sort();
+		return (
+			sortedA.length === sortedB.length &&
+			sortedA.every((v, i) => v === sortedB[i])
+		);
+	};
+
+	for (const fixedRate of fixedRates) {
+		const baseFilter = (varRate: MortgageRate) => {
+			// Check buyerTypes overlap (BTL must match BTL, PDH must match PDH)
+			const fixedIsBtl = fixedRate.buyerTypes.some((bt) =>
+				btlBuyerTypes.includes(bt),
+			);
+			const varIsBtl = varRate.buyerTypes.some((bt) =>
+				btlBuyerTypes.includes(bt),
+			);
+			if (fixedIsBtl !== varIsBtl) {
+				return false;
+			}
+			// Fixed rate's LTV band must overlap with variable rate's LTV band
+			if (
+				fixedRate.maxLtv <= varRate.minLtv ||
+				fixedRate.minLtv >= varRate.maxLtv
+			) {
+				return false;
+			}
+			if (varRate.newBusiness === true) {
+				return false;
+			}
+			return true;
+		};
+
+		// First try to find variable rates with matching berEligible
+		const fixedBer = fixedRate.berEligible ?? [];
+		let matchingVariables = variableRates.filter((varRate) => {
+			if (!baseFilter(varRate)) return false;
+			const varBer = varRate.berEligible ?? [];
+			return arraysEqual(fixedBer, varBer);
+		});
+
+		// If no exact berEligible match, fall back to variable rates without berEligible
+		if (matchingVariables.length === 0) {
+			matchingVariables = variableRates.filter((varRate) => {
+				if (!baseFilter(varRate)) return false;
+				return varRate.berEligible === undefined;
+			});
+		}
+
+		const allSameRate =
+			matchingVariables.length > 0 &&
+			matchingVariables.every((v) => v.rate === matchingVariables[0].rate);
+
+		if (matchingVariables.length === 0) {
+			errors.push({
+				lenderId,
+				type: "follow-on-rate",
+				message: `Fixed rate "${fixedRate.id}" has no matching variable rate for follow-on`,
+				rateId: fixedRate.id,
+				matchingVariableRates: [],
+			});
+		} else if (!allSameRate) {
+			const matchIds = matchingVariables.map((r) => r.id);
+			const hasOverlappingLtvBands = matchingVariables.some((v1, i) =>
+				matchingVariables.some(
+					(v2, j) => i < j && v1.minLtv < v2.maxLtv && v2.minLtv < v1.maxLtv,
+				),
+			);
+
+			if (!hasOverlappingLtvBands) {
+				warnings.push({
+					lenderId,
+					type: "follow-on-rate-ltv-dependent",
+					message: `Fixed rate "${fixedRate.id}" has LTV-dependent follow-on rates: [${matchIds.join(", ")}]`,
+					rateId: fixedRate.id,
+					matchingVariableRates: matchIds,
+				});
+			} else {
+				errors.push({
+					lenderId,
+					type: "follow-on-rate",
+					message: `Fixed rate "${fixedRate.id}" has ${matchingVariables.length} matching variable rates with different rates: [${matchIds.join(", ")}]`,
+					rateId: fixedRate.id,
+					matchingVariableRates: matchIds,
+				});
+			}
+		}
+	}
+
 	return {
 		lenderId,
 		totalRates: rates.length,
 		errors,
+		warnings,
 		isValid: errors.length === 0,
 	};
 }
@@ -105,8 +225,18 @@ async function validateLenderRates(
 async function main() {
 	console.log("Validating rate files...\n");
 
+	const lendersContent = await readFile(LENDERS_FILE, "utf-8");
+	const lenders = JSON.parse(lendersContent) as { id: string }[];
+	const lenderIds = lenders.map((l) => l.id);
+
 	const files = await readdir(RATES_DIR);
-	const jsonFiles = files.filter((f) => f.endsWith(".json"));
+	const jsonFiles = files
+		.filter((f) => f.endsWith(".json"))
+		.sort((a, b) => {
+			const aId = a.replace(".json", "");
+			const bId = b.replace(".json", "");
+			return lenderIds.indexOf(aId) - lenderIds.indexOf(bId);
+		});
 
 	const results: ValidationResult[] = [];
 	let hasErrors = false;
@@ -142,7 +272,8 @@ async function main() {
 	console.log("=".repeat(60));
 
 	for (const result of results) {
-		const status = result.isValid ? "✓" : "✗";
+		const hasWarnings = result.warnings.length > 0;
+		const status = result.isValid ? (hasWarnings ? "⚠" : "✓") : "✗";
 		console.log(`\n${status} ${result.lenderId.toUpperCase()}`);
 		console.log(`  Total rates: ${result.totalRates}`);
 
@@ -150,6 +281,13 @@ async function main() {
 			console.log(`  Errors (${result.errors.length}):`);
 			for (const error of result.errors) {
 				console.log(`    - ${error.message}`);
+			}
+		}
+
+		if (result.warnings.length > 0) {
+			console.log(`  Warnings (${result.warnings.length}):`);
+			for (const warning of result.warnings) {
+				console.log(`    - ${warning.message}`);
 			}
 		}
 	}

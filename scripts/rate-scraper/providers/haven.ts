@@ -96,7 +96,8 @@ function getSectionTypeFromTab(tabText: string): SectionType {
 	const lower = tabText.toLowerCase();
 	if (lower.includes("variable") && lower.includes("existing"))
 		return "existing-variable";
-	if (lower.includes("variable") && lower.includes("new")) return "new-variable";
+	if (lower.includes("variable") && lower.includes("new"))
+		return "new-variable";
 	if (lower.includes("fixed")) return "fixed";
 	return "unknown";
 }
