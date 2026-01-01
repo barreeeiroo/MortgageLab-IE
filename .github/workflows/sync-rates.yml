@@ -1,8 +1,8 @@
-name: Scrape Rates
+name: Sync Rates
 
 on:
   schedule:
-    - cron: "0 */4 * * *" # Every 4 hours
+    - cron: "0 8 * * *" # Daily at 8am UTC
   workflow_dispatch: # Allow manual trigger
 
 permissions:
@@ -10,7 +10,7 @@ permissions:
   actions: write
 
 jobs:
-  scrape:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Scrape all rates
+      - name: Sync all rates
         run: bun run rates:scrape-all --write-updates
 
       - name: Commit changes
