@@ -1,6 +1,14 @@
-import { Coins, HelpCircle, type LucideIcon, PiggyBank, X } from "lucide-react";
+import {
+	Coins,
+	HelpCircle,
+	type LucideIcon,
+	PiggyBank,
+	Play,
+	TriangleAlert,
+	X,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { GLOSSARY_TERMS_MAP } from "@/lib/constants";
+import { GLOSSARY_TERMS_MAP, getIncorrectRateUrl } from "@/lib/constants";
 import {
 	DEFAULT_MAX_TERM,
 	type Lender,
@@ -19,6 +27,7 @@ import {
 import type { AprcConfig } from "@/lib/mortgage/aprc";
 import { formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
+import { Button } from "../ui/button";
 import {
 	Dialog,
 	DialogClose,
@@ -46,6 +55,7 @@ interface RateInfoModalProps {
 	mortgageTerm: number;
 	ltv: number;
 	berRating?: string;
+	mode?: "first-mortgage" | "remortgage";
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }
@@ -281,6 +291,7 @@ export function RateInfoModal({
 	mortgageTerm,
 	ltv,
 	berRating,
+	mode,
 	open,
 	onOpenChange,
 }: RateInfoModalProps) {
@@ -594,6 +605,37 @@ export function RateInfoModal({
 							)}
 						</div>
 					</div>
+				</div>
+
+				{/* Sticky Footer */}
+				<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex items-center justify-between">
+					<Button
+						variant="ghost"
+						size="sm"
+						className="gap-1.5 text-muted-foreground hover:text-foreground"
+						asChild
+					>
+						<a
+							href={getIncorrectRateUrl({
+								lenderId: rate.lenderId,
+								rateName: rate.name,
+								rateId: rate.id,
+								sourceUrl: lender?.ratesUrl,
+								reportSource: "Rate Info dialog",
+							})}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<TriangleAlert className="h-4 w-4" />
+							Incorrect Info?
+						</a>
+					</Button>
+					{mode === "first-mortgage" && (
+						<Button className="gap-1.5">
+							<Play className="h-4 w-4" />
+							Simulate
+						</Button>
+					)}
 				</div>
 			</DialogContent>
 		</Dialog>

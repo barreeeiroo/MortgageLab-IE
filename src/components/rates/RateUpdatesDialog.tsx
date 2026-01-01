@@ -1,6 +1,7 @@
 import { format, formatDistanceToNow } from "date-fns";
-import { Clock, ExternalLink } from "lucide-react";
+import { CirclePlus, Clock, ExternalLink } from "lucide-react";
 import { useState } from "react";
+import { getNewRateUrl } from "@/lib/constants";
 import type { Lender, RatesMetadata } from "@/lib/schemas";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
@@ -48,11 +49,11 @@ export function RateUpdatesDialog({
 						<span className="hidden sm:inline">Rate Updates</span>
 					</Button>
 				</DialogTrigger>
-				<DialogContent className="sm:max-w-2xl">
-					<DialogHeader>
+				<DialogContent className="sm:max-w-2xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0">
+					<DialogHeader className="px-6 pt-6 pb-4">
 						<DialogTitle>Rate Update Information</DialogTitle>
 					</DialogHeader>
-					<div className="overflow-x-auto">
+					<div className="flex-1 overflow-y-auto px-6 pb-4">
 						<table className="w-full text-sm">
 							<thead>
 								<tr className="border-b text-muted-foreground">
@@ -126,6 +127,27 @@ export function RateUpdatesDialog({
 								})}
 							</tbody>
 						</table>
+					</div>
+
+					{/* Sticky Footer */}
+					<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t">
+						<Button
+							variant="ghost"
+							size="sm"
+							className="gap-1.5 text-muted-foreground hover:text-foreground"
+							asChild
+						>
+							<a
+								href={getNewRateUrl({
+									reportSource: "Rate Updates dialog",
+								})}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<CirclePlus className="h-4 w-4" />
+								Missing Rates?
+							</a>
+						</Button>
 					</div>
 				</DialogContent>
 			</Dialog>

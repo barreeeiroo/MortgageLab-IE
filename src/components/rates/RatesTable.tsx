@@ -969,6 +969,7 @@ export function RatesTable({
 				mortgageTerm={mortgageTerm}
 				ltv={ltv}
 				berRating={inputValues.berRating}
+				mode={inputValues.mode}
 				open={selectedRate !== null}
 				onOpenChange={(open) => !open && setSelectedRate(null)}
 			/>

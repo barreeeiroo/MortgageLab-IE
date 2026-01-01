@@ -27,7 +27,10 @@ interface IncorrectRateParams {
 	rateName: string;
 	rateId?: string;
 	sourceUrl?: string;
-	additional?: string;
+	/** Where the report was generated from (e.g., "Rate Info dialog", "Rates table") */
+	reportSource: string;
+	/** Additional context to include before the footer */
+	additionalContext?: string;
 }
 
 /**
@@ -38,7 +41,8 @@ export function getIncorrectRateUrl({
 	rateName,
 	rateId,
 	sourceUrl,
-	additional,
+	reportSource,
+	additionalContext,
 }: IncorrectRateParams): string {
 	const params = new URLSearchParams({
 		template: "3-incorrect-rate.yml",
@@ -50,29 +54,37 @@ export function getIncorrectRateUrl({
 		params.set("source", sourceUrl);
 	}
 
-	if (additional) {
-		params.set("additional", additional);
-	}
+	// Build additional info with placeholder and italics footer
+	const additionalParts = [
+		additionalContext ?? "[Replace this with what you think is incorrect]",
+		"",
+		`_Reported from ${reportSource}_`,
+	];
+	params.set("additional", additionalParts.join("\n"));
 
 	return `${AUTHOR.github}/issues/new?${params.toString()}`;
 }
 
 interface NewRateParams {
+	/** Where the report was generated from (e.g., "Rate Updates dialog") */
+	reportSource: string;
 	lenderId?: string;
 	rateDescription?: string;
 	sourceUrl?: string;
-	additional?: string;
+	/** Additional context to include before the footer */
+	additionalContext?: string;
 }
 
 /**
  * Generate a URL for requesting a new rate
  */
 export function getNewRateUrl({
+	reportSource,
 	lenderId,
 	rateDescription,
 	sourceUrl,
-	additional,
-}: NewRateParams = {}): string {
+	additionalContext,
+}: NewRateParams): string {
 	const params = new URLSearchParams({
 		template: "4-new-rate.yml",
 	});
@@ -89,9 +101,13 @@ export function getNewRateUrl({
 		params.set("source", sourceUrl);
 	}
 
-	if (additional) {
-		params.set("additional", additional);
-	}
+	// Build additional info with placeholder and italics footer
+	const additionalParts = [
+		additionalContext ?? "[Replace this with details about the missing rate]",
+		"",
+		`_Reported from ${reportSource}_`,
+	];
+	params.set("additional", additionalParts.join("\n"));
 
 	return `${AUTHOR.github}/issues/new?${params.toString()}`;
 }
@@ -193,7 +209,7 @@ export function getMissingVariableRateUrl({
 	const modeLabel =
 		mode === "remortgage" ? "Remortgage / Switcher" : "First Mortgage";
 
-	const additional = [
+	const additionalContext = [
 		`**Issue:** Unable to find a matching variable rate for follow-up payment calculation.`,
 		``,
 		`**Fixed Rate Details:**`,
@@ -220,6 +236,7 @@ export function getMissingVariableRateUrl({
 		rateName: `${lenderName} - ${fixedRateName}`,
 		rateId: fixedRateId,
 		sourceUrl: ratesUrl,
-		additional,
+		reportSource: "Rates table follow-up column",
+		additionalContext,
 	});
 }
