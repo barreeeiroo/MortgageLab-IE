@@ -251,6 +251,15 @@ export function parseLtvFromName(name: string): LtvBand {
 		return { minLtv: 0, maxLtv: 80 };
 	}
 
+	// >70% (without upper bound) - typically means 70-90%
+	if (
+		lowerName.includes(">70%") ||
+		lowerName.includes("&gt;70%") ||
+		lowerName.includes("greaterthan70%")
+	) {
+		return { minLtv: 70, maxLtv: 90 };
+	}
+
 	// >80% to 90%
 	if (
 		lowerName.includes(">80%") ||

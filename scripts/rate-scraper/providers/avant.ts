@@ -65,6 +65,62 @@ function parseFlexMortgageTable($: cheerio.CheerioAPI): MortgageRate[] {
 	return rates;
 }
 
+function parseFollowOnVariableTable(
+	$: cheerio.CheerioAPI,
+	container: cheerio.Cheerio<cheerio.Element>,
+): MortgageRate[] {
+	const rates: MortgageRate[] = [];
+
+	// Find sections with "Follow-on Variable" heading
+	container.find(".am-figures-table__tab-section").each((_, section) => {
+		const headingEl = $(section)
+			.find(".am-figures-table__section-heading")
+			.first();
+		const heading = headingEl.text().trim().toLowerCase();
+
+		if (!heading.includes("follow-on") && !heading.includes("follow on")) {
+			return;
+		}
+
+		$(section)
+			.find(".am-figures-table__section-row")
+			.each((_, row) => {
+				const cells = $(row).find("> div").toArray();
+				if (cells.length < 3) return;
+
+				const ltvText = $(cells[0]).text().trim();
+				const rateText = $(cells[1]).text().trim();
+				const aprText = $(cells[2]).text().trim();
+
+				if (!ltvText || !rateText.includes("%")) return;
+
+				try {
+					const { minLtv, maxLtv } = parseLtvFromName(ltvText);
+					const rate = parsePercentageOrThrow(rateText);
+					const apr = parsePercentageOrThrow(aprText);
+
+					rates.push({
+						id: `avant-follow-on-variable-${maxLtv}`,
+						name: `Follow-On Variable - LTV ≤${maxLtv}%`,
+						lenderId: LENDER_ID,
+						type: "variable",
+						rate,
+						apr,
+						minLtv,
+						maxLtv,
+						buyerTypes: BUYER_TYPES,
+						newBusiness: false, // Only for existing customers rolling off fixed term
+						perks: [],
+					});
+				} catch {
+					// Skip unparseable rows
+				}
+			});
+	});
+
+	return rates;
+}
+
 function parseFixedTermTable(
 	$: cheerio.CheerioAPI,
 	container: cheerio.Cheerio<cheerio.Element>,
@@ -191,18 +247,24 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	console.log("Parsing Flex Mortgage rates...");
 	rates.push(...parseFlexMortgageTable($));
 
-	// Find Fixed Term Rates section
+	// Find rate sections by article title
 	$(".journal-content-article").each((_, article) => {
 		const title = $(article).attr("data-analytics-asset-title") || "";
+		const titleLower = title.toLowerCase();
 
-		if (title.toLowerCase().includes("fixed term rates")) {
+		if (titleLower.includes("fixed term rates")) {
 			console.log("Parsing Fixed Term rates...");
 			rates.push(...parseFixedTermTable($, $(article)));
 		}
 
-		if (title.toLowerCase().includes("one mortgage rates")) {
+		if (titleLower.includes("one mortgage rates")) {
 			console.log("Parsing One Mortgage rates...");
 			rates.push(...parseOneMortgageTable($, $(article)));
+		}
+
+		if (titleLower.includes("follow on variable")) {
+			console.log("Parsing Follow-On Variable rates...");
+			rates.push(...parseFollowOnVariableTable($, $(article)));
 		}
 	});
 

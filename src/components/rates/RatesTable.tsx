@@ -47,6 +47,7 @@ interface RatesMetadata {
 
 interface RatesTableProps {
 	rates: MortgageRate[];
+	allRates: MortgageRate[]; // Unfiltered rates for follow-up calculation
 	lenders: Lender[];
 	ratesMetadata: RatesMetadata[];
 	mortgageAmount: number;
@@ -410,6 +411,7 @@ function createColumns(
 
 export function RatesTable({
 	rates,
+	allRates,
 	lenders,
 	ratesMetadata,
 	mortgageAmount,
@@ -434,8 +436,9 @@ export function RatesTable({
 	const data = useMemo<RateRow[]>(
 		() =>
 			rates.map((rate) => {
+				// Use allRates to find follow-up rate (includes newBusiness: false rates)
 				const followUpRate =
-					rate.type === "fixed" ? findVariableRate(rate, rates) : undefined;
+					rate.type === "fixed" ? findVariableRate(rate, allRates) : undefined;
 				return {
 					...rate,
 					monthlyPayment: calculateMonthlyPayment(
@@ -452,7 +455,7 @@ export function RatesTable({
 					),
 				};
 			}),
-		[rates, mortgageAmount, mortgageTerm],
+		[rates, allRates, mortgageAmount, mortgageTerm],
 	);
 
 	if (rates.length === 0) {

@@ -54,6 +54,8 @@ export function calculateRemainingBalance(
 /**
  * Find the best matching variable rate for a fixed rate.
  * Matches by lender and overlapping LTV range.
+ * Prefers follow-on rates (newBusiness: false) over new business rates,
+ * since customers rolling off fixed terms typically get the follow-on rate.
  *
  * @param fixedRate - The fixed rate to find a follow-up for
  * @param allRates - All available rates to search through
@@ -63,13 +65,22 @@ export function findVariableRate(
 	fixedRate: MortgageRate,
 	allRates: MortgageRate[],
 ): MortgageRate | undefined {
-	return allRates.find(
+	const matchingVariables = allRates.filter(
 		(r) =>
 			r.type === "variable" &&
 			r.lenderId === fixedRate.lenderId &&
 			r.minLtv <= fixedRate.maxLtv &&
 			r.maxLtv >= fixedRate.minLtv,
 	);
+
+	if (matchingVariables.length === 0) return undefined;
+
+	// Prefer follow-on rates (newBusiness: false) for existing customers
+	const followOnRate = matchingVariables.find((r) => r.newBusiness === false);
+	if (followOnRate) return followOnRate;
+
+	// Fall back to any matching variable rate
+	return matchingVariables[0];
 }
 
 /**

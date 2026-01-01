@@ -173,9 +173,16 @@ async function validateLenderRates(
 			});
 		}
 
+		// If we have follow-on rates (newBusiness: false), prioritize those
+		const followOnRates = matchingVariables.filter(
+			(r) => r.newBusiness === false,
+		);
+		const effectiveRates =
+			followOnRates.length > 0 ? followOnRates : matchingVariables;
+
 		const allSameRate =
-			matchingVariables.length > 0 &&
-			matchingVariables.every((v) => v.rate === matchingVariables[0].rate);
+			effectiveRates.length > 0 &&
+			effectiveRates.every((v) => v.rate === effectiveRates[0].rate);
 
 		if (matchingVariables.length === 0) {
 			errors.push({
@@ -186,9 +193,9 @@ async function validateLenderRates(
 				matchingVariableRates: [],
 			});
 		} else if (!allSameRate) {
-			const matchIds = matchingVariables.map((r) => r.id);
-			const hasOverlappingLtvBands = matchingVariables.some((v1, i) =>
-				matchingVariables.some(
+			const matchIds = effectiveRates.map((r) => r.id);
+			const hasOverlappingLtvBands = effectiveRates.some((v1, i) =>
+				effectiveRates.some(
 					(v2, j) => i < j && v1.minLtv < v2.maxLtv && v2.minLtv < v1.maxLtv,
 				),
 			);
@@ -205,7 +212,7 @@ async function validateLenderRates(
 				errors.push({
 					lenderId,
 					type: "follow-on-rate",
-					message: `Fixed rate "${fixedRate.id}" has ${matchingVariables.length} matching variable rates with different rates: [${matchIds.join(", ")}]`,
+					message: `Fixed rate "${fixedRate.id}" has ${effectiveRates.length} matching variable rates with different rates: [${matchIds.join(", ")}]`,
 					rateId: fixedRate.id,
 					matchingVariableRates: matchIds,
 				});

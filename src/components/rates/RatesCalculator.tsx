@@ -192,6 +192,7 @@ export function RatesCalculator() {
 				isFormValid && (
 					<RatesTable
 						rates={filteredRates}
+						allRates={rates}
 						lenders={lenders}
 						ratesMetadata={ratesMetadata}
 						mortgageAmount={mortgage}
