@@ -4,10 +4,13 @@ import {
 	ArrowUp,
 	ArrowUpDown,
 	Check,
+	Coins,
 	ListFilter,
+	PiggyBank,
 	Plus,
 	Share2,
 	TriangleAlert,
+	type LucideIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
@@ -15,6 +18,9 @@ import {
 	getLender,
 	type Lender,
 	type MortgageRate,
+	type Perk,
+	perks,
+	resolvePerks,
 } from "@/lib/data";
 import { useLocalStorage } from "@/lib/hooks";
 import {
@@ -76,6 +82,8 @@ interface RateRow extends MortgageRate {
 	followUpRate?: MortgageRate;
 	monthlyFollowUp?: number;
 	totalRepayable?: number;
+	costOfCreditPct?: number; // (totalRepayable - mortgageAmount) / mortgageAmount * 100
+	combinedPerks: string[]; // Lender perks + rate perks (deduplicated)
 }
 
 // Custom filter function for array-based multi-select filtering
@@ -83,6 +91,21 @@ const arrayIncludesFilter: FilterFn<RateRow> = (row, columnId, filterValue) => {
 	if (!filterValue || filterValue.length === 0) return true;
 	const value = row.getValue(columnId);
 	return filterValue.includes(value);
+};
+
+// Custom filter function for perks (uses combinedPerks which includes lender + rate perks)
+const perksIncludesFilter: FilterFn<RateRow> = (row, columnId, filterValue) => {
+	if (!filterValue || filterValue.length === 0) return true;
+	const combinedPerks = row.original.combinedPerks;
+	if (!combinedPerks || combinedPerks.length === 0) return false;
+	// Row matches if it has at least one of the selected perks
+	return filterValue.some((perkId: string) => combinedPerks.includes(perkId));
+};
+
+// Map perk icon names to lucide components
+const PERK_ICONS: Record<string, LucideIcon> = {
+	PiggyBank,
+	Coins,
 };
 
 function SortIcon({ isSorted }: { isSorted: false | "asc" | "desc" }) {
@@ -226,6 +249,7 @@ const typeOptions = [
 const COLUMN_LABELS: Record<string, string> = {
 	lenderId: "Lender",
 	name: "Product",
+	perks: "Perks",
 	type: "Type",
 	fixedTerm: "Period",
 	rate: "Rate",
@@ -234,11 +258,14 @@ const COLUMN_LABELS: Record<string, string> = {
 	followUpProduct: "Follow-Up Product",
 	monthlyFollowUp: "Follow-Up Monthly",
 	totalRepayable: "Total Repayable",
+	costOfCreditPct: "Cost of Credit %",
 };
 
 const DEFAULT_VISIBILITY: VisibilityState = {
+	perks: false,
 	followUpProduct: false,
 	monthlyFollowUp: false,
+	costOfCreditPct: false,
 };
 const DEFAULT_SORTING: SortingState = [{ id: "monthlyPayment", desc: false }];
 const DEFAULT_FILTERS: ColumnFiltersState = [];
@@ -261,6 +288,10 @@ function createColumns(
 	const lenderOptions = lenders.map((lender) => ({
 		label: lender.name,
 		value: lender.id,
+	}));
+	const perkOptions = perks.map((perk) => ({
+		label: perk.label,
+		value: perk.id,
 	}));
 
 	return [
@@ -312,6 +343,51 @@ function createColumns(
 				</div>
 			),
 			enableHiding: false,
+		},
+		{
+			accessorKey: "perks",
+			header: ({ column }) => (
+				<ColumnHeader
+					column={column}
+					title="Perks"
+					filterOptions={perkOptions}
+					align="center"
+				/>
+			),
+			cell: ({ row }) => {
+				const allPerks = resolvePerks(row.original.combinedPerks);
+
+				if (allPerks.length === 0) {
+					return <div className="text-center text-muted-foreground">—</div>;
+				}
+				return (
+					<div className="flex items-center justify-center gap-1">
+						{allPerks.map((perk) => {
+							const IconComponent = PERK_ICONS[perk.icon];
+							return (
+								<Tooltip key={perk.id}>
+									<TooltipTrigger asChild>
+										<span className="inline-flex items-center justify-center p-1 rounded hover:bg-muted cursor-help">
+											{IconComponent ? (
+												<IconComponent className="h-4 w-4 text-muted-foreground" />
+											) : null}
+										</span>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p className="font-medium">{perk.label}</p>
+										{perk.description && (
+											<p className="text-xs text-muted-foreground">
+												{perk.description}
+											</p>
+										)}
+									</TooltipContent>
+								</Tooltip>
+							);
+						})}
+					</div>
+				);
+			},
+			filterFn: perksIncludesFilter,
 		},
 		{
 			accessorKey: "type",
@@ -447,6 +523,28 @@ function createColumns(
 				return a - b;
 			},
 		},
+		{
+			accessorKey: "costOfCreditPct",
+			header: ({ column }) => (
+				<SortableHeader
+					column={column}
+					title="Cost of Credit %"
+					align="right"
+				/>
+			),
+			cell: ({ row }) => (
+				<div className="text-right">
+					{row.original.costOfCreditPct !== undefined
+						? `${row.original.costOfCreditPct.toFixed(1)}%`
+						: "—"}
+				</div>
+			),
+			sortingFn: (rowA, rowB) => {
+				const a = rowA.original.costOfCreditPct ?? 0;
+				const b = rowB.original.costOfCreditPct ?? 0;
+				return a - b;
+			},
+		},
 	];
 }
 
@@ -515,20 +613,32 @@ export function RatesTable({
 					mortgageTerm,
 				);
 
+				const totalRepayable = calculateTotalRepayable(
+					rate,
+					monthlyPayment,
+					monthlyFollowUp,
+					mortgageTerm,
+				);
+				const costOfCreditPct = totalRepayable
+					? ((totalRepayable - mortgageAmount) / mortgageAmount) * 100
+					: undefined;
+
+				// Combine lender perks with rate-specific perks (deduplicated)
+				const lender = getLender(lenders, rate.lenderId);
+				const lenderPerkIds = lender?.perks ?? [];
+				const combinedPerks = [...new Set([...lenderPerkIds, ...rate.perks])];
+
 				return {
 					...rate,
 					monthlyPayment,
 					followUpRate,
 					monthlyFollowUp,
-					totalRepayable: calculateTotalRepayable(
-						rate,
-						monthlyPayment,
-						monthlyFollowUp,
-						mortgageTerm,
-					),
+					totalRepayable,
+					costOfCreditPct,
+					combinedPerks,
 				};
 			}),
-		[rates, allRates, mortgageAmount, mortgageTerm, ltv],
+		[rates, allRates, lenders, mortgageAmount, mortgageTerm, ltv],
 	);
 
 	if (rates.length === 0) {

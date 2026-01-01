@@ -2,21 +2,25 @@
 	{
 		"id": "fee-free-banking",
 		"label": "Fee Free Banking",
-		"description": "No fees on day-to-day banking"
+		"description": "No fees on day-to-day banking",
+		"icon": "PiggyBank"
 	},
 	{
 		"id": "cashback-2pct",
 		"label": "2% Cashback",
-		"description": "2% cashback on drawdown, up to €10,000"
+		"description": "2% cashback on drawdown, up to €10,000",
+		"icon": "Coins"
 	},
 	{
 		"id": "cashback-3pct",
 		"label": "3% Cashback",
-		"description": "2% cashback on drawdown + 1% after 5 years, up to €15,000"
+		"description": "2% cashback on drawdown + 1% after 5 years, up to €15,000",
+		"icon": "Coins"
 	},
 	{
 		"id": "cashback-5k",
 		"label": "€5,000 Cashback",
-		"description": "€5,000 cashback on drawdown (€3,000 for switchers), min €250k loan"
+		"description": "€5,000 cashback on drawdown (€3,000 for switchers), min €250k loan",
+		"icon": "Coins"
 	}
 ]

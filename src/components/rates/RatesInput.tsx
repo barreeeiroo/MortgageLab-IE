@@ -363,7 +363,7 @@ export function RatesInput({
 							)}
 							<div className="space-y-1 flex-1">
 								<Label htmlFor="mortgageTerm" className="text-xs">
-									Term
+									{isRemortgage ? "Remaining Term" : "Term"}
 								</Label>
 								<MortgageTermSelector
 									value={mortgageTerm}
