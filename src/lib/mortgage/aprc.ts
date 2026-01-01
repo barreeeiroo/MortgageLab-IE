@@ -72,8 +72,11 @@ export function calculateAprc(
 
 		const variablePayment =
 			Math.round(
-				calculateMonthlyPayment(balanceAfterFixed, followOnRate, variableMonths) *
-					100,
+				calculateMonthlyPayment(
+					balanceAfterFixed,
+					followOnRate,
+					variableMonths,
+				) * 100,
 			) / 100;
 
 		for (let i = 0; i < fixedTermMonths; i++) {

@@ -197,6 +197,7 @@ export function RatesCalculator() {
 						ratesMetadata={ratesMetadata}
 						mortgageAmount={mortgage}
 						mortgageTerm={mortgageTerm}
+						ltv={ltv}
 					/>
 				)
 			)}

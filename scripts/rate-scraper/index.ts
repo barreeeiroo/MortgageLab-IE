@@ -47,7 +47,10 @@ async function readExistingRatesFile(
 	}
 }
 
-async function scrapeProvider(lenderId: string, provider: LenderProvider): Promise<boolean> {
+async function scrapeProvider(
+	lenderId: string,
+	provider: LenderProvider,
+): Promise<boolean> {
 	console.log(`Scraping rates from ${provider.name}...`);
 	console.log(`URL: ${provider.url}\n`);
 

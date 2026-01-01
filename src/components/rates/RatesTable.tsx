@@ -17,6 +17,7 @@ import { useLocalStorage } from "@/lib/hooks";
 import {
 	calculateMonthlyFollowUp,
 	calculateMonthlyPayment,
+	calculateRemainingBalance,
 	findVariableRate,
 } from "@/lib/mortgage";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -52,6 +53,7 @@ interface RatesTableProps {
 	ratesMetadata: RatesMetadata[];
 	mortgageAmount: number;
 	mortgageTerm: number;
+	ltv: number;
 }
 
 interface RateRow extends MortgageRate {
@@ -391,7 +393,11 @@ function createColumns(
 		{
 			accessorKey: "monthlyFollowUp",
 			header: ({ column }) => (
-				<SortableHeader column={column} title="Follow-Up Monthly" align="right" />
+				<SortableHeader
+					column={column}
+					title="Follow-Up Monthly"
+					align="right"
+				/>
 			),
 			cell: ({ row }) => (
 				<div className="text-right text-muted-foreground">
@@ -416,6 +422,7 @@ export function RatesTable({
 	ratesMetadata,
 	mortgageAmount,
 	mortgageTerm,
+	ltv,
 }: RatesTableProps) {
 	const [sorting, setSorting] = useLocalStorage<SortingState>(
 		STORAGE_KEYS.sorting,
@@ -436,9 +443,27 @@ export function RatesTable({
 	const data = useMemo<RateRow[]>(
 		() =>
 			rates.map((rate) => {
+				// Calculate LTV after fixed term ends (principal paid down)
+				let followUpLtv = ltv;
+				if (rate.type === "fixed" && rate.fixedTerm) {
+					const totalMonths = mortgageTerm * 12;
+					const fixedMonths = rate.fixedTerm * 12;
+					const remainingBalance = calculateRemainingBalance(
+						mortgageAmount,
+						rate.rate,
+						totalMonths,
+						fixedMonths,
+					);
+					// remainingLtv = remainingBalance / propertyValue * 100
+					// propertyValue = mortgageAmount / (ltv / 100)
+					followUpLtv = (remainingBalance / mortgageAmount) * ltv;
+				}
+
 				// Use allRates to find follow-up rate (includes newBusiness: false rates)
 				const followUpRate =
-					rate.type === "fixed" ? findVariableRate(rate, allRates) : undefined;
+					rate.type === "fixed"
+						? findVariableRate(rate, allRates, followUpLtv)
+						: undefined;
 				return {
 					...rate,
 					monthlyPayment: calculateMonthlyPayment(
@@ -455,7 +480,7 @@ export function RatesTable({
 					),
 				};
 			}),
-		[rates, allRates, mortgageAmount, mortgageTerm],
+		[rates, allRates, mortgageAmount, mortgageTerm, ltv],
 	);
 
 	if (rates.length === 0) {

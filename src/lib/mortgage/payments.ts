@@ -64,14 +64,17 @@ export function calculateRemainingBalance(
 export function findVariableRate(
 	fixedRate: MortgageRate,
 	allRates: MortgageRate[],
+	ltv?: number,
 ): MortgageRate | undefined {
-	const matchingVariables = allRates.filter(
-		(r) =>
-			r.type === "variable" &&
-			r.lenderId === fixedRate.lenderId &&
-			r.minLtv <= fixedRate.maxLtv &&
-			r.maxLtv >= fixedRate.minLtv,
-	);
+	const matchingVariables = allRates.filter((r) => {
+		if (r.type !== "variable" || r.lenderId !== fixedRate.lenderId) {
+			return false;
+		}
+		if (ltv !== undefined) {
+			return ltv >= r.minLtv && ltv <= r.maxLtv;
+		}
+		return r.minLtv <= fixedRate.maxLtv && r.maxLtv >= fixedRate.minLtv;
+	});
 
 	if (matchingVariables.length === 0) return undefined;
 
