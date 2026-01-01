@@ -1,4 +1,5 @@
 import { AlertCircle, HelpCircle, Info, TriangleAlert } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import type { Lender } from "@/lib/schemas";
 import {
 	calculateStampDuty,
@@ -93,6 +94,34 @@ export function RatesInput({
 	const stampDuty = calculateStampDuty(property);
 	const legalFees = ESTIMATED_LEGAL_FEES;
 
+	// Local state for currency inputs (update parent on blur)
+	const [localPropertyValue, setLocalPropertyValue] = useState(propertyValue);
+	const [localMortgageAmount, setLocalMortgageAmount] = useState(mortgageAmount);
+	const [localMonthlyRepayment, setLocalMonthlyRepayment] =
+		useState(monthlyRepayment);
+
+	// Track which field is focused to avoid overwriting while typing
+	const focusedField = useRef<string | null>(null);
+
+	// Sync local state from props when not focused
+	useEffect(() => {
+		if (focusedField.current !== "propertyValue") {
+			setLocalPropertyValue(propertyValue);
+		}
+	}, [propertyValue]);
+
+	useEffect(() => {
+		if (focusedField.current !== "mortgageAmount") {
+			setLocalMortgageAmount(mortgageAmount);
+		}
+	}, [mortgageAmount]);
+
+	useEffect(() => {
+		if (focusedField.current !== "monthlyRepayment") {
+			setLocalMonthlyRepayment(monthlyRepayment);
+		}
+	}, [monthlyRepayment]);
+
 	const updateField = <K extends keyof RatesInputValues>(
 		field: K,
 		value: RatesInputValues[K],
@@ -129,13 +158,17 @@ export function RatesInput({
 										inputMode="numeric"
 										placeholder="€350,000"
 										className="h-9"
-										value={formatCurrencyInput(propertyValue)}
+										value={formatCurrencyInput(localPropertyValue)}
+										onFocus={() => (focusedField.current = "propertyValue")}
 										onChange={(e) =>
-											updateField(
-												"propertyValue",
+											setLocalPropertyValue(
 												e.target.value.replace(/[^0-9]/g, ""),
 											)
 										}
+										onBlur={() => {
+											focusedField.current = null;
+											updateField("propertyValue", localPropertyValue);
+										}}
 									/>
 								</div>
 								<div className="space-y-1 flex-1">
@@ -148,35 +181,42 @@ export function RatesInput({
 										inputMode="numeric"
 										placeholder="€315,000"
 										className="h-9"
-										value={formatCurrencyInput(mortgageAmount)}
+										value={formatCurrencyInput(localMortgageAmount)}
+										onFocus={() => (focusedField.current = "mortgageAmount")}
 										onChange={(e) =>
-											updateField(
-												"mortgageAmount",
+											setLocalMortgageAmount(
 												e.target.value.replace(/[^0-9]/g, ""),
 											)
 										}
+										onBlur={() => {
+											focusedField.current = null;
+											updateField("mortgageAmount", localMortgageAmount);
+										}}
 									/>
 									<div className="flex gap-1 pt-0.5">
 										{(isRemortgage
 											? [25, 50, 60, 70, 80]
 											: [50, 70, 80, 90]
-										).map((pct) => (
-											<Button
-												key={pct}
-												type="button"
-												variant="ghost"
-												disabled={property === 0}
-												onClick={() =>
-													updateField(
-														"mortgageAmount",
-														String(Math.round(property * (pct / 100))),
-													)
-												}
-												className="h-5 px-1.5 text-[10px] text-muted-foreground"
-											>
-												{pct}%
-											</Button>
-										))}
+										).map((pct) => {
+											const newAmount = String(
+												Math.round(property * (pct / 100)),
+											);
+											return (
+												<Button
+													key={pct}
+													type="button"
+													variant="ghost"
+													disabled={property === 0}
+													onClick={() => {
+														setLocalMortgageAmount(newAmount);
+														updateField("mortgageAmount", newAmount);
+													}}
+													className="h-5 px-1.5 text-[10px] text-muted-foreground"
+												>
+													{pct}%
+												</Button>
+											);
+										})}
 									</div>
 								</div>
 							</div>
@@ -193,13 +233,17 @@ export function RatesInput({
 											inputMode="numeric"
 											placeholder="€1,500"
 											className="h-9"
-											value={formatCurrencyInput(monthlyRepayment)}
+											value={formatCurrencyInput(localMonthlyRepayment)}
+											onFocus={() => (focusedField.current = "monthlyRepayment")}
 											onChange={(e) =>
-												updateField(
-													"monthlyRepayment",
+												setLocalMonthlyRepayment(
 													e.target.value.replace(/[^0-9]/g, ""),
 												)
 											}
+											onBlur={() => {
+												focusedField.current = null;
+												updateField("monthlyRepayment", localMonthlyRepayment);
+											}}
 										/>
 									</div>
 								) : (
