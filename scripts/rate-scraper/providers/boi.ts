@@ -176,10 +176,12 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 					buyerTypes,
 					berEligible: parsed.ber ? BER_GROUPS[parsed.ber] : undefined,
 					newBusiness: !isExisting,
-					perks:
-						!isBtl && !isExisting && !parsed.isVariable
-							? ["cashback-3pct"]
-							: [],
+					// Cashback Plus (3%) only available on standard fixed rates
+				// NOT available on: BTL, existing customers, variable rates, or HVM
+				perks:
+					!isBtl && !isExisting && !parsed.isVariable && !isHvm
+						? ["cashback-3pct"]
+						: [],
 				};
 
 				ratesMap.set(mortgageRate.id, mortgageRate);

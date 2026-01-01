@@ -1,8 +1,8 @@
 {
 	"lenderId": "boi",
-	"lastScrapedAt": "2026-01-01T08:07:08.599Z",
-	"lastUpdatedAt": "2025-12-31T16:50:35.684Z",
-	"ratesHash": "15e5292b5669455261b2843a8d6b5c31120c1a0da400570a15de57fa8107870b",
+	"lastScrapedAt": "2026-01-01T17:12:48.160Z",
+	"lastUpdatedAt": "2026-01-01T17:12:48.160Z",
+	"ratesHash": "c3c43b36de57da36330eb0aef1334b51714acac037317ecbd5dbc06b1a165cbf",
 	"rates": [
 		{
 			"id": "boi-hvm-fixed-1yr-ber-a",
@@ -26,9 +26,7 @@
 				"A3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-1yr-ber-b",
@@ -52,9 +50,7 @@
 				"B3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-1yr-ber-c",
@@ -78,9 +74,7 @@
 				"C3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-1yr-ber-d",
@@ -103,9 +97,7 @@
 				"D2"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-1yr-ber-e",
@@ -128,9 +120,7 @@
 				"E2"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-1yr-ber-f",
@@ -152,9 +142,7 @@
 				"F"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-1yr-ber-g",
@@ -176,9 +164,7 @@
 				"G"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-1yr-ber-exempt",
@@ -200,9 +186,7 @@
 				"Exempt"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-fixed-2yr-ber-a",
@@ -802,9 +786,7 @@
 				"A3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-4yr-ber-b",
@@ -828,9 +810,7 @@
 				"B3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-4yr-ber-c",
@@ -854,9 +834,7 @@
 				"C3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-4yr-ber-d",
@@ -879,9 +857,7 @@
 				"D2"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-4yr-ber-e",
@@ -904,9 +880,7 @@
 				"E2"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-4yr-ber-f",
@@ -928,9 +902,7 @@
 				"F"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-4yr-ber-g",
@@ -952,9 +924,7 @@
 				"G"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-4yr-ber-exempt",
@@ -976,9 +946,7 @@
 				"Exempt"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-5yr-ber-a",
@@ -1002,9 +970,7 @@
 				"A3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-5yr-ber-b",
@@ -1028,9 +994,7 @@
 				"B3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-5yr-ber-c",
@@ -1054,9 +1018,7 @@
 				"C3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-5yr-ber-d",
@@ -1079,9 +1041,7 @@
 				"D2"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-5yr-ber-e",
@@ -1104,9 +1064,7 @@
 				"E2"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-5yr-ber-f",
@@ -1128,9 +1086,7 @@
 				"F"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-5yr-ber-g",
@@ -1152,9 +1108,7 @@
 				"G"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-5yr-ber-exempt",
@@ -1176,9 +1130,7 @@
 				"Exempt"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-7yr-ber-a",
@@ -1202,9 +1154,7 @@
 				"A3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-7yr-ber-b",
@@ -1228,9 +1178,7 @@
 				"B3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-7yr-ber-c",
@@ -1254,9 +1202,7 @@
 				"C3"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-7yr-ber-d",
@@ -1279,9 +1225,7 @@
 				"D2"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-7yr-ber-e",
@@ -1304,9 +1248,7 @@
 				"E2"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-7yr-ber-f",
@@ -1328,9 +1270,7 @@
 				"F"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-7yr-ber-g",
@@ -1352,9 +1292,7 @@
 				"G"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-hvm-fixed-7yr-ber-exempt",
@@ -1376,9 +1314,7 @@
 				"Exempt"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-3pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "boi-fixed-10yr-ber-a",
