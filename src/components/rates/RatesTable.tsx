@@ -4,6 +4,7 @@ import {
 	ArrowUp,
 	ArrowUpDown,
 	Check,
+	ChevronRight,
 	Coins,
 	ListFilter,
 	PiggyBank,
@@ -113,12 +114,12 @@ const PERK_ICONS: Record<string, LucideIcon> = {
 
 function SortIcon({ isSorted }: { isSorted: false | "asc" | "desc" }) {
 	if (isSorted === "asc") {
-		return <ArrowUp className="ml-1.5 h-4 w-4 text-primary" />;
+		return <ArrowUp className="h-4 w-4" />;
 	}
 	if (isSorted === "desc") {
-		return <ArrowDown className="ml-1.5 h-4 w-4 text-primary" />;
+		return <ArrowDown className="h-4 w-4" />;
 	}
-	return <ArrowUpDown className="ml-1.5 h-4 w-4" />;
+	return <ArrowUpDown className="h-4 w-4" />;
 }
 
 interface ColumnHeaderProps<TData> {
@@ -138,6 +139,7 @@ function ColumnHeader<TData>({
 		(column.getFilterValue() as (string | number)[]) ?? [],
 	);
 	const hasFilter = selectedValues.size > 0;
+	const canSort = column.getCanSort();
 	const isSorted = column.getIsSorted();
 
 	return (
@@ -148,15 +150,17 @@ function ColumnHeader<TData>({
 				align === "right" && "justify-end",
 			)}
 		>
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={() => column.toggleSorting(isSorted === "asc")}
-				className="h-8 px-2"
-			>
-				{title}
-				<SortIcon isSorted={isSorted} />
-			</Button>
+			<span className="px-2 text-sm font-medium">{title}</span>
+			{canSort && (
+				<Button
+					variant="ghost"
+					size="sm"
+					onClick={() => column.toggleSorting(isSorted === "asc")}
+					className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+				>
+					<SortIcon isSorted={isSorted} />
+				</Button>
+			)}
 			{filterOptions && (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -230,14 +234,19 @@ function SortableHeader<TData>({
 	const isSorted = column.getIsSorted();
 
 	return (
-		<div className={cn("flex", align === "right" && "justify-end")}>
+		<div
+			className={cn(
+				"flex items-center gap-0.5",
+				align === "right" && "justify-end",
+			)}
+		>
+			<span className="px-2 text-sm font-medium">{title}</span>
 			<Button
 				variant="ghost"
 				size="sm"
 				onClick={() => column.toggleSorting(isSorted === "asc")}
-				className="h-8 px-2"
+				className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
 			>
-				{title}
 				<SortIcon isSorted={isSorted} />
 			</Button>
 		</div>
@@ -314,15 +323,16 @@ function createColumns(
 			cell: ({ row }) => {
 				const lender = getLender(lenders, row.original.lenderId);
 				return (
-					<div className="flex items-center gap-2">
+					<div className="flex items-center justify-center lg:justify-start gap-2">
 						<LenderLogo lenderId={row.original.lenderId} size={36} />
-						<span className="font-medium">
+						<span className="font-medium hidden lg:inline">
 							{lender?.name ?? row.original.lenderId.toUpperCase()}
 						</span>
 					</div>
 				);
 			},
 			filterFn: arrayIncludesFilter,
+			enableSorting: false,
 			enableHiding: false,
 			meta: { sticky: true },
 		},
@@ -331,26 +341,29 @@ function createColumns(
 			header: "Product",
 			cell: ({ row }) => (
 				<div
-					className="flex items-start gap-1.5 cursor-pointer"
+					className="flex w-full items-center justify-between gap-2 cursor-pointer rounded-md px-2 py-1 -ml-2 hover:ring-1 hover:ring-primary/50"
 					onClick={() => onProductClick(row.original)}
 				>
-					<div>
-						<p className="font-medium hover:underline">{row.original.name}</p>
-						<p className="text-xs text-muted-foreground">
-							LTV {row.original.minLtv > 0 ? `${row.original.minLtv}-` : "≤"}
-							{row.original.maxLtv}%
-						</p>
+					<div className="flex items-start gap-1.5">
+						<div>
+							<p className="font-medium text-primary">{row.original.name}</p>
+							<p className="text-xs text-muted-foreground">
+								LTV {row.original.minLtv > 0 ? `${row.original.minLtv}-` : "≤"}
+								{row.original.maxLtv}%
+							</p>
+						</div>
+						{row.original.warning && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<TriangleAlert className="h-4 w-4 text-yellow-500 shrink-0 mt-0.5" />
+								</TooltipTrigger>
+								<TooltipContent className="max-w-xs">
+									{row.original.warning}
+								</TooltipContent>
+							</Tooltip>
+						)}
 					</div>
-					{row.original.warning && (
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<TriangleAlert className="h-4 w-4 text-yellow-500 shrink-0 mt-0.5" />
-							</TooltipTrigger>
-							<TooltipContent className="max-w-xs">
-								{row.original.warning}
-							</TooltipContent>
-						</Tooltip>
-					)}
+					<ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
 				</div>
 			),
 			enableHiding: false,
@@ -400,6 +413,7 @@ function createColumns(
 				);
 			},
 			filterFn: perksIncludesFilter,
+			enableSorting: false,
 		},
 		{
 			accessorKey: "type",
@@ -415,6 +429,7 @@ function createColumns(
 				<div className="text-center capitalize">{row.original.type}</div>
 			),
 			filterFn: arrayIncludesFilter,
+			enableSorting: false,
 		},
 		{
 			accessorKey: "fixedTerm",

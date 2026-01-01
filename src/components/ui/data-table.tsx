@@ -22,7 +22,7 @@ export type {
 };
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { type ReactNode, useCallback, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import {
@@ -141,6 +141,16 @@ export function DataTable<TData, TValue>({
 	const pageSize = table.getState().pagination.pageSize;
 	const pageCount = table.getPageCount();
 
+	// Track if we're on desktop (lg breakpoint = 1024px) for sticky columns
+	const [isDesktop, setIsDesktop] = useState(false);
+	useEffect(() => {
+		const mediaQuery = window.matchMedia("(min-width: 1024px)");
+		setIsDesktop(mediaQuery.matches);
+		const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+		mediaQuery.addEventListener("change", handler);
+		return () => mediaQuery.removeEventListener("change", handler);
+	}, []);
+
 	// Track sticky column widths for calculating left offsets
 	const stickyWidthsRef = useRef<Map<string, number>>(new Map());
 	const [stickyOffsets, setStickyOffsets] = useState<Map<string, number>>(
@@ -204,12 +214,13 @@ export function DataTable<TData, TValue>({
 		[columns],
 	);
 
-	// Helper to get sticky styles for a column
+	// Helper to get sticky styles for a column (disabled on mobile)
 	const getStickyStyles = (
 		columnId: string,
 		meta: { sticky?: boolean; stickyRight?: boolean } | undefined,
 		isHeader: boolean,
 	): React.CSSProperties | undefined => {
+		if (!isDesktop) return undefined;
 		if (meta?.sticky) {
 			const left = stickyOffsets.get(columnId) ?? 0;
 			return {
@@ -230,12 +241,12 @@ export function DataTable<TData, TValue>({
 
 	// Check if column is the last sticky-left column (for shadow on right)
 	const isLastStickyLeftColumn = (columnId: string): boolean => {
-		return columnId === lastStickyLeftColumnId;
+		return isDesktop && columnId === lastStickyLeftColumnId;
 	};
 
 	// Check if column is the first sticky-right column (for shadow on left)
 	const isFirstStickyRightColumn = (columnId: string): boolean => {
-		return columnId === firstStickyRightColumnId;
+		return isDesktop && columnId === firstStickyRightColumnId;
 	};
 
 	// Generate page numbers to display (with ellipsis for many pages)
@@ -289,7 +300,8 @@ export function DataTable<TData, TValue>({
 								const meta = header.column.columnDef.meta as
 									| { sticky?: boolean; stickyRight?: boolean }
 									| undefined;
-								const isSticky = meta?.sticky || meta?.stickyRight;
+								const isSticky =
+									isDesktop && (meta?.sticky || meta?.stickyRight);
 								const isLastStickyLeft = isLastStickyLeftColumn(
 									header.column.id,
 								);
@@ -342,7 +354,8 @@ export function DataTable<TData, TValue>({
 									const meta = cell.column.columnDef.meta as
 										| { sticky?: boolean; stickyRight?: boolean }
 										| undefined;
-									const isSticky = meta?.sticky || meta?.stickyRight;
+									const isSticky =
+										isDesktop && (meta?.sticky || meta?.stickyRight);
 									const isLastStickyLeft = isLastStickyLeftColumn(
 										cell.column.id,
 									);
