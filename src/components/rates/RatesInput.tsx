@@ -1,6 +1,8 @@
 import { AlertCircle, HelpCircle, Info, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import type { RatesMode } from "@/lib/constants";
 import type { Lender } from "@/lib/schemas";
+import type { RatesInputValues } from "@/lib/stores";
 import {
 	calculateStampDuty,
 	ESTIMATED_LEGAL_FEES,
@@ -28,19 +30,6 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
-
-export type RatesMode = "first-mortgage" | "remortgage";
-
-export interface RatesInputValues {
-	mode: RatesMode;
-	propertyValue: string;
-	mortgageAmount: string;
-	monthlyRepayment: string;
-	mortgageTerm: string;
-	berRating: string;
-	buyerType: string;
-	currentLender: string;
-}
 
 export interface RatesInputProps {
 	values: RatesInputValues;

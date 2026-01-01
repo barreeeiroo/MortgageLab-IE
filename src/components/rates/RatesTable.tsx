@@ -21,6 +21,7 @@ import {
 	type Lender,
 	type MortgageRate,
 	type Perk,
+	type RatesMetadata,
 	resolvePerks,
 } from "@/lib/data";
 import { useLocalStorage } from "@/lib/hooks";
@@ -31,6 +32,7 @@ import {
 	calculateTotalRepayable,
 	findVariableRate,
 } from "@/lib/mortgage";
+import type { RatesInputValues } from "@/lib/stores";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
@@ -58,15 +60,8 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import type { RatesInputValues } from "./RatesInput";
 import { RateUpdatesDialog } from "./RateUpdatesDialog";
 import { generateRatesShareUrl } from "./share";
-
-interface RatesMetadata {
-	lenderId: string;
-	lastScrapedAt: string;
-	lastUpdatedAt: string;
-}
 
 interface RatesTableProps {
 	rates: MortgageRate[];

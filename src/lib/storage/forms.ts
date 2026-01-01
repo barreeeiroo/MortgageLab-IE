@@ -1,3 +1,4 @@
+import type { RatesInputValues } from "@/lib/stores/form";
 import { loadFromStorage, saveToStorage } from "./helpers";
 
 // Storage keys
@@ -25,19 +26,8 @@ export function saveFtbForm(state: FtbFormState): void {
 	saveToStorage(STORAGE_KEYS.FTB_CALCULATOR, state);
 }
 
-// Rates Calculator form state
-export type RatesMode = "first-mortgage" | "remortgage";
-
-export interface RatesFormState {
-	mode: RatesMode;
-	propertyValue: string;
-	mortgageAmount: string;
-	monthlyRepayment: string;
-	mortgageTerm: string;
-	berRating: string;
-	buyerType: string;
-	currentLender: string; // For remortgage mode - which lender they're switching from
-}
+// Rates Calculator form state - uses RatesInputValues from the store
+export type RatesFormState = RatesInputValues;
 
 export function loadRatesForm(): Partial<RatesFormState> {
 	return loadFromStorage<RatesFormState>(STORAGE_KEYS.RATES_CALCULATOR);

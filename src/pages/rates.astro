@@ -1,7 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { SITE } from "@/lib/constants";
-import { RatesCalculator } from "@/components/rates/RatesCalculator";
+import { RatesInputIsland } from "@/components/rates/RatesInputIsland";
+import { RatesTableIsland } from "@/components/rates/RatesTableIsland";
 ---
 
 <Layout title={`Rates | ${SITE.name}`}>
@@ -13,6 +14,7 @@ import { RatesCalculator } from "@/components/rates/RatesCalculator";
 			</p>
 		</div>
 
-		<RatesCalculator client:load />
+		<RatesInputIsland client:load />
+		<RatesTableIsland client:idle />
 	</div>
 </Layout>

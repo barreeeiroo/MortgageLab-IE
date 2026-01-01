@@ -2,7 +2,8 @@
  * Mortgage payment calculations
  */
 
-import type { BerRating, MortgageRate } from "@/lib/schemas";
+import type { BerRating } from "@/lib/constants";
+import type { MortgageRate } from "@/lib/schemas";
 
 /**
  * Calculate monthly payment for a loan using the standard amortization formula.

@@ -151,3 +151,5 @@ export function getAvailableFixedTerms(rates: MortgageRate[]): number[] {
 export { BER_RATINGS, GREEN_BER_RATINGS, isGreenBer } from "@/lib/constants";
 // Re-export schema types
 export * from "@/lib/schemas";
+// Re-export fetch utilities
+export * from "./fetch";

@@ -4,7 +4,7 @@ import {
 	decompressFromUrl,
 	getUrlParam,
 } from "@/lib/share";
-import type { RatesInputValues } from "./RatesInput";
+import type { RatesInputValues } from "@/lib/stores";
 
 /**
  * Rates table share state encoding/decoding

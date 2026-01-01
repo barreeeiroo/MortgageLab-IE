@@ -1,9 +1,8 @@
 import { z } from "zod";
-import { BER_RATINGS, type BerRating } from "@/lib/constants";
+import { BER_RATINGS } from "@/lib/constants";
 import { BuyerTypeSchema } from "./buyer";
 
 export const BerRatingSchema = z.enum(BER_RATINGS);
-export type { BerRating };
 
 export const RATE_TYPES = ["fixed", "variable"] as const;
 export const RateTypeSchema = z.enum(RATE_TYPES);
@@ -34,7 +33,15 @@ export const MortgageRateSchema = z.object({
 });
 export type MortgageRate = z.infer<typeof MortgageRateSchema>;
 
-// Schema for individual rate files (data/rates/{lender}.json)
+// Metadata about rates for a lender (used for UI display of last update times)
+export const RatesMetadataSchema = z.object({
+	lenderId: z.string(),
+	lastScrapedAt: z.string(),
+	lastUpdatedAt: z.string(),
+});
+export type RatesMetadata = z.infer<typeof RatesMetadataSchema>;
+
+// Schema for individual rate files
 export const RatesFileSchema = z.object({
 	lenderId: z.string(),
 	lastScrapedAt: z.string().datetime(),

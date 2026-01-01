@@ -1,7 +1,7 @@
 import { format, formatDistanceToNow } from "date-fns";
 import { Clock, ExternalLink } from "lucide-react";
 import { useState } from "react";
-import type { Lender } from "@/lib/schemas";
+import type { Lender, RatesMetadata } from "@/lib/schemas";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
 import {
@@ -17,12 +17,6 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
-
-interface RatesMetadata {
-	lenderId: string;
-	lastScrapedAt: string;
-	lastUpdatedAt: string;
-}
 
 interface RateUpdatesDialogProps {
 	lenders: Lender[];
