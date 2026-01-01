@@ -6,6 +6,7 @@ import {
 	Check,
 	ChevronRight,
 	Coins,
+	HelpCircle,
 	ListFilter,
 	type LucideIcon,
 	PiggyBank,
@@ -14,7 +15,7 @@ import {
 	TriangleAlert,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { getMissingVariableRateUrl } from "@/lib/constants";
+import { GLOSSARY_TERMS_MAP, getMissingVariableRateUrl } from "@/lib/constants";
 import {
 	getAvailableFixedTerms,
 	getLender,
@@ -265,7 +266,7 @@ const COLUMN_LABELS: Record<string, string> = {
 	type: "Type",
 	fixedTerm: "Period",
 	rate: "Rate",
-	apr: "APR",
+	apr: "APRC",
 	monthlyPayment: "Monthly",
 	followUpProduct: "Follow-Up Product",
 	monthlyFollowUp: "Follow-Up Monthly",
@@ -469,9 +470,36 @@ function createColumns(
 		},
 		{
 			accessorKey: "apr",
-			header: ({ column }) => (
-				<SortableHeader column={column} title="APR" align="right" />
-			),
+			header: ({ column }) => {
+				const isSorted = column.getIsSorted();
+				const aprcTerm = GLOSSARY_TERMS_MAP.aprc;
+				return (
+					<div className="flex items-center gap-0.5 justify-end">
+						<span className="px-2 text-sm font-medium">APRC</span>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="inline-flex items-center justify-center cursor-help">
+									<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent className="max-w-xs">
+								<p className="font-medium">{aprcTerm.shortDescription}</p>
+								<p className="text-xs text-muted-foreground mt-1">
+									{aprcTerm.fullDescription}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => column.toggleSorting(isSorted === "asc")}
+							className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+						>
+							<SortIcon isSorted={isSorted} />
+						</Button>
+					</div>
+				);
+			},
 			cell: ({ row }) => (
 				<div className="text-right text-muted-foreground">
 					{row.original.apr ? `${row.original.apr.toFixed(2)}%` : "—"}
@@ -497,7 +525,27 @@ function createColumns(
 		{
 			id: "followUpProduct",
 			accessorFn: (row) => row.followUpRate?.name,
-			header: "Follow-Up Product",
+			header: () => {
+				const term = GLOSSARY_TERMS_MAP.followUpProduct;
+				return (
+					<div className="flex items-center gap-0.5">
+						<span className="px-2 text-sm font-medium">Follow-Up Product</span>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="inline-flex items-center justify-center cursor-help">
+									<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent className="max-w-xs">
+								<p className="font-medium">{term.shortDescription}</p>
+								<p className="text-xs text-muted-foreground mt-1">
+									{term.fullDescription}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</div>
+				);
+			},
 			cell: ({ row }) => {
 				const followUpRate = row.original.followUpRate;
 				const isFixed = row.original.type === "fixed";
@@ -584,9 +632,36 @@ function createColumns(
 		},
 		{
 			accessorKey: "totalRepayable",
-			header: ({ column }) => (
-				<SortableHeader column={column} title="Total Repayable" align="right" />
-			),
+			header: ({ column }) => {
+				const isSorted = column.getIsSorted();
+				const term = GLOSSARY_TERMS_MAP.totalRepayable;
+				return (
+					<div className="flex items-center gap-0.5 justify-end">
+						<span className="px-2 text-sm font-medium">Total Repayable</span>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="inline-flex items-center justify-center cursor-help">
+									<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent className="max-w-xs">
+								<p className="font-medium">{term.shortDescription}</p>
+								<p className="text-xs text-muted-foreground mt-1">
+									{term.fullDescription}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => column.toggleSorting(isSorted === "asc")}
+							className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+						>
+							<SortIcon isSorted={isSorted} />
+						</Button>
+					</div>
+				);
+			},
 			cell: ({ row }) => (
 				<div className="text-right">
 					{row.original.totalRepayable
@@ -602,13 +677,36 @@ function createColumns(
 		},
 		{
 			accessorKey: "costOfCreditPct",
-			header: ({ column }) => (
-				<SortableHeader
-					column={column}
-					title="Cost of Credit %"
-					align="right"
-				/>
-			),
+			header: ({ column }) => {
+				const isSorted = column.getIsSorted();
+				const term = GLOSSARY_TERMS_MAP.costOfCredit;
+				return (
+					<div className="flex items-center gap-0.5 justify-end">
+						<span className="px-2 text-sm font-medium">Cost of Credit %</span>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="inline-flex items-center justify-center cursor-help">
+									<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent className="max-w-xs">
+								<p className="font-medium">{term.shortDescription}</p>
+								<p className="text-xs text-muted-foreground mt-1">
+									{term.fullDescription}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => column.toggleSorting(isSorted === "asc")}
+							className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+						>
+							<SortIcon isSorted={isSorted} />
+						</Button>
+					</div>
+				);
+			},
 			cell: ({ row }) => (
 				<div className="text-right">
 					{row.original.costOfCreditPct !== undefined

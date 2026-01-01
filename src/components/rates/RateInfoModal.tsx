@@ -1,5 +1,6 @@
-import { Coins, type LucideIcon, PiggyBank, X } from "lucide-react";
+import { Coins, HelpCircle, type LucideIcon, PiggyBank, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { GLOSSARY_TERMS_MAP } from "@/lib/constants";
 import {
 	DEFAULT_MAX_TERM,
 	type Lender,
@@ -223,15 +224,42 @@ function InfoRow({
 	value,
 	muted = false,
 	highlight = false,
+	glossaryTermId,
 }: {
 	label: string;
 	value: string | React.ReactNode;
 	muted?: boolean;
 	highlight?: boolean;
+	glossaryTermId?: string;
 }) {
+	const glossaryTerm = glossaryTermId
+		? GLOSSARY_TERMS_MAP[glossaryTermId]
+		: null;
+
 	return (
 		<tr className="border-b border-border/50 last:border-0">
-			<td className="py-2 pr-4 text-muted-foreground text-sm">{label}</td>
+			<td className="py-2 pr-4 text-muted-foreground text-sm">
+				{glossaryTerm ? (
+					<span className="inline-flex items-center gap-1">
+						{label}
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="inline-flex items-center justify-center cursor-help">
+									<HelpCircle className="h-3 w-3 text-muted-foreground" />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent className="max-w-xs">
+								<p className="font-medium">{glossaryTerm.shortDescription}</p>
+								<p className="text-xs text-muted-foreground mt-1">
+									{glossaryTerm.fullDescription}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</span>
+				) : (
+					label
+				)}
+			</td>
 			<td
 				className={`py-2 text-right font-medium transition-colors duration-700 ${
 					highlight ? "text-primary" : muted ? "text-muted-foreground" : ""
@@ -439,11 +467,13 @@ export function RateInfoModal({
 												showCents: true,
 											})}
 											highlight={highlightedFields.has("totalRepayable")}
+											glossaryTermId="totalRepayable"
 										/>
 										<InfoRow
 											label="Cost of Credit"
 											value={`${formatCurrency(calculations.costOfCredit)} (${calculations.costOfCreditPct.toFixed(1)}%)`}
 											highlight={highlightedFields.has("costOfCredit")}
+											glossaryTermId="costOfCredit"
 										/>
 									</tbody>
 								</table>
@@ -482,6 +512,7 @@ export function RateInfoModal({
 												}
 												muted={!hasFollowUp}
 												highlight={highlightedFields.has("followUpProduct")}
+												glossaryTermId="followUpProduct"
 											/>
 											<InfoRow
 												label="Monthly Repayments"
@@ -523,6 +554,7 @@ export function RateInfoModal({
 											<InfoRow
 												label="APRC"
 												value={`${calculations.indicativeAprc.toFixed(2)}%`}
+												glossaryTermId="aprc"
 											/>
 										)}
 										<InfoRow

@@ -65,6 +65,14 @@ export function MobileNav() {
 					)}
 					<SheetClose asChild>
 						<a
+							href={getPath("/glossary")}
+							className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+						>
+							Glossary
+						</a>
+					</SheetClose>
+					<SheetClose asChild>
+						<a
 							href={getPath("/resources")}
 							className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
 						>

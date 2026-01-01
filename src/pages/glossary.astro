@@ -1,0 +1,58 @@
+---
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import Layout from "../layouts/Layout.astro";
+import { GLOSSARY_TERMS, SITE } from "../lib/constants";
+---
+
+<Layout title={`Glossary | ${SITE.name}`}>
+	<div class="container mx-auto px-4 py-12">
+		<div class="max-w-4xl mx-auto">
+			<div class="mb-10">
+				<h1 class="text-3xl font-bold tracking-tight mb-2">Mortgage Glossary</h1>
+				<p class="text-muted-foreground">
+					Common mortgage terms and their meanings to help you understand your options.
+				</p>
+			</div>
+
+			<div class="space-y-6">
+				{GLOSSARY_TERMS.map((term) => (
+					<Card id={term.id}>
+						<CardHeader className="pb-2">
+							<CardTitle className="text-xl">{term.shortDescription}</CardTitle>
+							<CardDescription>{term.term}</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<p class="text-sm text-muted-foreground leading-relaxed">
+								{term.fullDescription}
+							</p>
+							{term.relatedTerms && term.relatedTerms.length > 0 && (
+								<div class="mt-4 pt-4 border-t">
+									<p class="text-xs text-muted-foreground">
+										<span class="font-medium">Related terms: </span>
+										{term.relatedTerms.map((relatedId, index) => {
+											const relatedTerm = GLOSSARY_TERMS.find(t => t.id === relatedId);
+											return (
+												<>
+													{index > 0 && ", "}
+													<a href={`#${relatedId}`} class="text-primary hover:underline">
+														{relatedTerm?.term ?? relatedId}
+													</a>
+												</>
+											);
+										})}
+									</p>
+								</div>
+							)}
+						</CardContent>
+					</Card>
+				))}
+			</div>
+		</div>
+	</div>
+</Layout>
