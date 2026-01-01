@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
 		[],
 	);
 	const [internalPagination, setInternalPagination] = useState<PaginationState>(
-		{ pageIndex: 0, pageSize: 25 },
+		{ pageIndex: 0, pageSize: 10 },
 	);
 
 	const sorting = sortingProp ?? internalSorting;

@@ -277,6 +277,7 @@ const STORAGE_KEYS = {
 	columns: "rates-table-columns",
 	sorting: "rates-table-sorting",
 	filters: "rates-table-filters",
+	pageSize: "rates-table-page-size",
 } as const;
 
 function createColumns(
@@ -645,6 +646,11 @@ export function RatesTable({
 	);
 	const [columnVisibility, setColumnVisibility] =
 		useLocalStorage<VisibilityState>(STORAGE_KEYS.columns, DEFAULT_VISIBILITY);
+	const [pageSize, setPageSize] = useLocalStorage<number>(
+		STORAGE_KEYS.pageSize,
+		10,
+	);
+	const [pageIndex, setPageIndex] = useState(0);
 	const [copied, setCopied] = useState(false);
 	const [selectedRate, setSelectedRate] = useState<RateRow | null>(null);
 
@@ -741,9 +747,19 @@ export function RatesTable({
 			sorting={sorting}
 			onSortingChange={setSorting}
 			columnFilters={columnFilters}
-			onColumnFiltersChange={setColumnFilters}
+			onColumnFiltersChange={(filters) => {
+				setColumnFilters(filters);
+				setPageIndex(0);
+			}}
 			columnVisibility={columnVisibility}
 			onColumnVisibilityChange={setColumnVisibility}
+			pagination={{ pageIndex, pageSize }}
+			onPaginationChange={(newPagination) => {
+				setPageIndex(newPagination.pageIndex);
+				if (newPagination.pageSize !== pageSize) {
+					setPageSize(newPagination.pageSize);
+				}
+			}}
 			toolbar={(table) => {
 				const handleShare = async () => {
 					const url = generateRatesShareUrl({
