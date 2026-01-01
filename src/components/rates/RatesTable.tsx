@@ -14,6 +14,11 @@ import {
 	type MortgageRate,
 } from "@/lib/data";
 import { useLocalStorage } from "@/lib/hooks";
+import {
+	calculateMonthlyFollowUp,
+	calculateMonthlyPayment,
+	findVariableRate,
+} from "@/lib/mortgage";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
@@ -50,24 +55,8 @@ interface RatesTableProps {
 
 interface RateRow extends MortgageRate {
 	monthlyPayment: number;
-}
-
-function calculateMonthlyPayment(
-	principal: number,
-	annualRate: number,
-	years: number,
-): number {
-	const monthlyRate = annualRate / 100 / 12;
-	const numPayments = years * 12;
-
-	if (monthlyRate === 0) {
-		return principal / numPayments;
-	}
-
-	return (
-		(principal * (monthlyRate * (1 + monthlyRate) ** numPayments)) /
-		((1 + monthlyRate) ** numPayments - 1)
-	);
+	followUpRate?: MortgageRate;
+	monthlyFollowUp?: number;
 }
 
 // Custom filter function for array-based multi-select filtering
@@ -223,9 +212,14 @@ const COLUMN_LABELS: Record<string, string> = {
 	rate: "Rate",
 	apr: "APR",
 	monthlyPayment: "Monthly",
+	followUpProduct: "Follow-Up Product",
+	monthlyFollowUp: "Follow-Up Monthly",
 };
 
-const DEFAULT_VISIBILITY: VisibilityState = {};
+const DEFAULT_VISIBILITY: VisibilityState = {
+	followUpProduct: false,
+	monthlyFollowUp: false,
+};
 const DEFAULT_SORTING: SortingState = [{ id: "monthlyPayment", desc: false }];
 const DEFAULT_FILTERS: ColumnFiltersState = [];
 
@@ -376,6 +370,41 @@ function createColumns(
 				</div>
 			),
 		},
+		{
+			id: "followUpProduct",
+			accessorFn: (row) => row.followUpRate?.name,
+			header: "Follow-Up Product",
+			cell: ({ row }) => {
+				const followUpRate = row.original.followUpRate;
+				if (!followUpRate) return <div className="text-center">—</div>;
+				return (
+					<div>
+						<p className="font-medium">{followUpRate.name}</p>
+						<p className="text-xs text-muted-foreground">
+							Variable Rate: {followUpRate.rate.toFixed(2)}%
+						</p>
+					</div>
+				);
+			},
+		},
+		{
+			accessorKey: "monthlyFollowUp",
+			header: ({ column }) => (
+				<SortableHeader column={column} title="Follow-Up Monthly" align="right" />
+			),
+			cell: ({ row }) => (
+				<div className="text-right text-muted-foreground">
+					{row.original.monthlyFollowUp
+						? formatCurrency(row.original.monthlyFollowUp, { showCents: true })
+						: "—"}
+				</div>
+			),
+			sortingFn: (rowA, rowB) => {
+				const a = rowA.original.monthlyFollowUp ?? 0;
+				const b = rowB.original.monthlyFollowUp ?? 0;
+				return a - b;
+			},
+		},
 	];
 }
 
@@ -404,14 +433,25 @@ export function RatesTable({
 
 	const data = useMemo<RateRow[]>(
 		() =>
-			rates.map((rate) => ({
-				...rate,
-				monthlyPayment: calculateMonthlyPayment(
-					mortgageAmount,
-					rate.rate,
-					mortgageTerm,
-				),
-			})),
+			rates.map((rate) => {
+				const followUpRate =
+					rate.type === "fixed" ? findVariableRate(rate, rates) : undefined;
+				return {
+					...rate,
+					monthlyPayment: calculateMonthlyPayment(
+						mortgageAmount,
+						rate.rate,
+						mortgageTerm * 12,
+					),
+					followUpRate,
+					monthlyFollowUp: calculateMonthlyFollowUp(
+						rate,
+						followUpRate,
+						mortgageAmount,
+						mortgageTerm,
+					),
+				};
+			}),
 		[rates, mortgageAmount, mortgageTerm],
 	);
 
