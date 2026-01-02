@@ -5,15 +5,19 @@ import {
 	$formValues,
 	$lenders,
 	$perks,
+	$storedCustomRates,
 	addCustomRate,
 	initializeCustomRates,
+	removeCustomRate,
 	type StoredCustomRate,
+	updateCustomRate,
 } from "@/lib/stores";
-import { AddCustomRateDialog } from "./AddCustomRateDialog";
+import { ManageCustomRatesDialog } from "./ManageCustomRatesDialog";
 
 export function CustomRatesIsland() {
 	const lenders = useStore($lenders);
 	const customLenders = useStore($customLenders);
+	const storedCustomRates = useStore($storedCustomRates);
 	const perks = useStore($perks);
 	const formValues = useStore($formValues);
 
@@ -21,12 +25,21 @@ export function CustomRatesIsland() {
 		initializeCustomRates();
 	}, []);
 
-	const handleAddCustomRate = useCallback((rate: StoredCustomRate) => {
+	const handleAddRate = useCallback((rate: StoredCustomRate) => {
 		addCustomRate(rate);
 	}, []);
 
+	const handleUpdateRate = useCallback((rate: StoredCustomRate) => {
+		updateCustomRate(rate);
+	}, []);
+
+	const handleDeleteRate = useCallback((rateId: string) => {
+		removeCustomRate(rateId);
+	}, []);
+
 	return (
-		<AddCustomRateDialog
+		<ManageCustomRatesDialog
+			customRates={storedCustomRates}
 			lenders={lenders}
 			customLenders={customLenders}
 			perks={perks}
@@ -38,7 +51,9 @@ export function CustomRatesIsland() {
 					| "switcher-pdh"
 					| "switcher-btl"
 			}
-			onAddRate={handleAddCustomRate}
+			onAddRate={handleAddRate}
+			onUpdateRate={handleUpdateRate}
+			onDeleteRate={handleDeleteRate}
 		/>
 	);
 }

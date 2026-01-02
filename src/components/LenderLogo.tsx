@@ -45,6 +45,9 @@ export function LenderLogo({
 	const logo = logos[lenderId];
 	const iconSize = Math.max(12, Math.floor(size * 0.35));
 
+	// Treat as custom if explicitly marked OR if lenderId is not a known lender
+	const effectiveIsCustom = isCustom || !logo;
+
 	// Custom badge component
 	const CustomBadge = () => (
 		<Tooltip>
@@ -60,7 +63,7 @@ export function LenderLogo({
 	);
 
 	// Custom rate with unknown lender: show pencil icon (no badge needed - icon is sufficient)
-	if (isCustom && !logo) {
+	if (effectiveIsCustom && !logo) {
 		return (
 			<div
 				className={cn(

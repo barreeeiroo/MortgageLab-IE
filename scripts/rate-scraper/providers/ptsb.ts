@@ -6,7 +6,7 @@ import {
 	parseLtvFromName,
 	parsePercentageOrThrow,
 	parseTermFromText,
-} from "../lib/parsing";
+} from "../parsing.ts";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "ptsb";

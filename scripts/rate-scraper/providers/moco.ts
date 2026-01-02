@@ -10,7 +10,7 @@ import {
 	parseLtvBandOrThrow,
 	parsePercentageOrThrow,
 	parseTermOrThrow,
-} from "../lib/parsing";
+} from "../parsing.ts";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "moco";

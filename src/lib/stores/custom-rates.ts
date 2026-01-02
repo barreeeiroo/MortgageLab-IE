@@ -8,6 +8,8 @@ import { $formValues, $ltv } from "./rates-form";
  */
 export interface StoredCustomRate extends MortgageRate {
 	customLenderName?: string; // Custom lender name if not using an existing lender
+	createdAt?: string; // ISO date string
+	lastUpdatedAt?: string; // ISO date string
 }
 
 /**
@@ -102,8 +104,14 @@ export const $customLenders = computed($storedCustomRates, (storedRates) => {
 
 // Actions
 export function addCustomRate(rate: StoredCustomRate): void {
+	const now = new Date().toISOString();
+	const rateWithTimestamps: StoredCustomRate = {
+		...rate,
+		createdAt: now,
+		lastUpdatedAt: now,
+	};
 	const current = $storedCustomRates.get();
-	const updated = [...current, rate];
+	const updated = [...current, rateWithTimestamps];
 	$storedCustomRates.set(updated);
 	persistCustomRates(updated);
 }
@@ -111,6 +119,21 @@ export function addCustomRate(rate: StoredCustomRate): void {
 export function removeCustomRate(rateId: string): void {
 	const current = $storedCustomRates.get();
 	const updated = current.filter((r) => r.id !== rateId);
+	$storedCustomRates.set(updated);
+	persistCustomRates(updated);
+}
+
+export function updateCustomRate(rate: StoredCustomRate): void {
+	const current = $storedCustomRates.get();
+	const updated = current.map((r) =>
+		r.id === rate.id
+			? {
+					...rate,
+					createdAt: r.createdAt,
+					lastUpdatedAt: new Date().toISOString(),
+				}
+			: r,
+	);
 	$storedCustomRates.set(updated);
 	persistCustomRates(updated);
 }

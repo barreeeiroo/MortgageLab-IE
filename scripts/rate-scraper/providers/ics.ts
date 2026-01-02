@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
-import { parsePercentage } from "../lib/parsing";
+import { parsePercentage } from "../parsing.ts";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "ics";

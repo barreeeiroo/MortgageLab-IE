@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import type { BuyerType, MortgageRate } from "@/lib/schemas";
-import { parseTermFromText } from "../lib/parsing";
+import { parseTermFromText } from "../parsing.ts";
 import type { LenderProvider } from "../types";
 
 const LENDER_ID = "boi";
