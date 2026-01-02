@@ -1,3 +1,4 @@
+import type { RateType } from "@/lib/schemas/rate";
 import type { RatesInputValues, StoredCustomRate } from "@/lib/stores";
 import {
 	clearUrlParam,
@@ -101,7 +102,7 @@ function decompressCustomRate(
 		id: compressed.id,
 		name: compressed.n,
 		lenderId: compressed.li,
-		type: compressed.ty as "fixed" | "variable",
+		type: compressed.ty as RateType,
 		rate: compressed.rt,
 		apr: compressed.ap,
 		fixedTerm: compressed.ft,

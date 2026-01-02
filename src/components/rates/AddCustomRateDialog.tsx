@@ -34,7 +34,7 @@ import { type AprcConfig, calculateAprc } from "@/lib/mortgage";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import { DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
-import { RATE_TYPES } from "@/lib/schemas/rate";
+import { RATE_TYPES, type RateType } from "@/lib/schemas/rate";
 import type { StoredCustomRate } from "@/lib/stores";
 
 // Standard APRC calculation config (per EU directive typical disclosure)
@@ -95,7 +95,7 @@ interface FormState {
 	lenderId: string;
 	customLenderName: string;
 	name: string;
-	type: "fixed" | "variable";
+	type: RateType;
 	rate: string;
 	fixedTerm: string;
 	ltvRange: [number, number];
@@ -491,7 +491,7 @@ export function AddCustomRateDialog({
 								<Label>Rate Type</Label>
 								<Select
 									value={form.type}
-									onValueChange={(value: "fixed" | "variable") =>
+									onValueChange={(value: RateType) =>
 										updateForm("type", value)
 									}
 								>

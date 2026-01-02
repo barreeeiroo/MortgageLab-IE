@@ -9,7 +9,11 @@ import {
 	X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { GLOSSARY_TERMS_MAP, getIncorrectRateUrl } from "@/lib/constants";
+import {
+	GLOSSARY_TERMS_MAP,
+	getIncorrectRateUrl,
+	type RatesMode,
+} from "@/lib/constants";
 import {
 	DEFAULT_MAX_TERM,
 	getOverpaymentPolicy,
@@ -60,7 +64,7 @@ interface RateInfoModalProps {
 	mortgageTerm: number;
 	ltv: number;
 	berRating?: string;
-	mode?: "first-mortgage" | "remortgage";
+	mode?: RatesMode;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }

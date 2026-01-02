@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import { GREEN_BER_RATINGS } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
-import type { MortgageRate } from "@/lib/schemas/rate";
+import type { MortgageRate, RateType } from "@/lib/schemas/rate";
 import {
 	parseLtvFromName,
 	parsePercentageOrThrow,
@@ -114,7 +114,7 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 			headingText.includes("buy to let") || headingText.includes("btl");
 
 		// For BTL section, track sub-sections within the table
-		let btlSubSection: "variable" | "fixed" | null = null;
+		let btlSubSection: RateType | null = null;
 
 		$(table)
 			.find("tbody tr")

@@ -5,6 +5,7 @@ import type {
 	MortgageRate,
 	OverpaymentPolicy,
 	Perk,
+	RateType,
 } from "@/lib/schemas";
 
 /**
@@ -54,7 +55,7 @@ export interface RateFilter {
 	buyerType?: BuyerType;
 	ber?: BerRating;
 	lenderId?: string;
-	type?: "fixed" | "variable";
+	type?: RateType;
 	fixedTerm?: number;
 	currentLender?: string; // User's current mortgage lender (for newBusiness filtering)
 }

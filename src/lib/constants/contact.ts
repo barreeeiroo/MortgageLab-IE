@@ -2,6 +2,7 @@
  * Contact and issue reporting utilities
  */
 
+import type { RatesMode } from "./rates";
 import { AUTHOR } from "./site";
 
 // Map lender IDs to issue template dropdown values
@@ -169,7 +170,7 @@ interface MissingVariableRateParams {
 	maxLtv: number;
 	ratesUrl?: string;
 	// User search context
-	mode?: "first-mortgage" | "remortgage";
+	mode?: RatesMode;
 	buyerType?: string;
 	berRating?: string;
 }

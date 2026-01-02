@@ -3,7 +3,9 @@ import {
 	ArrowDown,
 	ArrowUp,
 	ArrowUpDown,
+	ChevronDown,
 	ChevronRight,
+	ChevronUp,
 	Coins,
 	HelpCircle,
 	ListFilter,
@@ -34,7 +36,7 @@ import type { AprcConfig } from "@/lib/mortgage/aprc";
 import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { RatesInputValues } from "@/lib/stores";
 import { type CustomRate, isCustomRate } from "@/lib/stores";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, parseCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -527,11 +529,37 @@ function createColumns(
 			header: ({ column }) => (
 				<SortableHeader column={column} title="Monthly" align="right" />
 			),
-			cell: ({ row }) => (
-				<div className="text-right font-medium">
-					{formatCurrency(row.original.monthlyPayment, { showCents: true })}
-				</div>
-			),
+			cell: ({ row }) => {
+				const isRemortgage = inputValues.mode === "remortgage";
+				const currentMonthly = parseCurrency(inputValues.monthlyRepayment);
+				const delta =
+					isRemortgage && currentMonthly > 0
+						? row.original.monthlyPayment - currentMonthly
+						: null;
+
+				return (
+					<div className="text-right">
+						<p className="font-medium">
+							{formatCurrency(row.original.monthlyPayment, { showCents: true })}
+						</p>
+						{delta !== null && delta !== 0 && (
+							<p
+								className={cn(
+									"text-xs flex items-center justify-end gap-0.5",
+									delta < 0 ? "text-green-600" : "text-red-600",
+								)}
+							>
+								{delta < 0 ? (
+									<ChevronDown className="h-3 w-3" />
+								) : (
+									<ChevronUp className="h-3 w-3" />
+								)}
+								{formatCurrency(Math.abs(delta), { showCents: true })}
+							</p>
+						)}
+					</div>
+				);
+			},
 		},
 		{
 			id: "followOnProduct",
@@ -673,13 +701,40 @@ function createColumns(
 					</div>
 				);
 			},
-			cell: ({ row }) => (
-				<div className="text-right text-muted-foreground">
-					{row.original.monthlyFollowOn
-						? formatCurrency(row.original.monthlyFollowOn, { showCents: true })
-						: "—"}
-				</div>
-			),
+			cell: ({ row }) => {
+				const isRemortgage = inputValues.mode === "remortgage";
+				const currentMonthly = parseCurrency(inputValues.monthlyRepayment);
+				const monthlyFollowOn = row.original.monthlyFollowOn;
+				const delta =
+					isRemortgage && currentMonthly > 0 && monthlyFollowOn
+						? monthlyFollowOn - currentMonthly
+						: null;
+
+				return (
+					<div className="text-right text-muted-foreground">
+						<p>
+							{monthlyFollowOn
+								? formatCurrency(monthlyFollowOn, { showCents: true })
+								: "—"}
+						</p>
+						{delta !== null && delta !== 0 && (
+							<p
+								className={cn(
+									"text-xs flex items-center justify-end gap-0.5",
+									delta < 0 ? "text-green-600" : "text-red-600",
+								)}
+							>
+								{delta < 0 ? (
+									<ChevronDown className="h-3 w-3" />
+								) : (
+									<ChevronUp className="h-3 w-3" />
+								)}
+								{formatCurrency(Math.abs(delta), { showCents: true })}
+							</p>
+						)}
+					</div>
+				);
+			},
 			sortingFn: (rowA, rowB) => {
 				const a = rowA.original.monthlyFollowOn ?? 0;
 				const b = rowB.original.monthlyFollowOn ?? 0;

@@ -1,4 +1,4 @@
-import type { MortgageRate } from "../../src/lib/schemas/rate";
+import type { MortgageRate, RateType } from "../../src/lib/schemas/rate";
 
 export type ScrapedRate = Omit<MortgageRate, "id"> & { id?: string };
 
@@ -12,7 +12,7 @@ export interface LenderProvider {
 export interface BerRateTable {
 	term: string;
 	fixedTerm?: number;
-	type: "fixed" | "variable";
+	type: RateType;
 	rates: {
 		berGroup: string;
 		rate: number;
