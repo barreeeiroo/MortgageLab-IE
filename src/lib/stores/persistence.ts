@@ -4,6 +4,11 @@ import {
 	type RatesFormState,
 	saveRatesForm,
 } from "@/lib/storage";
+import {
+	$storedCustomRates,
+	CUSTOM_RATES_STORAGE_KEY,
+	type StoredCustomRate,
+} from "./custom-rates";
 import { $formValues } from "./rates-form";
 import {
 	$columnFilters,
@@ -41,7 +46,7 @@ export function initializeStore(): void {
 
 	// If there's a share param, handle it async (less common case)
 	if (hasShareParam()) {
-		import("@/components/rates/share").then(
+		import("@/lib/share").then(
 			({ parseRatesShareState, clearRatesShareParam }) => {
 				const sharedState = parseRatesShareState();
 
@@ -70,6 +75,23 @@ export function initializeStore(): void {
 							TABLE_STORAGE_KEYS.sorting,
 							JSON.stringify(sharedState.table.sorting),
 						);
+					}
+
+					// Merge shared custom rates with existing ones
+					if (sharedState.customRates && sharedState.customRates.length > 0) {
+						const existingRates = $storedCustomRates.get();
+						const existingIds = new Set(existingRates.map((r) => r.id));
+						const newRates = sharedState.customRates.filter(
+							(r: StoredCustomRate) => !existingIds.has(r.id),
+						);
+						if (newRates.length > 0) {
+							const merged = [...existingRates, ...newRates];
+							$storedCustomRates.set(merged);
+							localStorage.setItem(
+								CUSTOM_RATES_STORAGE_KEY,
+								JSON.stringify(merged),
+							);
+						}
 					}
 
 					// Clear URL params after loading

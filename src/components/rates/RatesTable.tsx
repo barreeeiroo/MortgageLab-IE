@@ -33,6 +33,7 @@ import {
 import type { AprcConfig } from "@/lib/mortgage/aprc";
 import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { RatesInputValues } from "@/lib/stores";
+import { type CustomRate, isCustomRate } from "@/lib/stores";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
@@ -51,7 +52,6 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { type CustomRate, isCustomRate } from "./customRates";
 import { RateInfoModal } from "./RateInfoModal";
 
 interface RatesTableProps {

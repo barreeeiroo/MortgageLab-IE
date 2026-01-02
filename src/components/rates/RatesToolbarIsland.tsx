@@ -10,19 +10,21 @@ import {
 	$perks,
 	$ratesMetadata,
 	$sorting,
+	$storedCustomRates,
 	addCustomRate,
 	fetchRatesData,
 	initializeCustomRates,
 	initializeTableState,
+	type StoredCustomRate,
 	setColumnVisibility,
 } from "@/lib/stores";
-import type { StoredCustomRate } from "./customRates";
 import { RatesToolbar } from "./RatesToolbar";
 
 export function RatesToolbarIsland() {
 	const isFormValid = useStore($isFormValid);
 	const lenders = useStore($lenders);
 	const customLenders = useStore($customLenders);
+	const customRates = useStore($storedCustomRates);
 	const perks = useStore($perks);
 	const ratesMetadata = useStore($ratesMetadata);
 	const inputValues = useStore($formValues);
@@ -42,15 +44,11 @@ export function RatesToolbarIsland() {
 		addCustomRate(rate);
 	}, []);
 
-	// Don't render toolbar until form is valid
-	if (!isFormValid) {
-		return null;
-	}
-
 	return (
 		<RatesToolbar
 			lenders={lenders}
 			customLenders={customLenders}
+			customRates={customRates}
 			perks={perks}
 			ratesMetadata={ratesMetadata}
 			inputValues={inputValues}
@@ -59,6 +57,7 @@ export function RatesToolbarIsland() {
 			sorting={sorting}
 			onColumnVisibilityChange={setColumnVisibility}
 			onAddCustomRate={handleAddCustomRate}
+			disabled={!isFormValid}
 		/>
 	);
 }

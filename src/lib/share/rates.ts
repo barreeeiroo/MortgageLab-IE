@@ -1,10 +1,10 @@
+import type { RatesInputValues, StoredCustomRate } from "@/lib/stores";
 import {
 	clearUrlParam,
 	compressToUrl,
 	decompressFromUrl,
 	getUrlParam,
-} from "@/lib/share";
-import type { RatesInputValues } from "@/lib/stores";
+} from "./common";
 
 /**
  * Rates table share state encoding/decoding
@@ -21,6 +21,7 @@ export interface ShareableTableState {
 export interface RatesShareState {
 	input: RatesInputValues;
 	table: ShareableTableState;
+	customRates?: StoredCustomRate[];
 }
 
 // Value abbreviations for mode
@@ -44,11 +45,76 @@ interface CompressedInput {
 	l: string;
 }
 
+// Compressed custom rate format
+interface CompressedCustomRate {
+	id: string;
+	n: string; // name
+	li: string; // lenderId
+	ty: string; // type
+	rt: number; // rate
+	ap?: number; // apr
+	ft?: number; // fixedTerm
+	mnL: number; // minLtv
+	mxL: number; // maxLtv
+	mnLn?: number; // minLoan
+	bt: string[]; // buyerTypes
+	be?: string[]; // berEligible
+	nb?: boolean; // newBusiness
+	pk?: string[]; // perks
+	w?: string; // warning
+	cln?: string; // customLenderName
+}
+
 interface CompressedState {
 	i: CompressedInput;
 	v?: Record<string, boolean>;
 	f?: Array<{ id: string; value: unknown }>;
 	s?: Array<{ id: string; desc: boolean }>;
+	c?: CompressedCustomRate[]; // customRates
+}
+
+function compressCustomRate(rate: StoredCustomRate): CompressedCustomRate {
+	return {
+		id: rate.id,
+		n: rate.name,
+		li: rate.lenderId,
+		ty: rate.type,
+		rt: rate.rate,
+		ap: rate.apr,
+		ft: rate.fixedTerm,
+		mnL: rate.minLtv,
+		mxL: rate.maxLtv,
+		mnLn: rate.minLoan,
+		bt: rate.buyerTypes,
+		be: rate.berEligible,
+		nb: rate.newBusiness,
+		pk: rate.perks.length > 0 ? rate.perks : undefined,
+		w: rate.warning,
+		cln: rate.customLenderName,
+	};
+}
+
+function decompressCustomRate(
+	compressed: CompressedCustomRate,
+): StoredCustomRate {
+	return {
+		id: compressed.id,
+		name: compressed.n,
+		lenderId: compressed.li,
+		type: compressed.ty as "fixed" | "variable",
+		rate: compressed.rt,
+		apr: compressed.ap,
+		fixedTerm: compressed.ft,
+		minLtv: compressed.mnL,
+		maxLtv: compressed.mxL,
+		minLoan: compressed.mnLn,
+		buyerTypes: compressed.bt as StoredCustomRate["buyerTypes"],
+		berEligible: compressed.be as StoredCustomRate["berEligible"],
+		newBusiness: compressed.nb,
+		perks: compressed.pk ?? [],
+		warning: compressed.w,
+		customLenderName: compressed.cln,
+	};
 }
 
 function compressState(state: RatesShareState): CompressedState {
@@ -73,6 +139,10 @@ function compressState(state: RatesShareState): CompressedState {
 				? state.table.columnFilters
 				: undefined,
 		s: state.table.sorting.length > 0 ? state.table.sorting : undefined,
+		c:
+			state.customRates && state.customRates.length > 0
+				? state.customRates.map(compressCustomRate)
+				: undefined,
 	};
 }
 
@@ -94,6 +164,7 @@ function decompressState(compressed: CompressedState): RatesShareState {
 			columnFilters: compressed.f ?? [],
 			sorting: compressed.s ?? [],
 		},
+		customRates: compressed.c?.map(decompressCustomRate),
 	};
 }
 
@@ -105,7 +176,7 @@ export function generateRatesShareUrl(state: RatesShareState): string {
 	const encoded = compressToUrl(compressed);
 	const url = new URL(window.location.href);
 	url.searchParams.set(SHARE_PARAM, encoded);
-	url.hash = "";
+	url.hash = state.input.mode;
 	return url.toString();
 }
 

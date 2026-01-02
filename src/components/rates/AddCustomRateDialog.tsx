@@ -35,7 +35,7 @@ import type { BuyerType } from "@/lib/schemas/buyer";
 import { DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
 import { RATE_TYPES } from "@/lib/schemas/rate";
-import type { StoredCustomRate } from "./customRates";
+import type { StoredCustomRate } from "@/lib/stores";
 
 // Standard APRC calculation config (per EU directive typical disclosure)
 const DEFAULT_APRC_CONFIG: Omit<
@@ -57,6 +57,7 @@ interface AddCustomRateDialogProps {
 	perks: Perk[];
 	currentBuyerType: BuyerType;
 	onAddRate: (rate: StoredCustomRate) => void;
+	disabled?: boolean;
 }
 
 // First Mortgage buyer types
@@ -152,6 +153,7 @@ export function AddCustomRateDialog({
 	perks: availablePerks,
 	currentBuyerType,
 	onAddRate,
+	disabled = false,
 }: AddCustomRateDialogProps) {
 	const [open, setOpen] = useState(false);
 	const [form, setForm] = useState<FormState>(() =>
@@ -373,7 +375,7 @@ export function AddCustomRateDialog({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button size="sm" className="h-8 gap-1.5">
+				<Button size="sm" className="h-8 gap-1.5" disabled={disabled}>
 					<Plus className="h-4 w-4" />
 					<span className="hidden sm:inline">Add</span> Custom Rate
 				</Button>
