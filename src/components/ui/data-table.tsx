@@ -7,6 +7,7 @@ import {
 	getPaginationRowModel,
 	getSortedRowModel,
 	type PaginationState,
+	type RowSelectionState,
 	type SortingState,
 	type Table as TanstackTable,
 	useReactTable,
@@ -16,6 +17,7 @@ import {
 export type {
 	ColumnFiltersState,
 	PaginationState,
+	RowSelectionState,
 	SortingState,
 	TanstackTable,
 	VisibilityState,
@@ -62,6 +64,10 @@ interface DataTableProps<TData, TValue> {
 	pagination?: PaginationState;
 	onPaginationChange?: (pagination: PaginationState) => void;
 	pageSizeOptions?: number[];
+	// Row selection
+	rowSelection?: RowSelectionState;
+	onRowSelectionChange?: (rowSelection: RowSelectionState) => void;
+	getRowId?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
@@ -78,6 +84,9 @@ export function DataTable<TData, TValue>({
 	pagination: paginationProp,
 	onPaginationChange,
 	pageSizeOptions = [10, 25, 50, 100],
+	rowSelection: rowSelectionProp,
+	onRowSelectionChange,
+	getRowId,
 }: DataTableProps<TData, TValue>) {
 	// Use internal state if not controlled
 	const [internalSorting, setInternalSorting] = useState<SortingState>([]);
@@ -87,14 +96,18 @@ export function DataTable<TData, TValue>({
 	const [internalPagination, setInternalPagination] = useState<PaginationState>(
 		{ pageIndex: 0, pageSize: 10 },
 	);
+	const [internalRowSelection, setInternalRowSelection] =
+		useState<RowSelectionState>({});
 
 	const sorting = sortingProp ?? internalSorting;
 	const columnFilters = columnFiltersProp ?? internalFilters;
 	const pagination = paginationProp ?? internalPagination;
+	const rowSelection = rowSelectionProp ?? internalRowSelection;
 
 	const table = useReactTable({
 		data,
 		columns,
+		getRowId,
 		getCoreRowModel: getCoreRowModel(),
 		onSortingChange: (updater) => {
 			const newSorting =
@@ -134,11 +147,21 @@ export function DataTable<TData, TValue>({
 				setInternalPagination(newPagination);
 			}
 		},
+		onRowSelectionChange: (updater) => {
+			const newRowSelection =
+				typeof updater === "function" ? updater(rowSelection) : updater;
+			if (onRowSelectionChange) {
+				onRowSelectionChange(newRowSelection);
+			} else {
+				setInternalRowSelection(newRowSelection);
+			}
+		},
 		state: {
 			sorting,
 			columnFilters,
 			columnVisibility,
 			pagination,
+			rowSelection,
 		},
 	});
 
@@ -378,7 +401,7 @@ export function DataTable<TData, TValue>({
 											key={cell.id}
 											className={cn(
 												isSticky &&
-													"bg-background transition-colors group-hover:bg-muted",
+													"bg-background transition-colors group-hover:bg-muted/50 group-data-[state=selected]:bg-muted",
 												isLastStickyLeft &&
 													"shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]",
 												isFirstStickyRight &&

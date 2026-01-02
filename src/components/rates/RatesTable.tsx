@@ -1,3 +1,4 @@
+import { useStore } from "@nanostores/react";
 import type { Column, ColumnDef, FilterFn } from "@tanstack/react-table";
 import {
 	ArrowDown,
@@ -7,6 +8,7 @@ import {
 	ChevronRight,
 	ChevronUp,
 	Coins,
+	GitCompare,
 	HelpCircle,
 	ListFilter,
 	type LucideIcon,
@@ -34,8 +36,11 @@ import {
 } from "@/lib/mortgage";
 import type { AprcConfig } from "@/lib/mortgage/aprc";
 import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
+import { generateRatesShareUrl } from "@/lib/share";
 import type { RatesInputValues } from "@/lib/stores";
 import { type CustomRate, isCustomRate } from "@/lib/stores";
+import { $compareState, saveCompareState } from "@/lib/stores/compare";
+import { $storedCustomRates } from "@/lib/stores/custom-rates";
 import { cn, formatCurrency, parseCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
@@ -43,6 +48,7 @@ import { Checkbox } from "../ui/checkbox";
 import {
 	type ColumnFiltersState,
 	DataTable,
+	type RowSelectionState,
 	type SortingState,
 	type VisibilityState,
 } from "../ui/data-table";
@@ -54,7 +60,11 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { CompareRatesModal } from "./CompareRatesModal";
 import { RateInfoModal } from "./RateInfoModal";
+
+const MIN_COMPARE_RATES = 2;
+const MAX_COMPARE_RATES = 5;
 
 interface RatesTableProps {
 	rates: MortgageRate[];
@@ -266,12 +276,18 @@ const typeOptions = [
 	{ label: "Variable", value: "variable" },
 ];
 
+interface CompareContext {
+	selectedCount: number;
+	onCompareClick: () => void;
+}
+
 function createColumns(
 	rates: MortgageRate[],
 	lenders: Lender[],
 	perks: Perk[],
 	inputValues: RatesInputValues,
 	onProductClick: (rate: RateRow) => void,
+	compareContext: CompareContext,
 ): ColumnDef<RateRow>[] {
 	const availableFixedTerms = getAvailableFixedTerms(rates);
 	const periodOptions = availableFixedTerms.map((term) => ({
@@ -872,17 +888,78 @@ function createColumns(
 			},
 		},
 		{
-			id: "actions",
-			header: () => <div className="text-center">Compare</div>,
-			cell: ({ row }) => (
-				<div className="flex justify-center">
+			id: "compare",
+			header: () => {
+				const { selectedCount, onCompareClick } = compareContext;
+				const canCompare =
+					selectedCount >= MIN_COMPARE_RATES &&
+					selectedCount <= MAX_COMPARE_RATES;
+
+				const button = (
+					<Button
+						variant={canCompare ? "default" : "ghost"}
+						size="sm"
+						disabled={!canCompare}
+						onClick={onCompareClick}
+						className={cn(
+							"gap-1.5 text-xs whitespace-nowrap",
+							!canCompare && "text-muted-foreground",
+						)}
+					>
+						<GitCompare className="h-3.5 w-3.5" />
+						Compare ({selectedCount})
+					</Button>
+				);
+
+				if (!canCompare) {
+					return (
+						<div className="flex justify-center">
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span>{button}</span>
+								</TooltipTrigger>
+								<TooltipContent>
+									<p>Select {MIN_COMPARE_RATES} or more rates to compare</p>
+								</TooltipContent>
+							</Tooltip>
+						</div>
+					);
+				}
+
+				return <div className="flex justify-center">{button}</div>;
+			},
+			cell: ({ row }) => {
+				const { selectedCount } = compareContext;
+				const isSelected = row.getIsSelected();
+				const isMaxReached = selectedCount >= MAX_COMPARE_RATES;
+				const isDisabled = !isSelected && isMaxReached;
+
+				const checkbox = (
 					<Checkbox
-						checked={row.getIsSelected()}
+						checked={isSelected}
 						onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+						disabled={isDisabled}
 						aria-label="Select row for comparison"
 					/>
-				</div>
-			),
+				);
+
+				if (isDisabled) {
+					return (
+						<div className="flex justify-center">
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span className="cursor-not-allowed">{checkbox}</span>
+								</TooltipTrigger>
+								<TooltipContent>
+									<p>Maximum of {MAX_COMPARE_RATES} rates can be compared</p>
+								</TooltipContent>
+							</Tooltip>
+						</div>
+					);
+				}
+
+				return <div className="flex justify-center">{checkbox}</div>;
+			},
 			enableHiding: false,
 			enableSorting: false,
 			meta: { stickyRight: true },
@@ -910,14 +987,83 @@ export function RatesTable({
 	onPaginationChange,
 }: RatesTableProps) {
 	const [selectedRate, setSelectedRate] = useState<RateRow | null>(null);
+	const compareState = useStore($compareState);
+
+	// Convert compare state to row selection format
+	const rowSelection: RowSelectionState = useMemo(() => {
+		const selection: RowSelectionState = {};
+		for (const id of compareState.selectedRateIds) {
+			selection[id] = true;
+		}
+		return selection;
+	}, [compareState.selectedRateIds]);
+
+	const setRowSelection = useCallback((newSelection: RowSelectionState) => {
+		const newState = {
+			...$compareState.get(),
+			selectedRateIds: Object.keys(newSelection),
+		};
+		$compareState.set(newState);
+		saveCompareState(newState);
+	}, []);
+
+	const compareModalOpen = compareState.isOpen;
+
+	const setCompareModalOpen = useCallback((open: boolean) => {
+		const newState = {
+			...$compareState.get(),
+			isOpen: open,
+		};
+		$compareState.set(newState);
+		saveCompareState(newState);
+	}, []);
 
 	const handleProductClick = useCallback((rate: RateRow) => {
 		setSelectedRate(rate);
 	}, []);
 
+	const handleCompareClick = useCallback(() => {
+		setCompareModalOpen(true);
+	}, [setCompareModalOpen]);
+
+	const handleShareComparison = useCallback(async () => {
+		const rateIds = Object.keys(rowSelection);
+		const customRates = $storedCustomRates.get();
+		const url = generateRatesShareUrl({
+			input: inputValues,
+			table: {
+				columnVisibility,
+				columnFilters,
+				sorting,
+			},
+			customRates: customRates.length > 0 ? customRates : undefined,
+			compare: { rateIds },
+		});
+		await navigator.clipboard.writeText(url);
+		return url;
+	}, [rowSelection, inputValues, columnVisibility, columnFilters, sorting]);
+
+	const selectedCount = Object.keys(rowSelection).length;
+
+	const compareContext: CompareContext = useMemo(
+		() => ({
+			selectedCount,
+			onCompareClick: handleCompareClick,
+		}),
+		[selectedCount, handleCompareClick],
+	);
+
 	const columns = useMemo(
-		() => createColumns(rates, lenders, perks, inputValues, handleProductClick),
-		[rates, lenders, perks, inputValues, handleProductClick],
+		() =>
+			createColumns(
+				rates,
+				lenders,
+				perks,
+				inputValues,
+				handleProductClick,
+				compareContext,
+			),
+		[rates, lenders, perks, inputValues, handleProductClick, compareContext],
 	);
 
 	const data = useMemo<RateRow[]>(
@@ -1035,6 +1181,12 @@ export function RatesTable({
 		],
 	);
 
+	// Get the selected rates for comparison
+	const selectedRates = useMemo(() => {
+		const selectedIds = Object.keys(rowSelection);
+		return data.filter((rate) => selectedIds.includes(rate.id));
+	}, [data, rowSelection]);
+
 	if (rates.length === 0) {
 		return (
 			<div className="text-center py-8 text-muted-foreground">
@@ -1057,6 +1209,9 @@ export function RatesTable({
 				onColumnVisibilityChange={onColumnVisibilityChange}
 				pagination={pagination}
 				onPaginationChange={onPaginationChange}
+				rowSelection={rowSelection}
+				onRowSelectionChange={setRowSelection}
+				getRowId={(row) => row.id}
 			/>
 
 			{/* Rate Details Modal */}
@@ -1076,6 +1231,18 @@ export function RatesTable({
 				mode={inputValues.mode}
 				open={selectedRate !== null}
 				onOpenChange={(open) => !open && setSelectedRate(null)}
+			/>
+
+			{/* Compare Rates Modal */}
+			<CompareRatesModal
+				rates={selectedRates}
+				lenders={lenders}
+				perks={perks}
+				mortgageAmount={mortgageAmount}
+				mortgageTerm={mortgageTerm}
+				open={compareModalOpen}
+				onOpenChange={setCompareModalOpen}
+				onShare={handleShareComparison}
 			/>
 		</>
 	);

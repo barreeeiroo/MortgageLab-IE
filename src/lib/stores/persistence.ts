@@ -1,9 +1,15 @@
 import type { RatesMode } from "@/lib/constants";
+import { hasRatesShareParam } from "@/lib/share";
 import {
 	loadRatesForm,
 	type RatesFormState,
 	saveRatesForm,
 } from "@/lib/storage";
+import {
+	$compareState,
+	COMPARE_STORAGE_KEY,
+	loadCompareState,
+} from "./compare";
 import {
 	$storedCustomRates,
 	CUSTOM_RATES_STORAGE_KEY,
@@ -16,9 +22,6 @@ import {
 	$sorting,
 	TABLE_STORAGE_KEYS,
 } from "./rates-table";
-
-// Re-export for backwards compatibility
-export { TABLE_STORAGE_KEYS } from "./rates-table";
 
 // Track initialization state
 let initialized = false;
@@ -33,19 +36,13 @@ function getModeFromHash(): RatesMode | null {
 	return null;
 }
 
-// Check if URL has share param
-function hasShareParam(): boolean {
-	if (typeof window === "undefined") return false;
-	return new URLSearchParams(window.location.search).has("s");
-}
-
 // Initialize store from localStorage or URL params
 export function initializeStore(): void {
 	if (typeof window === "undefined" || initialized) return;
 	initialized = true;
 
 	// If there's a share param, handle it async (less common case)
-	if (hasShareParam()) {
+	if (hasRatesShareParam()) {
 		import("@/lib/share").then(
 			({ parseRatesShareState, clearRatesShareParam }) => {
 				const sharedState = parseRatesShareState();
@@ -94,6 +91,19 @@ export function initializeStore(): void {
 						}
 					}
 
+					// Load compare state if present and persist to localStorage
+					if (sharedState.compare && sharedState.compare.rateIds.length > 0) {
+						const compareState = {
+							selectedRateIds: sharedState.compare.rateIds,
+							isOpen: true,
+						};
+						$compareState.set(compareState);
+						localStorage.setItem(
+							COMPARE_STORAGE_KEY,
+							JSON.stringify(compareState),
+						);
+					}
+
 					// Clear URL params after loading
 					clearRatesShareParam();
 				}
@@ -118,6 +128,15 @@ export function initializeStore(): void {
 		buyerType: saved.buyerType ?? current.buyerType,
 		currentLender: saved.currentLender ?? current.currentLender,
 	});
+
+	// Load compare state from localStorage
+	const savedCompareState = loadCompareState();
+	if (
+		savedCompareState.selectedRateIds.length > 0 ||
+		savedCompareState.isOpen
+	) {
+		$compareState.set(savedCompareState);
+	}
 }
 
 // Save form values to localStorage

@@ -11,7 +11,7 @@ import {
  * Rates table share state encoding/decoding
  */
 
-const SHARE_PARAM = "s";
+export const RATES_SHARE_PARAM = "r";
 
 export interface ShareableTableState {
 	columnVisibility: Record<string, boolean>;
@@ -19,10 +19,15 @@ export interface ShareableTableState {
 	sorting: Array<{ id: string; desc: boolean }>;
 }
 
+export interface CompareShareState {
+	rateIds: string[];
+}
+
 export interface RatesShareState {
 	input: RatesInputValues;
 	table: ShareableTableState;
 	customRates?: StoredCustomRate[];
+	compare?: CompareShareState;
 }
 
 // Value abbreviations for mode
@@ -72,6 +77,7 @@ interface CompressedState {
 	f?: Array<{ id: string; value: unknown }>;
 	s?: Array<{ id: string; desc: boolean }>;
 	c?: CompressedCustomRate[]; // customRates
+	x?: string[]; // compare rateIds
 }
 
 function compressCustomRate(rate: StoredCustomRate): CompressedCustomRate {
@@ -144,6 +150,10 @@ function compressState(state: RatesShareState): CompressedState {
 			state.customRates && state.customRates.length > 0
 				? state.customRates.map(compressCustomRate)
 				: undefined,
+		x:
+			state.compare && state.compare.rateIds.length > 0
+				? state.compare.rateIds
+				: undefined,
 	};
 }
 
@@ -166,6 +176,7 @@ function decompressState(compressed: CompressedState): RatesShareState {
 			sorting: compressed.s ?? [],
 		},
 		customRates: compressed.c?.map(decompressCustomRate),
+		compare: compressed.x ? { rateIds: compressed.x } : undefined,
 	};
 }
 
@@ -176,7 +187,7 @@ export function generateRatesShareUrl(state: RatesShareState): string {
 	const compressed = compressState(state);
 	const encoded = compressToUrl(compressed);
 	const url = new URL(window.location.href);
-	url.searchParams.set(SHARE_PARAM, encoded);
+	url.searchParams.set(RATES_SHARE_PARAM, encoded);
 	url.hash = state.input.mode;
 	return url.toString();
 }
@@ -185,7 +196,7 @@ export function generateRatesShareUrl(state: RatesShareState): string {
  * Parse rates share state from URL if present
  */
 export function parseRatesShareState(): RatesShareState | null {
-	const encoded = getUrlParam(SHARE_PARAM);
+	const encoded = getUrlParam(RATES_SHARE_PARAM);
 	if (!encoded) return null;
 
 	const compressed = decompressFromUrl<CompressedState>(encoded);
@@ -198,5 +209,14 @@ export function parseRatesShareState(): RatesShareState | null {
  * Clear the share parameter from the URL
  */
 export function clearRatesShareParam(): void {
-	clearUrlParam(SHARE_PARAM);
+	clearUrlParam(RATES_SHARE_PARAM);
+}
+
+/**
+ * Check if URL has share param
+ */
+export function hasRatesShareParam(): boolean {
+	if (typeof window === "undefined") return false;
+	const params = new URLSearchParams(window.location.search);
+	return params.has(RATES_SHARE_PARAM);
 }

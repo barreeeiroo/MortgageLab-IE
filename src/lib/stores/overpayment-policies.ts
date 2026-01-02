@@ -1,6 +1,6 @@
 import { fetchOverpaymentPoliciesData } from "@/lib/data/fetch";
 import type { OverpaymentPolicy } from "@/lib/schemas";
-import { createDataStore } from "./createDataStore";
+import { createDataStore } from "./common";
 
 const store = createDataStore<OverpaymentPolicy>(fetchOverpaymentPoliciesData);
 

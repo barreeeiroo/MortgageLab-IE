@@ -32,7 +32,6 @@ export { $perks, fetchPerks } from "./perks";
 export {
 	initializeStore,
 	persistFormValues,
-	TABLE_STORAGE_KEYS,
 	updateUrlHash,
 } from "./persistence";
 // Re-export from form store

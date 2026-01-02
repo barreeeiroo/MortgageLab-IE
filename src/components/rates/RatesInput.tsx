@@ -251,7 +251,10 @@ export function RatesInput({
 											onKeyDown={(e) => {
 												if (e.key === "Enter") {
 													focusedField.current = null;
-													updateField("monthlyRepayment", localMonthlyRepayment);
+													updateField(
+														"monthlyRepayment",
+														localMonthlyRepayment,
+													);
 												}
 											}}
 											onBlur={() => {

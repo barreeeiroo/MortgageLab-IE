@@ -491,9 +491,7 @@ export function AddCustomRateDialog({
 								<Label>Rate Type</Label>
 								<Select
 									value={form.type}
-									onValueChange={(value: RateType) =>
-										updateForm("type", value)
-									}
+									onValueChange={(value: RateType) => updateForm("type", value)}
 								>
 									<SelectTrigger className="w-full">
 										<SelectValue />

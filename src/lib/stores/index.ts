@@ -1,3 +1,4 @@
+export * from "./compare";
 export * from "./custom-rates";
 export * from "./lenders";
 export * from "./perks";

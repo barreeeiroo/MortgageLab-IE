@@ -1,6 +1,6 @@
 import { fetchPerksData } from "@/lib/data/fetch";
 import type { Perk } from "@/lib/schemas";
-import { createDataStore } from "./createDataStore";
+import { createDataStore } from "./common";
 
 const store = createDataStore<Perk>(fetchPerksData);
 

@@ -10,7 +10,9 @@ export {
 export {
 	clearRatesShareParam,
 	generateRatesShareUrl,
+	hasRatesShareParam,
 	parseRatesShareState,
+	RATES_SHARE_PARAM,
 	type RatesShareState,
 	type ShareableTableState,
 } from "./rates";
