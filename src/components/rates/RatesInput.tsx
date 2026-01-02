@@ -157,6 +157,12 @@ export function RatesInput({
 												e.target.value.replace(/[^0-9]/g, ""),
 											)
 										}
+										onKeyDown={(e) => {
+											if (e.key === "Enter") {
+												focusedField.current = null;
+												updateField("propertyValue", localPropertyValue);
+											}
+										}}
 										onBlur={() => {
 											focusedField.current = null;
 											updateField("propertyValue", localPropertyValue);
@@ -182,6 +188,12 @@ export function RatesInput({
 												e.target.value.replace(/[^0-9]/g, ""),
 											)
 										}
+										onKeyDown={(e) => {
+											if (e.key === "Enter") {
+												focusedField.current = null;
+												updateField("mortgageAmount", localMortgageAmount);
+											}
+										}}
 										onBlur={() => {
 											focusedField.current = null;
 											updateField("mortgageAmount", localMortgageAmount);
@@ -236,6 +248,12 @@ export function RatesInput({
 													e.target.value.replace(/[^0-9]/g, ""),
 												)
 											}
+											onKeyDown={(e) => {
+												if (e.key === "Enter") {
+													focusedField.current = null;
+													updateField("monthlyRepayment", localMonthlyRepayment);
+												}
+											}}
 											onBlur={() => {
 												focusedField.current = null;
 												updateField("monthlyRepayment", localMonthlyRepayment);
