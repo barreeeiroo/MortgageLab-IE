@@ -1,0 +1,48 @@
+[
+	{
+		"id": "fixed-20pct-balance",
+		"label": "20% of Balance",
+		"description": "Up to 20% of balance per year without charge",
+		"icon": "TrendingUp",
+		"allowanceType": "percentage",
+		"allowanceValue": 20,
+		"allowanceBasis": "balance"
+	},
+	{
+		"id": "fixed-10pct-balance",
+		"label": "10% of Balance",
+		"description": "Up to 10% of balance per year without charge",
+		"icon": "Percent",
+		"allowanceType": "percentage",
+		"allowanceValue": 10,
+		"allowanceBasis": "balance"
+	},
+	{
+		"id": "fixed-10pct-balance-2pct-cap",
+		"label": "10% of Balance (2% Cap)",
+		"description": "Up to 10% of balance per year, early redemption fee capped at 2%",
+		"icon": "Shield",
+		"allowanceType": "percentage",
+		"allowanceValue": 10,
+		"allowanceBasis": "balance",
+		"chargeCap": 2
+	},
+	{
+		"id": "fixed-10pct-monthly",
+		"label": "10% of Monthly",
+		"description": "10% of monthly payment or €65, whichever is greater",
+		"icon": "Calendar",
+		"allowanceType": "percentage",
+		"allowanceValue": 10,
+		"allowanceBasis": "monthly",
+		"minAmount": 65
+	},
+	{
+		"id": "fixed-5k-year",
+		"label": "€5,000 per Year",
+		"description": "Up to €5,000 per year without charge",
+		"icon": "Banknote",
+		"allowanceType": "flat",
+		"allowanceValue": 5000
+	}
+]

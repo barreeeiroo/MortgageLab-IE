@@ -3,6 +3,7 @@ import type {
 	BuyerType,
 	Lender,
 	MortgageRate,
+	OverpaymentPolicy,
 	Perk,
 } from "@/lib/schemas";
 
@@ -19,6 +20,16 @@ export function getPerk(perks: Perk[], id: string): Perk | undefined {
 export function resolvePerks(perks: Perk[], perkIds: string[]): Perk[] {
 	const perkMap = new Map<string, Perk>(perks.map((perk) => [perk.id, perk]));
 	return perkIds.map((id) => perkMap.get(id)).filter((p): p is Perk => !!p);
+}
+
+/**
+ * Get an overpayment policy by ID from a policies array
+ */
+export function getOverpaymentPolicy(
+	policies: OverpaymentPolicy[],
+	id: string,
+): OverpaymentPolicy | undefined {
+	return policies.find((p) => p.id === id);
 }
 
 /**

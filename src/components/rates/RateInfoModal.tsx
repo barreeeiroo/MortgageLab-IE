@@ -1,6 +1,7 @@
 import {
 	Coins,
 	HelpCircle,
+	Infinity as InfinityIcon,
 	type LucideIcon,
 	PiggyBank,
 	Play,
@@ -11,8 +12,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { GLOSSARY_TERMS_MAP, getIncorrectRateUrl } from "@/lib/constants";
 import {
 	DEFAULT_MAX_TERM,
+	getOverpaymentPolicy,
 	type Lender,
 	type MortgageRate,
+	type OverpaymentPolicy,
 	type Perk,
 	resolvePerks,
 } from "@/lib/data";
@@ -51,6 +54,7 @@ interface RateInfoModalProps {
 	lender: Lender | undefined;
 	allRates: MortgageRate[];
 	perks: Perk[];
+	overpaymentPolicies: OverpaymentPolicy[];
 	combinedPerks: string[];
 	mortgageAmount: number;
 	mortgageTerm: number;
@@ -285,6 +289,7 @@ export function RateInfoModal({
 	lender,
 	allRates,
 	perks,
+	overpaymentPolicies,
 	combinedPerks,
 	mortgageAmount,
 	mortgageTerm,
@@ -681,8 +686,44 @@ export function RateInfoModal({
 											/>
 										)}
 										<InfoRow
-											label="Early Repayment Fee"
-											value={isFixed ? "Yes" : "No"}
+											label="Overpayment Policy"
+											value={(() => {
+												// Custom rates: unknown policy
+												if ((rate as { isCustom?: boolean }).isCustom) {
+													return "Unknown";
+												}
+												// Variable rates: always unlimited
+												if (!isFixed) {
+													return (
+														<span className="inline-flex items-center gap-1">
+															<InfinityIcon className="h-3.5 w-3.5 text-muted-foreground" />
+															Unlimited
+														</span>
+													);
+												}
+												// Fixed rates: check for overpayment policy
+												const policy = lender?.overpaymentPolicy
+													? getOverpaymentPolicy(
+															overpaymentPolicies,
+															lender.overpaymentPolicy,
+														)
+													: undefined;
+												if (!policy) {
+													return "Fee Applies";
+												}
+												return (
+													<Tooltip>
+														<TooltipTrigger asChild>
+															<span className="inline-flex items-center gap-1 cursor-help underline decoration-dotted underline-offset-2">
+																{policy.label}
+															</span>
+														</TooltipTrigger>
+														<TooltipContent>
+															<p className="text-xs">{policy.description}</p>
+														</TooltipContent>
+													</Tooltip>
+												);
+											})()}
 										/>
 										{rate.minLoan && (
 											<InfoRow

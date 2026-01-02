@@ -1,4 +1,3 @@
-import type { AprcFees } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 
 /**
@@ -7,7 +6,6 @@ import type { MortgageRate } from "@/lib/schemas/rate";
  */
 export interface StoredCustomRate extends MortgageRate {
 	customLenderName?: string; // Custom lender name if not using an existing lender
-	aprcFees?: AprcFees; // Optional APRC fees for calculating indicative APRC
 }
 
 /**

@@ -23,6 +23,7 @@ export const LenderSchema = z.object({
 	perks: z.array(z.string()).default([]),
 	maxTerm: z.number().int().positive().optional(), // Maximum mortgage term in years, defaults to DEFAULT_MAX_TERM
 	aprcFees: AprcFeesSchema.optional(), // Fees used for APRC calculation
+	overpaymentPolicy: z.string().optional(), // Reference to overpayment policy id, if not set breakage fee applies
 });
 export type Lender = z.infer<typeof LenderSchema>;
 

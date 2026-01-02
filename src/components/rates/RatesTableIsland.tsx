@@ -10,6 +10,7 @@ import {
 	$ltv,
 	$mortgage,
 	$mortgageTerm,
+	$overpaymentPolicies,
 	$perks,
 	$rates,
 	$ratesMetadata,
@@ -26,6 +27,7 @@ export function RatesTableIsland() {
 	const allRates = useStore($rates);
 	const lenders = useStore($lenders);
 	const perks = useStore($perks);
+	const overpaymentPolicies = useStore($overpaymentPolicies);
 	const ratesMetadata = useStore($ratesMetadata);
 	const mortgage = useStore($mortgage);
 	const mortgageTerm = useStore($mortgageTerm);
@@ -64,6 +66,7 @@ export function RatesTableIsland() {
 				allRates={allRates}
 				lenders={lenders}
 				perks={perks}
+				overpaymentPolicies={overpaymentPolicies}
 				ratesMetadata={ratesMetadata}
 				mortgageAmount={mortgage}
 				mortgageTerm={mortgageTerm}

@@ -20,6 +20,7 @@ import {
 	getLender,
 	type Lender,
 	type MortgageRate,
+	type OverpaymentPolicy,
 	type Perk,
 	type RatesMetadata,
 	resolvePerks,
@@ -72,6 +73,7 @@ interface RatesTableProps {
 	allRates: MortgageRate[]; // Unfiltered rates for follow-up calculation
 	lenders: Lender[];
 	perks: Perk[];
+	overpaymentPolicies: OverpaymentPolicy[];
 	ratesMetadata: RatesMetadata[];
 	mortgageAmount: number;
 	mortgageTerm: number;
@@ -849,6 +851,7 @@ export function RatesTable({
 	allRates,
 	lenders,
 	perks,
+	overpaymentPolicies,
 	ratesMetadata,
 	mortgageAmount,
 	mortgageTerm,
@@ -1107,6 +1110,7 @@ export function RatesTable({
 								<AddCustomRateDialog
 									lenders={lenders}
 									customLenders={customLenders}
+									perks={perks}
 									currentBuyerType={inputValues.buyerType}
 									onAddRate={handleAddCustomRate}
 								/>
@@ -1149,6 +1153,7 @@ export function RatesTable({
 				}
 				allRates={allRatesWithCustom}
 				perks={perks}
+				overpaymentPolicies={overpaymentPolicies}
 				combinedPerks={selectedRate?.combinedPerks ?? []}
 				mortgageAmount={mortgageAmount}
 				mortgageTerm={mortgageTerm}

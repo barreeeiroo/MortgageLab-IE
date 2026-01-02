@@ -7,6 +7,8 @@ import {
 	type Lender,
 	LendersFileSchema,
 	type MortgageRate,
+	OverpaymentPoliciesFileSchema,
+	type OverpaymentPolicy,
 	type Perk,
 	PerksFileSchema,
 	type RatesFile,
@@ -40,6 +42,23 @@ export async function fetchPerksData(): Promise<Perk[]> {
 		if (!res.ok) return [];
 		const json = await res.json();
 		return PerksFileSchema.parse(json);
+	} catch {
+		return [];
+	}
+}
+
+/**
+ * Fetch overpayment policies data from the JSON file.
+ * @returns Array of overpayment policies, or empty array on error
+ */
+export async function fetchOverpaymentPoliciesData(): Promise<
+	OverpaymentPolicy[]
+> {
+	try {
+		const res = await fetch(getPath("data/overpayment-policies.json"));
+		if (!res.ok) return [];
+		const json = await res.json();
+		return OverpaymentPoliciesFileSchema.parse(json);
 	} catch {
 		return [];
 	}

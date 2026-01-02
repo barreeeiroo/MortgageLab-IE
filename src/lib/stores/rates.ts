@@ -14,6 +14,11 @@ import {
 	isLendersFetched,
 	markLendersFetched,
 } from "./lenders";
+import {
+	fetchOverpaymentPolicies,
+	isOverpaymentPoliciesFetched,
+	markOverpaymentPoliciesFetched,
+} from "./overpayment-policies";
 import { fetchPerks, isPerksFetched, markPerksFetched } from "./perks";
 
 // Re-export from form store
@@ -35,8 +40,12 @@ export {
 	setFormValues,
 	updateFormValue,
 } from "./form";
-// Re-export from lenders and perks stores
+// Re-export from lenders, perks, and overpayment policies stores
 export { $lenders, fetchLenders } from "./lenders";
+export {
+	$overpaymentPolicies,
+	fetchOverpaymentPolicies,
+} from "./overpayment-policies";
 export { $perks, fetchPerks } from "./perks";
 // Re-export from persistence store
 export {
@@ -119,15 +128,19 @@ export async function fetchRatesData(): Promise<void> {
 
 	fetchPromise = (async () => {
 		try {
-			// Fetch lenders and perks if not already fetched
+			// Fetch lenders, perks, and overpayment policies if not already fetched
 			await Promise.all([
 				isLendersFetched() ? Promise.resolve() : fetchLenders(),
 				isPerksFetched() ? Promise.resolve() : fetchPerks(),
+				isOverpaymentPoliciesFetched()
+					? Promise.resolve()
+					: fetchOverpaymentPolicies(),
 			]);
 
 			const lenders = $lenders.get();
 			markLendersFetched();
 			markPerksFetched();
+			markOverpaymentPoliciesFetched();
 
 			// Fetch rates for all lenders
 			const { rates, metadata } = await fetchAllRates(lenders);

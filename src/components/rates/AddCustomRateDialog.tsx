@@ -30,10 +30,21 @@ import {
 } from "@/components/ui/tooltip";
 import { GLOSSARY_TERMS_MAP } from "@/lib/constants";
 import type { Lender, MortgageRate } from "@/lib/data";
+import { type AprcConfig, calculateAprc } from "@/lib/mortgage";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import { DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
+import type { Perk } from "@/lib/schemas/perk";
 import { RATE_TYPES } from "@/lib/schemas/rate";
 import type { StoredCustomRate } from "./customRates";
+
+// Standard APRC calculation config (per EU directive typical disclosure)
+const DEFAULT_APRC_CONFIG: Omit<
+	AprcConfig,
+	"valuationFee" | "securityReleaseFee"
+> = {
+	loanAmount: 250000,
+	termYears: 20,
+};
 
 interface CustomLenderInfo {
 	id: string;
@@ -43,6 +54,7 @@ interface CustomLenderInfo {
 interface AddCustomRateDialogProps {
 	lenders: Lender[];
 	customLenders: CustomLenderInfo[];
+	perks: Perk[];
 	currentBuyerType: BuyerType;
 	onAddRate: (rate: StoredCustomRate) => void;
 }
@@ -77,6 +89,8 @@ const BUYER_TYPE_LABELS: Record<string, string> = {
 
 const CUSTOM_LENDER_VALUE = "__custom__";
 
+type AprcMode = "fees" | "direct";
+
 interface FormState {
 	lenderId: string;
 	customLenderName: string;
@@ -88,8 +102,11 @@ interface FormState {
 	buyerTypes: string[];
 	berEligible: string[];
 	allBerEligible: boolean;
+	aprcMode: AprcMode;
 	valuationFee: string;
 	securityReleaseFee: string;
+	aprc: string;
+	perks: string[];
 }
 
 function getDefaultBuyerTypes(buyerType: BuyerType): string[] {
@@ -121,14 +138,18 @@ function createInitialFormState(buyerType: BuyerType): FormState {
 		buyerTypes: getDefaultBuyerTypes(buyerType),
 		berEligible: [],
 		allBerEligible: true,
+		aprcMode: "fees",
 		valuationFee: "",
 		securityReleaseFee: "",
+		aprc: "",
+		perks: [],
 	};
 }
 
 export function AddCustomRateDialog({
 	lenders,
 	customLenders,
+	perks: availablePerks,
 	currentBuyerType,
 	onAddRate,
 }: AddCustomRateDialogProps) {
@@ -204,29 +225,53 @@ export function AddCustomRateDialog({
 		const [minLtv, maxLtv] = form.ltvRange;
 		if (minLtv < 0 || minLtv > 100 || maxLtv < 0 || maxLtv > 100) return false;
 		if (minLtv > maxLtv) return false;
-		// Require both APRC fees
-		if (
-			!form.valuationFee ||
-			Number.isNaN(Number(form.valuationFee)) ||
-			Number(form.valuationFee) < 0
-		)
-			return false;
-		if (
-			!form.securityReleaseFee ||
-			Number.isNaN(Number(form.securityReleaseFee)) ||
-			Number(form.securityReleaseFee) < 0
-		)
-			return false;
+		// Validate APRC based on mode
+		if (form.aprcMode === "fees") {
+			if (
+				!form.valuationFee ||
+				Number.isNaN(Number(form.valuationFee)) ||
+				Number(form.valuationFee) < 0
+			)
+				return false;
+			if (
+				!form.securityReleaseFee ||
+				Number.isNaN(Number(form.securityReleaseFee)) ||
+				Number(form.securityReleaseFee) < 0
+			)
+				return false;
+		} else {
+			if (
+				!form.aprc ||
+				Number.isNaN(Number(form.aprc)) ||
+				Number(form.aprc) <= 0
+			)
+				return false;
+		}
 		return true;
 	}, [form, isCustomLender]);
 
 	const handleSubmit = useCallback(() => {
 		if (!isFormValid) return;
 
-		const aprcFees = {
-			valuationFee: Number(form.valuationFee),
-			securityReleaseFee: Number(form.securityReleaseFee),
-		};
+		// Compute or use direct APRC
+		let apr: number | undefined;
+		if (form.aprcMode === "direct") {
+			apr = Number(form.aprc);
+		} else if (form.type === "fixed" && form.fixedTerm) {
+			// Compute APRC from fees using standard config
+			const aprcConfig: AprcConfig = {
+				...DEFAULT_APRC_CONFIG,
+				valuationFee: Number(form.valuationFee),
+				securityReleaseFee: Number(form.securityReleaseFee),
+			};
+			// For custom rates, use the fixed rate as follow-on rate (conservative estimate)
+			apr = calculateAprc(
+				Number(form.rate),
+				Number(form.fixedTerm) * 12,
+				Number(form.rate),
+				aprcConfig,
+			);
+		}
 
 		const customRate: StoredCustomRate = {
 			id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
@@ -234,6 +279,7 @@ export function AddCustomRateDialog({
 			lenderId: effectiveLenderId,
 			type: form.type,
 			rate: Number(form.rate),
+			apr,
 			fixedTerm: form.type === "fixed" ? Number(form.fixedTerm) : undefined,
 			minLtv: form.ltvRange[0],
 			maxLtv: form.ltvRange[1],
@@ -241,11 +287,10 @@ export function AddCustomRateDialog({
 			berEligible: form.allBerEligible
 				? undefined
 				: (form.berEligible as MortgageRate["berEligible"]),
-			perks: [],
+			perks: form.perks,
 			customLenderName: isCustomLender
 				? form.customLenderName.trim()
 				: undefined,
-			aprcFees,
 		};
 
 		onAddRate(customRate);
@@ -315,6 +360,15 @@ export function AddCustomRateDialog({
 		},
 		[form.berEligible],
 	);
+
+	const togglePerk = useCallback((perkId: string) => {
+		setForm((prev) => ({
+			...prev,
+			perks: prev.perks.includes(perkId)
+				? prev.perks.filter((id) => id !== perkId)
+				: [...prev.perks, perkId],
+		}));
+	}, []);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -469,15 +523,55 @@ export function AddCustomRateDialog({
 							)}
 						</div>
 
-						{/* Interest Rate and APRC Fees */}
+						{/* Interest Rate & APRC */}
 						<div className="space-y-3">
-							<p className="text-sm font-semibold text-muted-foreground">
-								Interest Rate & APRC Fees
-							</p>
-							<div className="grid grid-cols-3 gap-4">
+							{/* APRC Mode Toggle */}
+							<div className="flex items-center gap-4">
+								<p className="text-sm font-semibold text-muted-foreground">
+									Rate & APRC
+								</p>
+								<div className="flex gap-3 ml-auto">
+									<div className="flex items-center gap-1.5">
+										<input
+											type="radio"
+											id="aprc-mode-fees"
+											name="aprc-mode"
+											checked={form.aprcMode === "fees"}
+											onChange={() => updateForm("aprcMode", "fees")}
+											className="h-3.5 w-3.5 accent-primary"
+										/>
+										<label
+											htmlFor="aprc-mode-fees"
+											className="text-xs cursor-pointer text-muted-foreground"
+										>
+											Calculate from fees
+										</label>
+									</div>
+									<div className="flex items-center gap-1.5">
+										<input
+											type="radio"
+											id="aprc-mode-direct"
+											name="aprc-mode"
+											checked={form.aprcMode === "direct"}
+											onChange={() => updateForm("aprcMode", "direct")}
+											className="h-3.5 w-3.5 accent-primary"
+										/>
+										<label
+											htmlFor="aprc-mode-direct"
+											className="text-xs cursor-pointer text-muted-foreground"
+										>
+											Enter APRC
+										</label>
+									</div>
+								</div>
+							</div>
+
+							{/* Interest Rate + Fees/APRC in one row */}
+							<div className="flex gap-4">
+								{/* Interest Rate - always visible */}
 								<div className="space-y-2">
 									<Label htmlFor="rate">Interest Rate</Label>
-									<div className="relative">
+									<div className="relative w-28">
 										<Input
 											id="rate"
 											type="number"
@@ -493,79 +587,106 @@ export function AddCustomRateDialog({
 										</span>
 									</div>
 								</div>
-								<div className="space-y-2">
-									<Label
-										htmlFor="valuation-fee"
-										className="flex items-center gap-1"
-									>
-										Valuation Fee
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<CircleHelp className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-											</TooltipTrigger>
-											<TooltipContent side="top" className="max-w-xs">
-												<p className="text-xs">
-													{GLOSSARY_TERMS_MAP.valuationFee?.shortDescription}
-												</p>
-											</TooltipContent>
-										</Tooltip>
-									</Label>
-									<div className="relative">
-										<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-											€
-										</span>
-										<Input
-											id="valuation-fee"
-											type="number"
-											step="1"
-											min="0"
-											placeholder={DEFAULT_APRC_FEES.valuationFee.toString()}
-											value={form.valuationFee}
-											onChange={(e) =>
-												updateForm("valuationFee", e.target.value)
-											}
-											className="pl-7"
-										/>
-									</div>
-								</div>
-								<div className="space-y-2">
-									<Label
-										htmlFor="security-fee"
-										className="flex items-center gap-1"
-									>
-										Release Fee
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<CircleHelp className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-											</TooltipTrigger>
-											<TooltipContent side="top" className="max-w-xs">
-												<p className="text-xs">
-													{
-														GLOSSARY_TERMS_MAP.securityReleaseFee
-															?.shortDescription
+
+								{form.aprcMode === "fees" ? (
+									<>
+										<div className="space-y-2 flex-1">
+											<Label
+												htmlFor="valuation-fee"
+												className="flex items-center gap-1"
+											>
+												Valuation Fee
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<CircleHelp className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+													</TooltipTrigger>
+													<TooltipContent side="top" className="max-w-xs">
+														<p className="text-xs">
+															{
+																GLOSSARY_TERMS_MAP.valuationFee
+																	?.shortDescription
+															}
+														</p>
+													</TooltipContent>
+												</Tooltip>
+											</Label>
+											<div className="relative">
+												<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+													€
+												</span>
+												<Input
+													id="valuation-fee"
+													type="number"
+													step="1"
+													min="0"
+													placeholder={DEFAULT_APRC_FEES.valuationFee.toString()}
+													value={form.valuationFee}
+													onChange={(e) =>
+														updateForm("valuationFee", e.target.value)
 													}
-												</p>
-											</TooltipContent>
-										</Tooltip>
-									</Label>
-									<div className="relative">
-										<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-											€
-										</span>
-										<Input
-											id="security-fee"
-											type="number"
-											step="1"
-											min="0"
-											placeholder={DEFAULT_APRC_FEES.securityReleaseFee.toString()}
-											value={form.securityReleaseFee}
-											onChange={(e) =>
-												updateForm("securityReleaseFee", e.target.value)
-											}
-											className="pl-7"
-										/>
+													className="pl-7"
+												/>
+											</div>
+										</div>
+										<div className="space-y-2 flex-1">
+											<Label
+												htmlFor="security-fee"
+												className="flex items-center gap-1"
+											>
+												Release Fee
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<CircleHelp className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+													</TooltipTrigger>
+													<TooltipContent side="top" className="max-w-xs">
+														<p className="text-xs">
+															{
+																GLOSSARY_TERMS_MAP.securityReleaseFee
+																	?.shortDescription
+															}
+														</p>
+													</TooltipContent>
+												</Tooltip>
+											</Label>
+											<div className="relative">
+												<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+													€
+												</span>
+												<Input
+													id="security-fee"
+													type="number"
+													step="1"
+													min="0"
+													placeholder={DEFAULT_APRC_FEES.securityReleaseFee.toString()}
+													value={form.securityReleaseFee}
+													onChange={(e) =>
+														updateForm("securityReleaseFee", e.target.value)
+													}
+													className="pl-7"
+												/>
+											</div>
+										</div>
+									</>
+								) : (
+									<div className="space-y-2">
+										<Label htmlFor="aprc">APRC</Label>
+										<div className="relative w-28">
+											<Input
+												id="aprc"
+												type="number"
+												step="0.01"
+												min="0"
+												placeholder="4.50"
+												value={form.aprc}
+												onChange={(e) => updateForm("aprc", e.target.value)}
+												className="pr-7"
+											/>
+											<span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+												%
+											</span>
+										</div>
 									</div>
-								</div>
+								)}
 							</div>
 						</div>
 
@@ -727,6 +848,36 @@ export function AddCustomRateDialog({
 								</div>
 							)}
 						</div>
+
+						{/* Perks (Optional) */}
+						{availablePerks.length > 0 && (
+							<div className="space-y-3">
+								<p className="text-sm font-semibold text-muted-foreground">
+									Perks
+								</p>
+								<div className="flex flex-wrap gap-3">
+									{availablePerks.map((perk) => {
+										const id = `perk-${perk.id}`;
+										return (
+											<div key={perk.id} className="flex items-center gap-2">
+												<Checkbox
+													id={id}
+													checked={form.perks.includes(perk.id)}
+													onCheckedChange={() => togglePerk(perk.id)}
+												/>
+												<label
+													htmlFor={id}
+													className="text-sm cursor-pointer"
+													title={perk.description}
+												>
+													{perk.label}
+												</label>
+											</div>
+										);
+									})}
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 
