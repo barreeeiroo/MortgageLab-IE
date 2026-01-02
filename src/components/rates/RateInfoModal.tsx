@@ -80,35 +80,41 @@ interface RateCalculations {
 }
 
 /**
- * Generate available term options based on current term and lender maxTerm
+ * Generate available term options based on current term and lender maxTerm.
+ * Always returns 3 options, aiming for ±5 years from current term.
+ * If near boundaries (min 5 years or maxTerm), shifts to show 2 options in one direction.
  */
 function getTermOptions(
 	currentTerm: number,
 	maxTerm: number,
 ): { value: number; label: string }[] {
-	const options: number[] = [];
+	const MIN_TERM = 5;
+	const STEP = 5;
 
-	// Always include current term
-	options.push(currentTerm);
+	const lower = currentTerm - STEP;
+	const upper = currentTerm + STEP;
 
-	if (currentTerm === 5) {
-		// If 5, show 10 and 15
-		options.push(10, 15);
-	} else if (currentTerm >= maxTerm) {
-		// If at max (35 or 40), show max-5 and max-10
-		options.push(maxTerm - 5, maxTerm - 10);
+	const canGoDown = lower >= MIN_TERM;
+	const canGoUp = upper <= maxTerm;
+
+	let options: number[];
+
+	if (canGoDown && canGoUp) {
+		// Ideal: -5, current, +5
+		options = [lower, currentTerm, upper];
+	} else if (!canGoUp) {
+		// At or near max: go down twice
+		options = [currentTerm - STEP * 2, currentTerm - STEP, currentTerm];
 	} else {
-		// Otherwise show ±5
-		if (currentTerm - 5 >= 5) {
-			options.push(currentTerm - 5);
-		}
-		if (currentTerm + 5 <= maxTerm) {
-			options.push(currentTerm + 5);
-		}
+		// At or near min: go up twice
+		options = [currentTerm, currentTerm + STEP, currentTerm + STEP * 2];
 	}
 
-	// Sort and dedupe
-	const uniqueOptions = [...new Set(options)].sort((a, b) => a - b);
+	// Filter to valid range, dedupe, and sort
+	const validOptions = options.filter(
+		(term) => term >= MIN_TERM && term <= maxTerm,
+	);
+	const uniqueOptions = [...new Set(validOptions)].sort((a, b) => a - b);
 
 	return uniqueOptions.map((term) => ({
 		value: term,
