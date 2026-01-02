@@ -47,6 +47,22 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
 			"The Cost of Credit represents the total amount of interest you'll pay over the full term of your mortgage. It's calculated as the difference between the Total Repayable amount and the original mortgage amount. The percentage shows this cost relative to your original loan. For example, a 50% cost of credit means you'll pay half of your original loan amount in interest over the term.",
 		relatedTerms: ["aprc", "totalRepayable"],
 	},
+	{
+		id: "valuationFee",
+		term: "Valuation Fee",
+		shortDescription: "Fee for professional property valuation",
+		fullDescription:
+			"The Valuation Fee is charged by lenders to cover the cost of having your property professionally valued before approving a mortgage. This fee is typically paid upfront and is included in APRC calculations. In Ireland, valuation fees typically range from €150 to €215 depending on the lender. The valuation ensures the property value supports the loan amount requested.",
+		relatedTerms: ["aprc", "securityReleaseFee"],
+	},
+	{
+		id: "securityReleaseFee",
+		term: "Security Release Fee",
+		shortDescription: "Fee to release the mortgage from your property",
+		fullDescription:
+			"The Security Release Fee (also called Deed Release Fee) is charged when your mortgage is fully paid off to release the lender's security interest from your property. This fee covers the administrative and legal costs of removing the mortgage charge from the Land Registry (Tailte Éireann). In Ireland, this fee typically ranges from €40 to €175 depending on the lender.",
+		relatedTerms: ["aprc", "valuationFee"],
+	},
 ];
 
 export const GLOSSARY_TERMS_MAP = Object.fromEntries(

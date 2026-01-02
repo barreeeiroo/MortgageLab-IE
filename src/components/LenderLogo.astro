@@ -1,17 +1,19 @@
 ---
 import { Image } from 'astro:assets';
+import { Pencil } from 'lucide-react';
 
 interface Props {
   lenderId: string;
   size?: number;
   class?: string;
+  isCustom?: boolean;
 }
 
 const images = import.meta.glob<{ default: ImageMetadata }>(
   '../assets/logos/lenders/*'
 );
 
-const { lenderId, size = 48, class: className } = Astro.props;
+const { lenderId, size = 48, class: className, isCustom = false } = Astro.props;
 
 // Find matching logo file regardless of extension
 const logoPath = Object.keys(images).find((path) =>
@@ -20,26 +22,44 @@ const logoPath = Object.keys(images).find((path) =>
 
 const logoModule = logoPath ? await images[logoPath]() : null;
 const logo = logoModule?.default;
+
+const iconSize = Math.max(12, Math.floor(size * 0.35));
 ---
 
-{logo ? (
+{/* Custom rate with unknown lender: show pencil icon */}
+{isCustom && !logo ? (
   <div
-    class:list={["bg-white rounded-md flex items-center justify-center p-2", className]}
+    class:list={["bg-primary/10 rounded-md flex items-center justify-center", className]}
     style={`width: ${size}px; height: ${size}px;`}
+    title="Custom Rate"
   >
-    <Image
-      src={logo}
-      alt={`${lenderId} logo`}
-      class="max-w-full max-h-full object-contain"
-      width={size - 16}
-      height={size - 16}
-    />
+    <Pencil className="text-primary" style={`width: ${iconSize}px; height: ${iconSize}px;`} />
+  </div>
+) : logo ? (
+  <div class:list={["relative", className]}>
+    <div
+      class="bg-white rounded-md flex items-center justify-center p-1"
+      style={`width: ${size}px; height: ${size}px;`}
+    >
+      <Image
+        src={logo}
+        alt={`${lenderId} logo`}
+        class="max-w-full max-h-full object-contain"
+        width={size - 8}
+        height={size - 8}
+      />
+    </div>
+    {isCustom && (
+      <div class="absolute -top-1 -right-1 bg-primary rounded-full p-0.5 shadow-sm" title="Custom Rate">
+        <Pencil className="text-primary-foreground" style="width: 10px; height: 10px;" />
+      </div>
+    )}
   </div>
 ) : (
   <div
     class:list={["bg-muted rounded-md flex items-center justify-center", className]}
     style={`width: ${size}px; height: ${size}px;`}
   >
-    <span class="text-xs text-muted-foreground font-medium">{lenderId.toUpperCase()}</span>
+    <span class="text-xs text-muted-foreground font-medium">{lenderId.toUpperCase().slice(0, 4)}</span>
   </div>
 )}

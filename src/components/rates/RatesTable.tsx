@@ -10,7 +10,6 @@ import {
 	ListFilter,
 	type LucideIcon,
 	PiggyBank,
-	Plus,
 	Share2,
 	TriangleAlert,
 } from "lucide-react";
@@ -27,12 +26,15 @@ import {
 } from "@/lib/data";
 import { useLocalStorage } from "@/lib/hooks";
 import {
+	calculateAprc,
 	calculateMonthlyFollowUp,
 	calculateMonthlyPayment,
 	calculateRemainingBalance,
 	calculateTotalRepayable,
 	findVariableRate,
 } from "@/lib/mortgage";
+import type { AprcConfig } from "@/lib/mortgage/aprc";
+import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { RatesInputValues } from "@/lib/stores";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
@@ -46,14 +48,6 @@ import {
 	type VisibilityState,
 } from "../ui/data-table";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "../ui/dialog";
-import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
@@ -61,6 +55,14 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { AddCustomRateDialog } from "./AddCustomRateDialog";
+import {
+	CUSTOM_RATES_STORAGE_KEY,
+	type CustomRate,
+	hydrateCustomRates,
+	isCustomRate,
+	type StoredCustomRate,
+} from "./customRates";
 import { RateInfoModal } from "./RateInfoModal";
 import { RateUpdatesDialog } from "./RateUpdatesDialog";
 import { generateRatesShareUrl } from "./share";
@@ -85,6 +87,10 @@ interface RateRow extends MortgageRate {
 	totalRepayable?: number;
 	costOfCreditPct?: number; // (totalRepayable - mortgageAmount) / mortgageAmount * 100
 	combinedPerks: string[]; // Lender perks + rate perks (deduplicated)
+	isCustom?: boolean;
+	customLenderName?: string;
+	indicativeAprc?: number; // Calculated APRC when no official APR
+	usesFixedRateForWholeTerm?: boolean; // True when fixed rate has no follow-up rate
 }
 
 // Custom filter function for array-based multi-select filtering
@@ -323,12 +329,25 @@ function createColumns(
 			),
 			cell: ({ row }) => {
 				const lender = getLender(lenders, row.original.lenderId);
+				const rateIsCustom = row.original.isCustom === true;
+				const displayName =
+					rateIsCustom && row.original.customLenderName
+						? row.original.customLenderName
+						: (lender?.name ?? row.original.lenderId.toUpperCase());
+
 				return (
 					<div className="flex items-center justify-center lg:justify-start gap-2">
-						<LenderLogo lenderId={row.original.lenderId} size={36} />
-						<span className="font-medium hidden lg:inline">
-							{lender?.name ?? row.original.lenderId.toUpperCase()}
-						</span>
+						<LenderLogo
+							lenderId={row.original.lenderId}
+							size={36}
+							isCustom={rateIsCustom}
+						/>
+						<div className="hidden lg:block">
+							<span className="font-medium">{displayName}</span>
+							{rateIsCustom && (
+								<p className="text-xs text-muted-foreground">Custom</p>
+							)}
+						</div>
 					</div>
 				);
 			},
@@ -500,14 +519,38 @@ function createColumns(
 					</div>
 				);
 			},
-			cell: ({ row }) => (
-				<div className="text-right text-muted-foreground">
-					{row.original.apr ? `${row.original.apr.toFixed(2)}%` : "—"}
-				</div>
-			),
+			cell: ({ row }) => {
+				// Show warning if APRC is calculated (no official APR) and no follow-up rate
+				const hasWarning =
+					!row.original.apr && row.original.usesFixedRateForWholeTerm;
+				return (
+					<div className="flex items-center justify-end gap-1 text-muted-foreground">
+						{row.original.indicativeAprc
+							? `${row.original.indicativeAprc.toFixed(2)}%`
+							: "—"}
+						{hasWarning && row.original.indicativeAprc && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span className="inline-flex items-center justify-center cursor-help">
+										<TriangleAlert className="h-3.5 w-3.5 text-yellow-500" />
+									</span>
+								</TooltipTrigger>
+								<TooltipContent className="max-w-xs">
+									<p className="font-medium">Fixed Rate Used for Whole Term</p>
+									<p className="text-xs text-muted-foreground">
+										No matching follow-up variable rate was found. This APRC is
+										calculated assuming the fixed rate continues for the entire
+										term.
+									</p>
+								</TooltipContent>
+							</Tooltip>
+						)}
+					</div>
+				);
+			},
 			sortingFn: (rowA, rowB) => {
-				const a = rowA.original.apr ?? 0;
-				const b = rowB.original.apr ?? 0;
+				const a = rowA.original.indicativeAprc ?? 0;
+				const b = rowB.original.indicativeAprc ?? 0;
 				return a - b;
 			},
 		},
@@ -549,6 +592,7 @@ function createColumns(
 			cell: ({ row }) => {
 				const followUpRate = row.original.followUpRate;
 				const isFixed = row.original.type === "fixed";
+				const rateIsCustom = row.original.isCustom === true;
 
 				// For variable rates, no follow-up product is expected
 				if (!isFixed) {
@@ -557,6 +601,27 @@ function createColumns(
 
 				// For fixed rates without a matching variable rate, show warning
 				if (!followUpRate) {
+					// For custom rates, show hint to add a custom variable rate
+					if (rateIsCustom) {
+						return (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span className="flex items-center gap-1.5 text-destructive cursor-help">
+										<TriangleAlert className="h-4 w-4 shrink-0" />
+										<span className="text-xs">Not found</span>
+									</span>
+								</TooltipTrigger>
+								<TooltipContent className="max-w-xs">
+									<p className="font-medium">No Variable Rate</p>
+									<p className="text-xs text-muted-foreground">
+										Add a custom variable rate with matching criteria (lender,
+										LTV range, BER eligibility) to see follow-up calculations.
+									</p>
+								</TooltipContent>
+							</Tooltip>
+						);
+					}
+
 					const lender = getLender(lenders, row.original.lenderId);
 					const reportUrl = getMissingVariableRateUrl({
 						lenderId: row.original.lenderId,
@@ -662,13 +727,33 @@ function createColumns(
 					</div>
 				);
 			},
-			cell: ({ row }) => (
-				<div className="text-right">
-					{row.original.totalRepayable
-						? formatCurrency(row.original.totalRepayable, { showCents: true })
-						: "—"}
-				</div>
-			),
+			cell: ({ row }) => {
+				const hasWarning = row.original.usesFixedRateForWholeTerm;
+				return (
+					<div className="flex items-center justify-end gap-1">
+						{row.original.totalRepayable
+							? formatCurrency(row.original.totalRepayable, { showCents: true })
+							: "—"}
+						{hasWarning && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span className="inline-flex items-center justify-center cursor-help">
+										<TriangleAlert className="h-3.5 w-3.5 text-yellow-500" />
+									</span>
+								</TooltipTrigger>
+								<TooltipContent className="max-w-xs">
+									<p className="font-medium">Fixed Rate Used for Whole Term</p>
+									<p className="text-xs text-muted-foreground">
+										No matching follow-up variable rate was found. This
+										calculation assumes the fixed rate continues for the entire
+										term.
+									</p>
+								</TooltipContent>
+							</Tooltip>
+						)}
+					</div>
+				);
+			},
 			sortingFn: (rowA, rowB) => {
 				const a = rowA.original.totalRepayable ?? 0;
 				const b = rowB.original.totalRepayable ?? 0;
@@ -707,13 +792,33 @@ function createColumns(
 					</div>
 				);
 			},
-			cell: ({ row }) => (
-				<div className="text-right">
-					{row.original.costOfCreditPct !== undefined
-						? `${row.original.costOfCreditPct.toFixed(1)}%`
-						: "—"}
-				</div>
-			),
+			cell: ({ row }) => {
+				const hasWarning = row.original.usesFixedRateForWholeTerm;
+				return (
+					<div className="flex items-center justify-end gap-1">
+						{row.original.costOfCreditPct !== undefined
+							? `${row.original.costOfCreditPct.toFixed(1)}%`
+							: "—"}
+						{hasWarning && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span className="inline-flex items-center justify-center cursor-help">
+										<TriangleAlert className="h-3.5 w-3.5 text-yellow-500" />
+									</span>
+								</TooltipTrigger>
+								<TooltipContent className="max-w-xs">
+									<p className="font-medium">Fixed Rate Used for Whole Term</p>
+									<p className="text-xs text-muted-foreground">
+										No matching follow-up variable rate was found. This
+										calculation assumes the fixed rate continues for the entire
+										term.
+									</p>
+								</TooltipContent>
+							</Tooltip>
+						)}
+					</div>
+				);
+			},
 			sortingFn: (rowA, rowB) => {
 				const a = rowA.original.costOfCreditPct ?? 0;
 				const b = rowB.original.costOfCreditPct ?? 0;
@@ -764,9 +869,40 @@ export function RatesTable({
 		STORAGE_KEYS.pageSize,
 		10,
 	);
+	const [storedCustomRates, setStoredCustomRates] = useLocalStorage<
+		StoredCustomRate[]
+	>(CUSTOM_RATES_STORAGE_KEY, []);
 	const [pageIndex, setPageIndex] = useState(0);
 	const [copied, setCopied] = useState(false);
 	const [selectedRate, setSelectedRate] = useState<RateRow | null>(null);
+
+	// Hydrate stored rates with isCustom flag
+	const customRates = useMemo(
+		() => hydrateCustomRates(storedCustomRates),
+		[storedCustomRates],
+	);
+
+	// Extract unique custom lenders from stored custom rates
+	const customLenders = useMemo(() => {
+		const lenderMap = new Map<string, string>();
+		for (const rate of storedCustomRates) {
+			// Only include rates with custom lender names (not existing lenders)
+			if (
+				rate.customLenderName &&
+				!lenders.some((l) => l.id === rate.lenderId)
+			) {
+				lenderMap.set(rate.lenderId, rate.customLenderName);
+			}
+		}
+		return Array.from(lenderMap.entries()).map(([id, name]) => ({ id, name }));
+	}, [storedCustomRates, lenders]);
+
+	const handleAddCustomRate = useCallback(
+		(rate: StoredCustomRate) => {
+			setStoredCustomRates((prev) => [...prev, rate]);
+		},
+		[setStoredCustomRates],
+	);
 
 	const handleProductClick = useCallback((rate: RateRow) => {
 		setSelectedRate(rate);
@@ -777,9 +913,37 @@ export function RatesTable({
 		[rates, lenders, perks, inputValues, handleProductClick],
 	);
 
+	// Filter custom rates based on current input values
+	const filteredCustomRates = useMemo(() => {
+		return customRates.filter((rate) => {
+			// Filter by LTV
+			if (ltv < rate.minLtv || ltv > rate.maxLtv) return false;
+			// Filter by buyer type
+			if (!rate.buyerTypes.includes(inputValues.buyerType)) return false;
+			// Filter by BER rating
+			if (inputValues.berRating && rate.berEligible) {
+				if (!rate.berEligible.includes(inputValues.berRating)) return false;
+			}
+			return true;
+		});
+	}, [customRates, ltv, inputValues.buyerType, inputValues.berRating]);
+
+	// Combine regular rates with custom rates for display
+	const allDisplayRates = useMemo(
+		() => [...rates, ...filteredCustomRates],
+		[rates, filteredCustomRates],
+	);
+
+	// Combine allRates with all custom rates for follow-up rate matching
+	// (includes unfiltered custom rates so variable rates can be found)
+	const allRatesWithCustom = useMemo(
+		() => [...allRates, ...customRates],
+		[allRates, customRates],
+	);
+
 	const data = useMemo<RateRow[]>(
 		() =>
-			rates.map((rate) => {
+			allDisplayRates.map((rate) => {
 				// Calculate LTV after fixed term ends (principal paid down)
 				let followUpLtv = ltv;
 				if (rate.type === "fixed" && rate.fixedTerm) {
@@ -796,12 +960,13 @@ export function RatesTable({
 					followUpLtv = (remainingBalance / mortgageAmount) * ltv;
 				}
 
-				// Use allRates to find follow-up rate (includes newBusiness: false rates)
+				// Use allRatesWithCustom to find follow-up rate (includes newBusiness: false rates and custom rates)
+				const rateIsCustom = isCustomRate(rate);
 				const followUpRate =
 					rate.type === "fixed"
 						? findVariableRate(
 								rate,
-								allRates,
+								allRatesWithCustom,
 								followUpLtv,
 								inputValues.berRating,
 							)
@@ -835,6 +1000,34 @@ export function RatesTable({
 				const lenderPerkIds = lender?.perks ?? [];
 				const combinedPerks = [...new Set([...lenderPerkIds, ...rate.perks])];
 
+				// Calculate indicative APRC if no official APR is provided
+				let indicativeAprc: number | undefined = rate.apr;
+				if (!indicativeAprc && rate.type === "fixed" && rate.fixedTerm) {
+					// Determine APRC fees: custom rate fees > lender fees > defaults
+					const rateAprcFees = (rate as { aprcFees?: AprcFees }).aprcFees;
+					const aprcFees: AprcFees =
+						rateAprcFees ?? lender?.aprcFees ?? DEFAULT_APRC_FEES;
+
+					const aprcConfig: AprcConfig = {
+						loanAmount: mortgageAmount,
+						termYears: mortgageTerm,
+						valuationFee: aprcFees.valuationFee,
+						securityReleaseFee: aprcFees.securityReleaseFee,
+					};
+					// Use follow-up rate if available, otherwise use fixed rate for whole term
+					const followOnRate = followUpRate?.rate ?? rate.rate;
+					indicativeAprc = calculateAprc(
+						rate.rate,
+						rate.fixedTerm * 12,
+						followOnRate,
+						aprcConfig,
+					);
+				}
+
+				// Flag when fixed rate has no follow-up (using fixed rate for whole term)
+				const usesFixedRateForWholeTerm =
+					rate.type === "fixed" && rate.fixedTerm && !followUpRate;
+
 				return {
 					...rate,
 					monthlyPayment,
@@ -844,11 +1037,17 @@ export function RatesTable({
 					totalRepayable,
 					costOfCreditPct,
 					combinedPerks,
+					isCustom: rateIsCustom,
+					customLenderName: rateIsCustom
+						? (rate as CustomRate).customLenderName
+						: undefined,
+					indicativeAprc,
+					usesFixedRateForWholeTerm,
 				};
 			}),
 		[
-			rates,
-			allRates,
+			allDisplayRates,
+			allRatesWithCustom,
 			lenders,
 			mortgageAmount,
 			mortgageTerm,
@@ -857,7 +1056,7 @@ export function RatesTable({
 		],
 	);
 
-	if (rates.length === 0) {
+	if (rates.length === 0 && filteredCustomRates.length === 0) {
 		return (
 			<div className="text-center py-8 text-muted-foreground">
 				No rates match your criteria. Try adjusting your filters.
@@ -905,26 +1104,12 @@ export function RatesTable({
 					return (
 						<div className="flex justify-between">
 							<div className="flex gap-2">
-								<Dialog>
-									<DialogTrigger asChild>
-										<Button size="sm" className="h-8 gap-1.5">
-											<Plus className="h-4 w-4" />
-											<span className="hidden sm:inline">Add</span> Custom Rate
-										</Button>
-									</DialogTrigger>
-									<DialogContent>
-										<DialogHeader>
-											<DialogTitle>Add Custom Rate</DialogTitle>
-											<DialogDescription>
-												Add a custom mortgage rate to compare against lender
-												rates.
-											</DialogDescription>
-										</DialogHeader>
-										<div className="py-4 text-muted-foreground text-center">
-											Coming soon...
-										</div>
-									</DialogContent>
-								</Dialog>
+								<AddCustomRateDialog
+									lenders={lenders}
+									customLenders={customLenders}
+									currentBuyerType={inputValues.buyerType}
+									onAddRate={handleAddCustomRate}
+								/>
 								<ColumnVisibilityToggle
 									table={table}
 									columnLabels={COLUMN_LABELS}
@@ -962,7 +1147,7 @@ export function RatesTable({
 				lender={
 					selectedRate ? getLender(lenders, selectedRate.lenderId) : undefined
 				}
-				allRates={allRates}
+				allRates={allRatesWithCustom}
 				perks={perks}
 				combinedPerks={selectedRate?.combinedPerks ?? []}
 				mortgageAmount={mortgageAmount}

@@ -25,6 +25,7 @@ import {
 	findVariableRate,
 } from "@/lib/mortgage";
 import type { AprcConfig } from "@/lib/mortgage/aprc";
+import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import { formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
@@ -120,7 +121,8 @@ function calculateRateInfo(
 	mortgageAmount: number,
 	termYears: number,
 	ltv: number,
-	berRating?: string,
+	berRating: string | undefined,
+	aprcFees: AprcFees,
 ): RateCalculations {
 	const totalMonths = termYears * 12;
 
@@ -182,22 +184,19 @@ function calculateRateInfo(
 	// Use existing APR if available (consistent with table display)
 	// Only calculate APRC if no APR is provided
 	let indicativeAprc: number | undefined = rate.apr;
-	if (
-		!indicativeAprc &&
-		rate.type === "fixed" &&
-		rate.fixedTerm &&
-		followUpRate
-	) {
+	if (!indicativeAprc && rate.type === "fixed" && rate.fixedTerm) {
 		const aprcConfig: AprcConfig = {
 			loanAmount: mortgageAmount,
 			termYears,
-			valuationFee: 150, // Standard estimate
-			securityReleaseFee: 35, // Standard estimate
+			valuationFee: aprcFees.valuationFee,
+			securityReleaseFee: aprcFees.securityReleaseFee,
 		};
+		// Use follow-up rate if available, otherwise use fixed rate for whole term
+		const followOnRate = followUpRate?.rate ?? rate.rate;
 		indicativeAprc = calculateAprc(
 			rate.rate,
 			rate.fixedTerm * 12,
-			followUpRate.rate,
+			followOnRate,
 			aprcConfig,
 		);
 	}
@@ -316,6 +315,19 @@ export function RateInfoModal({
 		[mortgageTerm, maxTerm],
 	);
 
+	// Determine APRC fees: custom rate fees > lender fees > defaults
+	const aprcFees = useMemo((): AprcFees => {
+		// Check if rate has custom aprcFees (for custom rates)
+		const rateAprcFees = (rate as { aprcFees?: AprcFees } | null)?.aprcFees;
+		if (rateAprcFees) return rateAprcFees;
+
+		// Use lender fees if available
+		if (lender?.aprcFees) return lender.aprcFees;
+
+		// Fall back to defaults
+		return DEFAULT_APRC_FEES;
+	}, [rate, lender]);
+
 	// Calculate rate info for selected term
 	const calculations = useMemo(() => {
 		if (!rate) return null;
@@ -326,8 +338,9 @@ export function RateInfoModal({
 			selectedTerm,
 			ltv,
 			berRating,
+			aprcFees,
 		);
-	}, [rate, allRates, mortgageAmount, selectedTerm, ltv, berRating]);
+	}, [rate, allRates, mortgageAmount, selectedTerm, ltv, berRating, aprcFees]);
 
 	// Highlight fields that changed when term changes
 	useEffect(() => {
@@ -384,11 +397,25 @@ export function RateInfoModal({
 					<DialogHeader>
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex items-center gap-3">
-								<LenderLogo lenderId={rate.lenderId} size={40} />
+								<LenderLogo
+									lenderId={rate.lenderId}
+									size={40}
+									isCustom={(rate as { isCustom?: boolean }).isCustom}
+								/>
 								<div>
-									<DialogTitle>{rate.name}</DialogTitle>
+									<DialogTitle className="flex items-center gap-2">
+										{rate.name}
+										{(rate as { isCustom?: boolean }).isCustom && (
+											<span className="text-xs font-normal px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+												Custom
+											</span>
+										)}
+									</DialogTitle>
 									<DialogDescription>
-										{lender?.name ?? rate.lenderId} •{" "}
+										{(rate as { customLenderName?: string }).customLenderName ??
+											lender?.name ??
+											rate.lenderId}{" "}
+										•{" "}
 										{isFixed ? `${rate.fixedTerm} Year Fixed` : "Variable Rate"}
 									</DialogDescription>
 								</div>
@@ -474,15 +501,61 @@ export function RateInfoModal({
 										/>
 										<InfoRow
 											label="Total Repayable"
-											value={formatCurrency(calculations.totalRepayable, {
-												showCents: true,
-											})}
+											value={
+												<span className="inline-flex items-center gap-1">
+													{formatCurrency(calculations.totalRepayable, {
+														showCents: true,
+													})}
+													{isFixed && !hasFollowUp && (
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<span className="inline-flex items-center justify-center cursor-help">
+																	<TriangleAlert className="h-3.5 w-3.5 text-yellow-500" />
+																</span>
+															</TooltipTrigger>
+															<TooltipContent className="max-w-xs">
+																<p className="font-medium">
+																	Fixed Rate Used for Whole Term
+																</p>
+																<p className="text-xs text-muted-foreground">
+																	No matching follow-up variable rate was found.
+																	This calculation assumes the fixed rate
+																	continues for the entire term.
+																</p>
+															</TooltipContent>
+														</Tooltip>
+													)}
+												</span>
+											}
 											highlight={highlightedFields.has("totalRepayable")}
 											glossaryTermId="totalRepayable"
 										/>
 										<InfoRow
 											label="Cost of Credit"
-											value={`${formatCurrency(calculations.costOfCredit)} (${calculations.costOfCreditPct.toFixed(1)}%)`}
+											value={
+												<span className="inline-flex items-center gap-1">
+													{`${formatCurrency(calculations.costOfCredit)} (${calculations.costOfCreditPct.toFixed(1)}%)`}
+													{isFixed && !hasFollowUp && (
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<span className="inline-flex items-center justify-center cursor-help">
+																	<TriangleAlert className="h-3.5 w-3.5 text-yellow-500" />
+																</span>
+															</TooltipTrigger>
+															<TooltipContent className="max-w-xs">
+																<p className="font-medium">
+																	Fixed Rate Used for Whole Term
+																</p>
+																<p className="text-xs text-muted-foreground">
+																	No matching follow-up variable rate was found.
+																	This calculation assumes the fixed rate
+																	continues for the entire term.
+																</p>
+															</TooltipContent>
+														</Tooltip>
+													)}
+												</span>
+											}
 											highlight={highlightedFields.has("costOfCredit")}
 											glossaryTermId="costOfCredit"
 										/>
@@ -506,37 +579,50 @@ export function RateInfoModal({
 														highlight={highlightedFields.has("followOnTerm")}
 													/>
 												)}
-											<InfoRow
-												label="Interest Rate"
-												value={
-													hasFollowUp
-														? `${calculations.followUpRate?.rate.toFixed(2)}%`
-														: "—"
-												}
-												muted={!hasFollowUp}
-												highlight={highlightedFields.has("followUpRate")}
-											/>
-											<InfoRow
-												label="Product"
-												value={
-													hasFollowUp ? calculations.followUpRate?.name : "—"
-												}
-												muted={!hasFollowUp}
-												highlight={highlightedFields.has("followUpProduct")}
-												glossaryTermId="followUpProduct"
-											/>
-											<InfoRow
-												label="Monthly Repayments"
-												value={
-													calculations.monthlyFollowUp
-														? formatCurrency(calculations.monthlyFollowUp, {
-																showCents: true,
-															})
-														: "—"
-												}
-												muted={!calculations.monthlyFollowUp}
-												highlight={highlightedFields.has("monthlyFollowUp")}
-											/>
+											{hasFollowUp ? (
+												<>
+													<InfoRow
+														label="Interest Rate"
+														value={`${calculations.followUpRate?.rate.toFixed(2)}%`}
+														highlight={highlightedFields.has("followUpRate")}
+													/>
+													<InfoRow
+														label="Product"
+														value={calculations.followUpRate?.name}
+														highlight={highlightedFields.has("followUpProduct")}
+														glossaryTermId="followUpProduct"
+													/>
+													<InfoRow
+														label="Monthly Repayments"
+														value={
+															calculations.monthlyFollowUp
+																? formatCurrency(calculations.monthlyFollowUp, {
+																		showCents: true,
+																	})
+																: "—"
+														}
+														highlight={highlightedFields.has("monthlyFollowUp")}
+													/>
+												</>
+											) : (
+												<tr>
+													<td colSpan={2} className="py-2">
+														<div className="flex items-start gap-2 p-3 rounded-md bg-destructive/10 text-destructive text-sm">
+															<TriangleAlert className="h-4 w-4 shrink-0 mt-0.5" />
+															<div>
+																<p className="font-medium">
+																	No matching variable rate found
+																</p>
+																<p className="text-xs text-destructive/80 mt-1">
+																	{(rate as { isCustom?: boolean }).isCustom
+																		? "Add a custom variable rate with matching criteria (lender, LTV range, BER eligibility) to see follow-up calculations."
+																		: "Total repayable and cost of credit are calculated assuming the fixed rate continues for the entire term."}
+																</p>
+															</div>
+														</div>
+													</td>
+												</tr>
+											)}
 										</tbody>
 									</table>
 								</div>
@@ -564,7 +650,33 @@ export function RateInfoModal({
 										{calculations.indicativeAprc && (
 											<InfoRow
 												label="APRC"
-												value={`${calculations.indicativeAprc.toFixed(2)}%`}
+												value={
+													// Show warning if APRC is calculated (no official APR) and no follow-up rate
+													!rate.apr && isFixed && !hasFollowUp ? (
+														<span className="inline-flex items-center gap-1">
+															{`${calculations.indicativeAprc.toFixed(2)}%`}
+															<Tooltip>
+																<TooltipTrigger asChild>
+																	<span className="inline-flex items-center justify-center cursor-help">
+																		<TriangleAlert className="h-3.5 w-3.5 text-yellow-500" />
+																	</span>
+																</TooltipTrigger>
+																<TooltipContent className="max-w-xs">
+																	<p className="font-medium">
+																		Fixed Rate Used for Whole Term
+																	</p>
+																	<p className="text-xs text-muted-foreground">
+																		No matching follow-up variable rate was
+																		found. This APRC is calculated assuming the
+																		fixed rate continues for the entire term.
+																	</p>
+																</TooltipContent>
+															</Tooltip>
+														</span>
+													) : (
+														`${calculations.indicativeAprc.toFixed(2)}%`
+													)
+												}
 												glossaryTermId="aprc"
 											/>
 										)}
@@ -572,6 +684,18 @@ export function RateInfoModal({
 											label="Early Repayment Fee"
 											value={isFixed ? "Yes" : "No"}
 										/>
+										{rate.minLoan && (
+											<InfoRow
+												label="Min. Loan Amount"
+												value={formatCurrency(rate.minLoan)}
+											/>
+										)}
+										{rate.berEligible && rate.berEligible.length > 0 && (
+											<InfoRow
+												label="BER Required"
+												value={rate.berEligible.join(", ")}
+											/>
+										)}
 									</tbody>
 								</table>
 							</div>
@@ -609,27 +733,32 @@ export function RateInfoModal({
 
 				{/* Sticky Footer */}
 				<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex items-center justify-between">
-					<Button
-						variant="ghost"
-						size="sm"
-						className="gap-1.5 text-muted-foreground hover:text-foreground"
-						asChild
-					>
-						<a
-							href={getIncorrectRateUrl({
-								lenderId: rate.lenderId,
-								rateName: rate.name,
-								rateId: rate.id,
-								sourceUrl: lender?.ratesUrl,
-								reportSource: "Rate Info dialog",
-							})}
-							target="_blank"
-							rel="noopener noreferrer"
+					{/* Hide report button for custom rates */}
+					{!(rate as { isCustom?: boolean }).isCustom ? (
+						<Button
+							variant="ghost"
+							size="sm"
+							className="gap-1.5 text-muted-foreground hover:text-foreground"
+							asChild
 						>
-							<TriangleAlert className="h-4 w-4" />
-							Incorrect Info?
-						</a>
-					</Button>
+							<a
+								href={getIncorrectRateUrl({
+									lenderId: rate.lenderId,
+									rateName: rate.name,
+									rateId: rate.id,
+									sourceUrl: lender?.ratesUrl,
+									reportSource: "Rate Info dialog",
+								})}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<TriangleAlert className="h-4 w-4" />
+								Incorrect Info?
+							</a>
+						</Button>
+					) : (
+						<div />
+					)}
 					{mode === "first-mortgage" && (
 						<Button className="gap-1.5">
 							<Play className="h-4 w-4" />
