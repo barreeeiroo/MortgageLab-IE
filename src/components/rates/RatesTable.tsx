@@ -3,14 +3,12 @@ import {
 	ArrowDown,
 	ArrowUp,
 	ArrowUpDown,
-	Check,
 	ChevronRight,
 	Coins,
 	HelpCircle,
 	ListFilter,
 	type LucideIcon,
 	PiggyBank,
-	Share2,
 	TriangleAlert,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -22,10 +20,8 @@ import {
 	type MortgageRate,
 	type OverpaymentPolicy,
 	type Perk,
-	type RatesMetadata,
 	resolvePerks,
 } from "@/lib/data";
-import { useLocalStorage } from "@/lib/hooks";
 import {
 	calculateAprc,
 	calculateMonthlyFollowUp,
@@ -41,7 +37,6 @@ import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../LenderLogo";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { ColumnVisibilityToggle } from "../ui/column-visibility-toggle";
 import {
 	type ColumnFiltersState,
 	DataTable,
@@ -56,17 +51,8 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { AddCustomRateDialog } from "./AddCustomRateDialog";
-import {
-	CUSTOM_RATES_STORAGE_KEY,
-	type CustomRate,
-	hydrateCustomRates,
-	isCustomRate,
-	type StoredCustomRate,
-} from "./customRates";
+import { type CustomRate, isCustomRate } from "./customRates";
 import { RateInfoModal } from "./RateInfoModal";
-import { RateUpdatesDialog } from "./RateUpdatesDialog";
-import { generateRatesShareUrl } from "./share";
 
 interface RatesTableProps {
 	rates: MortgageRate[];
@@ -74,11 +60,22 @@ interface RatesTableProps {
 	lenders: Lender[];
 	perks: Perk[];
 	overpaymentPolicies: OverpaymentPolicy[];
-	ratesMetadata: RatesMetadata[];
 	mortgageAmount: number;
 	mortgageTerm: number;
 	ltv: number;
 	inputValues: RatesInputValues;
+	// Table state (controlled from parent/store)
+	sorting: SortingState;
+	onSortingChange: (sorting: SortingState) => void;
+	columnFilters: ColumnFiltersState;
+	onColumnFiltersChange: (filters: ColumnFiltersState) => void;
+	columnVisibility: VisibilityState;
+	onColumnVisibilityChange: (visibility: VisibilityState) => void;
+	pagination: { pageIndex: number; pageSize: number };
+	onPaginationChange: (pagination: {
+		pageIndex: number;
+		pageSize: number;
+	}) => void;
 }
 
 interface RateRow extends MortgageRate {
@@ -266,37 +263,6 @@ const typeOptions = [
 	{ label: "Fixed", value: "fixed" },
 	{ label: "Variable", value: "variable" },
 ];
-
-const COLUMN_LABELS: Record<string, string> = {
-	lenderId: "Lender",
-	name: "Product",
-	perks: "Perks",
-	type: "Type",
-	fixedTerm: "Period",
-	rate: "Rate",
-	apr: "APRC",
-	monthlyPayment: "Monthly",
-	followUpProduct: "Follow-Up Product",
-	monthlyFollowUp: "Follow-Up Monthly",
-	totalRepayable: "Total Repayable",
-	costOfCreditPct: "Cost of Credit %",
-};
-
-const DEFAULT_VISIBILITY: VisibilityState = {
-	perks: false,
-	followUpProduct: false,
-	monthlyFollowUp: false,
-	costOfCreditPct: false,
-};
-const DEFAULT_SORTING: SortingState = [{ id: "monthlyPayment", desc: false }];
-const DEFAULT_FILTERS: ColumnFiltersState = [];
-
-const STORAGE_KEYS = {
-	columns: "rates-table-columns",
-	sorting: "rates-table-sorting",
-	filters: "rates-table-filters",
-	pageSize: "rates-table-page-size",
-} as const;
 
 function createColumns(
 	rates: MortgageRate[],
@@ -852,60 +818,20 @@ export function RatesTable({
 	lenders,
 	perks,
 	overpaymentPolicies,
-	ratesMetadata,
 	mortgageAmount,
 	mortgageTerm,
 	ltv,
 	inputValues,
+	sorting,
+	onSortingChange,
+	columnFilters,
+	onColumnFiltersChange,
+	columnVisibility,
+	onColumnVisibilityChange,
+	pagination,
+	onPaginationChange,
 }: RatesTableProps) {
-	const [sorting, setSorting] = useLocalStorage<SortingState>(
-		STORAGE_KEYS.sorting,
-		DEFAULT_SORTING,
-	);
-	const [columnFilters, setColumnFilters] = useLocalStorage<ColumnFiltersState>(
-		STORAGE_KEYS.filters,
-		DEFAULT_FILTERS,
-	);
-	const [columnVisibility, setColumnVisibility] =
-		useLocalStorage<VisibilityState>(STORAGE_KEYS.columns, DEFAULT_VISIBILITY);
-	const [pageSize, setPageSize] = useLocalStorage<number>(
-		STORAGE_KEYS.pageSize,
-		10,
-	);
-	const [storedCustomRates, setStoredCustomRates] = useLocalStorage<
-		StoredCustomRate[]
-	>(CUSTOM_RATES_STORAGE_KEY, []);
-	const [pageIndex, setPageIndex] = useState(0);
-	const [copied, setCopied] = useState(false);
 	const [selectedRate, setSelectedRate] = useState<RateRow | null>(null);
-
-	// Hydrate stored rates with isCustom flag
-	const customRates = useMemo(
-		() => hydrateCustomRates(storedCustomRates),
-		[storedCustomRates],
-	);
-
-	// Extract unique custom lenders from stored custom rates
-	const customLenders = useMemo(() => {
-		const lenderMap = new Map<string, string>();
-		for (const rate of storedCustomRates) {
-			// Only include rates with custom lender names (not existing lenders)
-			if (
-				rate.customLenderName &&
-				!lenders.some((l) => l.id === rate.lenderId)
-			) {
-				lenderMap.set(rate.lenderId, rate.customLenderName);
-			}
-		}
-		return Array.from(lenderMap.entries()).map(([id, name]) => ({ id, name }));
-	}, [storedCustomRates, lenders]);
-
-	const handleAddCustomRate = useCallback(
-		(rate: StoredCustomRate) => {
-			setStoredCustomRates((prev) => [...prev, rate]);
-		},
-		[setStoredCustomRates],
-	);
 
 	const handleProductClick = useCallback((rate: RateRow) => {
 		setSelectedRate(rate);
@@ -916,37 +842,9 @@ export function RatesTable({
 		[rates, lenders, perks, inputValues, handleProductClick],
 	);
 
-	// Filter custom rates based on current input values
-	const filteredCustomRates = useMemo(() => {
-		return customRates.filter((rate) => {
-			// Filter by LTV
-			if (ltv < rate.minLtv || ltv > rate.maxLtv) return false;
-			// Filter by buyer type
-			if (!rate.buyerTypes.includes(inputValues.buyerType)) return false;
-			// Filter by BER rating
-			if (inputValues.berRating && rate.berEligible) {
-				if (!rate.berEligible.includes(inputValues.berRating)) return false;
-			}
-			return true;
-		});
-	}, [customRates, ltv, inputValues.buyerType, inputValues.berRating]);
-
-	// Combine regular rates with custom rates for display
-	const allDisplayRates = useMemo(
-		() => [...rates, ...filteredCustomRates],
-		[rates, filteredCustomRates],
-	);
-
-	// Combine allRates with all custom rates for follow-up rate matching
-	// (includes unfiltered custom rates so variable rates can be found)
-	const allRatesWithCustom = useMemo(
-		() => [...allRates, ...customRates],
-		[allRates, customRates],
-	);
-
 	const data = useMemo<RateRow[]>(
 		() =>
-			allDisplayRates.map((rate) => {
+			rates.map((rate) => {
 				// Calculate LTV after fixed term ends (principal paid down)
 				let followUpLtv = ltv;
 				if (rate.type === "fixed" && rate.fixedTerm) {
@@ -963,13 +861,13 @@ export function RatesTable({
 					followUpLtv = (remainingBalance / mortgageAmount) * ltv;
 				}
 
-				// Use allRatesWithCustom to find follow-up rate (includes newBusiness: false rates and custom rates)
+				// Use allRates to find follow-up rate (includes newBusiness: false rates and custom rates)
 				const rateIsCustom = isCustomRate(rate);
 				const followUpRate =
 					rate.type === "fixed"
 						? findVariableRate(
 								rate,
-								allRatesWithCustom,
+								allRates,
 								followUpLtv,
 								inputValues.berRating,
 							)
@@ -1049,8 +947,8 @@ export function RatesTable({
 				};
 			}),
 		[
-			allDisplayRates,
-			allRatesWithCustom,
+			rates,
+			allRates,
 			lenders,
 			mortgageAmount,
 			mortgageTerm,
@@ -1059,7 +957,7 @@ export function RatesTable({
 		],
 	);
 
-	if (rates.length === 0 && filteredCustomRates.length === 0) {
+	if (rates.length === 0) {
 		return (
 			<div className="text-center py-8 text-muted-foreground">
 				No rates match your criteria. Try adjusting your filters.
@@ -1074,75 +972,13 @@ export function RatesTable({
 				data={data}
 				emptyMessage="No rates match your filters. Try adjusting your selection."
 				sorting={sorting}
-				onSortingChange={setSorting}
+				onSortingChange={onSortingChange}
 				columnFilters={columnFilters}
-				onColumnFiltersChange={(filters) => {
-					setColumnFilters(filters);
-					setPageIndex(0);
-				}}
+				onColumnFiltersChange={onColumnFiltersChange}
 				columnVisibility={columnVisibility}
-				onColumnVisibilityChange={setColumnVisibility}
-				pagination={{ pageIndex, pageSize }}
-				onPaginationChange={(newPagination) => {
-					setPageIndex(newPagination.pageIndex);
-					if (newPagination.pageSize !== pageSize) {
-						setPageSize(newPagination.pageSize);
-					}
-				}}
-				toolbar={(table) => {
-					const handleShare = async () => {
-						const url = generateRatesShareUrl({
-							input: inputValues,
-							table: {
-								columnVisibility,
-								columnFilters,
-								sorting,
-							},
-						});
-						await navigator.clipboard.writeText(url);
-						setCopied(true);
-						setTimeout(() => setCopied(false), 2000);
-					};
-
-					return (
-						<div className="flex justify-between">
-							<div className="flex gap-2">
-								<AddCustomRateDialog
-									lenders={lenders}
-									customLenders={customLenders}
-									perks={perks}
-									currentBuyerType={inputValues.buyerType}
-									onAddRate={handleAddCustomRate}
-								/>
-								<ColumnVisibilityToggle
-									table={table}
-									columnLabels={COLUMN_LABELS}
-								/>
-							</div>
-							<div className="flex gap-2">
-								<RateUpdatesDialog
-									lenders={lenders}
-									ratesMetadata={ratesMetadata}
-								/>
-								<Button
-									variant="outline"
-									size="sm"
-									className="h-8 gap-1.5"
-									onClick={handleShare}
-								>
-									{copied ? (
-										<Check className="h-4 w-4" />
-									) : (
-										<Share2 className="h-4 w-4" />
-									)}
-									<span className="hidden sm:inline">
-										{copied ? "Copied!" : "Share"}
-									</span>
-								</Button>
-							</div>
-						</div>
-					);
-				}}
+				onColumnVisibilityChange={onColumnVisibilityChange}
+				pagination={pagination}
+				onPaginationChange={onPaginationChange}
 			/>
 
 			{/* Rate Details Modal */}
@@ -1151,7 +987,7 @@ export function RatesTable({
 				lender={
 					selectedRate ? getLender(lenders, selectedRate.lenderId) : undefined
 				}
-				allRates={allRatesWithCustom}
+				allRates={allRates}
 				perks={perks}
 				overpaymentPolicies={overpaymentPolicies}
 				combinedPerks={selectedRate?.combinedPerks ?? []}

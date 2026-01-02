@@ -21,6 +21,20 @@ import {
 } from "./overpayment-policies";
 import { fetchPerks, isPerksFetched, markPerksFetched } from "./perks";
 
+// Re-export from lenders, perks, and overpayment policies stores
+export { $lenders, fetchLenders } from "./lenders";
+export {
+	$overpaymentPolicies,
+	fetchOverpaymentPolicies,
+} from "./overpayment-policies";
+export { $perks, fetchPerks } from "./perks";
+// Re-export from persistence store
+export {
+	initializeStore,
+	persistFormValues,
+	TABLE_STORAGE_KEYS,
+	updateUrlHash,
+} from "./persistence";
 // Re-export from form store
 export {
 	$deposit,
@@ -39,21 +53,7 @@ export {
 	type RatesMode,
 	setFormValues,
 	updateFormValue,
-} from "./form";
-// Re-export from lenders, perks, and overpayment policies stores
-export { $lenders, fetchLenders } from "./lenders";
-export {
-	$overpaymentPolicies,
-	fetchOverpaymentPolicies,
-} from "./overpayment-policies";
-export { $perks, fetchPerks } from "./perks";
-// Re-export from persistence store
-export {
-	initializeStore,
-	persistFormValues,
-	TABLE_STORAGE_KEYS,
-	updateUrlHash,
-} from "./persistence";
+} from "./rates-form";
 // Re-export from validation store
 export {
 	$errorMessage,
@@ -67,7 +67,7 @@ export {
 } from "./validation";
 
 // Import for use in computed values
-import { $formValues, $isRemortgage, $mortgageTerm } from "./form";
+import { $formValues, $isRemortgage, $mortgageTerm } from "./rates-form";
 import { $isFormValid } from "./validation";
 
 // Atoms for rates data
@@ -81,7 +81,7 @@ let dataFetched = false;
 let fetchPromise: Promise<void> | null = null;
 
 // Computed: LTV for filtering (imported from form)
-import { $ltv } from "./form";
+import { $ltv } from "./rates-form";
 
 // Filtered rates based on form values
 export const $filteredRates = computed(

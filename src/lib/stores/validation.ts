@@ -8,7 +8,7 @@ import {
 	$monthly,
 	$mortgage,
 	$property,
-} from "./form";
+} from "./rates-form";
 
 export const $isMortgageAboveProperty = computed(
 	[$mortgage, $property],

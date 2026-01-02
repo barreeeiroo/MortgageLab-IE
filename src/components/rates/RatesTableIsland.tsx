@@ -1,7 +1,11 @@
 import { useStore } from "@nanostores/react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
+	$columnFilters,
+	$columnVisibility,
+	$customRates,
 	$error,
+	$filteredCustomRates,
 	$filteredRates,
 	$formValues,
 	$isFormValid,
@@ -11,11 +15,20 @@ import {
 	$mortgage,
 	$mortgageTerm,
 	$overpaymentPolicies,
+	$pageIndex,
+	$pageSize,
 	$perks,
 	$rates,
-	$ratesMetadata,
+	$sorting,
 	fetchRatesData,
-} from "@/lib/stores/rates";
+	initializeCustomRates,
+	initializeTableState,
+	setColumnFilters,
+	setColumnVisibility,
+	setPageIndex,
+	setPageSize,
+	setSorting,
+} from "@/lib/stores";
 import { RatesTable } from "./RatesTable";
 import { RatesTableSkeleton } from "./RatesTableSkeleton";
 
@@ -25,19 +38,48 @@ export function RatesTableIsland() {
 	const isFormValid = useStore($isFormValid);
 	const filteredRates = useStore($filteredRates);
 	const allRates = useStore($rates);
+	const customRates = useStore($customRates);
+	const filteredCustomRates = useStore($filteredCustomRates);
 	const lenders = useStore($lenders);
 	const perks = useStore($perks);
 	const overpaymentPolicies = useStore($overpaymentPolicies);
-	const ratesMetadata = useStore($ratesMetadata);
 	const mortgage = useStore($mortgage);
 	const mortgageTerm = useStore($mortgageTerm);
 	const ltv = useStore($ltv);
 	const inputValues = useStore($formValues);
 
-	// Ensure data is fetched (in case this island loads before RatesInputIsland)
+	// Table state from store
+	const sorting = useStore($sorting);
+	const columnFilters = useStore($columnFilters);
+	const columnVisibility = useStore($columnVisibility);
+	const pageSize = useStore($pageSize);
+	const pageIndex = useStore($pageIndex);
+
+	// Initialize stores on mount
 	useEffect(() => {
+		initializeTableState();
+		initializeCustomRates();
 		fetchRatesData();
 	}, []);
+
+	// Pagination change handler
+	const handlePaginationChange = useCallback(
+		(newPagination: { pageIndex: number; pageSize: number }) => {
+			setPageIndex(newPagination.pageIndex);
+			if (newPagination.pageSize !== pageSize) {
+				setPageSize(newPagination.pageSize);
+			}
+		},
+		[pageSize],
+	);
+
+	// Column filters change handler (resets page index)
+	const handleColumnFiltersChange = useCallback(
+		(filters: typeof columnFilters) => {
+			setColumnFilters(filters);
+		},
+		[],
+	);
 
 	if (error) {
 		return (
@@ -59,19 +101,33 @@ export function RatesTableIsland() {
 		return null;
 	}
 
+	// Combine regular rates with filtered custom rates
+	const allDisplayRates = [...filteredRates, ...filteredCustomRates];
+
+	// Combine allRates with all custom rates for follow-up rate matching
+	const allRatesWithCustom = [...allRates, ...customRates];
+
 	return (
 		<div className="mt-4">
 			<RatesTable
-				rates={filteredRates}
-				allRates={allRates}
+				rates={allDisplayRates}
+				allRates={allRatesWithCustom}
 				lenders={lenders}
 				perks={perks}
 				overpaymentPolicies={overpaymentPolicies}
-				ratesMetadata={ratesMetadata}
 				mortgageAmount={mortgage}
 				mortgageTerm={mortgageTerm}
 				ltv={ltv}
 				inputValues={inputValues}
+				// Table state from store
+				sorting={sorting}
+				onSortingChange={setSorting}
+				columnFilters={columnFilters}
+				onColumnFiltersChange={handleColumnFiltersChange}
+				columnVisibility={columnVisibility}
+				onColumnVisibilityChange={setColumnVisibility}
+				pagination={{ pageIndex, pageSize }}
+				onPaginationChange={handlePaginationChange}
 			/>
 		</div>
 	);

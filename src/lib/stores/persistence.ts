@@ -4,14 +4,16 @@ import {
 	type RatesFormState,
 	saveRatesForm,
 } from "@/lib/storage";
-import { $formValues } from "./form";
+import { $formValues } from "./rates-form";
+import {
+	$columnFilters,
+	$columnVisibility,
+	$sorting,
+	TABLE_STORAGE_KEYS,
+} from "./rates-table";
 
-// Storage keys for table state (must match RatesTable)
-export const TABLE_STORAGE_KEYS = {
-	columns: "rates-table-columns",
-	sorting: "rates-table-sorting",
-	filters: "rates-table-filters",
-} as const;
+// Re-export for backwards compatibility
+export { TABLE_STORAGE_KEYS } from "./rates-table";
 
 // Track initialization state
 let initialized = false;
@@ -47,20 +49,23 @@ export function initializeStore(): void {
 					// URL params take priority - load shared state
 					$formValues.set(sharedState.input);
 
-					// Save table state to localStorage so RatesTable picks it up
+					// Update table state atoms and persist to localStorage
 					if (Object.keys(sharedState.table.columnVisibility).length > 0) {
+						$columnVisibility.set(sharedState.table.columnVisibility);
 						localStorage.setItem(
 							TABLE_STORAGE_KEYS.columns,
 							JSON.stringify(sharedState.table.columnVisibility),
 						);
 					}
 					if (sharedState.table.columnFilters.length > 0) {
+						$columnFilters.set(sharedState.table.columnFilters);
 						localStorage.setItem(
 							TABLE_STORAGE_KEYS.filters,
 							JSON.stringify(sharedState.table.columnFilters),
 						);
 					}
 					if (sharedState.table.sorting.length > 0) {
+						$sorting.set(sharedState.table.sorting);
 						localStorage.setItem(
 							TABLE_STORAGE_KEYS.sorting,
 							JSON.stringify(sharedState.table.sorting),
