@@ -58,7 +58,7 @@ export function calculateRemainingBalance(
  * Prefers follow-on rates (newBusiness: false) over new business rates,
  * since customers rolling off fixed terms typically get the follow-on rate.
  *
- * @param fixedRate - The fixed rate to find a follow-up for
+ * @param fixedRate - The fixed rate to find a follow-on for
  * @param allRates - All available rates to search through
  * @param ltv - The LTV to match against (optional)
  * @param ber - The BER rating to match against (optional)
@@ -97,15 +97,15 @@ export function findVariableRate(
 }
 
 /**
- * Calculate the monthly payment for the follow-up period after a fixed term ends.
+ * Calculate the monthly payment for the follow-on period after a fixed term ends.
  *
  * @param rate - The fixed rate
  * @param variableRate - The variable rate to use after fixed term
  * @param principal - Original loan amount
  * @param totalTermYears - Total mortgage term in years
- * @returns Monthly payment for the follow-up period, or undefined if not applicable
+ * @returns Monthly payment for the follow-on period, or undefined if not applicable
  */
-export function calculateMonthlyFollowUp(
+export function calculateMonthlyFollowOn(
 	rate: MortgageRate,
 	variableRate: MortgageRate | undefined,
 	principal: number,
@@ -136,26 +136,26 @@ export function calculateMonthlyFollowUp(
 
 /**
  * Calculate the total amount repayable over the full mortgage term.
- * For fixed rates, includes both the fixed period and follow-up variable period.
+ * For fixed rates, includes both the fixed period and follow-on variable period.
  *
  * @param rate - The mortgage rate
  * @param monthlyPayment - Monthly payment during initial period
- * @param monthlyFollowUp - Monthly payment during follow-up period (for fixed rates)
+ * @param monthlyFollowOn - Monthly payment during follow-on period (for fixed rates)
  * @param totalTermYears - Total mortgage term in years
  * @returns Total amount repayable over the full term
  */
 export function calculateTotalRepayable(
 	rate: MortgageRate,
 	monthlyPayment: number,
-	monthlyFollowUp: number | undefined,
+	monthlyFollowOn: number | undefined,
 	totalTermYears: number,
 ): number {
 	const totalMonths = totalTermYears * 12;
 
-	if (rate.type === "fixed" && rate.fixedTerm && monthlyFollowUp) {
+	if (rate.type === "fixed" && rate.fixedTerm && monthlyFollowOn) {
 		const fixedMonths = rate.fixedTerm * 12;
 		const remainingMonths = totalMonths - fixedMonths;
-		return monthlyPayment * fixedMonths + monthlyFollowUp * remainingMonths;
+		return monthlyPayment * fixedMonths + monthlyFollowOn * remainingMonths;
 	}
 
 	return monthlyPayment * totalMonths;

@@ -4,7 +4,7 @@
 
 export { type AprcConfig, calculateAprc, inferFollowOnRate } from "./aprc";
 export {
-	calculateMonthlyFollowUp,
+	calculateMonthlyFollowOn,
 	calculateMonthlyPayment,
 	calculateRemainingBalance,
 	calculateTotalRepayable,

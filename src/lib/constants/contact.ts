@@ -175,7 +175,7 @@ interface MissingVariableRateParams {
 }
 
 /**
- * Generate a URL for reporting a missing variable rate (for follow-up calculation)
+ * Generate a URL for reporting a missing variable rate (for follow-on calculation)
  */
 // Map buyer type codes to human-readable labels
 const BUYER_TYPE_LABELS: Record<string, string> = {
@@ -210,7 +210,7 @@ export function getMissingVariableRateUrl({
 		mode === "remortgage" ? "Remortgage / Switcher" : "First Mortgage";
 
 	const additionalContext = [
-		`**Issue:** Unable to find a matching variable rate for follow-up payment calculation.`,
+		`**Issue:** Unable to find a matching variable rate for follow-on payment calculation.`,
 		``,
 		`**Fixed Rate Details:**`,
 		`- Product: ${fixedRateName}`,
@@ -236,7 +236,7 @@ export function getMissingVariableRateUrl({
 		rateName: `${lenderName} - ${fixedRateName}`,
 		rateId: fixedRateId,
 		sourceUrl: ratesUrl,
-		reportSource: "Rates table follow-up column",
+		reportSource: "Rates table follow-on column",
 		additionalContext,
 	});
 }

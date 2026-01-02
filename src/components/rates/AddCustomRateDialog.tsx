@@ -57,7 +57,6 @@ interface AddCustomRateDialogProps {
 	perks: Perk[];
 	currentBuyerType: BuyerType;
 	onAddRate: (rate: StoredCustomRate) => void;
-	disabled?: boolean;
 }
 
 // First Mortgage buyer types
@@ -153,7 +152,6 @@ export function AddCustomRateDialog({
 	perks: availablePerks,
 	currentBuyerType,
 	onAddRate,
-	disabled = false,
 }: AddCustomRateDialogProps) {
 	const [open, setOpen] = useState(false);
 	const [form, setForm] = useState<FormState>(() =>
@@ -375,7 +373,7 @@ export function AddCustomRateDialog({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button size="sm" className="h-8 gap-1.5" disabled={disabled}>
+				<Button size="sm" className="h-8 gap-1.5">
 					<Plus className="h-4 w-4" />
 					<span className="hidden sm:inline">Add</span> Custom Rate
 				</Button>

@@ -1,56 +1,76 @@
 ---
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import Layout from "../layouts/Layout.astro";
 import { GLOSSARY_TERMS, SITE } from "../lib/constants";
+
+// Group terms by first letter
+const termsByLetter = GLOSSARY_TERMS.reduce((acc, term) => {
+	const letter = term.term.charAt(0).toUpperCase();
+	if (!acc[letter]) acc[letter] = [];
+	acc[letter].push(term);
+	return acc;
+}, {} as Record<string, typeof GLOSSARY_TERMS>);
+
+// Get sorted letters that have terms
+const availableLetters = Object.keys(termsByLetter).sort();
 ---
 
 <Layout title={`Glossary | ${SITE.name}`}>
 	<div class="container mx-auto px-4 py-12">
 		<div class="max-w-4xl mx-auto">
-			<div class="mb-10">
+			<div class="mb-8">
 				<h1 class="text-3xl font-bold tracking-tight mb-2">Mortgage Glossary</h1>
 				<p class="text-muted-foreground">
 					Common mortgage terms and their meanings to help you understand your options.
 				</p>
 			</div>
 
-			<div class="space-y-6">
-				{GLOSSARY_TERMS.map((term) => (
-					<Card id={term.id}>
-						<CardHeader className="pb-2">
-							<CardTitle className="text-xl">{term.shortDescription}</CardTitle>
-							<CardDescription>{term.term}</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<p class="text-sm text-muted-foreground leading-relaxed">
-								{term.fullDescription}
-							</p>
-							{term.relatedTerms && term.relatedTerms.length > 0 && (
-								<div class="mt-4 pt-4 border-t">
-									<p class="text-xs text-muted-foreground">
-										<span class="font-medium">Related terms: </span>
-										{term.relatedTerms.map((relatedId, index) => {
-											const relatedTerm = GLOSSARY_TERMS.find(t => t.id === relatedId);
-											return (
-												<>
-													{index > 0 && ", "}
-													<a href={`#${relatedId}`} class="text-primary hover:underline">
-														{relatedTerm?.term ?? relatedId}
-													</a>
-												</>
-											);
-										})}
-									</p>
+			<!-- Alphabet Navigation -->
+			<nav class="mb-8 flex flex-wrap gap-2" aria-label="Glossary navigation">
+				{availableLetters.map((letter) => (
+					<a
+						href={`#letter-${letter}`}
+						class="w-8 h-8 flex items-center justify-center rounded-md bg-muted hover:bg-primary hover:text-primary-foreground transition-colors font-medium text-sm"
+					>
+						{letter}
+					</a>
+				))}
+			</nav>
+
+			<!-- Terms grouped by letter -->
+			<div class="space-y-8">
+				{availableLetters.map((letter) => (
+					<section id={`letter-${letter}`}>
+						<h2 class="text-lg font-semibold border-b pb-2 mb-4">{letter}</h2>
+						<dl class="space-y-4">
+							{termsByLetter[letter].map((term) => (
+								<div id={term.id} class="scroll-mt-4">
+									<dt class="font-medium">
+										{term.term}
+										<span class="text-muted-foreground font-normal"> — {term.shortDescription}</span>
+									</dt>
+									<dd class="mt-1 text-sm text-muted-foreground leading-relaxed pl-4">
+										{term.fullDescription}
+										{term.relatedTerms && term.relatedTerms.length > 0 && (
+											<p class="mt-2 text-xs">
+												<span class="font-medium">Related: </span>
+												{term.relatedTerms.map((relatedId, index) => {
+													const relatedTerm = GLOSSARY_TERMS.find(t => t.id === relatedId);
+													return (
+														<>
+															{index > 0 && ", "}
+															<a href={`#${relatedId}`} class="text-primary hover:underline">
+																{relatedTerm?.term ?? relatedId}
+															</a>
+														</>
+													);
+												})}
+											</p>
+										)}
+									</dd>
 								</div>
-							)}
-						</CardContent>
-					</Card>
+							))}
+						</dl>
+					</section>
 				))}
 			</div>
 		</div>

@@ -23,8 +23,8 @@ export const COLUMN_LABELS: Record<string, string> = {
 	rate: "Rate",
 	apr: "APRC",
 	monthlyPayment: "Monthly",
-	followUpProduct: "Follow-Up Product",
-	monthlyFollowUp: "Follow-Up Monthly",
+	followOnProduct: "Follow-On Product",
+	monthlyFollowOn: "Follow-On Monthly",
 	totalRepayable: "Total Repayable",
 	costOfCreditPct: "Cost of Credit %",
 };
@@ -37,8 +37,8 @@ export const HIDEABLE_COLUMNS = [
 	"rate",
 	"apr",
 	"monthlyPayment",
-	"followUpProduct",
-	"monthlyFollowUp",
+	"followOnProduct",
+	"monthlyFollowOn",
 	"totalRepayable",
 	"costOfCreditPct",
 ] as const;
@@ -46,8 +46,8 @@ export const HIDEABLE_COLUMNS = [
 // Default values
 export const DEFAULT_COLUMN_VISIBILITY: VisibilityState = {
 	perks: false,
-	followUpProduct: false,
-	monthlyFollowUp: false,
+	followOnProduct: false,
+	monthlyFollowOn: false,
 	costOfCreditPct: false,
 };
 

@@ -24,20 +24,28 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
 		relatedTerms: ["apr"],
 	},
 	{
-		id: "followUpProduct",
-		term: "Follow-Up Product",
+		id: "followOnProduct",
+		term: "Follow-On Product",
 		shortDescription: "The variable rate after your fixed period ends",
 		fullDescription:
-			"When your fixed-rate period ends, you'll typically move to a variable rate with your lender. The follow-up product shown here is an estimate based on the lender's current variable rates. However, you are not restricted to this rate. Once your fixed period ends, you're free to switch to any other rate offered by your lender, or remortgage to a different lender entirely. Lenders often offer multiple variable rate products with different terms.",
-		relatedTerms: ["costOfCredit"],
+			"When your fixed-rate period ends, you'll typically move to a variable rate with your lender. The follow-on product shown here is an estimate based on the lender's current variable rates. However, you are not restricted to this rate. Once your fixed period ends, you're free to switch to any other rate offered by your lender, or remortgage to a different lender entirely. Lenders often offer multiple variable rate products with different terms.",
+		relatedTerms: ["followOnMonthly", "costOfCredit"],
+	},
+	{
+		id: "followOnMonthly",
+		term: "Follow-On Monthly",
+		shortDescription: "Your estimated monthly payment after the fixed period",
+		fullDescription:
+			"The Follow-On Monthly payment is the estimated amount you'll pay each month after your fixed-rate period ends. This is calculated using the follow-on variable rate and the remaining balance on your mortgage at that point. Since you'll have paid down some principal during the fixed period, both your remaining balance and LTV will be lower, which may qualify you for better rates. This figure helps you understand the full cost of your mortgage beyond the initial fixed period.",
+		relatedTerms: ["followOnProduct", "totalRepayable"],
 	},
 	{
 		id: "totalRepayable",
 		term: "Total Repayable",
 		shortDescription: "The full amount you'll pay back",
 		fullDescription:
-			"The Total Repayable is the complete amount you'll pay over the life of your mortgage, including both the original loan amount (principal) and all interest charges. For fixed-rate mortgages, this calculation assumes you move to the estimated follow-up variable rate after your fixed period ends. The actual amount may differ if you remortgage or switch to a different rate.",
-		relatedTerms: ["costOfCredit", "followUpProduct"],
+			"The Total Repayable is the complete amount you'll pay over the life of your mortgage, including both the original loan amount (principal) and all interest charges. For fixed-rate mortgages, this calculation assumes you move to the estimated follow-on variable rate after your fixed period ends. The actual amount may differ if you remortgage or switch to a different rate.",
+		relatedTerms: ["costOfCredit", "followOnProduct"],
 	},
 	{
 		id: "costOfCredit",

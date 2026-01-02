@@ -24,7 +24,7 @@ import {
 } from "@/lib/data";
 import {
 	calculateAprc,
-	calculateMonthlyFollowUp,
+	calculateMonthlyFollowOn,
 	calculateMonthlyPayment,
 	calculateRemainingBalance,
 	calculateTotalRepayable,
@@ -56,7 +56,7 @@ import { RateInfoModal } from "./RateInfoModal";
 
 interface RatesTableProps {
 	rates: MortgageRate[];
-	allRates: MortgageRate[]; // Unfiltered rates for follow-up calculation
+	allRates: MortgageRate[]; // Unfiltered rates for follow-on calculation
 	lenders: Lender[];
 	perks: Perk[];
 	overpaymentPolicies: OverpaymentPolicy[];
@@ -80,16 +80,16 @@ interface RatesTableProps {
 
 interface RateRow extends MortgageRate {
 	monthlyPayment: number;
-	followUpRate?: MortgageRate;
-	followUpLtv: number; // LTV after fixed term ends (for variable rate matching)
-	monthlyFollowUp?: number;
+	followOnRate?: MortgageRate;
+	followOnLtv: number; // LTV after fixed term ends (for variable rate matching)
+	monthlyFollowOn?: number;
 	totalRepayable?: number;
 	costOfCreditPct?: number; // (totalRepayable - mortgageAmount) / mortgageAmount * 100
 	combinedPerks: string[]; // Lender perks + rate perks (deduplicated)
 	isCustom?: boolean;
 	customLenderName?: string;
 	indicativeAprc?: number; // Calculated APRC when no official APR
-	usesFixedRateForWholeTerm?: boolean; // True when fixed rate has no follow-up rate
+	usesFixedRateForWholeTerm?: boolean; // True when fixed rate has no follow-on rate
 }
 
 // Custom filter function for array-based multi-select filtering
@@ -488,7 +488,7 @@ function createColumns(
 				);
 			},
 			cell: ({ row }) => {
-				// Show warning if APRC is calculated (no official APR) and no follow-up rate
+				// Show warning if APRC is calculated (no official APR) and no follow-on rate
 				const hasWarning =
 					!row.original.apr && row.original.usesFixedRateForWholeTerm;
 				return (
@@ -506,7 +506,7 @@ function createColumns(
 								<TooltipContent className="max-w-xs">
 									<p className="font-medium">Fixed Rate Used for Whole Term</p>
 									<p className="text-xs text-muted-foreground">
-										No matching follow-up variable rate was found. This APRC is
+										No matching follow-on variable rate was found. This APRC is
 										calculated assuming the fixed rate continues for the entire
 										term.
 									</p>
@@ -534,13 +534,13 @@ function createColumns(
 			),
 		},
 		{
-			id: "followUpProduct",
-			accessorFn: (row) => row.followUpRate?.name,
+			id: "followOnProduct",
+			accessorFn: (row) => row.followOnRate?.name,
 			header: () => {
-				const term = GLOSSARY_TERMS_MAP.followUpProduct;
+				const term = GLOSSARY_TERMS_MAP.followOnProduct;
 				return (
 					<div className="flex items-center gap-0.5">
-						<span className="px-2 text-sm font-medium">Follow-Up Product</span>
+						<span className="px-2 text-sm font-medium">Follow-On Product</span>
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<span className="inline-flex items-center justify-center cursor-help">
@@ -558,17 +558,17 @@ function createColumns(
 				);
 			},
 			cell: ({ row }) => {
-				const followUpRate = row.original.followUpRate;
+				const followOnRate = row.original.followOnRate;
 				const isFixed = row.original.type === "fixed";
 				const rateIsCustom = row.original.isCustom === true;
 
-				// For variable rates, no follow-up product is expected
+				// For variable rates, no follow-on product is expected
 				if (!isFixed) {
 					return <div className="text-center text-muted-foreground">—</div>;
 				}
 
 				// For fixed rates without a matching variable rate, show warning
-				if (!followUpRate) {
+				if (!followOnRate) {
 					// For custom rates, show hint to add a custom variable rate
 					if (rateIsCustom) {
 						return (
@@ -583,7 +583,7 @@ function createColumns(
 									<p className="font-medium">No Variable Rate</p>
 									<p className="text-xs text-muted-foreground">
 										Add a custom variable rate with matching criteria (lender,
-										LTV range, BER eligibility) to see follow-up calculations.
+										LTV range, BER eligibility) to see follow-on calculations.
 									</p>
 								</TooltipContent>
 							</Tooltip>
@@ -598,7 +598,7 @@ function createColumns(
 						fixedRateName: row.original.name,
 						fixedRate: row.original.rate,
 						fixedTerm: row.original.fixedTerm,
-						ltv: row.original.followUpLtv,
+						ltv: row.original.followOnLtv,
 						minLtv: row.original.minLtv,
 						maxLtv: row.original.maxLtv,
 						ratesUrl: lender?.ratesUrl,
@@ -633,33 +633,56 @@ function createColumns(
 
 				return (
 					<div>
-						<p className="font-medium">{followUpRate.name}</p>
+						<p className="font-medium">{followOnRate.name}</p>
 						<p className="text-xs text-muted-foreground">
-							Variable Rate: {followUpRate.rate.toFixed(2)}%
+							Variable Rate: {followOnRate.rate.toFixed(2)}%
 						</p>
 					</div>
 				);
 			},
 		},
 		{
-			accessorKey: "monthlyFollowUp",
-			header: ({ column }) => (
-				<SortableHeader
-					column={column}
-					title="Follow-Up Monthly"
-					align="right"
-				/>
-			),
+			accessorKey: "monthlyFollowOn",
+			header: ({ column }) => {
+				const isSorted = column.getIsSorted();
+				const term = GLOSSARY_TERMS_MAP.followOnMonthly;
+				return (
+					<div className="flex items-center gap-0.5 justify-end">
+						<span className="px-2 text-sm font-medium">Follow-On Monthly</span>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="inline-flex items-center justify-center cursor-help">
+									<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent className="max-w-xs">
+								<p className="font-medium">{term.shortDescription}</p>
+								<p className="text-xs text-muted-foreground mt-1">
+									{term.fullDescription}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => column.toggleSorting(isSorted === "asc")}
+							className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+						>
+							<SortIcon isSorted={isSorted} />
+						</Button>
+					</div>
+				);
+			},
 			cell: ({ row }) => (
 				<div className="text-right text-muted-foreground">
-					{row.original.monthlyFollowUp
-						? formatCurrency(row.original.monthlyFollowUp, { showCents: true })
+					{row.original.monthlyFollowOn
+						? formatCurrency(row.original.monthlyFollowOn, { showCents: true })
 						: "—"}
 				</div>
 			),
 			sortingFn: (rowA, rowB) => {
-				const a = rowA.original.monthlyFollowUp ?? 0;
-				const b = rowB.original.monthlyFollowUp ?? 0;
+				const a = rowA.original.monthlyFollowOn ?? 0;
+				const b = rowB.original.monthlyFollowOn ?? 0;
 				return a - b;
 			},
 		},
@@ -712,7 +735,7 @@ function createColumns(
 								<TooltipContent className="max-w-xs">
 									<p className="font-medium">Fixed Rate Used for Whole Term</p>
 									<p className="text-xs text-muted-foreground">
-										No matching follow-up variable rate was found. This
+										No matching follow-on variable rate was found. This
 										calculation assumes the fixed rate continues for the entire
 										term.
 									</p>
@@ -777,7 +800,7 @@ function createColumns(
 								<TooltipContent className="max-w-xs">
 									<p className="font-medium">Fixed Rate Used for Whole Term</p>
 									<p className="text-xs text-muted-foreground">
-										No matching follow-up variable rate was found. This
+										No matching follow-on variable rate was found. This
 										calculation assumes the fixed rate continues for the entire
 										term.
 									</p>
@@ -846,7 +869,7 @@ export function RatesTable({
 		() =>
 			rates.map((rate) => {
 				// Calculate LTV after fixed term ends (principal paid down)
-				let followUpLtv = ltv;
+				let followOnLtv = ltv;
 				if (rate.type === "fixed" && rate.fixedTerm) {
 					const totalMonths = mortgageTerm * 12;
 					const fixedMonths = rate.fixedTerm * 12;
@@ -858,17 +881,17 @@ export function RatesTable({
 					);
 					// remainingLtv = remainingBalance / propertyValue * 100
 					// propertyValue = mortgageAmount / (ltv / 100)
-					followUpLtv = (remainingBalance / mortgageAmount) * ltv;
+					followOnLtv = (remainingBalance / mortgageAmount) * ltv;
 				}
 
-				// Use allRates to find follow-up rate (includes newBusiness: false rates and custom rates)
+				// Use allRates to find follow-on rate (includes newBusiness: false rates and custom rates)
 				const rateIsCustom = isCustomRate(rate);
-				const followUpRate =
+				const followOnRate =
 					rate.type === "fixed"
 						? findVariableRate(
 								rate,
 								allRates,
-								followUpLtv,
+								followOnLtv,
 								inputValues.berRating,
 							)
 						: undefined;
@@ -879,9 +902,9 @@ export function RatesTable({
 					rate.rate,
 					totalMonths,
 				);
-				const monthlyFollowUp = calculateMonthlyFollowUp(
+				const monthlyFollowOn = calculateMonthlyFollowOn(
 					rate,
-					followUpRate,
+					followOnRate,
 					mortgageAmount,
 					mortgageTerm,
 				);
@@ -889,7 +912,7 @@ export function RatesTable({
 				const totalRepayable = calculateTotalRepayable(
 					rate,
 					monthlyPayment,
-					monthlyFollowUp,
+					monthlyFollowOn,
 					mortgageTerm,
 				);
 				const costOfCreditPct = totalRepayable
@@ -915,26 +938,26 @@ export function RatesTable({
 						valuationFee: aprcFees.valuationFee,
 						securityReleaseFee: aprcFees.securityReleaseFee,
 					};
-					// Use follow-up rate if available, otherwise use fixed rate for whole term
-					const followOnRate = followUpRate?.rate ?? rate.rate;
+					// Use follow-on rate if available, otherwise use fixed rate for whole term
+					const followOnRateValue = followOnRate?.rate ?? rate.rate;
 					indicativeAprc = calculateAprc(
 						rate.rate,
 						rate.fixedTerm * 12,
-						followOnRate,
+						followOnRateValue,
 						aprcConfig,
 					);
 				}
 
-				// Flag when fixed rate has no follow-up (using fixed rate for whole term)
+				// Flag when fixed rate has no follow-on (using fixed rate for whole term)
 				const usesFixedRateForWholeTerm =
-					rate.type === "fixed" && rate.fixedTerm && !followUpRate;
+					rate.type === "fixed" && rate.fixedTerm && !followOnRate;
 
 				return {
 					...rate,
 					monthlyPayment,
-					followUpRate,
-					followUpLtv,
-					monthlyFollowUp,
+					followOnRate,
+					followOnLtv,
+					monthlyFollowOn,
 					totalRepayable,
 					costOfCreditPct,
 					combinedPerks,

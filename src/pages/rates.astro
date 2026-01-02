@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import { SITE } from "@/lib/constants";
 import { RatesInputIsland } from "@/components/rates/RatesInputIsland";
+import { CustomRatesIsland } from "@/components/rates/CustomRatesIsland";
 import { RatesToolbarIsland } from "@/components/rates/RatesToolbarIsland";
 import { RatesTableIsland } from "@/components/rates/RatesTableIsland";
 ---
@@ -16,8 +17,11 @@ import { RatesTableIsland } from "@/components/rates/RatesTableIsland";
 		</div>
 
 		<RatesInputIsland client:load />
-		<div class="mt-4">
-			<RatesToolbarIsland client:load />
+		<div class="mt-4 flex items-start gap-2">
+			<CustomRatesIsland client:load />
+			<div class="flex-1">
+				<RatesToolbarIsland client:load />
+			</div>
 		</div>
 		<RatesTableIsland client:idle />
 	</div>

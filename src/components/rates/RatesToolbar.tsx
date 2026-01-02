@@ -5,9 +5,9 @@ import type {
 } from "@tanstack/react-table";
 import { Check, Settings2, Share2 } from "lucide-react";
 import { useCallback, useState } from "react";
-import type { Lender, Perk, RatesMetadata } from "@/lib/schemas";
+import type { Lender, RatesMetadata } from "@/lib/schemas";
 import { generateRatesShareUrl } from "@/lib/share";
-import type { RatesInputValues, StoredCustomRate } from "@/lib/stores";
+import { $storedCustomRates, type RatesInputValues } from "@/lib/stores";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
@@ -17,7 +17,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { AddCustomRateDialog } from "./AddCustomRateDialog";
 import { RateUpdatesDialog } from "./RateUpdatesDialog";
 
 // Column labels for the visibility toggle
@@ -30,8 +29,8 @@ const COLUMN_LABELS: Record<string, string> = {
 	rate: "Rate",
 	apr: "APRC",
 	monthlyPayment: "Monthly",
-	followUpProduct: "Follow-Up Product",
-	monthlyFollowUp: "Follow-Up Monthly",
+	followOnProduct: "Follow-On Product",
+	monthlyFollowOn: "Follow-On Monthly",
 	totalRepayable: "Total Repayable",
 	costOfCreditPct: "Cost of Credit %",
 };
@@ -44,23 +43,15 @@ const HIDEABLE_COLUMNS = [
 	"rate",
 	"apr",
 	"monthlyPayment",
-	"followUpProduct",
-	"monthlyFollowUp",
+	"followOnProduct",
+	"monthlyFollowOn",
 	"totalRepayable",
 	"costOfCreditPct",
 ] as const;
 
-interface CustomLenderInfo {
-	id: string;
-	name: string;
-}
-
 export interface RatesToolbarProps {
 	// Data for dialogs
 	lenders: Lender[];
-	customLenders: CustomLenderInfo[];
-	customRates: StoredCustomRate[];
-	perks: Perk[];
 	ratesMetadata: RatesMetadata[];
 	inputValues: RatesInputValues;
 	// Table state
@@ -69,28 +60,25 @@ export interface RatesToolbarProps {
 	sorting: SortingState;
 	// Callbacks
 	onColumnVisibilityChange: (visibility: VisibilityState) => void;
-	onAddCustomRate: (rate: StoredCustomRate) => void;
-	// Disable Add Custom Rate and Columns buttons when no minimal input
+	// Disable Columns button when no minimal input
 	disabled?: boolean;
 }
 
 export function RatesToolbar({
 	lenders,
-	customLenders,
-	customRates,
-	perks,
 	ratesMetadata,
 	inputValues,
 	columnVisibility,
 	columnFilters,
 	sorting,
 	onColumnVisibilityChange,
-	onAddCustomRate,
 	disabled = false,
 }: RatesToolbarProps) {
 	const [copied, setCopied] = useState(false);
 
 	const handleShare = useCallback(async () => {
+		// Read custom rates on demand (no subscription needed)
+		const customRates = $storedCustomRates.get();
 		const url = generateRatesShareUrl({
 			input: inputValues,
 			table: {
@@ -103,7 +91,7 @@ export function RatesToolbar({
 		await navigator.clipboard.writeText(url);
 		setCopied(true);
 		setTimeout(() => setCopied(false), 2000);
-	}, [inputValues, columnVisibility, columnFilters, sorting, customRates]);
+	}, [inputValues, columnVisibility, columnFilters, sorting]);
 
 	const toggleColumnVisibility = useCallback(
 		(columnId: string, checked: boolean) => {
@@ -117,56 +105,39 @@ export function RatesToolbar({
 
 	return (
 		<div className="flex justify-between">
-			<div className="flex gap-2">
-				<AddCustomRateDialog
-					lenders={lenders}
-					customLenders={customLenders}
-					perks={perks}
-					currentBuyerType={
-						inputValues.buyerType as
-							| "ftb"
-							| "mover"
-							| "btl"
-							| "switcher-pdh"
-							| "switcher-btl"
-					}
-					onAddRate={onAddCustomRate}
-					disabled={disabled}
-				/>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button
-							variant="outline"
-							size="sm"
-							className="h-8 gap-1.5"
-							disabled={disabled}
-						>
-							<Settings2 className="h-4 w-4" />
-							<span className="hidden sm:inline">Columns</span>
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end" className="w-40">
-						<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-						<DropdownMenuSeparator />
-						{HIDEABLE_COLUMNS.map((columnId) => {
-							const label = COLUMN_LABELS[columnId] ?? columnId;
-							// Column is visible if not explicitly set to false
-							const isVisible = columnVisibility[columnId] !== false;
-							return (
-								<DropdownMenuCheckboxItem
-									key={columnId}
-									checked={isVisible}
-									onCheckedChange={(checked) =>
-										toggleColumnVisibility(columnId, checked)
-									}
-								>
-									{label}
-								</DropdownMenuCheckboxItem>
-							);
-						})}
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</div>
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button
+						variant="outline"
+						size="sm"
+						className="h-8 gap-1.5"
+						disabled={disabled}
+					>
+						<Settings2 className="h-4 w-4" />
+						<span className="hidden sm:inline">Columns</span>
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end" className="w-40">
+					<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					{HIDEABLE_COLUMNS.map((columnId) => {
+						const label = COLUMN_LABELS[columnId] ?? columnId;
+						// Column is visible if not explicitly set to false
+						const isVisible = columnVisibility[columnId] !== false;
+						return (
+							<DropdownMenuCheckboxItem
+								key={columnId}
+								checked={isVisible}
+								onCheckedChange={(checked) =>
+									toggleColumnVisibility(columnId, checked)
+								}
+							>
+								{label}
+							</DropdownMenuCheckboxItem>
+						);
+					})}
+				</DropdownMenuContent>
+			</DropdownMenu>
 			<div className="flex gap-2">
 				<RateUpdatesDialog lenders={lenders} ratesMetadata={ratesMetadata} />
 				<Button

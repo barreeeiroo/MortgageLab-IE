@@ -21,7 +21,7 @@ import {
 } from "@/lib/data";
 import {
 	calculateAprc,
-	calculateMonthlyFollowUp,
+	calculateMonthlyFollowOn,
 	calculateMonthlyPayment,
 	calculateRemainingBalance,
 	calculateTotalRepayable,
@@ -67,9 +67,9 @@ interface RateInfoModalProps {
 
 interface RateCalculations {
 	monthlyPayment: number;
-	followUpRate?: MortgageRate;
-	followUpLtv: number;
-	monthlyFollowUp?: number;
+	followOnRate?: MortgageRate;
+	followOnLtv: number;
+	monthlyFollowOn?: number;
 	remainingBalance?: number;
 	remainingBalancePct?: number;
 	totalRepayable: number;
@@ -137,7 +137,7 @@ function calculateRateInfo(
 	const totalMonths = termYears * 12;
 
 	// Calculate LTV after fixed term ends
-	let followUpLtv = ltv;
+	let followOnLtv = ltv;
 	let remainingBalance: number | undefined;
 
 	if (rate.type === "fixed" && rate.fixedTerm) {
@@ -150,16 +150,16 @@ function calculateRateInfo(
 		);
 		// Remaining LTV = remainingBalance / propertyValue * 100
 		// propertyValue = mortgageAmount / (ltv / 100)
-		followUpLtv = (remainingBalance / mortgageAmount) * ltv;
+		followOnLtv = (remainingBalance / mortgageAmount) * ltv;
 	}
 
-	// Find follow-up variable rate
-	const followUpRate =
+	// Find follow-on variable rate
+	const followOnRate =
 		rate.type === "fixed"
 			? findVariableRate(
 					rate,
 					allRates,
-					followUpLtv,
+					followOnLtv,
 					berRating as Parameters<typeof findVariableRate>[3],
 				)
 			: undefined;
@@ -171,10 +171,10 @@ function calculateRateInfo(
 		totalMonths,
 	);
 
-	// Calculate follow-up monthly payment
-	const monthlyFollowUp = calculateMonthlyFollowUp(
+	// Calculate follow-on monthly payment
+	const monthlyFollowOn = calculateMonthlyFollowOn(
 		rate,
-		followUpRate,
+		followOnRate,
 		mortgageAmount,
 		termYears,
 	);
@@ -183,7 +183,7 @@ function calculateRateInfo(
 	const totalRepayable = calculateTotalRepayable(
 		rate,
 		monthlyPayment,
-		monthlyFollowUp,
+		monthlyFollowOn,
 		termYears,
 	);
 
@@ -201,12 +201,12 @@ function calculateRateInfo(
 			valuationFee: aprcFees.valuationFee,
 			securityReleaseFee: aprcFees.securityReleaseFee,
 		};
-		// Use follow-up rate if available, otherwise use fixed rate for whole term
-		const followOnRate = followUpRate?.rate ?? rate.rate;
+		// Use follow-on rate if available, otherwise use fixed rate for whole term
+		const followOnRateValue = followOnRate?.rate ?? rate.rate;
 		indicativeAprc = calculateAprc(
 			rate.rate,
 			rate.fixedTerm * 12,
-			followOnRate,
+			followOnRateValue,
 			aprcConfig,
 		);
 	}
@@ -225,9 +225,9 @@ function calculateRateInfo(
 
 	return {
 		monthlyPayment,
-		followUpRate,
-		followUpLtv,
-		monthlyFollowUp,
+		followOnRate,
+		followOnLtv,
+		monthlyFollowOn,
 		remainingBalance,
 		remainingBalancePct,
 		totalRepayable,
@@ -373,15 +373,15 @@ export function RateInfoModal({
 			changed.add("remainingBalance");
 		if (prev.remainingBalancePct !== calculations.remainingBalancePct)
 			changed.add("remainingBalancePct");
-		if (prev.followUpLtv !== calculations.followUpLtv)
-			changed.add("followUpLtv");
+		if (prev.followOnLtv !== calculations.followOnLtv)
+			changed.add("followOnLtv");
 		if (prev.followOnTerm !== calculations.followOnTerm)
 			changed.add("followOnTerm");
-		if (prev.monthlyFollowUp !== calculations.monthlyFollowUp)
-			changed.add("monthlyFollowUp");
-		if (prev.followUpRate?.id !== calculations.followUpRate?.id) {
-			changed.add("followUpRate");
-			changed.add("followUpProduct");
+		if (prev.monthlyFollowOn !== calculations.monthlyFollowOn)
+			changed.add("monthlyFollowOn");
+		if (prev.followOnRate?.id !== calculations.followOnRate?.id) {
+			changed.add("followOnRate");
+			changed.add("followOnProduct");
 		}
 
 		setHighlightedFields(changed);
@@ -394,7 +394,7 @@ export function RateInfoModal({
 	if (!rate || !calculations) return null;
 
 	const isFixed = rate.type === "fixed";
-	const hasFollowUp = isFixed && calculations.followUpRate;
+	const hasFollowOn = isFixed && calculations.followOnRate;
 	const resolvedPerks = resolvePerks(perks, combinedPerks);
 
 	return (
@@ -517,7 +517,7 @@ export function RateInfoModal({
 													{formatCurrency(calculations.totalRepayable, {
 														showCents: true,
 													})}
-													{isFixed && !hasFollowUp && (
+													{isFixed && !hasFollowOn && (
 														<Tooltip>
 															<TooltipTrigger asChild>
 																<span className="inline-flex items-center justify-center cursor-help">
@@ -529,7 +529,7 @@ export function RateInfoModal({
 																	Fixed Rate Used for Whole Term
 																</p>
 																<p className="text-xs text-muted-foreground">
-																	No matching follow-up variable rate was found.
+																	No matching follow-on variable rate was found.
 																	This calculation assumes the fixed rate
 																	continues for the entire term.
 																</p>
@@ -546,7 +546,7 @@ export function RateInfoModal({
 											value={
 												<span className="inline-flex items-center gap-1">
 													{`${formatCurrency(calculations.costOfCredit)} (${calculations.costOfCreditPct.toFixed(1)}%)`}
-													{isFixed && !hasFollowUp && (
+													{isFixed && !hasFollowOn && (
 														<Tooltip>
 															<TooltipTrigger asChild>
 																<span className="inline-flex items-center justify-center cursor-help">
@@ -558,7 +558,7 @@ export function RateInfoModal({
 																	Fixed Rate Used for Whole Term
 																</p>
 																<p className="text-xs text-muted-foreground">
-																	No matching follow-up variable rate was found.
+																	No matching follow-on variable rate was found.
 																	This calculation assumes the fixed rate
 																	continues for the entire term.
 																</p>
@@ -590,29 +590,30 @@ export function RateInfoModal({
 														highlight={highlightedFields.has("followOnTerm")}
 													/>
 												)}
-											{hasFollowUp ? (
+											{hasFollowOn ? (
 												<>
 													<InfoRow
 														label="Interest Rate"
-														value={`${calculations.followUpRate?.rate.toFixed(2)}%`}
-														highlight={highlightedFields.has("followUpRate")}
+														value={`${calculations.followOnRate?.rate.toFixed(2)}%`}
+														highlight={highlightedFields.has("followOnRate")}
 													/>
 													<InfoRow
 														label="Product"
-														value={calculations.followUpRate?.name}
-														highlight={highlightedFields.has("followUpProduct")}
-														glossaryTermId="followUpProduct"
+														value={calculations.followOnRate?.name}
+														highlight={highlightedFields.has("followOnProduct")}
+														glossaryTermId="followOnProduct"
 													/>
 													<InfoRow
 														label="Monthly Repayments"
 														value={
-															calculations.monthlyFollowUp
-																? formatCurrency(calculations.monthlyFollowUp, {
+															calculations.monthlyFollowOn
+																? formatCurrency(calculations.monthlyFollowOn, {
 																		showCents: true,
 																	})
 																: "—"
 														}
-														highlight={highlightedFields.has("monthlyFollowUp")}
+														highlight={highlightedFields.has("monthlyFollowOn")}
+														glossaryTermId="followOnMonthly"
 													/>
 												</>
 											) : (
@@ -626,7 +627,7 @@ export function RateInfoModal({
 																</p>
 																<p className="text-xs text-destructive/80 mt-1">
 																	{(rate as { isCustom?: boolean }).isCustom
-																		? "Add a custom variable rate with matching criteria (lender, LTV range, BER eligibility) to see follow-up calculations."
+																		? "Add a custom variable rate with matching criteria (lender, LTV range, BER eligibility) to see follow-on calculations."
 																		: "Total repayable and cost of credit are calculated assuming the fixed rate continues for the entire term."}
 																</p>
 															</div>
@@ -662,8 +663,8 @@ export function RateInfoModal({
 											<InfoRow
 												label="APRC"
 												value={
-													// Show warning if APRC is calculated (no official APR) and no follow-up rate
-													!rate.apr && isFixed && !hasFollowUp ? (
+													// Show warning if APRC is calculated (no official APR) and no follow-on rate
+													!rate.apr && isFixed && !hasFollowOn ? (
 														<span className="inline-flex items-center gap-1">
 															{`${calculations.indicativeAprc.toFixed(2)}%`}
 															<Tooltip>
@@ -767,8 +768,8 @@ export function RateInfoModal({
 											/>
 											<InfoRow
 												label="LTV"
-												value={`${calculations.followUpLtv.toFixed(1)}%`}
-												highlight={highlightedFields.has("followUpLtv")}
+												value={`${calculations.followOnLtv.toFixed(1)}%`}
+												highlight={highlightedFields.has("followOnLtv")}
 											/>
 										</tbody>
 									</table>

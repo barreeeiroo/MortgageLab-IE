@@ -104,7 +104,7 @@ export function RatesTableIsland() {
 	// Combine regular rates with filtered custom rates
 	const allDisplayRates = [...filteredRates, ...filteredCustomRates];
 
-	// Combine allRates with all custom rates for follow-up rate matching
+	// Combine allRates with all custom rates for follow-on rate matching
 	const allRatesWithCustom = [...allRates, ...customRates];
 
 	return (
