@@ -7,7 +7,7 @@ import {
 	TriangleAlert,
 	X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
 	getLender,
 	type Lender,
@@ -15,6 +15,7 @@ import {
 	type Perk,
 	resolvePerks,
 } from "@/lib/data";
+import { useIsDesktop } from "@/lib/hooks";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../lenders";
 import { Button } from "../ui/button";
@@ -212,17 +213,9 @@ export function CompareRatesModal({
 	onOpenChange,
 	onShare,
 }: CompareRatesModalProps) {
-	// Track if we're on desktop (lg breakpoint = 1024px) for sticky columns
-	const [isDesktop, setIsDesktop] = useState(false);
+	// Track if we're on desktop (lg breakpoint) for sticky columns
+	const isDesktop = useIsDesktop();
 	const [copied, setCopied] = useState(false);
-
-	useEffect(() => {
-		const mediaQuery = window.matchMedia("(min-width: 1024px)");
-		setIsDesktop(mediaQuery.matches);
-		const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-		mediaQuery.addEventListener("change", handler);
-		return () => mediaQuery.removeEventListener("change", handler);
-	}, []);
 
 	const handleShare = async () => {
 		await onShare();

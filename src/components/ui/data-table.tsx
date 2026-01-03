@@ -24,13 +24,8 @@ export type {
 };
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-	type ReactNode,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type ReactNode, useCallback, useRef, useState } from "react";
+import { useIsDesktop } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import {
@@ -198,15 +193,8 @@ export function DataTable<TData, TValue>({
 		[onPaginationChange],
 	);
 
-	// Track if we're on desktop (lg breakpoint = 1024px) for sticky columns
-	const [isDesktop, setIsDesktop] = useState(false);
-	useEffect(() => {
-		const mediaQuery = window.matchMedia("(min-width: 1024px)");
-		setIsDesktop(mediaQuery.matches);
-		const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-		mediaQuery.addEventListener("change", handler);
-		return () => mediaQuery.removeEventListener("change", handler);
-	}, []);
+	// Track if we're on desktop (lg breakpoint) for sticky columns
+	const isDesktop = useIsDesktop();
 
 	// Track sticky column widths for calculating left offsets
 	const stickyWidthsRef = useRef<Map<string, number>>(new Map());
