@@ -999,23 +999,34 @@ export function RatesTable({
 	}, [compareState.selectedRateIds]);
 
 	const setRowSelection = useCallback((newSelection: RowSelectionState) => {
+		const currentState = $compareState.get();
 		const newState = {
-			...$compareState.get(),
+			...currentState,
 			selectedRateIds: Object.keys(newSelection),
 		};
 		$compareState.set(newState);
-		saveCompareState(newState);
+		// Only persist selection when the compare modal is open
+		if (currentState.isOpen) {
+			saveCompareState(newState);
+		}
 	}, []);
 
 	const compareModalOpen = compareState.isOpen;
 
 	const setCompareModalOpen = useCallback((open: boolean) => {
+		const currentState = $compareState.get();
 		const newState = {
-			...$compareState.get(),
+			...currentState,
 			isOpen: open,
 		};
 		$compareState.set(newState);
-		saveCompareState(newState);
+		// Only persist when opening the modal (selection should not persist after close)
+		if (open) {
+			saveCompareState(newState);
+		} else {
+			// Clear persisted state when closing (but keep selection in memory)
+			saveCompareState({ selectedRateIds: [], isOpen: false });
+		}
 	}, []);
 
 	const handleProductClick = useCallback((rate: RateRow) => {
