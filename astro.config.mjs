@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@astrojs/react";
+import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
@@ -33,7 +34,7 @@ export default defineConfig({
 	site: "https://www.mortgagelab.ie",
 	base: "/",
 
-	integrations: [react()],
+	integrations: [react(), sitemap()],
 
 	vite: {
 		plugins: [tailwindcss(), serveDataFolder()],
