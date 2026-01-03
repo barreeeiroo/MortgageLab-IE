@@ -38,6 +38,7 @@ import type { Lender } from "@/lib/data";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Perk } from "@/lib/schemas/perk";
 import type { StoredCustomRate } from "@/lib/stores";
+import { formatShortDate } from "@/lib/utils/date";
 import { AddCustomRateDialog } from "./AddCustomRateDialog";
 import type { CustomLenderInfo } from "./CustomRateForm";
 import { EditCustomRateDialog } from "./EditCustomRateDialog";
@@ -156,7 +157,7 @@ export function ManageCustomRatesDialog({
 					</Button>
 				</DialogTrigger>
 				<DialogContent
-					className="sm:max-w-2xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0"
+					className="sm:max-w-4xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0"
 					showCloseButton={false}
 				>
 					{/* Sticky Header */}
@@ -196,6 +197,8 @@ export function ManageCustomRatesDialog({
 											<TableHead>Type</TableHead>
 											<TableHead>Period</TableHead>
 											<TableHead className="text-right">Rate</TableHead>
+											<TableHead>Created</TableHead>
+											<TableHead>Modified</TableHead>
 											<TableHead className="w-[100px]" />
 										</TableRow>
 									</TableHeader>
@@ -230,6 +233,16 @@ export function ManageCustomRatesDialog({
 												<TableCell className="text-right">
 													<span className="text-sm font-medium tabular-nums">
 														{rate.rate.toFixed(2)}%
+													</span>
+												</TableCell>
+												<TableCell>
+													<span className="text-sm text-muted-foreground whitespace-nowrap">
+														{formatShortDate(rate.createdAt)}
+													</span>
+												</TableCell>
+												<TableCell>
+													<span className="text-sm text-muted-foreground whitespace-nowrap">
+														{formatShortDate(rate.lastUpdatedAt)}
 													</span>
 												</TableCell>
 												<TableCell>

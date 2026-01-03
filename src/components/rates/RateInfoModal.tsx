@@ -1,5 +1,7 @@
 import {
+	Check,
 	Coins,
+	Copy,
 	HelpCircle,
 	Infinity as InfinityIcon,
 	type LucideIcon,
@@ -33,6 +35,10 @@ import {
 } from "@/lib/mortgage";
 import type { AprcConfig } from "@/lib/mortgage/aprc";
 import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
+import {
+	addCustomRate,
+	type StoredCustomRate,
+} from "@/lib/stores/custom-rates";
 import { formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../lenders";
 import { Button } from "../ui/button";
@@ -313,13 +319,15 @@ export function RateInfoModal({
 	const [highlightedFields, setHighlightedFields] = useState<Set<string>>(
 		new Set(),
 	);
+	const [copiedRateId, setCopiedRateId] = useState<string | null>(null);
 	const prevCalculationsRef = useRef<RateCalculations | null>(null);
 
-	// Reset selected term when modal opens with new rate
+	// Reset selected term and copied state when modal opens with new rate
 	useMemo(() => {
 		if (rate) {
 			setSelectedTerm(mortgageTerm);
 			prevCalculationsRef.current = null;
+			setCopiedRateId(null);
 		}
 	}, [rate, mortgageTerm]);
 
@@ -400,6 +408,31 @@ export function RateInfoModal({
 	const isFixed = rate.type === "fixed";
 	const hasFollowOn = isFixed && calculations.followOnRate;
 	const resolvedPerks = resolvePerks(perks, combinedPerks);
+	const isCustom = (rate as { isCustom?: boolean }).isCustom;
+
+	// Handler for copying rate as custom
+	const handleCopyAsCustom = () => {
+		const customRate: StoredCustomRate = {
+			id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+			name: rate.name,
+			lenderId: rate.lenderId,
+			type: rate.type,
+			rate: rate.rate,
+			apr: rate.apr,
+			fixedTerm: rate.fixedTerm,
+			minLtv: rate.minLtv,
+			maxLtv: rate.maxLtv,
+			minLoan: rate.minLoan,
+			buyerTypes: [...rate.buyerTypes],
+			berEligible: rate.berEligible ? [...rate.berEligible] : undefined,
+			perks: [...rate.perks],
+			customLenderName:
+				(rate as { customLenderName?: string }).customLenderName ??
+				lender?.name,
+		};
+		addCustomRate(customRate);
+		setCopiedRateId(customRate.id);
+	};
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -786,7 +819,7 @@ export function RateInfoModal({
 				{/* Sticky Footer */}
 				<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex items-center justify-between">
 					{/* Hide report button for custom rates */}
-					{!(rate as { isCustom?: boolean }).isCustom ? (
+					{!isCustom ? (
 						<Button
 							variant="ghost"
 							size="sm"
@@ -811,12 +844,32 @@ export function RateInfoModal({
 					) : (
 						<div />
 					)}
-					{mode === "first-mortgage" && (
-						<Button className="gap-1.5">
-							<Play className="h-4 w-4" />
-							Simulate
-						</Button>
-					)}
+					<div className="flex items-center gap-2">
+						{/* Copy as Custom Rate button - only for non-custom rates */}
+						{!isCustom &&
+							(copiedRateId ? (
+								<span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+									<Check className="h-4 w-4 text-green-600" />
+									Copied as Custom
+								</span>
+							) : (
+								<Button
+									variant="outline"
+									size="sm"
+									className="gap-1.5"
+									onClick={handleCopyAsCustom}
+								>
+									<Copy className="h-4 w-4" />
+									Copy as Custom Rate
+								</Button>
+							))}
+						{mode === "first-mortgage" && (
+							<Button className="gap-1.5">
+								<Play className="h-4 w-4" />
+								Simulate
+							</Button>
+						)}
+					</div>
 				</div>
 			</DialogContent>
 		</Dialog>
