@@ -7,7 +7,7 @@ import {
 	LTI_LIMITS,
 	LTV_LIMITS,
 } from "@/lib/constants";
-import { loadFtbForm, saveFtbForm, saveRatesForm } from "@/lib/storage";
+import { loadMoverForm, saveMoverForm, saveRatesForm } from "@/lib/storage";
 import {
 	calculateJointMaxTerm,
 	formatCurrency,
@@ -35,18 +35,18 @@ import { ApplicantInputs } from "./ApplicantInputs";
 import { type MortgageResult, MortgageResultCard } from "./MortgageResultCard";
 import { MortgageTermDisplay } from "./MortgageTermDisplay";
 
-const FTB_LTI_LIMIT = LTI_LIMITS.FTB;
-const FTB_MAX_LTV = LTV_LIMITS.FTB / 100;
+const MOVER_LTI_LIMIT = LTI_LIMITS.MOVER;
+const MOVER_MAX_LTV = LTV_LIMITS.MOVER / 100;
 
 interface CalculationResult {
 	result: MortgageResult;
 	totalIncome: number;
-	hasSavingsShortfall: boolean;
+	hasDepositShortfall: boolean;
 	maxMortgageByIncome?: number;
 	requiredDeposit?: number;
 }
 
-export function FirstTimeBuyerCalculator() {
+export function HomeMoverCalculator() {
 	const [applicationType, setApplicationType] = useState<"sole" | "joint">(
 		"sole",
 	);
@@ -54,7 +54,9 @@ export function FirstTimeBuyerCalculator() {
 	const [income2, setIncome2] = useState("");
 	const [birthDate1, setBirthDate1] = useState<Date | undefined>(undefined);
 	const [birthDate2, setBirthDate2] = useState<Date | undefined>(undefined);
-	const [savings, setSavings] = useState("");
+	const [currentPropertyValue, setCurrentPropertyValue] = useState("");
+	const [outstandingMortgage, setOutstandingMortgage] = useState("");
+	const [additionalSavings, setAdditionalSavings] = useState("");
 	const [berRating, setBerRating] = useState("C1");
 	const [calculationResult, setCalculationResult] =
 		useState<CalculationResult | null>(null);
@@ -62,25 +64,31 @@ export function FirstTimeBuyerCalculator() {
 
 	// Load from localStorage on mount
 	useEffect(() => {
-		const saved = loadFtbForm();
+		const saved = loadMoverForm();
 		if (saved.applicationType) setApplicationType(saved.applicationType);
 		if (saved.income1) setIncome1(saved.income1);
 		if (saved.income2) setIncome2(saved.income2);
 		if (saved.birthDate1) setBirthDate1(new Date(saved.birthDate1));
 		if (saved.birthDate2) setBirthDate2(new Date(saved.birthDate2));
-		if (saved.savings) setSavings(saved.savings);
+		if (saved.currentPropertyValue)
+			setCurrentPropertyValue(saved.currentPropertyValue);
+		if (saved.outstandingMortgage)
+			setOutstandingMortgage(saved.outstandingMortgage);
+		if (saved.additionalSavings) setAdditionalSavings(saved.additionalSavings);
 		if (saved.berRating) setBerRating(saved.berRating);
 	}, []);
 
 	// Save to localStorage when form changes
 	useEffect(() => {
-		saveFtbForm({
+		saveMoverForm({
 			applicationType,
 			income1,
 			income2,
 			birthDate1: birthDate1?.toISOString() ?? null,
 			birthDate2: birthDate2?.toISOString() ?? null,
-			savings,
+			currentPropertyValue,
+			outstandingMortgage,
+			additionalSavings,
 			berRating,
 		});
 	}, [
@@ -89,7 +97,9 @@ export function FirstTimeBuyerCalculator() {
 		income2,
 		birthDate1,
 		birthDate2,
-		savings,
+		currentPropertyValue,
+		outstandingMortgage,
+		additionalSavings,
 		berRating,
 	]);
 
@@ -101,50 +111,51 @@ export function FirstTimeBuyerCalculator() {
 	);
 	const isAnyAgeTooOld = isApplicantTooOld(birthDate1, birthDate2, isJoint);
 
+	// Calculate equity and total deposit
+	const propertyVal = parseCurrency(currentPropertyValue);
+	const mortgageVal = parseCurrency(outstandingMortgage);
+	const equity = propertyVal > mortgageVal ? propertyVal - mortgageVal : 0;
+	const savings = parseCurrency(additionalSavings);
+	const totalDepositAvailable = equity + savings;
+
 	// Validate required fields
 	const hasIncome1 = parseCurrency(income1) > 0;
 	const hasIncome2 = parseCurrency(income2) > 0;
-	const hasSavings = parseCurrency(savings) > 0;
+	const hasDeposit = totalDepositAvailable > 0;
 	const isFormComplete =
 		hasIncome1 &&
 		birthDate1 !== undefined &&
-		hasSavings &&
+		hasDeposit &&
 		(!isJoint || (hasIncome2 && birthDate2 !== undefined));
 
 	const calculate = () => {
 		const totalIncome =
 			parseCurrency(income1) + (isJoint ? parseCurrency(income2) : 0);
-		const totalSavings = parseCurrency(savings);
 
 		if (totalIncome <= 0 || maxMortgageTerm === null) return;
 
-		// Maximum mortgage based on LTI rule
-		const maxMortgageByIncome = totalIncome * FTB_LTI_LIMIT;
-		// Minimum deposit required for max mortgage (10% of property value)
+		const maxMortgageByIncome = totalIncome * MOVER_LTI_LIMIT;
 		const requiredDepositForMaxMortgage = maxMortgageByIncome / 9;
+		const hasDepositShortfall =
+			totalDepositAvailable < requiredDepositForMaxMortgage;
 
-		// Check if savings are sufficient for maximum mortgage
-		const hasSavingsShortfall = totalSavings < requiredDepositForMaxMortgage;
-
-		let propertyValue: number;
+		let newPropertyValue: number;
 		let mortgageAmount: number;
 
-		if (hasSavingsShortfall) {
-			// Savings constrained: max property based on 10% deposit
-			propertyValue = totalSavings / (1 - FTB_MAX_LTV);
-			mortgageAmount = propertyValue * FTB_MAX_LTV;
+		if (hasDepositShortfall) {
+			newPropertyValue = totalDepositAvailable / (1 - MOVER_MAX_LTV);
+			mortgageAmount = newPropertyValue * MOVER_MAX_LTV;
 		} else {
-			// Income constrained: use max mortgage + all savings as deposit
 			mortgageAmount = maxMortgageByIncome;
-			propertyValue = mortgageAmount + totalSavings;
+			newPropertyValue = mortgageAmount + totalDepositAvailable;
 		}
 
-		const ltv = (mortgageAmount / propertyValue) * 100;
+		const ltv = (mortgageAmount / newPropertyValue) * 100;
 		const lti = mortgageAmount / totalIncome;
 
 		setCalculationResult({
 			result: {
-				propertyValue,
+				propertyValue: newPropertyValue,
 				mortgageAmount,
 				mortgageTerm: maxMortgageTerm,
 				berRating,
@@ -152,11 +163,11 @@ export function FirstTimeBuyerCalculator() {
 				lti,
 			},
 			totalIncome,
-			hasSavingsShortfall,
-			maxMortgageByIncome: hasSavingsShortfall
+			hasDepositShortfall,
+			maxMortgageByIncome: hasDepositShortfall
 				? maxMortgageByIncome
 				: undefined,
-			requiredDeposit: hasSavingsShortfall
+			requiredDeposit: hasDepositShortfall
 				? requiredDepositForMaxMortgage
 				: undefined,
 		});
@@ -172,8 +183,9 @@ export function FirstTimeBuyerCalculator() {
 							How Much Can I Borrow?
 						</CardTitle>
 						<CardDescription>
-							Enter your income and savings to see the maximum mortgage you
-							could get as a first time buyer.
+							For homeowners selling their current property and buying a new
+							primary residence. Enter your income, property details, and any
+							additional savings.
 						</CardDescription>
 					</div>
 
@@ -200,30 +212,88 @@ export function FirstTimeBuyerCalculator() {
 										Central Bank
 										<ExternalLink className="h-3 w-3 ml-0.5" />
 									</a>{" "}
-									allows {FTB_LTI_LIMIT}× income for first-time buyers. Lenders
-									can exceed this for {LENDER_ALLOWANCES.FTB}% of their lending.
-									Some may include overtime, bonuses, or other income.
+									allows {MOVER_LTI_LIMIT}× income for second/subsequent buyers.
+									Lenders can exceed this for {LENDER_ALLOWANCES.MOVER}% of
+									their lending. Some may include overtime, bonuses, or other
+									income.
 								</>
 							}
 						/>
 
+						<div className="grid gap-4 sm:grid-cols-2">
+							<div className="space-y-2">
+								<Label htmlFor="currentPropertyValue">
+									Current Property Value
+								</Label>
+								<Input
+									id="currentPropertyValue"
+									type="text"
+									inputMode="numeric"
+									placeholder="€350,000"
+									value={formatCurrencyInput(currentPropertyValue)}
+									onChange={(e) =>
+										setCurrentPropertyValue(
+											e.target.value.replace(/[^0-9]/g, ""),
+										)
+									}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="outstandingMortgage">
+									Outstanding Mortgage
+								</Label>
+								<Input
+									id="outstandingMortgage"
+									type="text"
+									inputMode="numeric"
+									placeholder="€150,000"
+									value={formatCurrencyInput(outstandingMortgage)}
+									onChange={(e) =>
+										setOutstandingMortgage(
+											e.target.value.replace(/[^0-9]/g, ""),
+										)
+									}
+								/>
+							</div>
+						</div>
+
+						{equity > 0 && (
+							<p className="text-sm text-muted-foreground">
+								Equity from sale:{" "}
+								<span className="font-medium text-foreground">
+									{formatCurrency(equity)}
+								</span>
+							</p>
+						)}
+
 						<div className="space-y-2">
-							<Label htmlFor="savings">Total Savings for Deposit</Label>
+							<Label htmlFor="additionalSavings">
+								Additional Savings (Optional)
+							</Label>
 							<Input
-								id="savings"
+								id="additionalSavings"
 								type="text"
 								inputMode="numeric"
-								placeholder="€30,000"
-								value={formatCurrencyInput(savings)}
+								placeholder="€0"
+								value={formatCurrencyInput(additionalSavings)}
 								onChange={(e) =>
-									setSavings(e.target.value.replace(/[^0-9]/g, ""))
+									setAdditionalSavings(e.target.value.replace(/[^0-9]/g, ""))
 								}
 							/>
 							<p className="text-xs text-muted-foreground">
-								Include any gifts or Help to Buy funds. Exclude Stamp Duty and
-								legal fees.
+								Any extra savings beyond your property equity. Exclude Stamp
+								Duty and legal fees.
 							</p>
 						</div>
+
+						{totalDepositAvailable > 0 && (
+							<p className="text-sm text-muted-foreground">
+								Total available for deposit:{" "}
+								<span className="font-medium text-foreground">
+									{formatCurrency(totalDepositAvailable)}
+								</span>
+							</p>
+						)}
 
 						<div className="grid gap-4 sm:grid-cols-2">
 							<MortgageTermDisplay maxMortgageTerm={maxMortgageTerm} />
@@ -238,7 +308,7 @@ export function FirstTimeBuyerCalculator() {
 						{isAnyAgeTooOld && (
 							<p className="text-sm text-destructive">
 								Applicants must be {AGE_LIMITS.MAX_APPLICANT_AGE} years old or
-								younger to qualify for a first time buyer mortgage.
+								younger to qualify for a mortgage.
 							</p>
 						)}
 
@@ -257,11 +327,11 @@ export function FirstTimeBuyerCalculator() {
 				<AlertDialogContent className="sm:max-w-5xl">
 					<AlertDialogHeader>
 						<AlertDialogTitle>
-							{calculationResult?.hasSavingsShortfall
-								? "Mortgage Summary (Adjusted for Savings)"
+							{calculationResult?.hasDepositShortfall
+								? "Mortgage Summary (Adjusted for Deposit)"
 								: "Your Mortgage Summary"}
 						</AlertDialogTitle>
-						{calculationResult?.hasSavingsShortfall && (
+						{calculationResult?.hasDepositShortfall && (
 							<AlertDialogDescription>
 								Your maximum mortgage based on income would be{" "}
 								<strong>
@@ -271,17 +341,17 @@ export function FirstTimeBuyerCalculator() {
 								<strong>
 									{formatCurrency(calculationResult.requiredDeposit ?? 0)}
 								</strong>{" "}
-								in savings for a 10% deposit. The figures below are adjusted
-								based on your current savings.
+								for a 10% deposit. The figures below are adjusted based on your
+								available funds (equity + savings).
 							</AlertDialogDescription>
 						)}
 					</AlertDialogHeader>
 					{calculationResult && (
 						<MortgageResultCard
 							result={calculationResult.result}
-							maxLtv={LTV_LIMITS.FTB}
-							maxLti={FTB_LTI_LIMIT}
-							isConstrained={calculationResult.hasSavingsShortfall}
+							maxLtv={LTV_LIMITS.MOVER}
+							maxLti={MOVER_LTI_LIMIT}
+							isConstrained={calculationResult.hasDepositShortfall}
 						/>
 					)}
 					<AlertDialogFooter>
@@ -297,7 +367,7 @@ export function FirstTimeBuyerCalculator() {
 									monthlyRepayment: "",
 									mortgageTerm: result.mortgageTerm.toString(),
 									berRating: result.berRating,
-									buyerType: "ftb",
+									buyerType: "mover",
 								});
 								window.location.href = getPath("/rates");
 							}}
