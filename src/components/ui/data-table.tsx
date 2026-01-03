@@ -401,7 +401,7 @@ export function DataTable<TData, TValue>({
 											key={cell.id}
 											className={cn(
 												isSticky &&
-													"bg-background transition-colors group-hover:bg-muted/50 group-data-[state=selected]:bg-muted",
+													"bg-background transition-colors group-hover:bg-muted group-data-[state=selected]:bg-muted",
 												isLastStickyLeft &&
 													"shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]",
 												isFirstStickyRight &&
