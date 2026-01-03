@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { GLOSSARY_TERMS, SITE } from "../lib/constants";
+import { GLOSSARY_TERMS } from "../lib/constants";
 
 // Group terms by first letter
 const termsByLetter = GLOSSARY_TERMS.reduce((acc, term) => {
@@ -14,7 +14,7 @@ const termsByLetter = GLOSSARY_TERMS.reduce((acc, term) => {
 const availableLetters = Object.keys(termsByLetter).sort();
 ---
 
-<Layout title={`Glossary | ${SITE.name}`}>
+<Layout title="Glossary">
 	<div class="container mx-auto px-4 py-12">
 		<div class="max-w-4xl mx-auto">
 			<div class="mb-8">
