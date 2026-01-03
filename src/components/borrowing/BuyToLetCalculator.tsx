@@ -21,6 +21,7 @@ import { BerSelector } from "../selectors/BerSelector";
 import {
 	AlertDialog,
 	AlertDialogAction,
+	AlertDialogBody,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -366,85 +367,89 @@ export function BuyToLetCalculator() {
 							</AlertDialogDescription>
 						)}
 					</AlertDialogHeader>
-					{calculationResult && (
-						<MortgageResultCard
-							result={calculationResult.result}
-							maxLtv={LTV_LIMITS.BTL}
-							maxLti={BTL_LTI_LIMIT}
-							isConstrained={calculationResult.constrainedBy !== "deposit"}
-							additionalMetrics={
-								<>
-									<div>
-										<p className="text-sm text-muted-foreground">
-											Est. Monthly Payment
-										</p>
-										<p className="text-lg font-semibold">
-											{formatCurrency(calculationResult.result.monthlyPayment)}
-										</p>
-									</div>
-									<div>
-										<p className="text-sm text-muted-foreground">
-											Rental Coverage
-										</p>
-										<p className={`text-lg font-semibold ${coverageColor}`}>
-											{calculationResult.result.rentalCoverage.toFixed(0)}%
-										</p>
-									</div>
-								</>
-							}
-							additionalSections={
-								<div className="pt-4 border-t border-border mt-4">
-									<p className="text-sm font-medium mb-2">Rental Analysis</p>
-									<div className="grid gap-2 sm:grid-cols-3 text-sm">
+					<AlertDialogBody>
+						{calculationResult && (
+							<MortgageResultCard
+								result={calculationResult.result}
+								maxLtv={LTV_LIMITS.BTL}
+								maxLti={BTL_LTI_LIMIT}
+								isConstrained={calculationResult.constrainedBy !== "deposit"}
+								additionalMetrics={
+									<>
 										<div>
-											<p className="text-muted-foreground">
-												Expected Monthly Rent
+											<p className="text-sm text-muted-foreground">
+												Est. Monthly Payment
 											</p>
-											<p className="font-semibold">
-												{formatCurrency(calculationResult.result.monthlyRent)}
-											</p>
-										</div>
-										<div>
-											<p className="text-muted-foreground">
-												Est. Mortgage Payment
-											</p>
-											<p className="font-semibold">
+											<p className="text-lg font-semibold">
 												{formatCurrency(
 													calculationResult.result.monthlyPayment,
 												)}
 											</p>
 										</div>
 										<div>
-											<p className="text-muted-foreground">
-												Net Monthly (before tax)
+											<p className="text-sm text-muted-foreground">
+												Rental Coverage
 											</p>
-											<p
-												className={`font-semibold ${
-													calculationResult.result.monthlyRent -
-														calculationResult.result.monthlyPayment >=
-													0
-														? ""
-														: "text-destructive"
-												}`}
-											>
-												{formatCurrency(
-													calculationResult.result.monthlyRent -
-														calculationResult.result.monthlyPayment,
-												)}
+											<p className={`text-lg font-semibold ${coverageColor}`}>
+												{calculationResult.result.rentalCoverage.toFixed(0)}%
 											</p>
 										</div>
+									</>
+								}
+								additionalSections={
+									<div className="pt-4 border-t border-border mt-4">
+										<p className="text-sm font-medium mb-2">Rental Analysis</p>
+										<div className="grid gap-2 sm:grid-cols-3 text-sm">
+											<div>
+												<p className="text-muted-foreground">
+													Expected Monthly Rent
+												</p>
+												<p className="font-semibold">
+													{formatCurrency(calculationResult.result.monthlyRent)}
+												</p>
+											</div>
+											<div>
+												<p className="text-muted-foreground">
+													Est. Mortgage Payment
+												</p>
+												<p className="font-semibold">
+													{formatCurrency(
+														calculationResult.result.monthlyPayment,
+													)}
+												</p>
+											</div>
+											<div>
+												<p className="text-muted-foreground">
+													Net Monthly (before tax)
+												</p>
+												<p
+													className={`font-semibold ${
+														calculationResult.result.monthlyRent -
+															calculationResult.result.monthlyPayment >=
+														0
+															? ""
+															: "text-destructive"
+													}`}
+												>
+													{formatCurrency(
+														calculationResult.result.monthlyRent -
+															calculationResult.result.monthlyPayment,
+													)}
+												</p>
+											</div>
+										</div>
+										<p className="text-xs text-muted-foreground mt-2">
+											Most lenders require rent to cover at least{" "}
+											{(RENTAL_COVERAGE_RATIO * 100).toFixed(0)}% of the
+											mortgage payment at a stress-tested rate of ~
+											{(STRESS_TEST_RATE * 100).toFixed(1)}%. These are typical
+											lender requirements, not Central Bank rules.
+										</p>
 									</div>
-									<p className="text-xs text-muted-foreground mt-2">
-										Most lenders require rent to cover at least{" "}
-										{(RENTAL_COVERAGE_RATIO * 100).toFixed(0)}% of the mortgage
-										payment at a stress-tested rate of ~
-										{(STRESS_TEST_RATE * 100).toFixed(1)}%. These are typical
-										lender requirements, not Central Bank rules.
-									</p>
-								</div>
-							}
-						/>
-					)}
+								}
+							/>
+						)}
+					</AlertDialogBody>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Close</AlertDialogCancel>
 						<AlertDialogAction

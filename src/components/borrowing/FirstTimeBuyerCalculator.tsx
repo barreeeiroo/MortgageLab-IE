@@ -20,6 +20,7 @@ import { BerSelector } from "../selectors/BerSelector";
 import {
 	AlertDialog,
 	AlertDialogAction,
+	AlertDialogBody,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -276,14 +277,16 @@ export function FirstTimeBuyerCalculator() {
 							</AlertDialogDescription>
 						)}
 					</AlertDialogHeader>
-					{calculationResult && (
-						<MortgageResultCard
-							result={calculationResult.result}
-							maxLtv={LTV_LIMITS.FTB}
-							maxLti={FTB_LTI_LIMIT}
-							isConstrained={calculationResult.hasSavingsShortfall}
-						/>
-					)}
+					<AlertDialogBody>
+						{calculationResult && (
+							<MortgageResultCard
+								result={calculationResult.result}
+								maxLtv={LTV_LIMITS.FTB}
+								maxLti={FTB_LTI_LIMIT}
+								isConstrained={calculationResult.hasSavingsShortfall}
+							/>
+						)}
+					</AlertDialogBody>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Close</AlertDialogCancel>
 						<AlertDialogAction

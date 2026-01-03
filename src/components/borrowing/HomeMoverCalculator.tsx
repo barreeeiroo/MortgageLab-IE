@@ -20,6 +20,7 @@ import { BerSelector } from "../selectors/BerSelector";
 import {
 	AlertDialog,
 	AlertDialogAction,
+	AlertDialogBody,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -346,14 +347,16 @@ export function HomeMoverCalculator() {
 							</AlertDialogDescription>
 						)}
 					</AlertDialogHeader>
-					{calculationResult && (
-						<MortgageResultCard
-							result={calculationResult.result}
-							maxLtv={LTV_LIMITS.MOVER}
-							maxLti={MOVER_LTI_LIMIT}
-							isConstrained={calculationResult.hasDepositShortfall}
-						/>
-					)}
+					<AlertDialogBody>
+						{calculationResult && (
+							<MortgageResultCard
+								result={calculationResult.result}
+								maxLtv={LTV_LIMITS.MOVER}
+								maxLti={MOVER_LTI_LIMIT}
+								isConstrained={calculationResult.hasDepositShortfall}
+							/>
+						)}
+					</AlertDialogBody>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Close</AlertDialogCancel>
 						<AlertDialogAction
