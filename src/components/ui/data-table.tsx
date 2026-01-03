@@ -324,7 +324,7 @@ export function DataTable<TData, TValue>({
 			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
-						<TableRow key={headerGroup.id}>
+						<TableRow key={headerGroup.id} className="group">
 							{headerGroup.headers.map((header) => {
 								const meta = header.column.columnDef.meta as
 									| { sticky?: boolean; stickyRight?: boolean }
@@ -351,7 +351,8 @@ export function DataTable<TData, TValue>({
 												: undefined
 										}
 										className={cn(
-											isSticky && "bg-background",
+											isSticky &&
+												"bg-background transition-colors group-hover:bg-muted group-data-[state=selected]:bg-muted",
 											isLastStickyLeft &&
 												"shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]",
 											isFirstStickyRight &&
