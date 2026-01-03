@@ -138,15 +138,15 @@ export function DataTable<TData, TValue>({
 			onColumnVisibilityChange(newVisibility);
 		},
 		getPaginationRowModel: getPaginationRowModel(),
-		onPaginationChange: (updater) => {
-			const newPagination =
-				typeof updater === "function" ? updater(pagination) : updater;
-			if (onPaginationChange) {
-				onPaginationChange(newPagination);
-			} else {
-				setInternalPagination(newPagination);
-			}
-		},
+		// Only use TanStack's onPaginationChange for internal (uncontrolled) pagination
+		// When controlled (onPaginationChange prop exists), we handle pagination directly via buttons
+		onPaginationChange: onPaginationChange
+			? undefined
+			: (updater) => {
+					const newPagination =
+						typeof updater === "function" ? updater(pagination) : updater;
+					setInternalPagination(newPagination);
+				},
 		onRowSelectionChange: (updater) => {
 			const newRowSelection =
 				typeof updater === "function" ? updater(rowSelection) : updater;
@@ -166,9 +166,37 @@ export function DataTable<TData, TValue>({
 	});
 
 	const totalRows = table.getFilteredRowModel().rows.length;
-	const currentPage = table.getState().pagination.pageIndex;
-	const pageSize = table.getState().pagination.pageSize;
 	const pageCount = table.getPageCount();
+
+	// Use props directly for pagination values (more reliable than table.getState())
+	const currentPage = pagination.pageIndex;
+	const pageSize = pagination.pageSize;
+
+	// Direct pagination change handler (bypasses TanStack internal state)
+	const handlePageChange = useCallback(
+		(newPageIndex: number) => {
+			if (onPaginationChange) {
+				onPaginationChange({
+					pageIndex: newPageIndex,
+					pageSize: pagination.pageSize,
+				});
+			} else {
+				setInternalPagination((prev) => ({ ...prev, pageIndex: newPageIndex }));
+			}
+		},
+		[onPaginationChange, pagination.pageSize],
+	);
+
+	const handlePageSizeChange = useCallback(
+		(newPageSize: number) => {
+			if (onPaginationChange) {
+				onPaginationChange({ pageIndex: 0, pageSize: newPageSize });
+			} else {
+				setInternalPagination({ pageIndex: 0, pageSize: newPageSize });
+			}
+		},
+		[onPaginationChange],
+	);
 
 	// Track if we're on desktop (lg breakpoint = 1024px) for sticky columns
 	const [isDesktop, setIsDesktop] = useState(false);
@@ -434,14 +462,12 @@ export function DataTable<TData, TValue>({
 
 			{/* Pagination Controls */}
 			{totalRows > 0 && (
-				<div className="flex items-center justify-between text-sm">
+				<div className="flex flex-wrap items-center justify-between gap-3 text-sm">
 					<div className="flex items-center gap-2 text-muted-foreground">
-						<span>Rates per page</span>
+						<span className="hidden sm:inline">Rates per page</span>
 						<Select
 							value={String(pageSize)}
-							onValueChange={(value) => {
-								table.setPageSize(Number(value));
-							}}
+							onValueChange={(value) => handlePageSizeChange(Number(value))}
 						>
 							<SelectTrigger className="h-8 w-[70px]">
 								<SelectValue />
@@ -458,13 +484,14 @@ export function DataTable<TData, TValue>({
 
 					{/* Page Number Buttons */}
 					{pageCount > 1 && (
-						<div className="flex items-center gap-1">
+						<div className="order-last sm:order-none flex basis-full sm:basis-auto items-center justify-center gap-1">
 							<Button
+								type="button"
 								variant="ghost"
 								size="icon"
-								className="h-8 w-8"
-								onClick={() => table.previousPage()}
-								disabled={!table.getCanPreviousPage()}
+								className="h-9 w-9 sm:h-8 sm:w-8"
+								onClick={() => handlePageChange(currentPage - 1)}
+								disabled={currentPage === 0}
 							>
 								<ChevronLeft className="h-4 w-4" />
 							</Button>
@@ -478,24 +505,26 @@ export function DataTable<TData, TValue>({
 									</span>
 								) : (
 									<Button
+										type="button"
 										key={page}
 										variant="ghost"
 										size="sm"
-										className={`h-8 w-8 p-0 ${
+										className={`h-9 w-9 sm:h-8 sm:w-8 p-0 ${
 											currentPage === page ? "bg-muted font-medium" : ""
 										}`}
-										onClick={() => table.setPageIndex(page)}
+										onClick={() => handlePageChange(page)}
 									>
 										{page + 1}
 									</Button>
 								),
 							)}
 							<Button
+								type="button"
 								variant="ghost"
 								size="icon"
-								className="h-8 w-8"
-								onClick={() => table.nextPage()}
-								disabled={!table.getCanNextPage()}
+								className="h-9 w-9 sm:h-8 sm:w-8"
+								onClick={() => handlePageChange(currentPage + 1)}
+								disabled={currentPage >= pageCount - 1}
 							>
 								<ChevronRight className="h-4 w-4" />
 							</Button>
