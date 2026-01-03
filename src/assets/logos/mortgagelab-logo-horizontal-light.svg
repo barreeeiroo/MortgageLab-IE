@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 80">
+  <!-- Rounded house icon - centered vertically -->
+  <g transform="translate(4, 4)">
+    <!-- House body with rounded corners (width=48, height=36) -->
+    <rect x="8" y="32" width="48" height="36" rx="6" fill="#0d9488"/>
+    <!-- Rounded roof -->
+    <path d="M4 36 C4 34 6 32 8 30 L28 14 C30 12 34 12 36 14 L56 30 C58 32 60 34 60 36 C60 38 58 40 56 40 L8 40 C6 40 4 38 4 36Z" fill="#0d9488"/>
+
+    <!-- Rising bar chart - matching favicon proportions -->
+    <!-- House bottom=68, bottom margin=6 (15%), bars end at y=62 -->
+    <!-- Bar widths=8 (17%), gaps=5 (10%), total=34, side margin=7 -->
+    <rect x="15" y="52" width="8" height="10" rx="3" fill="#ffffff"/>
+    <rect x="28" y="45" width="8" height="17" rx="3" fill="#ffffff"/>
+    <rect x="41" y="37" width="8" height="25" rx="3" fill="#ffffff"/>
+  </g>
+
+  <!-- Text: vertically centered -->
+  <text x="80" y="50" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="600" dominant-baseline="middle">
+    <tspan fill="#0f172a">Mortgage</tspan><tspan fill="#0d9488">Lab</tspan>
+  </text>
+</svg>

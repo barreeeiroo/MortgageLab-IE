@@ -1,8 +1,7 @@
 import { Menu } from "lucide-react";
 import { useState } from "react";
-import { NAV_ITEMS, SITE } from "../lib/constants";
+import { NAV_ITEMS } from "../lib/constants";
 import { getPath } from "../lib/utils";
-import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import {
 	Sheet,
@@ -13,7 +12,12 @@ import {
 	SheetTrigger,
 } from "./ui/sheet";
 
-export function MobileNav() {
+interface MobileNavProps {
+	logoLight: string;
+	logoDark: string;
+}
+
+export function MobileNav({ logoLight, logoDark }: MobileNavProps) {
 	const [open, setOpen] = useState(false);
 
 	return (
@@ -30,7 +34,18 @@ export function MobileNav() {
 			</SheetTrigger>
 			<SheetContent side="left" className="w-[280px]">
 				<SheetHeader>
-					<SheetTitle className="text-primary">{SITE.shortName}</SheetTitle>
+					<SheetTitle>
+						<img
+							src={logoLight}
+							alt="MortgageLab"
+							className="h-8 w-auto dark:hidden"
+						/>
+						<img
+							src={logoDark}
+							alt="MortgageLab"
+							className="h-8 w-auto hidden dark:block"
+						/>
+					</SheetTitle>
 				</SheetHeader>
 				<nav className="flex flex-col gap-1 px-2">
 					{NAV_ITEMS.map((item) =>
@@ -80,9 +95,6 @@ export function MobileNav() {
 						</a>
 					</SheetClose>
 				</nav>
-				<div className="mt-auto p-4 border-t border-border flex items-center justify-end">
-					<ThemeToggle />
-				</div>
 			</SheetContent>
 		</Sheet>
 	);

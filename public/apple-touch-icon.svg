@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- Background for iOS -->
+  <rect width="180" height="180" rx="40" fill="#0d9488"/>
+
+  <!-- Rounded house icon (white) - centered -->
+  <g transform="translate(30, 30)">
+    <!-- House body with rounded corners (width=100, height=60) -->
+    <rect x="10" y="52" width="100" height="60" rx="12" fill="#ffffff"/>
+    <!-- Rounded roof -->
+    <path d="M0 58 C0 54 4 50 8 46 L54 8 C58 4 62 4 66 8 L112 46 C116 50 120 54 120 58 C120 62 116 66 112 66 L8 66 C4 66 0 62 0 58Z" fill="#ffffff"/>
+
+    <!-- Rising bar chart - matching favicon proportions -->
+    <!-- House bottom=112, bottom margin=9 (15%), bars end at y=103 -->
+    <!-- Bar widths=18 (18%), gaps=10 (10%), total=74, side margin=13 -->
+    <rect x="23" y="87" width="18" height="16" rx="6" fill="#0d9488"/>
+    <rect x="51" y="75" width="18" height="28" rx="6" fill="#0d9488"/>
+    <rect x="79" y="61" width="18" height="42" rx="6" fill="#0d9488"/>
+  </g>
+</svg>

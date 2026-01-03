@@ -1,18 +1,30 @@
 ---
+import { Image } from "astro:assets";
 import { SITE } from "../lib/constants";
 import { getPath } from "../lib/utils";
 import { DesktopNav } from "./DesktopNav";
 import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "./ThemeToggle";
+import logoLight from "../assets/logos/mortgagelab-logo-horizontal-light.svg";
+import logoDark from "../assets/logos/mortgagelab-logo-horizontal-dark.svg";
 ---
 
 <header class="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 	<div class="container mx-auto px-4">
 		<nav class="flex h-14 items-center justify-between">
 			<div class="flex items-center gap-2 md:gap-8">
-				<MobileNav client:load />
-				<a href={getPath("/")} class="font-semibold text-lg text-primary hover:text-primary/80 transition-colors">
-					{SITE.shortName}
+				<MobileNav client:load logoLight={logoLight.src} logoDark={logoDark.src} />
+				<a href={getPath("/")} class="shrink-0 hover:opacity-80 transition-opacity">
+					<Image
+						src={logoLight}
+						alt={SITE.shortName}
+						class="h-8 w-auto min-w-max dark:hidden"
+					/>
+					<Image
+						src={logoDark}
+						alt={SITE.shortName}
+						class="h-8 w-auto min-w-max hidden dark:block"
+					/>
 				</a>
 				<DesktopNav client:load />
 			</div>
@@ -29,9 +41,7 @@ import { ThemeToggle } from "./ThemeToggle";
 				>
 					Resources
 				</a>
-				<div class="hidden md:block">
-					<ThemeToggle client:load />
-				</div>
+				<ThemeToggle client:load />
 			</div>
 		</nav>
 	</div>

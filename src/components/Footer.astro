@@ -27,6 +27,13 @@ const currentYear = new Date().getFullYear();
 				</p>
 				<div class="flex items-center gap-4">
 					<a
+						href={`mailto:${AUTHOR.email}`}
+						class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+					>
+						<Mail className="h-4 w-4" />
+						<span>Contact</span>
+					</a>
+					<a
 						href={AUTHOR.github}
 						target="_blank"
 						rel="noopener noreferrer"
@@ -34,13 +41,6 @@ const currentYear = new Date().getFullYear();
 					>
 						<Github className="h-4 w-4" />
 						<span>GitHub</span>
-					</a>
-					<a
-						href={`mailto:${AUTHOR.email}`}
-						class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
-					>
-						<Mail className="h-4 w-4" />
-						<span>Contact</span>
 					</a>
 				</div>
 			</div>
