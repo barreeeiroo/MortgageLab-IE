@@ -3,7 +3,7 @@ import { CirclePlus, Clock, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { getNewRateUrl } from "@/lib/constants";
 import type { Lender, RatesMetadata } from "@/lib/schemas";
-import { LenderLogo } from "../LenderLogo";
+import { LenderLogo } from "../lenders";
 import { Button } from "../ui/button";
 import {
 	Dialog,

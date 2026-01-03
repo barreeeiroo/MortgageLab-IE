@@ -42,7 +42,7 @@ import { type CustomRate, isCustomRate } from "@/lib/stores";
 import { $compareState, saveCompareState } from "@/lib/stores/compare";
 import { $storedCustomRates } from "@/lib/stores/custom-rates";
 import { cn, formatCurrency, parseCurrency } from "@/lib/utils";
-import { LenderLogo } from "../LenderLogo";
+import { LenderLogo, LenderOption } from "../lenders";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import {
@@ -143,7 +143,7 @@ function SortIcon({ isSorted }: { isSorted: false | "asc" | "desc" }) {
 interface ColumnHeaderProps<TData> {
 	column: Column<TData>;
 	title: string;
-	filterOptions?: { label: string; value: string | number }[];
+	filterOptions?: { label: React.ReactNode; value: string | number }[];
 	align?: "left" | "center" | "right";
 }
 
@@ -295,7 +295,7 @@ function createColumns(
 		value: term,
 	}));
 	const lenderOptions = lenders.map((lender) => ({
-		label: lender.name,
+		label: <LenderOption lenderId={lender.id} name={lender.name} />,
 		value: lender.id,
 	}));
 	const perkOptions = perks.map((perk) => ({

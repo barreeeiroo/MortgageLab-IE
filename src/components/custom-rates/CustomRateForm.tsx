@@ -1,6 +1,6 @@
 import { CircleHelp, Pencil } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LenderLogo } from "@/components/LenderLogo";
+import { LenderOption } from "@/components/lenders";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -373,10 +373,7 @@ export function CustomRateForm({
 							<SelectContent>
 								{lenders.map((lender) => (
 									<SelectItem key={lender.id} value={lender.id}>
-										<div className="flex items-center gap-2">
-											<LenderLogo lenderId={lender.id} size={20} />
-											<span>{lender.name}</span>
-										</div>
+										<LenderOption lenderId={lender.id} name={lender.name} />
 									</SelectItem>
 								))}
 								{customLenders.length > 0 && (
@@ -384,14 +381,11 @@ export function CustomRateForm({
 										<SelectSeparator />
 										{customLenders.map((customLender) => (
 											<SelectItem key={customLender.id} value={customLender.id}>
-												<div className="flex items-center gap-2">
-													<LenderLogo
-														lenderId={customLender.id}
-														size={20}
-														isCustom
-													/>
-													<span>{customLender.name}</span>
-												</div>
+												<LenderOption
+													lenderId={customLender.id}
+													name={customLender.name}
+													isCustom
+												/>
 											</SelectItem>
 										))}
 									</>

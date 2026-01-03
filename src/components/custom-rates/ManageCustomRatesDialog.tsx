@@ -1,6 +1,6 @@
 import { HandCoins, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { LenderLogo } from "@/components/LenderLogo";
+import { LenderLogo } from "@/components/lenders";
 import {
 	AlertDialog,
 	AlertDialogAction,

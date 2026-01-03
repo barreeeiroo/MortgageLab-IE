@@ -9,6 +9,7 @@ import {
 	formatCurrency,
 	formatCurrencyInput,
 } from "@/lib/utils";
+import { LenderOption } from "../lenders";
 import { BerSelector } from "../selectors/BerSelector";
 import { BuyerTypeSelector } from "../selectors/BuyerTypeSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
@@ -400,7 +401,10 @@ export function RatesInput({
 											<SelectContent>
 												{lenders.map((lender) => (
 													<SelectItem key={lender.id} value={lender.id}>
-														{lender.name}
+														<LenderOption
+															lenderId={lender.id}
+															name={lender.name}
+														/>
 													</SelectItem>
 												))}
 												<SelectItem value="other">Other</SelectItem>

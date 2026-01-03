@@ -16,7 +16,7 @@ import {
 	resolvePerks,
 } from "@/lib/data";
 import { cn, formatCurrency } from "@/lib/utils";
-import { LenderLogo } from "../LenderLogo";
+import { LenderLogo } from "../lenders";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
@@ -282,7 +282,7 @@ export function CompareRatesModal({
 							<TableRow>
 								<TableHead
 									className={cn(
-										"w-[140px]",
+										"w-[140px] py-1",
 										isDesktop && "sticky left-0 z-20 bg-background",
 									)}
 								>
@@ -298,7 +298,7 @@ export function CompareRatesModal({
 									return (
 										<TableHead
 											key={rate.id}
-											className="text-center min-w-[140px] px-3"
+											className="text-center min-w-[140px] px-3 py-1"
 										>
 											<div className="flex items-center gap-2 justify-center">
 												<LenderLogo
@@ -306,11 +306,11 @@ export function CompareRatesModal({
 													size={28}
 													isCustom={rate.isCustom}
 												/>
-												<div className="text-xs text-left">
-													<p className="font-medium text-foreground">
+												<div className="text-xs text-left max-w-[160px]">
+													<p className="font-medium text-foreground whitespace-nowrap">
 														{displayName}
 													</p>
-													<p className="text-muted-foreground font-normal truncate max-w-[100px]">
+													<p className="text-muted-foreground font-normal whitespace-normal">
 														{rate.name}
 													</p>
 												</div>

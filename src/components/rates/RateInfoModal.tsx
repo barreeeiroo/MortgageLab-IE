@@ -34,7 +34,7 @@ import {
 import type { AprcConfig } from "@/lib/mortgage/aprc";
 import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import { formatCurrency } from "@/lib/utils";
-import { LenderLogo } from "../LenderLogo";
+import { LenderLogo } from "../lenders";
 import { Button } from "../ui/button";
 import {
 	Dialog,

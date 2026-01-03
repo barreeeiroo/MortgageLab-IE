@@ -1,6 +1,6 @@
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { useCallback } from "react";
-import { LenderLogo } from "@/components/LenderLogo";
+import { LenderLogo } from "@/components/lenders";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
