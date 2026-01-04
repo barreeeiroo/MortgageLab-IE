@@ -37,23 +37,23 @@ const chartConfig = {
 	},
 	cumulativeInterest: {
 		label: "Total Interest Paid",
-		color: "var(--chart-2)",
+		color: "var(--chart-interest)",
 	},
 	cumulativePrincipal: {
 		label: "Total Principal Paid",
-		color: "var(--chart-3)",
+		color: "var(--chart-principal)",
 	},
 	totalPaid: {
 		label: "Total Paid",
-		color: "var(--chart-4)",
+		color: "var(--chart-total)",
 	},
 	monthlyPrincipal: {
 		label: "Monthly Principal",
-		color: "var(--chart-3)",
+		color: "var(--chart-principal)",
 	},
 	monthlyInterest: {
 		label: "Monthly Interest",
-		color: "var(--chart-2)",
+		color: "var(--chart-interest)",
 	},
 	monthlyPayment: {
 		label: "Monthly Payment",
@@ -64,11 +64,11 @@ const chartConfig = {
 // Colors for toggle buttons (outside ChartContainer scope)
 const COLORS = {
 	principalRemaining: "var(--primary)",
-	cumulativeInterest: "var(--chart-2)",
-	cumulativePrincipal: "var(--chart-3)",
-	totalPaid: "var(--chart-4)",
-	monthlyPrincipal: "var(--chart-3)",
-	monthlyInterest: "var(--chart-2)",
+	cumulativeInterest: "var(--chart-interest)",
+	cumulativePrincipal: "var(--chart-principal)",
+	totalPaid: "var(--chart-total)",
+	monthlyPrincipal: "var(--chart-principal)",
+	monthlyInterest: "var(--chart-interest)",
 	monthlyPayment: "var(--chart-4)",
 } as const;
 
