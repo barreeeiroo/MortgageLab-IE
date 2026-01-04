@@ -4,6 +4,7 @@ import { RatesInputIsland } from "@/components/rates/RatesInputIsland";
 import { CustomRatesIsland } from "@/components/custom-rates";
 import { RatesToolbarIsland } from "@/components/rates/RatesToolbarIsland";
 import { RatesTableIsland } from "@/components/rates/RatesTableIsland";
+import { SimulateRedirectAlert } from "@/components/rates/SimulateRedirectAlert";
 ---
 
 <Layout
@@ -11,6 +12,7 @@ import { RatesTableIsland } from "@/components/rates/RatesTableIsland";
 	description="Compare current mortgage rates from all major Irish lenders. Filter by LTV, fixed rate period, and property type. Updated regularly with the latest offers."
 >
 	<div class="container mx-auto px-4 py-8">
+		<SimulateRedirectAlert client:load />
 		<div class="mb-6">
 			<h1 class="text-2xl font-bold tracking-tight mb-1">Mortgage Rates</h1>
 			<p class="text-muted-foreground text-sm">

@@ -39,7 +39,9 @@ import {
 	addCustomRate,
 	type StoredCustomRate,
 } from "@/lib/stores/custom-rates";
+import { initializeFromRate } from "@/lib/stores/simulate";
 import { formatCurrency } from "@/lib/utils";
+import { getPath } from "@/lib/utils/path";
 import { LenderLogo } from "../lenders";
 import { Button } from "../ui/button";
 import {
@@ -432,6 +434,44 @@ export function RateInfoModal({
 		};
 		addCustomRate(customRate);
 		setCopiedRateId(customRate.id);
+	};
+
+	// Handler for navigating to simulation
+	const handleSimulate = () => {
+		if (!rate || !lender) return;
+
+		// Convert euros to cents for simulation state
+		const mortgageAmountCents = Math.round(mortgageAmount * 100);
+		const propertyValueCents = Math.round((mortgageAmount / ltv) * 100 * 100);
+
+		// Generate label for the rate period
+		const rateLabel = `${
+			(rate as { customLenderName?: string }).customLenderName ?? lender.name
+		} ${rate.type === "fixed" && rate.fixedTerm ? `${rate.fixedTerm}-Year Fixed` : "Variable"} @ ${rate.rate.toFixed(2)}%`;
+
+		// Prepare follow-on rate if available (for fixed rates)
+		const followOn = calculations?.followOnRate
+			? {
+					lenderId: calculations.followOnRate.lenderId,
+					rateId: calculations.followOnRate.id,
+					isCustom: false,
+					label: `${lender.name} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
+				}
+			: undefined;
+
+		initializeFromRate({
+			mortgageAmount: mortgageAmountCents,
+			mortgageTerm: selectedTerm,
+			propertyValue: propertyValueCents,
+			lenderId: rate.lenderId,
+			rateId: rate.id,
+			isCustom: isCustom,
+			fixedTerm: rate.fixedTerm,
+			label: rateLabel,
+			followOn,
+		});
+
+		window.location.href = getPath("/simulate");
 	};
 
 	return (
@@ -864,7 +904,7 @@ export function RateInfoModal({
 								</Button>
 							))}
 						{mode === "first-mortgage" && (
-							<Button className="gap-1.5">
+							<Button className="gap-1.5" onClick={handleSimulate}>
 								<Play className="h-4 w-4" />
 								Simulate
 							</Button>

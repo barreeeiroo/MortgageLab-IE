@@ -24,3 +24,16 @@ export function parseCurrency(value: string): number {
 	const parsed = Number.parseFloat(value.replace(/[^0-9.]/g, ""));
 	return Number.isNaN(parsed) ? 0 : parsed;
 }
+
+/**
+ * Format currency in compact form (e.g., €100k, €1.5M)
+ */
+export function formatCurrencyShort(value: number): string {
+	if (value >= 1000000) {
+		return `€${(value / 1000000).toFixed(1)}M`;
+	}
+	if (value >= 1000) {
+		return `€${(value / 1000).toFixed(0)}k`;
+	}
+	return `€${value.toFixed(0)}`;
+}

@@ -14,7 +14,7 @@ export const NAV_ITEMS = [
 		],
 	},
 	{ label: "Rates", href: "/rates" },
-	{ label: "Simulator", href: "/simulator" },
+	{ label: "Simulator", href: "/simulate" },
 ] as const;
 
 export const AUTHOR = {

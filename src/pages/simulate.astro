@@ -1,0 +1,39 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { SimulateHeaderIsland } from "@/components/simulate";
+import { SimulateEmptyState } from "@/components/simulate";
+import { SimulateMilestonesIsland } from "@/components/simulate";
+import { SimulateRatesIsland } from "@/components/simulate";
+import { SimulateOverpaymentsIsland } from "@/components/simulate";
+import { SimulateChartIsland } from "@/components/simulate";
+import { SimulateTableIsland } from "@/components/simulate";
+---
+
+<Layout
+	title="Simulate"
+	description="Simulate your mortgage with different rates, overpayments, and scenarios. See how rate changes and extra payments affect your total interest and term."
+>
+	<div class="container mx-auto px-4 py-8">
+		<!-- Header -->
+		<SimulateHeaderIsland client:load />
+
+		<!-- Empty state (manages its own margin, renders nothing when has data) -->
+		<SimulateEmptyState client:load />
+
+		<!-- Main content with sidebar -->
+		<div class="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+			<!-- Main content area -->
+			<div class="flex flex-col gap-6 min-w-0">
+				<SimulateChartIsland client:idle />
+				<SimulateTableIsland client:idle />
+			</div>
+
+			<!-- Right sidebar -->
+			<aside class="flex flex-col gap-4">
+				<SimulateRatesIsland client:load />
+				<SimulateOverpaymentsIsland client:load />
+				<SimulateMilestonesIsland client:load />
+			</aside>
+		</div>
+	</div>
+</Layout>

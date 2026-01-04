@@ -71,6 +71,46 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
 			"The Security Release Fee (also called Deed Release Fee) is charged when your mortgage is fully paid off to release the lender's security interest from your property. This fee covers the administrative and legal costs of removing the mortgage charge from the Land Registry (Tailte Éireann). In Ireland, this fee typically ranges from €40 to €175 depending on the lender.",
 		relatedTerms: ["aprc", "valuationFee"],
 	},
+	{
+		id: "openingBalance",
+		term: "Opening Balance",
+		shortDescription: "Balance at the start of the period",
+		fullDescription:
+			"The Opening Balance is the outstanding mortgage amount at the beginning of a period (month or year), before any payments are made. At the start of your mortgage, this equals your total loan amount. Each subsequent period, it equals the previous period's closing balance.",
+		relatedTerms: ["closingBalance", "principal"],
+	},
+	{
+		id: "closingBalance",
+		term: "Closing Balance",
+		shortDescription: "Balance at the end of the period",
+		fullDescription:
+			"The Closing Balance is the remaining mortgage amount at the end of a period, after all regular payments and overpayments have been applied. This becomes the opening balance for the next period. When this reaches zero, your mortgage is fully paid off.",
+		relatedTerms: ["openingBalance", "principal", "overpayment"],
+	},
+	{
+		id: "principal",
+		term: "Principal",
+		shortDescription: "The amount that reduces your loan balance",
+		fullDescription:
+			"Principal is the original amount of money borrowed, separate from interest. In the amortization table, this column shows the portion of each payment that goes toward reducing your outstanding loan balance. Early in your mortgage, most of your payment covers interest, but over time the principal portion increases as your balance decreases.",
+		relatedTerms: ["interest", "overpayment"],
+	},
+	{
+		id: "overpayment",
+		term: "Overpayment",
+		shortDescription: "Extra payments above your regular amount",
+		fullDescription:
+			"An overpayment is any amount you pay above your required monthly payment. Overpayments go directly toward reducing your principal balance, which can significantly reduce the total interest you pay and shorten your mortgage term. During fixed-rate periods, lenders typically limit penalty-free overpayments to a percentage of your balance or payment.",
+		relatedTerms: ["principal", "closingBalance"],
+	},
+	{
+		id: "interest",
+		term: "Interest",
+		shortDescription: "The cost of borrowing",
+		fullDescription:
+			"Interest is the cost charged by the lender for borrowing money, calculated as a percentage of your outstanding balance. Each month, interest is calculated on your remaining balance and forms part of your monthly payment. The lower your balance, the less interest you pay, which is why overpayments can save significant money over time.",
+		relatedTerms: ["apr", "principal"],
+	},
 ];
 
 export const GLOSSARY_TERMS_MAP = Object.fromEntries(

@@ -1,0 +1,435 @@
+import {
+	CheckCircle2,
+	Flag,
+	Pencil,
+	Percent,
+	Trash2,
+	TrendingDown,
+} from "lucide-react";
+import { LenderLogo } from "@/components/lenders";
+import { Button } from "@/components/ui/button";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
+import type {
+	Milestone,
+	MilestoneType,
+	OverpaymentConfig,
+	ResolvedRatePeriod,
+	SimulationWarning,
+} from "@/lib/schemas/simulate";
+import { formatCurrency } from "@/lib/utils";
+
+// Helper to format month/year
+function formatPeriod(month: number): string {
+	const years = Math.floor((month - 1) / 12);
+	const months = ((month - 1) % 12) + 1;
+	if (years === 0) return `Month ${months}`;
+	if (months === 1) return `Year ${years + 1}`;
+	return `Year ${years + 1}, Month ${months}`;
+}
+
+// Helper to format duration
+function formatDuration(months: number): string {
+	if (months === 0) return "Until end of mortgage";
+	const years = Math.floor(months / 12);
+	const remainingMonths = months % 12;
+	if (years === 0)
+		return `${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
+	if (remainingMonths === 0) return `${years} year${years !== 1 ? "s" : ""}`;
+	return `${years}y ${remainingMonths}m`;
+}
+
+// Milestone icon mapping
+const MILESTONE_ICONS: Record<MilestoneType, typeof Flag> = {
+	mortgage_start: Flag,
+	principal_25_percent: Percent,
+	principal_50_percent: Percent,
+	principal_75_percent: Percent,
+	ltv_80_percent: Percent,
+	mortgage_complete: CheckCircle2,
+};
+
+// Milestone color classes
+const MILESTONE_COLORS: Record<MilestoneType, string> = {
+	mortgage_start:
+		"bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+	principal_25_percent:
+		"bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
+	principal_50_percent:
+		"bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+	principal_75_percent:
+		"bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
+	ltv_80_percent:
+		"bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
+	mortgage_complete:
+		"bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200",
+};
+
+// Rate Period Event Component
+interface RatePeriodEventProps {
+	period: ResolvedRatePeriod;
+	warnings: SimulationWarning[];
+	overpaymentPolicy?: OverpaymentPolicy;
+	onEdit: () => void;
+	onDelete?: () => void;
+}
+
+export function SimulateRatePeriodEvent({
+	period,
+	warnings,
+	overpaymentPolicy,
+	onEdit,
+	onDelete,
+}: RatePeriodEventProps) {
+	const hasWarnings = warnings.length > 0;
+	const hasError = warnings.some((w) => w.severity === "error");
+
+	return (
+		<Popover>
+			<PopoverTrigger asChild>
+				<button
+					type="button"
+					className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors hover:bg-muted/50 ${
+						hasError
+							? "border-destructive/50"
+							: hasWarnings
+								? "border-yellow-500/50"
+								: "border-border"
+					}`}
+				>
+					<LenderLogo
+						lenderId={period.lenderId}
+						size={32}
+						isCustom={period.isCustom}
+					/>
+					<div className="flex-1 min-w-0">
+						<div className="flex items-center gap-2">
+							<span className="font-medium text-sm truncate">
+								{period.rateName}
+							</span>
+							<span
+								className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
+									period.type === "fixed"
+										? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+										: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+								}`}
+							>
+								{period.type === "fixed" ? "Fixed" : "Var"}
+							</span>
+						</div>
+						<div className="flex items-center gap-2 text-xs text-muted-foreground">
+							<span>{period.lenderName}</span>
+							<span>•</span>
+							<span className="font-medium text-foreground">
+								{period.rate.toFixed(2)}%
+							</span>
+							<span>•</span>
+							<span>{formatDuration(period.durationMonths)}</span>
+						</div>
+					</div>
+				</button>
+			</PopoverTrigger>
+			<PopoverContent className="w-72" align="start">
+				<div className="space-y-3">
+					{/* Header */}
+					<div className="flex items-start gap-3">
+						<LenderLogo
+							lenderId={period.lenderId}
+							size={40}
+							isCustom={period.isCustom}
+						/>
+						<div className="flex-1">
+							<h4 className="font-medium text-sm">{period.rateName}</h4>
+							<p className="text-xs text-muted-foreground">
+								{period.lenderName}
+							</p>
+						</div>
+					</div>
+
+					{/* Details */}
+					<div className="grid grid-cols-2 gap-2 text-sm">
+						<div>
+							<span className="text-muted-foreground text-xs">Rate</span>
+							<p className="font-medium">{period.rate.toFixed(2)}%</p>
+						</div>
+						<div>
+							<span className="text-muted-foreground text-xs">Type</span>
+							<p className="font-medium">
+								{period.type === "fixed"
+									? `${period.fixedTerm}-Year Fixed`
+									: "Variable"}
+							</p>
+						</div>
+						<div>
+							<span className="text-muted-foreground text-xs">Starts</span>
+							<p className="font-medium">{formatPeriod(period.startMonth)}</p>
+						</div>
+						<div>
+							<span className="text-muted-foreground text-xs">Duration</span>
+							<p className="font-medium">
+								{formatDuration(period.durationMonths)}
+							</p>
+						</div>
+					</div>
+
+					{/* Overpayment Policy */}
+					{period.type === "fixed" && overpaymentPolicy && (
+						<div className="pt-2 border-t">
+							<span className="text-muted-foreground text-xs">
+								Max Overpayment (no fee)
+							</span>
+							<p className="text-sm font-medium">{overpaymentPolicy.label}</p>
+						</div>
+					)}
+
+					{/* Warnings */}
+					{hasWarnings && (
+						<div className="pt-2 border-t space-y-1">
+							{warnings.map((warning) => (
+								<p
+									key={`${warning.type}-${warning.month}`}
+									className={`text-xs ${
+										warning.severity === "error"
+											? "text-destructive"
+											: "text-yellow-600 dark:text-yellow-500"
+									}`}
+								>
+									{warning.message}
+								</p>
+							))}
+						</div>
+					)}
+
+					{/* Actions */}
+					<div className="flex gap-2 pt-2 border-t">
+						<Button
+							variant="outline"
+							size="sm"
+							className="flex-1"
+							onClick={onEdit}
+						>
+							<Pencil className="h-3.5 w-3.5 mr-1.5" />
+							Edit
+						</Button>
+						{onDelete && (
+							<Button
+								variant="outline"
+								size="sm"
+								className="text-destructive hover:text-destructive hover:bg-destructive/10"
+								onClick={onDelete}
+							>
+								<Trash2 className="h-3.5 w-3.5" />
+							</Button>
+						)}
+					</div>
+				</div>
+			</PopoverContent>
+		</Popover>
+	);
+}
+
+// Overpayment Event Component
+interface OverpaymentEventProps {
+	config: OverpaymentConfig;
+	warnings: SimulationWarning[];
+	onEdit: () => void;
+	onDelete: () => void;
+}
+
+export function SimulateOverpaymentEvent({
+	config,
+	warnings,
+	onEdit,
+	onDelete,
+}: OverpaymentEventProps) {
+	const hasWarnings = warnings.length > 0;
+	const frequency = config.frequency ?? "monthly";
+	const frequencyLabel =
+		config.type === "one_time"
+			? "Once"
+			: frequency === "yearly"
+				? "Yearly"
+				: "Monthly";
+	const frequencySuffix =
+		config.type === "recurring" ? (frequency === "yearly" ? "/yr" : "/mo") : "";
+
+	return (
+		<Popover>
+			<PopoverTrigger asChild>
+				<button
+					type="button"
+					className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors hover:bg-muted/50 ${
+						hasWarnings ? "border-yellow-500/50" : "border-border"
+					}`}
+				>
+					<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+						<TrendingDown className="h-4 w-4 text-green-600 dark:text-green-400" />
+					</div>
+					<div className="flex-1 min-w-0">
+						<div className="flex items-center gap-2">
+							<span className="font-medium text-sm">
+								{formatCurrency(config.amount / 100)}
+								{frequencySuffix}
+							</span>
+							<span
+								className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
+									config.type === "one_time"
+										? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+										: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+								}`}
+							>
+								{frequencyLabel}
+							</span>
+						</div>
+						<div className="flex items-center gap-2 text-xs text-muted-foreground">
+							<span>
+								{config.type === "one_time"
+									? formatPeriod(config.startMonth)
+									: `${formatPeriod(config.startMonth)} → ${config.endMonth ? formatPeriod(config.endMonth) : "End"}`}
+							</span>
+							{config.label && (
+								<>
+									<span>•</span>
+									<span className="truncate">{config.label}</span>
+								</>
+							)}
+						</div>
+					</div>
+				</button>
+			</PopoverTrigger>
+			<PopoverContent className="w-64" align="start">
+				<div className="space-y-3">
+					{/* Header */}
+					<div className="flex items-center gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+							<TrendingDown className="h-5 w-5 text-green-600 dark:text-green-400" />
+						</div>
+						<div>
+							<h4 className="font-medium text-sm">
+								{formatCurrency(config.amount / 100)}
+								{config.type === "recurring" &&
+									(frequency === "yearly" ? " /year" : " /month")}
+							</h4>
+							<p className="text-xs text-muted-foreground">
+								{config.type === "one_time"
+									? "One-time payment"
+									: `Recurring ${frequencyLabel.toLowerCase()}`}
+							</p>
+						</div>
+					</div>
+
+					{/* Details */}
+					<div className="grid grid-cols-2 gap-2 text-sm">
+						<div>
+							<span className="text-muted-foreground text-xs">
+								{config.type === "one_time" ? "When" : "Starts"}
+							</span>
+							<p className="font-medium">{formatPeriod(config.startMonth)}</p>
+						</div>
+						{config.type === "recurring" && (
+							<div>
+								<span className="text-muted-foreground text-xs">Ends</span>
+								<p className="font-medium">
+									{config.endMonth
+										? formatPeriod(config.endMonth)
+										: "End of mortgage"}
+								</p>
+							</div>
+						)}
+						<div className={config.type === "one_time" ? "" : "col-span-2"}>
+							<span className="text-muted-foreground text-xs">Effect</span>
+							<p className="font-medium">
+								{config.effect === "reduce_term"
+									? "Reduce term"
+									: "Reduce payment"}
+							</p>
+						</div>
+					</div>
+
+					{/* Label */}
+					{config.label && (
+						<div className="pt-2 border-t">
+							<span className="text-muted-foreground text-xs">Note</span>
+							<p className="text-sm">{config.label}</p>
+						</div>
+					)}
+
+					{/* Warnings */}
+					{hasWarnings && (
+						<div className="pt-2 border-t">
+							<p className="text-xs text-yellow-600 dark:text-yellow-500">
+								Some overpayments may exceed the free allowance
+							</p>
+						</div>
+					)}
+
+					{/* Actions */}
+					<div className="flex gap-2 pt-2 border-t">
+						<Button
+							variant="outline"
+							size="sm"
+							className="flex-1"
+							onClick={onEdit}
+						>
+							<Pencil className="h-3.5 w-3.5 mr-1.5" />
+							Edit
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							className="text-destructive hover:text-destructive hover:bg-destructive/10"
+							onClick={onDelete}
+						>
+							<Trash2 className="h-3.5 w-3.5" />
+						</Button>
+					</div>
+				</div>
+			</PopoverContent>
+		</Popover>
+	);
+}
+
+// Milestone Event Component
+interface MilestoneEventProps {
+	milestone: Milestone;
+}
+
+export function SimulateMilestoneEvent({ milestone }: MilestoneEventProps) {
+	const Icon = MILESTONE_ICONS[milestone.type];
+	const colorClass = MILESTONE_COLORS[milestone.type];
+
+	const formattedDate = milestone.date
+		? new Date(milestone.date).toLocaleDateString("en-IE", {
+				month: "short",
+				year: "numeric",
+			})
+		: formatPeriod(milestone.month);
+
+	return (
+		<div className="flex items-center gap-3 p-2 rounded-lg border border-dashed">
+			<div
+				className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${colorClass}`}
+			>
+				<Icon className="h-4 w-4" />
+			</div>
+			<div className="flex-1 min-w-0">
+				<div className="font-medium text-sm">{milestone.label}</div>
+				<div className="flex items-center gap-2 text-xs text-muted-foreground">
+					<span>{formattedDate}</span>
+					{milestone.value !== undefined && milestone.value > 0 && (
+						<>
+							<span>•</span>
+							<span className="font-medium text-foreground">
+								{formatCurrency(milestone.value / 100)}
+							</span>
+						</>
+					)}
+				</div>
+			</div>
+		</div>
+	);
+}

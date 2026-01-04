@@ -1,0 +1,209 @@
+import { useStore } from "@nanostores/react";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { $customRates } from "@/lib/stores/custom-rates";
+import { $lenders } from "@/lib/stores/lenders";
+import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
+import { $rates } from "@/lib/stores/rates";
+import {
+	$hasRequiredData,
+	$simulationState,
+	$totalMonths,
+	addRatePeriod,
+	removeRatePeriod,
+	updateRatePeriod,
+} from "@/lib/stores/simulate";
+import {
+	$resolvedRatePeriods,
+	$simulationWarnings,
+} from "@/lib/stores/simulate/simulate-calculations";
+import { SimulateAddRatePeriodDialog } from "./SimulateAddRatePeriodDialog";
+import { SimulateRatePeriodEvent } from "./SimulateEventCard";
+
+export function SimulateRatesIsland() {
+	const simulationState = useStore($simulationState);
+	const hasRequiredData = useStore($hasRequiredData);
+	const totalMonths = useStore($totalMonths);
+	const resolvedRatePeriods = useStore($resolvedRatePeriods);
+	const warnings = useStore($simulationWarnings);
+	const rates = useStore($rates);
+	const customRates = useStore($customRates);
+	const lenders = useStore($lenders);
+	const overpaymentPolicies = useStore($overpaymentPolicies);
+
+	const [showAddRatePeriod, setShowAddRatePeriod] = useState(false);
+	const [editingRatePeriod, setEditingRatePeriod] = useState<
+		(typeof simulationState.ratePeriods)[0] | null
+	>(null);
+	const [deletingRatePeriod, setDeletingRatePeriod] = useState<string | null>(
+		null,
+	);
+
+	if (!hasRequiredData) {
+		return null;
+	}
+
+	const { ratePeriods } = simulationState;
+
+	// Sort rate periods by start month
+	const sortedRatePeriods = [...resolvedRatePeriods].sort(
+		(a, b) => a.startMonth - b.startMonth,
+	);
+
+	// Calculate next available start month for new rate period
+	const getNextAvailableMonth = (): number => {
+		if (ratePeriods.length === 0) return 1;
+		const lastPeriod = [...ratePeriods].sort(
+			(a, b) => b.startMonth - a.startMonth,
+		)[0];
+		if (lastPeriod.durationMonths === 0) return lastPeriod.startMonth;
+		return lastPeriod.startMonth + lastPeriod.durationMonths;
+	};
+
+	return (
+		<Card className="py-0 gap-0">
+			<CardHeader className="py-3 px-4">
+				<div className="flex items-center justify-between">
+					<CardTitle className="text-sm font-medium">Rate Periods</CardTitle>
+					<Button
+						variant="ghost"
+						size="sm"
+						className="h-6 gap-1 text-xs px-2"
+						onClick={() => setShowAddRatePeriod(true)}
+					>
+						<Plus className="h-3 w-3" />
+						Add
+					</Button>
+				</div>
+			</CardHeader>
+			<CardContent className="pt-0 px-3 pb-3">
+				{sortedRatePeriods.length === 0 ? (
+					<p className="text-sm text-muted-foreground text-center py-4">
+						No rate periods defined.
+					</p>
+				) : (
+					<div className="space-y-2">
+						{sortedRatePeriods.map((period, index) => {
+							const originalPeriod = ratePeriods.find(
+								(p) => p.id === period.id,
+							);
+							if (!originalPeriod) return null;
+							const periodWarnings = warnings.filter(
+								(w) =>
+									w.month >= period.startMonth &&
+									(period.durationMonths === 0 ||
+										w.month < period.startMonth + period.durationMonths),
+							);
+
+							// Find the overpayment policy for this period
+							const overpaymentPolicy = period.overpaymentPolicyId
+								? overpaymentPolicies.find(
+										(p) => p.id === period.overpaymentPolicyId,
+									)
+								: undefined;
+
+							// Only allow deleting the last rate period (stack-based timeline)
+							const isLastPeriod = index === sortedRatePeriods.length - 1;
+							const canDelete = ratePeriods.length > 1 && isLastPeriod;
+
+							return (
+								<SimulateRatePeriodEvent
+									key={period.id}
+									period={period}
+									warnings={periodWarnings}
+									overpaymentPolicy={overpaymentPolicy}
+									onEdit={() => setEditingRatePeriod(originalPeriod)}
+									onDelete={
+										canDelete
+											? () => setDeletingRatePeriod(period.id)
+											: undefined
+									}
+								/>
+							);
+						})}
+					</div>
+				)}
+			</CardContent>
+
+			{/* Add Rate Period Dialog */}
+			<SimulateAddRatePeriodDialog
+				open={showAddRatePeriod}
+				onOpenChange={setShowAddRatePeriod}
+				onAdd={addRatePeriod}
+				rates={rates}
+				customRates={customRates}
+				lenders={lenders}
+				existingPeriods={ratePeriods}
+				totalMonths={totalMonths}
+				mortgageAmount={simulationState.input.mortgageAmount}
+				propertyValue={simulationState.input.propertyValue}
+				defaultStartMonth={getNextAvailableMonth()}
+			/>
+
+			{/* Edit Rate Period Dialog */}
+			{editingRatePeriod && (
+				<SimulateAddRatePeriodDialog
+					open={!!editingRatePeriod}
+					onOpenChange={(open) => !open && setEditingRatePeriod(null)}
+					onAdd={(period) => {
+						updateRatePeriod(editingRatePeriod.id, period);
+						setEditingRatePeriod(null);
+					}}
+					rates={rates}
+					customRates={customRates}
+					lenders={lenders}
+					existingPeriods={ratePeriods.filter(
+						(p) => p.id !== editingRatePeriod.id,
+					)}
+					totalMonths={totalMonths}
+					mortgageAmount={simulationState.input.mortgageAmount}
+					propertyValue={simulationState.input.propertyValue}
+					defaultStartMonth={editingRatePeriod.startMonth}
+					editingPeriod={editingRatePeriod}
+				/>
+			)}
+
+			{/* Delete Rate Period Confirmation */}
+			<AlertDialog
+				open={!!deletingRatePeriod}
+				onOpenChange={(open) => !open && setDeletingRatePeriod(null)}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Delete Rate Period?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will remove this rate period from your simulation. This
+							action cannot be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={() => {
+								if (deletingRatePeriod) {
+									removeRatePeriod(deletingRatePeriod);
+									setDeletingRatePeriod(null);
+								}
+							}}
+						>
+							Delete
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</Card>
+	);
+}
