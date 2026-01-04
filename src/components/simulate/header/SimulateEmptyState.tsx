@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { loadRatesForm, saveRatesForm } from "@/lib/storage";
 import { $hasRequiredData, $initialized } from "@/lib/stores/simulate";
 import { getPath } from "@/lib/utils/path";
 
@@ -37,11 +38,20 @@ export function SimulateEmptyState() {
 					</CardHeader>
 					<CardContent className="flex justify-center pb-6">
 						{initialized ? (
-							<Button asChild className="gap-1.5">
-								<a href={`${getPath("/rates")}?from=simulate`}>
-									Compare Rates
-									<ArrowRight className="h-4 w-4" />
-								</a>
+							<Button
+								className="gap-1.5"
+								onClick={() => {
+									const saved = loadRatesForm();
+									saveRatesForm({
+										...saved,
+										mode: "first-mortgage",
+										buyerType: "ftb",
+									});
+									window.location.href = `${getPath("/rates")}#first-mortgage`;
+								}}
+							>
+								Compare Rates
+								<ArrowRight className="h-4 w-4" />
 							</Button>
 						) : (
 							<Button className="gap-1.5" disabled>
