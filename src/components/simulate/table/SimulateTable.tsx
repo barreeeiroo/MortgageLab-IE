@@ -155,9 +155,24 @@ export function SimulateTable({
 								</TooltipTrigger>
 								<TooltipContent>
 									<p>
-										With your overpayments, you have saved the equivalent to{" "}
-										{formatEuro(summary.interestSaved)} in interest
+										{formatEuro(summary.interestSaved)} in interest saved with
+										your overpayments
 									</p>
+								</TooltipContent>
+							</Tooltip>
+						)}
+						{summary.monthsSaved === 0 && summary.interestSaved > 0 && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<div className="flex items-center gap-1 text-green-600 dark:text-green-500 cursor-help">
+										<span className="font-medium">
+											{formatEuro(summary.interestSaved)} saved
+										</span>
+										<Info className="h-3.5 w-3.5" />
+									</div>
+								</TooltipTrigger>
+								<TooltipContent>
+									<p>Interest saved with your overpayments</p>
 								</TooltipContent>
 							</Tooltip>
 						)}
