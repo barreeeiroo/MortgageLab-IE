@@ -1,21 +1,19 @@
 import { useStore } from "@nanostores/react";
-import { useState } from "react";
 import { $hasRequiredData } from "@/lib/stores/simulate";
 import {
 	$amortizationSchedule,
 	$yearlySchedule,
 } from "@/lib/stores/simulate/simulate-calculations";
+import {
+	$chartSettings,
+	type ChartGranularity,
+	type ChartVisibility,
+	setGranularity,
+	toggleVisibility,
+} from "@/lib/stores/simulate/simulate-chart";
 import { SimulateChart } from "./SimulateChart";
 
-export type ChartGranularity = "monthly" | "quarterly" | "yearly";
-
-export interface ChartVisibility {
-	principalRemaining: boolean;
-	cumulativeInterest: boolean;
-	cumulativePrincipal: boolean;
-	totalPaid: boolean;
-	monthlyPayment: boolean;
-}
+export type { ChartGranularity, ChartVisibility };
 
 export interface ChartDataPoint {
 	// Unique identifier for the data point
@@ -40,15 +38,7 @@ export function SimulateChartIsland() {
 	const hasRequiredData = useStore($hasRequiredData);
 	const yearlySchedule = useStore($yearlySchedule);
 	const monthlySchedule = useStore($amortizationSchedule);
-
-	const [granularity, setGranularity] = useState<ChartGranularity>("yearly");
-	const [visibility, setVisibility] = useState<ChartVisibility>({
-		principalRemaining: true,
-		cumulativeInterest: true,
-		cumulativePrincipal: false,
-		totalPaid: false,
-		monthlyPayment: false,
-	});
+	const { granularity, visibility } = useStore($chartSettings);
 
 	if (!hasRequiredData) {
 		return null;
@@ -154,13 +144,6 @@ export function SimulateChartIsland() {
 			};
 		});
 	})();
-
-	const toggleVisibility = (key: keyof ChartVisibility) => {
-		setVisibility((prev) => ({
-			...prev,
-			[key]: !prev[key],
-		}));
-	};
 
 	return (
 		<SimulateChart
