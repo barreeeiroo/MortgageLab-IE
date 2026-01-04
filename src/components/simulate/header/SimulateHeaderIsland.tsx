@@ -18,7 +18,6 @@ import {
 	initializeSimulation,
 	markInitialized,
 	resetSimulation,
-	setInput,
 	setSimulationState,
 } from "@/lib/stores/simulate";
 import { $simulationCompleteness } from "@/lib/stores/simulate/simulate-calculations";
@@ -63,22 +62,18 @@ export function SimulateHeaderIsland() {
 		return copyShareUrl(simulationState, customRates);
 	};
 
-	const handleStartDateChange = (date: string | undefined) => {
-		setInput({ startDate: date });
-	};
-
 	return (
 		<SimulateHeader
 			hasRequiredData={hasRequiredData}
 			mortgageAmount={simulationState.input.mortgageAmount}
 			mortgageTermMonths={simulationState.input.mortgageTermMonths}
-			startDate={simulationState.input.startDate}
+			propertyValue={simulationState.input.propertyValue}
+			ber={simulationState.input.ber}
 			ratePeriodCount={simulationState.ratePeriods.length}
 			overpaymentCount={simulationState.overpaymentConfigs.length}
 			completeness={completeness}
 			onReset={resetSimulation}
 			onShare={handleShare}
-			onStartDateChange={handleStartDateChange}
 		/>
 	);
 }

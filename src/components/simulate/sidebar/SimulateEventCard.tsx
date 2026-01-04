@@ -1,12 +1,13 @@
 import {
+	ArrowRightToLine,
 	CheckCircle2,
 	Flag,
 	Pencil,
 	Percent,
-	Scissors,
 	Trash2,
 	TrendingDown,
 } from "lucide-react";
+import { useMemo, useState } from "react";
 import { LenderLogo } from "@/components/lenders";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +15,9 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type {
+	AmortizationMonth,
 	Milestone,
 	MilestoneType,
 	OverpaymentConfig,
@@ -28,6 +25,7 @@ import type {
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
 import { formatCurrency } from "@/lib/utils";
+import { SimulateTrimDialog } from "./SimulateTrimDialog";
 
 // Helper to format month/year
 function formatPeriod(month: number): string {
@@ -82,7 +80,11 @@ interface RatePeriodEventProps {
 	overpaymentPolicy?: OverpaymentPolicy;
 	onEdit: () => void;
 	onDelete?: () => void;
-	onTrim?: () => void;
+	onTrim?: (durationMonths: number) => void;
+	onExtend?: () => void;
+	// Additional props needed for trim dialog LTV calculations
+	propertyValue?: number;
+	amortizationSchedule?: AmortizationMonth[];
 }
 
 export function SimulateRatePeriodEvent({
@@ -92,9 +94,49 @@ export function SimulateRatePeriodEvent({
 	onEdit,
 	onDelete,
 	onTrim,
+	onExtend,
+	propertyValue = 0,
+	amortizationSchedule = [],
 }: RatePeriodEventProps) {
+	const [trimDialogOpen, setTrimDialogOpen] = useState(false);
 	const hasWarnings = warnings.length > 0;
 	const hasError = warnings.some((w) => w.severity === "error");
+
+	// Calculate beginning and ending LTV for this rate period
+	const { beginningLtv, endingLtv } = useMemo(() => {
+		if (propertyValue <= 0 || amortizationSchedule.length === 0) {
+			return { beginningLtv: null, endingLtv: null };
+		}
+
+		// Find beginning balance (opening balance of start month)
+		const startMonthData = amortizationSchedule.find(
+			(m) => m.month === period.startMonth,
+		);
+		const beginningBalance =
+			startMonthData?.openingBalance ?? amortizationSchedule[0]?.openingBalance;
+
+		// Find ending balance
+		let endingBalance: number | undefined;
+		if (period.durationMonths === 0) {
+			// "Until end" - use the last month's closing balance
+			endingBalance =
+				amortizationSchedule[amortizationSchedule.length - 1]?.closingBalance;
+		} else {
+			// Find the closing balance of the last month in this period
+			const endMonth = period.startMonth + period.durationMonths - 1;
+			const endMonthData = amortizationSchedule.find(
+				(m) => m.month === endMonth,
+			);
+			endingBalance = endMonthData?.closingBalance;
+		}
+
+		return {
+			beginningLtv: beginningBalance
+				? (beginningBalance / propertyValue) * 100
+				: null,
+			endingLtv: endingBalance ? (endingBalance / propertyValue) * 100 : null,
+		};
+	}, [period, propertyValue, amortizationSchedule]);
 
 	return (
 		<Popover>
@@ -180,6 +222,22 @@ export function SimulateRatePeriodEvent({
 								{formatDuration(period.durationMonths)}
 							</p>
 						</div>
+						{beginningLtv !== null && (
+							<div>
+								<span className="text-muted-foreground text-xs">
+									Beginning LTV
+								</span>
+								<p className="font-medium">{beginningLtv.toFixed(1)}%</p>
+							</div>
+						)}
+						{endingLtv !== null && (
+							<div>
+								<span className="text-muted-foreground text-xs">
+									Ending LTV
+								</span>
+								<p className="font-medium">{endingLtv.toFixed(1)}%</p>
+							</div>
+						)}
 					</div>
 
 					{/* Overpayment Policy */}
@@ -213,20 +271,19 @@ export function SimulateRatePeriodEvent({
 					{/* Actions */}
 					<div className="flex gap-2 pt-2 border-t">
 						{onTrim && (
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<Button variant="outline" size="sm" onClick={onTrim}>
-										<Scissors className="h-3.5 w-3.5" />
-									</Button>
-								</TooltipTrigger>
-								<TooltipContent side="bottom" className="max-w-[200px]">
-									<p className="font-medium">Trim to 1 month</p>
-									<p className="text-xs text-muted-foreground">
-										Useful to apply overpayments before switching to a different
-										rate.
-									</p>
-								</TooltipContent>
-							</Tooltip>
+							<SimulateTrimDialog
+								open={trimDialogOpen}
+								onOpenChange={setTrimDialogOpen}
+								onTrim={onTrim}
+								periodStartMonth={period.startMonth}
+								propertyValue={propertyValue}
+								amortizationSchedule={amortizationSchedule}
+							/>
+						)}
+						{onExtend && (
+							<Button variant="outline" size="sm" onClick={onExtend}>
+								<ArrowRightToLine className="h-3.5 w-3.5" />
+							</Button>
 						)}
 						<Button
 							variant="outline"

@@ -191,11 +191,17 @@ export function SimulateRatesIsland() {
 							const isLastPeriod = index === resolvedRatePeriods.length - 1;
 							const canDelete = ratePeriods.length > 1 && isLastPeriod;
 
-							// Allow trimming variable rate with "until end" to 1 month
+							// Allow trimming variable rate with "until end"
 							const canTrim =
 								isLastPeriod &&
 								period.type === "variable" &&
 								period.durationMonths === 0;
+
+							// Allow extending variable rate with defined duration to "until end"
+							const canExtend =
+								isLastPeriod &&
+								period.type === "variable" &&
+								period.durationMonths > 0;
 
 							// Calculate transition month for next period
 							const nextPeriodStartMonth =
@@ -213,6 +219,8 @@ export function SimulateRatesIsland() {
 										period={period}
 										warnings={periodWarnings}
 										overpaymentPolicy={overpaymentPolicy}
+										propertyValue={simulationState.input.propertyValue}
+										amortizationSchedule={amortizationSchedule}
 										onEdit={() => {
 											setEditingRatePeriod(originalPeriod);
 											setEditingIsLastPeriod(isLastPeriod);
@@ -224,8 +232,14 @@ export function SimulateRatesIsland() {
 										}
 										onTrim={
 											canTrim
+												? (durationMonths: number) =>
+														updateRatePeriod(period.id, { durationMonths })
+												: undefined
+										}
+										onExtend={
+											canExtend
 												? () =>
-														updateRatePeriod(period.id, { durationMonths: 1 })
+														updateRatePeriod(period.id, { durationMonths: 0 })
 												: undefined
 										}
 									/>

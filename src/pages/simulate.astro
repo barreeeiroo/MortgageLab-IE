@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import { SimulateHeaderIsland } from "@/components/simulate/header/SimulateHeaderIsland";
 import { SimulateEmptyState } from "@/components/simulate/header/SimulateEmptyState";
+import { SimulateStartDateIsland } from "@/components/simulate/sidebar/SimulateStartDateIsland";
 import { SimulateMilestonesIsland } from "@/components/simulate/sidebar/SimulateMilestonesIsland";
 import { SimulateRatesIsland } from "@/components/simulate/sidebar/SimulateRatesIsland";
 import { SimulateOverpaymentsIsland } from "@/components/simulate/sidebar/SimulateOverpaymentsIsland";
@@ -30,6 +31,7 @@ import { SimulateTableIsland } from "@/components/simulate/table/SimulateTableIs
 
 			<!-- Right sidebar -->
 			<aside class="flex flex-col gap-4">
+				<SimulateStartDateIsland client:load />
 				<SimulateRatesIsland client:load />
 				<SimulateOverpaymentsIsland client:load />
 				<SimulateMilestonesIsland client:load />

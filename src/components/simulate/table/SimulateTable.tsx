@@ -17,6 +17,7 @@ import {
 import { GLOSSARY_TERMS_MAP } from "@/lib/constants/glossary";
 import type {
 	AmortizationYear,
+	Milestone,
 	SimulationSummary,
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
@@ -28,6 +29,7 @@ interface SimulateTableProps {
 	summary: SimulationSummary;
 	warnings: SimulationWarning[];
 	ratePeriodLabels: Map<string, string>;
+	milestones: Milestone[];
 }
 
 function formatEuro(cents: number): string {
@@ -76,6 +78,7 @@ export function SimulateTable({
 	summary,
 	warnings,
 	ratePeriodLabels,
+	milestones,
 }: SimulateTableProps) {
 	const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
 
@@ -91,13 +94,34 @@ export function SimulateTable({
 		});
 	};
 
+	// Helper to find which year contains a given month
+	const findYearForMonth = (month: number): number | undefined => {
+		for (const year of yearlySchedule) {
+			if (year.months.some((m) => m.month === month)) {
+				return year.year;
+			}
+		}
+		return undefined;
+	};
+
 	// Check for warnings by year
 	const warningsByYear = new Map<number, SimulationWarning[]>();
 	for (const warning of warnings) {
-		const year = Math.ceil(warning.month / 12);
+		const year =
+			findYearForMonth(warning.month) ?? Math.ceil(warning.month / 12);
 		const existing = warningsByYear.get(year) || [];
 		existing.push(warning);
 		warningsByYear.set(year, existing);
+	}
+
+	// Group milestones by year (using the same year key as yearlySchedule)
+	const milestonesByYear = new Map<number, Milestone[]>();
+	for (const milestone of milestones) {
+		const year =
+			findYearForMonth(milestone.month) ?? Math.ceil(milestone.month / 12);
+		const existing = milestonesByYear.get(year) || [];
+		existing.push(milestone);
+		milestonesByYear.set(year, existing);
 	}
 
 	return (
@@ -220,6 +244,7 @@ export function SimulateTable({
 									year={year}
 									isExpanded={expandedYears.has(year.year)}
 									warnings={warningsByYear.get(year.year) || []}
+									milestones={milestonesByYear.get(year.year) || []}
 									ratePeriodLabels={ratePeriodLabels}
 									onToggle={() => toggleYear(year.year)}
 								/>
