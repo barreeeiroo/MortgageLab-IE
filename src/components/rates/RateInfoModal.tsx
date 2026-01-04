@@ -1,5 +1,6 @@
 import {
 	Check,
+	ChevronDown,
 	Coins,
 	Copy,
 	HelpCircle,
@@ -52,6 +53,12 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "../ui/dialog";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
@@ -437,7 +444,7 @@ export function RateInfoModal({
 	};
 
 	// Handler for navigating to simulation
-	const handleSimulate = () => {
+	const handleSimulate = (includeFollowOn = true) => {
 		if (!rate || !lender) return;
 
 		// Convert euros to cents for simulation state
@@ -449,15 +456,16 @@ export function RateInfoModal({
 			(rate as { customLenderName?: string }).customLenderName ?? lender.name
 		} ${rate.type === "fixed" && rate.fixedTerm ? `${rate.fixedTerm}-Year Fixed` : "Variable"} @ ${rate.rate.toFixed(2)}%`;
 
-		// Prepare follow-on rate if available (for fixed rates)
-		const followOn = calculations?.followOnRate
-			? {
-					lenderId: calculations.followOnRate.lenderId,
-					rateId: calculations.followOnRate.id,
-					isCustom: false,
-					label: `${lender.name} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
-				}
-			: undefined;
+		// Prepare follow-on rate if available (for fixed rates) and includeFollowOn is true
+		const followOn =
+			includeFollowOn && calculations?.followOnRate
+				? {
+						lenderId: calculations.followOnRate.lenderId,
+						rateId: calculations.followOnRate.id,
+						isCustom: false,
+						label: `${lender.name} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
+					}
+				: undefined;
 
 		initializeFromRate({
 			mortgageAmount: mortgageAmountCents,
@@ -857,13 +865,13 @@ export function RateInfoModal({
 				</div>
 
 				{/* Sticky Footer */}
-				<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex items-center justify-between">
+				<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
 					{/* Hide report button for custom rates */}
 					{!isCustom ? (
 						<Button
 							variant="ghost"
 							size="sm"
-							className="gap-1.5 text-muted-foreground hover:text-foreground"
+							className="gap-1.5 text-muted-foreground hover:text-foreground justify-center sm:justify-start"
 							asChild
 						>
 							<a
@@ -882,9 +890,9 @@ export function RateInfoModal({
 							</a>
 						</Button>
 					) : (
-						<div />
+						<div className="hidden sm:block" />
 					)}
-					<div className="flex items-center gap-2">
+					<div className="flex items-center justify-end gap-2 flex-wrap">
 						{/* Copy as Custom Rate button - only for non-custom rates */}
 						{!isCustom &&
 							(copiedRateId ? (
@@ -904,10 +912,45 @@ export function RateInfoModal({
 								</Button>
 							))}
 						{mode === "first-mortgage" && (
-							<Button className="gap-1.5" onClick={handleSimulate}>
-								<Play className="h-4 w-4" />
-								Simulate
-							</Button>
+							<>
+								{/* For fixed rates with a follow-on rate: show split button with dropdown */}
+								{isFixed && hasFollowOn ? (
+									<div className="flex items-center">
+										<Button
+											className="gap-1.5 rounded-r-none"
+											onClick={() => handleSimulate(true)}
+										>
+											<Play className="h-4 w-4" />
+											Simulate
+										</Button>
+										<DropdownMenu>
+											<DropdownMenuTrigger asChild>
+												<Button
+													className="rounded-l-none border-l border-primary-foreground/20 px-2"
+													aria-label="More simulation options"
+												>
+													<ChevronDown className="h-4 w-4" />
+												</Button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end">
+												<DropdownMenuItem onClick={() => handleSimulate(false)}>
+													<Play className="h-4 w-4" />
+													Simulate Fixed Only
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</div>
+								) : (
+									/* For variable rates or fixed without follow-on: simple button */
+									<Button
+										className="gap-1.5"
+										onClick={() => handleSimulate(true)}
+									>
+										<Play className="h-4 w-4" />
+										Simulate
+									</Button>
+								)}
+							</>
 						)}
 					</div>
 				</div>

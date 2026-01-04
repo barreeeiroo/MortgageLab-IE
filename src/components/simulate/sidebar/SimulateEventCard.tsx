@@ -118,7 +118,7 @@ export function SimulateRatePeriodEvent({
 										: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
 								}`}
 							>
-								{period.type === "fixed" ? "Fixed" : "Var"}
+								{period.type === "fixed" ? "Fix" : "Var"}
 							</span>
 						</div>
 						<div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -127,8 +127,6 @@ export function SimulateRatePeriodEvent({
 							<span className="font-medium text-foreground">
 								{period.rate.toFixed(2)}%
 							</span>
-							<span>•</span>
-							<span>{formatDuration(period.durationMonths)}</span>
 						</div>
 					</div>
 				</button>

@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { Plus } from "lucide-react";
+import { ArrowDown, Plus } from "lucide-react";
 import { useState } from "react";
 import {
 	AlertDialog,
@@ -35,6 +35,7 @@ import {
 	$resolvedRatePeriods,
 	$simulationWarnings,
 } from "@/lib/stores/simulate/simulate-calculations";
+import { formatTransitionDate } from "@/lib/utils/date";
 import { SimulateAddRatePeriodDialog } from "./SimulateAddRatePeriodDialog";
 import { SimulateRatePeriodEvent } from "./SimulateEventCard";
 
@@ -115,7 +116,7 @@ export function SimulateRatesIsland() {
 						No rate periods defined.
 					</p>
 				) : (
-					<div className="space-y-2">
+					<div className="space-y-1">
 						{resolvedRatePeriods.map((period, index) => {
 							const originalPeriod = ratePeriods.find(
 								(p) => p.id === period.id,
@@ -139,22 +140,44 @@ export function SimulateRatesIsland() {
 							const isLastPeriod = index === resolvedRatePeriods.length - 1;
 							const canDelete = ratePeriods.length > 1 && isLastPeriod;
 
+							// Calculate transition month for next period
+							const nextPeriodStartMonth =
+								period.durationMonths === 0
+									? null
+									: period.startMonth + period.durationMonths;
+							const showTransition =
+								!isLastPeriod &&
+								nextPeriodStartMonth !== null &&
+								period.durationMonths > 0;
+
 							return (
-								<SimulateRatePeriodEvent
-									key={period.id}
-									period={period}
-									warnings={periodWarnings}
-									overpaymentPolicy={overpaymentPolicy}
-									onEdit={() => {
-										setEditingRatePeriod(originalPeriod);
-										setEditingIsLastPeriod(isLastPeriod);
-									}}
-									onDelete={
-										canDelete
-											? () => setDeletingRatePeriod(period.id)
-											: undefined
-									}
-								/>
+								<div key={period.id}>
+									<SimulateRatePeriodEvent
+										period={period}
+										warnings={periodWarnings}
+										overpaymentPolicy={overpaymentPolicy}
+										onEdit={() => {
+											setEditingRatePeriod(originalPeriod);
+											setEditingIsLastPeriod(isLastPeriod);
+										}}
+										onDelete={
+											canDelete
+												? () => setDeletingRatePeriod(period.id)
+												: undefined
+										}
+									/>
+									{showTransition && nextPeriodStartMonth && (
+										<div className="flex items-center gap-2 py-1.5 px-2">
+											<ArrowDown className="h-3 w-3 text-muted-foreground" />
+											<span className="text-xs text-muted-foreground">
+												{formatTransitionDate(
+													simulationState.input.startDate,
+													nextPeriodStartMonth,
+												)}
+											</span>
+										</div>
+									)}
+								</div>
 							);
 						})}
 					</div>
@@ -172,6 +195,13 @@ export function SimulateRatesIsland() {
 				totalMonths={totalMonths}
 				mortgageAmount={simulationState.input.mortgageAmount}
 				propertyValue={simulationState.input.propertyValue}
+				startDate={simulationState.input.startDate}
+				periodStartMonth={
+					resolvedRatePeriods.length > 0
+						? resolvedRatePeriods[resolvedRatePeriods.length - 1].startMonth +
+							resolvedRatePeriods[resolvedRatePeriods.length - 1].durationMonths
+						: 1
+				}
 			/>
 
 			{/* Edit Rate Period Dialog */}
@@ -191,6 +221,11 @@ export function SimulateRatesIsland() {
 					propertyValue={simulationState.input.propertyValue}
 					editingPeriod={editingRatePeriod}
 					isLastPeriod={editingIsLastPeriod}
+					startDate={simulationState.input.startDate}
+					periodStartMonth={
+						resolvedRatePeriods.find((p) => p.id === editingRatePeriod.id)
+							?.startMonth ?? 1
+					}
 				/>
 			)}
 
