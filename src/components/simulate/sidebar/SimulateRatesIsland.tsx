@@ -18,6 +18,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { saveRatesForm } from "@/lib/storage";
 import { $customRates } from "@/lib/stores/custom-rates";
 import { $lenders } from "@/lib/stores/lenders";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
@@ -27,18 +28,19 @@ import {
 	$hasRequiredData,
 	$simulationState,
 	$totalMonths,
-	addRatePeriod,
 	removeRatePeriod,
 	updateRatePeriod,
 } from "@/lib/stores/simulate";
 import {
+	$amortizationSchedule,
 	$bufferSuggestions,
 	$resolvedRatePeriods,
 	$simulationWarnings,
 } from "@/lib/stores/simulate/simulate-calculations";
 import { formatTransitionDate } from "@/lib/utils/date";
-import { SimulateAddRatePeriodDialog } from "./SimulateAddRatePeriodDialog";
+import { getPath } from "@/lib/utils/path";
 import { SimulateBufferSuggestion } from "./SimulateBufferSuggestion";
+import { SimulateEditRatePeriodDialog } from "./SimulateEditRatePeriodDialog";
 import { SimulateRatePeriodEvent } from "./SimulateEventCard";
 
 export function SimulateRatesIsland() {
@@ -47,6 +49,7 @@ export function SimulateRatesIsland() {
 	const totalMonths = useStore($totalMonths);
 	const coveredMonths = useStore($coveredMonths);
 	const resolvedRatePeriods = useStore($resolvedRatePeriods);
+	const amortizationSchedule = useStore($amortizationSchedule);
 	const warnings = useStore($simulationWarnings);
 	const bufferSuggestions = useStore($bufferSuggestions);
 	const rates = useStore($rates);
@@ -58,7 +61,6 @@ export function SimulateRatesIsland() {
 	// coveredMonths is -1 when last period is "until end", or a number when explicit
 	const isFullyCovered = coveredMonths === -1 || coveredMonths >= totalMonths;
 
-	const [showAddRatePeriod, setShowAddRatePeriod] = useState(false);
 	const [editingRatePeriod, setEditingRatePeriod] = useState<
 		(typeof simulationState.ratePeriods)[0] | null
 	>(null);
@@ -66,6 +68,52 @@ export function SimulateRatesIsland() {
 	const [deletingRatePeriod, setDeletingRatePeriod] = useState<string | null>(
 		null,
 	);
+
+	// Navigate to Rates page for adding a new rate period
+	const handleAddRate = () => {
+		const { input, ratePeriods } = simulationState;
+
+		// Get the last covered month from the amortization schedule
+		const lastCoveredMonth = amortizationSchedule.length;
+
+		// Get the remaining balance and monthly payment from the last month
+		const lastMonth = amortizationSchedule[amortizationSchedule.length - 1];
+		const remainingBalance = lastMonth?.closingBalance ?? input.mortgageAmount;
+		const lastMonthlyPayment = lastMonth?.scheduledPayment ?? 0;
+
+		// Get the current lender from the last rate period
+		const lastRatePeriod = ratePeriods[ratePeriods.length - 1];
+		const currentLender = lastRatePeriod?.lenderId ?? "";
+
+		// Calculate remaining term (from the last covered month to end of mortgage)
+		const remainingMonths = Math.max(
+			0,
+			input.mortgageTermMonths - lastCoveredMonth,
+		);
+		const remainingTermYears = Math.ceil(remainingMonths / 12);
+
+		// Convert cents to euros for the rates form
+		const propertyValue = Math.round(input.propertyValue / 100);
+		// Use remaining balance as the "mortgage amount" for rate comparison
+		const mortgageAmount = Math.round(remainingBalance / 100);
+		// Monthly repayment in euros (from cents)
+		const monthlyRepayment = Math.round(lastMonthlyPayment / 100);
+
+		// Save form values to localStorage so Rates page can load them
+		saveRatesForm({
+			mode: "remortgage",
+			propertyValue: propertyValue.toString(),
+			mortgageAmount: mortgageAmount.toString(),
+			monthlyRepayment: monthlyRepayment.toString(),
+			mortgageTerm: remainingTermYears.toString(),
+			berRating: input.ber,
+			buyerType: "switcher-pdh",
+			currentLender,
+		});
+
+		// Navigate to Rates page with indicator that we're adding to simulation
+		window.location.href = `${getPath("/rates")}?from=simulate-add#remortgage`;
+	};
 
 	if (!hasRequiredData) {
 		return null;
@@ -105,7 +153,7 @@ export function SimulateRatesIsland() {
 							variant="ghost"
 							size="sm"
 							className="h-6 gap-1 text-xs px-2"
-							onClick={() => setShowAddRatePeriod(true)}
+							onClick={handleAddRate}
 						>
 							<Plus className="h-3 w-3" />
 							Add
@@ -143,6 +191,12 @@ export function SimulateRatesIsland() {
 							const isLastPeriod = index === resolvedRatePeriods.length - 1;
 							const canDelete = ratePeriods.length > 1 && isLastPeriod;
 
+							// Allow trimming variable rate with "until end" to 1 month
+							const canTrim =
+								isLastPeriod &&
+								period.type === "variable" &&
+								period.durationMonths === 0;
+
 							// Calculate transition month for next period
 							const nextPeriodStartMonth =
 								period.durationMonths === 0
@@ -166,6 +220,12 @@ export function SimulateRatesIsland() {
 										onDelete={
 											canDelete
 												? () => setDeletingRatePeriod(period.id)
+												: undefined
+										}
+										onTrim={
+											canTrim
+												? () =>
+														updateRatePeriod(period.id, { durationMonths: 1 })
 												: undefined
 										}
 									/>
@@ -196,32 +256,12 @@ export function SimulateRatesIsland() {
 				)}
 			</CardContent>
 
-			{/* Add Rate Period Dialog */}
-			<SimulateAddRatePeriodDialog
-				open={showAddRatePeriod}
-				onOpenChange={setShowAddRatePeriod}
-				onAdd={addRatePeriod}
-				rates={rates}
-				customRates={customRates}
-				lenders={lenders}
-				totalMonths={totalMonths}
-				mortgageAmount={simulationState.input.mortgageAmount}
-				propertyValue={simulationState.input.propertyValue}
-				startDate={simulationState.input.startDate}
-				periodStartMonth={
-					resolvedRatePeriods.length > 0
-						? resolvedRatePeriods[resolvedRatePeriods.length - 1].startMonth +
-							resolvedRatePeriods[resolvedRatePeriods.length - 1].durationMonths
-						: 1
-				}
-			/>
-
 			{/* Edit Rate Period Dialog */}
 			{editingRatePeriod && (
-				<SimulateAddRatePeriodDialog
+				<SimulateEditRatePeriodDialog
 					open={!!editingRatePeriod}
 					onOpenChange={(open) => !open && setEditingRatePeriod(null)}
-					onAdd={(period) => {
+					onSave={(period) => {
 						updateRatePeriod(editingRatePeriod.id, period);
 						setEditingRatePeriod(null);
 					}}

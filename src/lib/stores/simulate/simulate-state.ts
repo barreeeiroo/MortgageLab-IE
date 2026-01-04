@@ -191,16 +191,40 @@ export function setInitialized(initialized: boolean): void {
 
 // Rate Period Actions
 
+/**
+ * Add a rate period to the simulation.
+ * Works both on the Simulate page (updates store) and from other pages
+ * like Rates (loads persisted state, updates, and saves).
+ */
 export function addRatePeriod(period: Omit<RatePeriod, "id">): void {
-	const current = $simulationState.get();
 	const newPeriod: RatePeriod = {
 		...period,
 		id: crypto.randomUUID(),
 	};
-	$simulationState.set({
-		...current,
-		ratePeriods: [...current.ratePeriods, newPeriod],
-	});
+
+	// Check if store is initialized (we're on the Simulate page)
+	const current = $simulationState.get();
+	if (current.initialized) {
+		$simulationState.set({
+			...current,
+			ratePeriods: [...current.ratePeriods, newPeriod],
+		});
+		return;
+	}
+
+	// Store not initialized - load from localStorage, update, and save directly
+	const persisted = loadPersistedState();
+	if (!persisted) {
+		console.warn("No persisted simulation state found");
+		return;
+	}
+
+	const updatedState: SimulationState = {
+		...persisted,
+		ratePeriods: [...persisted.ratePeriods, newPeriod],
+	};
+
+	saveToStorage(STORAGE_KEY, updatedState);
 }
 
 export function updateRatePeriod(

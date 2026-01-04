@@ -3,6 +3,7 @@ import {
 	Flag,
 	Pencil,
 	Percent,
+	Scissors,
 	Trash2,
 	TrendingDown,
 } from "lucide-react";
@@ -13,6 +14,11 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type {
 	Milestone,
@@ -76,6 +82,7 @@ interface RatePeriodEventProps {
 	overpaymentPolicy?: OverpaymentPolicy;
 	onEdit: () => void;
 	onDelete?: () => void;
+	onTrim?: () => void;
 }
 
 export function SimulateRatePeriodEvent({
@@ -84,6 +91,7 @@ export function SimulateRatePeriodEvent({
 	overpaymentPolicy,
 	onEdit,
 	onDelete,
+	onTrim,
 }: RatePeriodEventProps) {
 	const hasWarnings = warnings.length > 0;
 	const hasError = warnings.some((w) => w.severity === "error");
@@ -204,6 +212,22 @@ export function SimulateRatePeriodEvent({
 
 					{/* Actions */}
 					<div className="flex gap-2 pt-2 border-t">
+						{onTrim && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Button variant="outline" size="sm" onClick={onTrim}>
+										<Scissors className="h-3.5 w-3.5" />
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent side="bottom" className="max-w-[200px]">
+									<p className="font-medium">Trim to 1 month</p>
+									<p className="text-xs text-muted-foreground">
+										Useful to apply overpayments before switching to a different
+										rate.
+									</p>
+								</TooltipContent>
+							</Tooltip>
+						)}
 						<Button
 							variant="outline"
 							size="sm"

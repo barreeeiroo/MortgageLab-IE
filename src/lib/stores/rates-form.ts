@@ -28,6 +28,14 @@ export const DEFAULT_VALUES: RatesInputValues = {
 // Form state atom
 export const $formValues = atom<RatesInputValues>(DEFAULT_VALUES);
 
+// Tracks whether we're in "add to simulation" mode (came from simulate page)
+// Not persisted - resets on page refresh
+export const $isAddingToSimulation = atom<boolean>(false);
+
+export function setAddingToSimulation(value: boolean): void {
+	$isAddingToSimulation.set(value);
+}
+
 // Computed values derived from form
 export const $isRemortgage = computed(
 	$formValues,

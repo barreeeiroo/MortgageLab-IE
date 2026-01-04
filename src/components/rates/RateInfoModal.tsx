@@ -1,3 +1,4 @@
+import { useStore } from "@nanostores/react";
 import {
 	Check,
 	ChevronDown,
@@ -8,6 +9,7 @@ import {
 	type LucideIcon,
 	PiggyBank,
 	Play,
+	PlusCircle,
 	TriangleAlert,
 	X,
 } from "lucide-react";
@@ -42,7 +44,8 @@ import {
 	addCustomRate,
 	type StoredCustomRate,
 } from "@/lib/stores/custom-rates";
-import { initializeFromRate } from "@/lib/stores/simulate";
+import { $isAddingToSimulation } from "@/lib/stores/rates-form";
+import { addRatePeriod, initializeFromRate } from "@/lib/stores/simulate";
 import { formatCurrency } from "@/lib/utils";
 import { getPath } from "@/lib/utils/path";
 import { LenderLogo } from "../lenders";
@@ -326,6 +329,7 @@ export function RateInfoModal({
 	open,
 	onOpenChange,
 }: RateInfoModalProps) {
+	const isAddingToSimulation = useStore($isAddingToSimulation);
 	const [selectedTerm, setSelectedTerm] = useState(mortgageTerm);
 	const [highlightedFields, setHighlightedFields] = useState<Set<string>>(
 		new Set(),
@@ -464,7 +468,9 @@ export function RateInfoModal({
 				? {
 						lenderId: calculations.followOnRate.lenderId,
 						rateId: calculations.followOnRate.id,
-						isCustom: false,
+						isCustom:
+							(calculations.followOnRate as { isCustom?: boolean }).isCustom ??
+							false,
 						label: `${lender.name} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
 					}
 				: undefined;
@@ -481,6 +487,41 @@ export function RateInfoModal({
 			label: rateLabel,
 			followOn,
 		});
+
+		window.location.href = getPath("/simulate");
+	};
+
+	// Handler for adding a rate to an existing simulation (remortgage mode)
+	const handleAddToSimulation = (includeFollowOn = true) => {
+		if (!rate || !lender) return;
+
+		// Generate label for the rate period
+		const rateLabel = `${
+			(rate as { customLenderName?: string }).customLenderName ?? lender.name
+		} ${rate.type === "fixed" && rate.fixedTerm ? `${rate.fixedTerm}-Year Fixed` : "Variable"} @ ${rate.rate.toFixed(2)}%`;
+
+		// Add the rate period to simulation state
+		addRatePeriod({
+			lenderId: rate.lenderId,
+			rateId: rate.id,
+			isCustom: isCustom,
+			durationMonths:
+				rate.type === "fixed" && rate.fixedTerm ? rate.fixedTerm * 12 : 0,
+			label: rateLabel,
+		});
+
+		// If this is a fixed rate with follow-on and we want to include it, add the follow-on as well
+		if (includeFollowOn && calculations?.followOnRate) {
+			const followOnIsCustom =
+				(calculations.followOnRate as { isCustom?: boolean }).isCustom ?? false;
+			addRatePeriod({
+				lenderId: calculations.followOnRate.lenderId,
+				rateId: calculations.followOnRate.id,
+				isCustom: followOnIsCustom,
+				durationMonths: 0, // Until end of mortgage
+				label: `${lender.name} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
+			});
+		}
 
 		window.location.href = getPath("/simulate");
 	};
@@ -951,6 +992,49 @@ export function RateInfoModal({
 									>
 										<Play className="h-4 w-4" />
 										Simulate
+									</Button>
+								)}
+							</>
+						)}
+						{isAddingToSimulation && (
+							<>
+								{/* For fixed rates with a follow-on rate: show split button with dropdown */}
+								{isFixed && hasFollowOn ? (
+									<div className="flex items-center">
+										<Button
+											className="gap-1.5 rounded-r-none"
+											onClick={() => handleAddToSimulation(true)}
+										>
+											<PlusCircle className="h-4 w-4" />
+											Add to Simulation
+										</Button>
+										<DropdownMenu>
+											<DropdownMenuTrigger asChild>
+												<Button
+													className="rounded-l-none border-l border-primary-foreground/20 px-2"
+													aria-label="More add options"
+												>
+													<ChevronDown className="h-4 w-4" />
+												</Button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end">
+												<DropdownMenuItem
+													onClick={() => handleAddToSimulation(false)}
+												>
+													<PlusCircle className="h-4 w-4" />
+													Add Fixed Only
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</div>
+								) : (
+									/* For variable rates or fixed without follow-on: simple button */
+									<Button
+										className="gap-1.5"
+										onClick={() => handleAddToSimulation(true)}
+									>
+										<PlusCircle className="h-4 w-4" />
+										Add to Simulation
 									</Button>
 								)}
 							</>
