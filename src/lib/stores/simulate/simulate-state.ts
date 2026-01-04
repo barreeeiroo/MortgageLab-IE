@@ -114,23 +114,40 @@ export const $hasRequiredData = computed($simulationState, (state) => {
 	);
 });
 
+// Helper: Compute startMonth for a rate period based on its position in the stack
+export function getStartMonth(periods: RatePeriod[], index: number): number {
+	let start = 1;
+	for (let i = 0; i < index; i++) {
+		start += periods[i].durationMonths;
+	}
+	return start;
+}
+
+// Helper: Compute startMonth for all periods in the stack
+export function getPeriodsWithStartMonths(
+	periods: RatePeriod[],
+): Array<RatePeriod & { startMonth: number }> {
+	let start = 1;
+	return periods.map((period) => {
+		const withStart = { ...period, startMonth: start };
+		start += period.durationMonths;
+		return withStart;
+	});
+}
+
 // Computed: total duration covered by rate periods (in months)
+// Stack-based: sum of all durations, -1 if last period has duration 0 (until end)
 export const $coveredMonths = computed($ratePeriods, (periods) => {
 	if (periods.length === 0) return 0;
 
-	// Sort by start month
-	const sorted = [...periods].sort((a, b) => a.startMonth - b.startMonth);
-	let maxEnd = 0;
-
-	for (const period of sorted) {
-		const periodEnd =
-			period.durationMonths === 0
-				? Number.POSITIVE_INFINITY // Until end of mortgage
-				: period.startMonth + period.durationMonths - 1;
-		maxEnd = Math.max(maxEnd, periodEnd);
+	// Check if last period is "until end"
+	const lastPeriod = periods[periods.length - 1];
+	if (lastPeriod.durationMonths === 0) {
+		return -1; // -1 means "until end"
 	}
 
-	return maxEnd === Number.POSITIVE_INFINITY ? -1 : maxEnd; // -1 means "until end"
+	// Sum all durations
+	return periods.reduce((sum, period) => sum + period.durationMonths, 0);
 });
 
 // Computed: LTV based on input
@@ -316,13 +333,12 @@ export function initializeFromRate(params: {
 
 	const startDate = getDefaultStartDate();
 
-	// Create initial rate period
+	// Create initial rate period (stack-based: no startMonth needed)
 	const initialPeriod: RatePeriod = {
 		id: crypto.randomUUID(),
 		lenderId,
 		rateId,
 		isCustom,
-		startMonth: 1,
 		durationMonths: fixedTerm ? fixedTerm * 12 : 0, // 0 = until end for variable
 		label,
 	};
@@ -330,13 +346,13 @@ export function initializeFromRate(params: {
 	const ratePeriods: RatePeriod[] = [initialPeriod];
 
 	// Add follow-on rate period if provided (for fixed rates)
+	// Stack-based: it automatically follows the previous period
 	if (followOn && fixedTerm) {
 		const followOnPeriod: RatePeriod = {
 			id: crypto.randomUUID(),
 			lenderId: followOn.lenderId,
 			rateId: followOn.rateId,
 			isCustom: followOn.isCustom,
-			startMonth: fixedTerm * 12 + 1, // Start after fixed period
 			durationMonths: 0, // Until end of mortgage
 			label: followOn.label,
 		};

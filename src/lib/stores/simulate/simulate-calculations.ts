@@ -40,35 +40,35 @@ function addMonthsToDate(dateStr: string | undefined, months: number): string {
 	return `${newYear}-${String(newMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
-// Helper: Find rate period for a given month
+// Helper: Find rate period for a given month (stack-based model)
+// Returns both the period and its computed startMonth
 function findRatePeriodForMonth(
 	periods: RatePeriod[],
 	month: number,
-): RatePeriod | undefined {
-	// Sort by start month
-	const sorted = [...periods].sort((a, b) => a.startMonth - b.startMonth);
+): { period: RatePeriod; startMonth: number } | undefined {
+	let currentStart = 1;
 
-	for (let i = sorted.length - 1; i >= 0; i--) {
-		const period = sorted[i];
-		if (month >= period.startMonth) {
-			// Check if month is within this period's duration
-			if (period.durationMonths === 0) {
-				// Until end of mortgage
-				return period;
-			}
-			const periodEnd = period.startMonth + period.durationMonths - 1;
-			if (month <= periodEnd) {
-				return period;
-			}
+	for (const period of periods) {
+		const periodEnd =
+			period.durationMonths === 0
+				? Number.POSITIVE_INFINITY // Until end of mortgage
+				: currentStart + period.durationMonths - 1;
+
+		if (month >= currentStart && month <= periodEnd) {
+			return { period, startMonth: currentStart };
 		}
+
+		currentStart += period.durationMonths;
 	}
 
 	return undefined;
 }
 
 // Helper: Resolve a rate period to get full rate details
+// startMonth is computed from stack position and passed in
 function resolveRatePeriod(
 	period: RatePeriod,
+	startMonth: number,
 	allRates: MortgageRate[],
 	customRates: CustomRate[],
 	lenders: Lender[],
@@ -113,7 +113,7 @@ function resolveRatePeriod(
 		lenderId: period.lenderId,
 		lenderName,
 		rateName: rate.name,
-		startMonth: period.startMonth,
+		startMonth,
 		durationMonths: period.durationMonths,
 		overpaymentPolicyId,
 		label,
@@ -314,44 +314,35 @@ export function calculateAmortization(
 	// (For balance-based policies, allowance should be based on balance at start of year)
 	const yearStartBalanceByPeriod = new Map<string, number>();
 
-	// Pre-resolve all rate periods
+	// Pre-resolve all rate periods (stack-based: compute startMonth from position)
 	const resolvedPeriods = new Map<string, ResolvedRatePeriod>();
+	let currentStart = 1;
 	for (const period of ratePeriods) {
-		const resolved = resolveRatePeriod(period, allRates, customRates, lenders);
+		const resolved = resolveRatePeriod(
+			period,
+			currentStart,
+			allRates,
+			customRates,
+			lenders,
+		);
 		if (resolved) {
 			resolvedPeriods.set(period.id, resolved);
 		}
+		currentStart += period.durationMonths;
 	}
 
-	// Check for gaps in rate coverage
-	const sortedPeriods = [...ratePeriods].sort(
-		(a, b) => a.startMonth - b.startMonth,
-	);
-	let expectedStart = 1;
-	for (const period of sortedPeriods) {
-		if (period.startMonth > expectedStart) {
-			warnings.push({
-				type: "rate_gap",
-				month: expectedStart,
-				message: `No rate defined for months ${expectedStart}-${period.startMonth - 1}`,
-				severity: "error",
-			});
-		}
-		expectedStart =
-			period.durationMonths === 0
-				? maxMonths + 1
-				: period.startMonth + period.durationMonths;
-	}
+	// Stack-based model: no gaps to check, periods are sequential
 
 	while (balance > 0.01 && month <= maxMonths) {
-		// Find current rate period
-		const ratePeriod = findRatePeriodForMonth(ratePeriods, month);
-		if (!ratePeriod) {
-			// No rate period for this month - skip (warning already added)
+		// Find current rate period (stack-based)
+		const found = findRatePeriodForMonth(ratePeriods, month);
+		if (!found) {
+			// No rate period for this month - incomplete simulation
 			month++;
 			continue;
 		}
 
+		const { period: ratePeriod } = found;
 		const resolved = resolvedPeriods.get(ratePeriod.id);
 		if (!resolved) {
 			month++;
@@ -434,7 +425,7 @@ export function calculateAmortization(
 			const periodEndMonth =
 				ratePeriod.durationMonths === 0
 					? maxMonths
-					: ratePeriod.startMonth + ratePeriod.durationMonths - 1;
+					: found.startMonth + ratePeriod.durationMonths - 1;
 			if (month < periodEndMonth && ratePeriod.durationMonths > 0) {
 				warnings.push({
 					type: "early_redemption",
@@ -583,13 +574,14 @@ export function calculateBaselineInterest(
 	let lastRatePeriodId: string | null = null;
 
 	while (balance > 0.01 && month <= maxMonths) {
-		// Find current rate period
-		const ratePeriod = findRatePeriodForMonth(ratePeriods, month);
-		if (!ratePeriod) {
+		// Find current rate period (stack-based)
+		const found = findRatePeriodForMonth(ratePeriods, month);
+		if (!found) {
 			month++;
 			continue;
 		}
 
+		const { period: ratePeriod } = found;
 		const resolved = resolvedPeriods.get(ratePeriod.id);
 		if (!resolved) {
 			month++;
@@ -701,13 +693,21 @@ export const $simulationSummary = computed(
 		$overpaymentPolicies,
 	],
 	(months, state, rates, customRates, lenders, _policies) => {
-		// Build resolved periods map for baseline calculation
+		// Build resolved periods map for baseline calculation (stack-based)
 		const resolvedPeriods = new Map<string, ResolvedRatePeriod>();
+		let currentStart = 1;
 		for (const period of state.ratePeriods) {
-			const resolved = resolveRatePeriod(period, rates, customRates, lenders);
+			const resolved = resolveRatePeriod(
+				period,
+				currentStart,
+				rates,
+				customRates,
+				lenders,
+			);
 			if (resolved) {
 				resolvedPeriods.set(period.id, resolved);
 			}
+			currentStart += period.durationMonths;
 		}
 
 		// Calculate baseline interest (without overpayments)
@@ -722,14 +722,22 @@ export const $simulationSummary = computed(
 	},
 );
 
-// Resolved rate periods for display
+// Resolved rate periods for display (stack-based: compute startMonth from position)
 export const $resolvedRatePeriods = computed(
 	[$simulationState, $rates, $customRates, $lenders, $overpaymentPolicies],
 	(state, rates, customRates, lenders, _policies) => {
 		const resolved: ResolvedRatePeriod[] = [];
+		let currentStart = 1;
 		for (const period of state.ratePeriods) {
-			const r = resolveRatePeriod(period, rates, customRates, lenders);
+			const r = resolveRatePeriod(
+				period,
+				currentStart,
+				rates,
+				customRates,
+				lenders,
+			);
 			if (r) resolved.push(r);
+			currentStart += period.durationMonths;
 		}
 		return resolved;
 	},

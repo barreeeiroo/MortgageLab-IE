@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 // Rate Period - references a rate by lenderId + rateId with isCustom flag
+// Stack-based model: periods are sequential, startMonth is computed from position
 export const RatePeriodSchema = z.object({
 	id: z.string(), // UUID for this period instance
 	lenderId: z.string(), // Reference to lender (or custom lender)
 	rateId: z.string(), // Reference to rate in lender's rates (or custom rate)
 	isCustom: z.boolean(), // true = lookup in custom rates, false = lookup in database rates
-	startMonth: z.number().int().positive(), // 1-indexed, month this period starts
-	durationMonths: z.number().int().nonnegative(), // 0 = until end of mortgage
+	durationMonths: z.number().int().nonnegative(), // Fixed: fixedTerm * 12, Variable: user-specified (0 = until end)
 	label: z.string().optional(), // Auto-generated, user can override
 });
 export type RatePeriod = z.infer<typeof RatePeriodSchema>;
@@ -136,6 +136,7 @@ export interface AmortizationResult {
 }
 
 // Resolved Rate Period (after looking up rate details)
+// startMonth is computed from stack position, not stored
 export interface ResolvedRatePeriod {
 	id: string;
 	rate: number;
@@ -144,7 +145,7 @@ export interface ResolvedRatePeriod {
 	lenderId: string;
 	lenderName: string;
 	rateName: string;
-	startMonth: number;
+	startMonth: number; // Computed from stack position
 	durationMonths: number;
 	overpaymentPolicyId?: string;
 	label: string;

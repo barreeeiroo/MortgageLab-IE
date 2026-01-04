@@ -108,18 +108,24 @@ function formatPeriodLabel(
 		if (granularity === "yearly") {
 			return `${dataPoint.calendarYear}`;
 		}
+		if (granularity === "quarterly") {
+			return `Q${dataPoint.calendarQuarter} ${dataPoint.calendarYear}`;
+		}
 		const monthName = MONTH_NAMES[(dataPoint.calendarMonth ?? 1) - 1];
 		return `${monthName} ${dataPoint.calendarYear}`;
 	}
 
-	// Fallback to incremental year/month
+	// Fallback to incremental year/month/quarter
 	if (granularity === "yearly") {
 		return `Year ${dataPoint.year}`;
+	}
+	if (granularity === "quarterly") {
+		return `Year ${dataPoint.year} Q${dataPoint.quarter}`;
 	}
 	return `Year ${dataPoint.year} Month ${dataPoint.month}`;
 }
 
-// Custom dot renderer: show dots for yearly view or January in monthly view
+// Custom dot renderer: show dots for yearly view, Q1 in quarterly, or January in monthly view
 function createDotRenderer(granularity: ChartGranularity, color: string) {
 	return (props: {
 		cx?: number;
@@ -130,9 +136,13 @@ function createDotRenderer(granularity: ChartGranularity, color: string) {
 		const { cx, cy, payload, index } = props;
 		if (cx === undefined || cy === undefined || !payload) return null;
 
-		// Show dot for yearly view, or for January (calendarMonth 1) in monthly view
+		// Show dot for yearly view, Q1 in quarterly, or January (calendarMonth 1) in monthly view
 		const shouldShowDot =
-			granularity === "yearly" || payload.calendarMonth === 1;
+			granularity === "yearly" ||
+			(granularity === "quarterly" &&
+				(payload.calendarQuarter ?? payload.quarter) === 1) ||
+			(granularity === "monthly" &&
+				(payload.calendarMonth ?? payload.month) === 1);
 		if (!shouldShowDot) return null;
 
 		return (
@@ -179,6 +189,9 @@ export function SimulateChart({
 						<TabsList className="h-8">
 							<TabsTrigger value="yearly" className="text-xs px-2">
 								Yearly
+							</TabsTrigger>
+							<TabsTrigger value="quarterly" className="text-xs px-2">
+								Quarterly
 							</TabsTrigger>
 							<TabsTrigger value="monthly" className="text-xs px-2">
 								Monthly
@@ -257,18 +270,31 @@ export function SimulateChart({
 										? `${dataPoint.calendarYear}`
 										: `Y${dataPoint.year}`;
 								}
+								if (granularity === "quarterly") {
+									// Show year for Q1, nothing for other quarters to reduce clutter
+									if ((dataPoint.calendarQuarter ?? dataPoint.quarter) === 1) {
+										return hasCalendarDate
+											? `${dataPoint.calendarYear}`
+											: `Y${dataPoint.year}`;
+									}
+									return "";
+								}
 								// Monthly view: format as year
 								return hasCalendarDate
 									? `${dataPoint.calendarYear}`
 									: `Y${dataPoint.year}`;
 							}}
-							// Only show ticks for yearly data or January months in monthly mode
+							// Only show ticks for yearly data, Q1 in quarterly, or January months in monthly mode
 							ticks={
 								granularity === "yearly"
 									? undefined // Show all ticks in yearly mode
-									: data
-											.filter((d) => d.calendarMonth === 1)
-											.map((d) => d.period)
+									: granularity === "quarterly"
+										? data
+												.filter((d) => (d.calendarQuarter ?? d.quarter) === 1)
+												.map((d) => d.period)
+										: data
+												.filter((d) => (d.calendarMonth ?? d.month) === 1)
+												.map((d) => d.period)
 							}
 							interval="preserveStartEnd"
 						/>

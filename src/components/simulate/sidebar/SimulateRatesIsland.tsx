@@ -13,11 +13,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { $customRates } from "@/lib/stores/custom-rates";
 import { $lenders } from "@/lib/stores/lenders";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
 import { $rates } from "@/lib/stores/rates";
 import {
+	$coveredMonths,
 	$hasRequiredData,
 	$simulationState,
 	$totalMonths,
@@ -36,6 +42,7 @@ export function SimulateRatesIsland() {
 	const simulationState = useStore($simulationState);
 	const hasRequiredData = useStore($hasRequiredData);
 	const totalMonths = useStore($totalMonths);
+	const coveredMonths = useStore($coveredMonths);
 	const resolvedRatePeriods = useStore($resolvedRatePeriods);
 	const warnings = useStore($simulationWarnings);
 	const rates = useStore($rates);
@@ -43,10 +50,15 @@ export function SimulateRatesIsland() {
 	const lenders = useStore($lenders);
 	const overpaymentPolicies = useStore($overpaymentPolicies);
 
+	// Check if mortgage duration is fully covered by rate periods
+	// coveredMonths is -1 when last period is "until end", or a number when explicit
+	const isFullyCovered = coveredMonths === -1 || coveredMonths >= totalMonths;
+
 	const [showAddRatePeriod, setShowAddRatePeriod] = useState(false);
 	const [editingRatePeriod, setEditingRatePeriod] = useState<
 		(typeof simulationState.ratePeriods)[0] | null
 	>(null);
+	const [editingIsLastPeriod, setEditingIsLastPeriod] = useState(false);
 	const [deletingRatePeriod, setDeletingRatePeriod] = useState<string | null>(
 		null,
 	);
@@ -57,45 +69,54 @@ export function SimulateRatesIsland() {
 
 	const { ratePeriods } = simulationState;
 
-	// Sort rate periods by start month
-	const sortedRatePeriods = [...resolvedRatePeriods].sort(
-		(a, b) => a.startMonth - b.startMonth,
-	);
-
-	// Calculate next available start month for new rate period
-	const getNextAvailableMonth = (): number => {
-		if (ratePeriods.length === 0) return 1;
-		const lastPeriod = [...ratePeriods].sort(
-			(a, b) => b.startMonth - a.startMonth,
-		)[0];
-		if (lastPeriod.durationMonths === 0) return lastPeriod.startMonth;
-		return lastPeriod.startMonth + lastPeriod.durationMonths;
-	};
+	// Stack-based model: periods are already in order, no sorting needed
+	// resolvedRatePeriods has computed startMonth for each period
 
 	return (
 		<Card className="py-0 gap-0">
 			<CardHeader className="py-3 px-4">
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-sm font-medium">Rate Periods</CardTitle>
-					<Button
-						variant="ghost"
-						size="sm"
-						className="h-6 gap-1 text-xs px-2"
-						onClick={() => setShowAddRatePeriod(true)}
-					>
-						<Plus className="h-3 w-3" />
-						Add
-					</Button>
+					{isFullyCovered ? (
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span>
+									<Button
+										variant="ghost"
+										size="sm"
+										className="h-6 gap-1 text-xs px-2"
+										disabled
+									>
+										<Plus className="h-3 w-3" />
+										Add
+									</Button>
+								</span>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>Mortgage duration is fully covered</p>
+							</TooltipContent>
+						</Tooltip>
+					) : (
+						<Button
+							variant="ghost"
+							size="sm"
+							className="h-6 gap-1 text-xs px-2"
+							onClick={() => setShowAddRatePeriod(true)}
+						>
+							<Plus className="h-3 w-3" />
+							Add
+						</Button>
+					)}
 				</div>
 			</CardHeader>
 			<CardContent className="pt-0 px-3 pb-3">
-				{sortedRatePeriods.length === 0 ? (
+				{resolvedRatePeriods.length === 0 ? (
 					<p className="text-sm text-muted-foreground text-center py-4">
 						No rate periods defined.
 					</p>
 				) : (
 					<div className="space-y-2">
-						{sortedRatePeriods.map((period, index) => {
+						{resolvedRatePeriods.map((period, index) => {
 							const originalPeriod = ratePeriods.find(
 								(p) => p.id === period.id,
 							);
@@ -114,8 +135,8 @@ export function SimulateRatesIsland() {
 									)
 								: undefined;
 
-							// Only allow deleting the last rate period (stack-based timeline)
-							const isLastPeriod = index === sortedRatePeriods.length - 1;
+							// Stack-based: only allow deleting the last rate period
+							const isLastPeriod = index === resolvedRatePeriods.length - 1;
 							const canDelete = ratePeriods.length > 1 && isLastPeriod;
 
 							return (
@@ -124,7 +145,10 @@ export function SimulateRatesIsland() {
 									period={period}
 									warnings={periodWarnings}
 									overpaymentPolicy={overpaymentPolicy}
-									onEdit={() => setEditingRatePeriod(originalPeriod)}
+									onEdit={() => {
+										setEditingRatePeriod(originalPeriod);
+										setEditingIsLastPeriod(isLastPeriod);
+									}}
 									onDelete={
 										canDelete
 											? () => setDeletingRatePeriod(period.id)
@@ -145,11 +169,9 @@ export function SimulateRatesIsland() {
 				rates={rates}
 				customRates={customRates}
 				lenders={lenders}
-				existingPeriods={ratePeriods}
 				totalMonths={totalMonths}
 				mortgageAmount={simulationState.input.mortgageAmount}
 				propertyValue={simulationState.input.propertyValue}
-				defaultStartMonth={getNextAvailableMonth()}
 			/>
 
 			{/* Edit Rate Period Dialog */}
@@ -164,14 +186,11 @@ export function SimulateRatesIsland() {
 					rates={rates}
 					customRates={customRates}
 					lenders={lenders}
-					existingPeriods={ratePeriods.filter(
-						(p) => p.id !== editingRatePeriod.id,
-					)}
 					totalMonths={totalMonths}
 					mortgageAmount={simulationState.input.mortgageAmount}
 					propertyValue={simulationState.input.propertyValue}
-					defaultStartMonth={editingRatePeriod.startMonth}
 					editingPeriod={editingRatePeriod}
+					isLastPeriod={editingIsLastPeriod}
 				/>
 			)}
 

@@ -23,11 +23,11 @@ import {
 export const SIMULATE_SHARE_PARAM = "s";
 
 // Compressed format for URL (abbreviated keys)
+// Stack-based model: startMonth is computed from position, not stored
 interface CompressedRatePeriod {
 	l: string; // lenderId
 	r: string; // rateId
 	c: boolean; // isCustom
-	s: number; // startMonth
 	d: number; // durationMonths
 	b?: string; // label
 }
@@ -58,7 +58,6 @@ function compressRatePeriod(period: RatePeriod): CompressedRatePeriod {
 		l: period.lenderId,
 		r: period.rateId,
 		c: period.isCustom,
-		s: period.startMonth,
 		d: period.durationMonths,
 		b: period.label,
 	};
@@ -70,7 +69,6 @@ function decompressRatePeriod(compressed: CompressedRatePeriod): RatePeriod {
 		lenderId: compressed.l,
 		rateId: compressed.r,
 		isCustom: compressed.c,
-		startMonth: compressed.s,
 		durationMonths: compressed.d,
 		label: compressed.b,
 	};

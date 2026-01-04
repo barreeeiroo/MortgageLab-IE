@@ -1,4 +1,4 @@
-import { AlertTriangle, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { LenderLogo } from "@/components/lenders";
 import { Button } from "@/components/ui/button";
@@ -32,12 +32,12 @@ interface AddRatePeriodDialogProps {
 	rates: MortgageRate[];
 	customRates: CustomRate[];
 	lenders: Lender[];
-	existingPeriods: RatePeriod[];
 	totalMonths: number;
 	mortgageAmount: number;
 	propertyValue: number;
-	defaultStartMonth: number;
 	editingPeriod?: RatePeriod;
+	/** Whether this is editing the last rate period (controls duration editing for variable rates) */
+	isLastPeriod?: boolean;
 }
 
 interface RateOption {
@@ -51,22 +51,6 @@ interface RateOption {
 	isCustom: boolean;
 }
 
-// Check if two rate periods overlap
-function periodsOverlap(
-	a: { startMonth: number; durationMonths: number },
-	b: { startMonth: number; durationMonths: number },
-	maxMonths: number,
-): boolean {
-	// Calculate end months (0 duration means until end of mortgage)
-	const aEnd =
-		a.durationMonths === 0 ? maxMonths : a.startMonth + a.durationMonths - 1;
-	const bEnd =
-		b.durationMonths === 0 ? maxMonths : b.startMonth + b.durationMonths - 1;
-
-	// Check for overlap
-	return a.startMonth <= bEnd && aEnd >= b.startMonth;
-}
-
 export function SimulateAddRatePeriodDialog({
 	open,
 	onOpenChange,
@@ -74,37 +58,18 @@ export function SimulateAddRatePeriodDialog({
 	rates,
 	customRates,
 	lenders,
-	existingPeriods,
 	totalMonths,
 	mortgageAmount,
 	propertyValue,
-	defaultStartMonth,
 	editingPeriod,
+	isLastPeriod = true,
 }: AddRatePeriodDialogProps) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedRate, setSelectedRate] = useState<RateOption | null>(null);
-	const [startYear, setStartYear] = useState(Math.ceil(defaultStartMonth / 12));
-	const [startMonthOfYear, setStartMonthOfYear] = useState(
-		((defaultStartMonth - 1) % 12) + 1,
-	);
 	const [durationYears, setDurationYears] = useState(0);
 	const [durationExtraMonths, setDurationExtraMonths] = useState(0);
 	const durationMonths = durationYears * 12 + durationExtraMonths;
 	const [customLabel, setCustomLabel] = useState("");
-
-	// Calculate actual month number from year and month
-	const startMonth = (startYear - 1) * 12 + startMonthOfYear;
-
-	// Check for overlaps with existing periods
-	const overlappingPeriod = useMemo(() => {
-		const newPeriod = { startMonth, durationMonths };
-		for (const existing of existingPeriods) {
-			if (periodsOverlap(newPeriod, existing, totalMonths)) {
-				return existing;
-			}
-		}
-		return null;
-	}, [startMonth, durationMonths, existingPeriods, totalMonths]);
 
 	// Calculate LTV for filtering
 	const ltv = propertyValue > 0 ? (mortgageAmount / propertyValue) * 100 : 0;
@@ -193,22 +158,18 @@ export function SimulateAddRatePeriodDialog({
 						r.isCustom === editingPeriod.isCustom,
 				);
 				setSelectedRate(rate || null);
-				setStartYear(Math.ceil(editingPeriod.startMonth / 12));
-				setStartMonthOfYear(((editingPeriod.startMonth - 1) % 12) + 1);
 				setDurationYears(Math.floor(editingPeriod.durationMonths / 12));
 				setDurationExtraMonths(editingPeriod.durationMonths % 12);
 				setCustomLabel(editingPeriod.label || "");
 			} else {
 				setSelectedRate(null);
-				setStartYear(Math.ceil(defaultStartMonth / 12));
-				setStartMonthOfYear(((defaultStartMonth - 1) % 12) + 1);
 				setDurationYears(0);
 				setDurationExtraMonths(0);
 				setCustomLabel("");
 			}
 			setSearchQuery("");
 		}
-	}, [open, editingPeriod, defaultStartMonth, rateOptions]);
+	}, [open, editingPeriod, rateOptions]);
 
 	// Update duration when rate changes (for fixed rates - always lock to fixed term)
 	useEffect(() => {
@@ -219,9 +180,15 @@ export function SimulateAddRatePeriodDialog({
 		}
 	}, [selectedRate]);
 
-	// Check if duration is locked (fixed rate selected)
+	// Check if duration is locked:
+	// - Fixed rates always have locked duration (based on fixedTerm)
+	// - Variable rates: locked when editing a non-last period
 	const isDurationLocked =
-		selectedRate?.type === "fixed" && !!selectedRate.fixedTerm;
+		(selectedRate?.type === "fixed" && !!selectedRate.fixedTerm) ||
+		(editingPeriod && !isLastPeriod);
+
+	// Check if rate selection is disabled (always disabled when editing)
+	const isRateSelectionDisabled = !!editingPeriod;
 
 	const handleSubmit = () => {
 		if (!selectedRate) return;
@@ -236,7 +203,6 @@ export function SimulateAddRatePeriodDialog({
 			lenderId: selectedRate.lenderId,
 			rateId: selectedRate.id,
 			isCustom: selectedRate.isCustom,
-			startMonth,
 			durationMonths,
 			label,
 		});
@@ -244,8 +210,7 @@ export function SimulateAddRatePeriodDialog({
 		onOpenChange(false);
 	};
 
-	const hasOverlap = overlappingPeriod !== null;
-	const isValid = selectedRate !== null && startMonth >= 1 && !hasOverlap;
+	const isValid = selectedRate !== null;
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -263,133 +228,84 @@ export function SimulateAddRatePeriodDialog({
 					{/* Rate Search */}
 					<div className="space-y-2">
 						<Label>Rate</Label>
-						<div className="relative">
-							<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-							<Input
-								placeholder="Search rates..."
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
-								className="pl-9"
-							/>
-						</div>
+						{isRateSelectionDisabled ? (
+							<div className="flex h-10 w-full items-center rounded-md border border-input bg-muted px-3 py-2 text-sm">
+								{selectedRate?.lenderName} - {selectedRate?.name} @{" "}
+								{selectedRate?.rate.toFixed(2)}%
+							</div>
+						) : (
+							<div className="relative">
+								<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+								<Input
+									placeholder="Search rates..."
+									value={searchQuery}
+									onChange={(e) => setSearchQuery(e.target.value)}
+									className="pl-9"
+								/>
+							</div>
+						)}
 
-						{/* Rate Selection */}
-						<ScrollArea className="h-48 border rounded-lg">
-							<div className="p-2 space-y-2">
-								{groupedRates.size === 0 ? (
-									<p className="text-sm text-muted-foreground text-center py-4">
-										No rates match your criteria
-									</p>
-								) : (
-									Array.from(groupedRates.entries()).map(
-										([lenderId, lenderRates]) => {
-											const firstRate = lenderRates[0];
-											return (
-												<div key={lenderId}>
-													<div className="flex items-center gap-2 px-2 py-1">
-														<LenderLogo
-															lenderId={firstRate.lenderId}
-															size={20}
-															isCustom={firstRate.isCustom}
-														/>
-														<span className="text-sm font-medium">
-															{firstRate.lenderName}
-														</span>
+						{/* Rate Selection - only show when not editing */}
+						{!isRateSelectionDisabled && (
+							<ScrollArea className="h-48 border rounded-lg">
+								<div className="p-2 space-y-2">
+									{groupedRates.size === 0 ? (
+										<p className="text-sm text-muted-foreground text-center py-4">
+											No rates match your criteria
+										</p>
+									) : (
+										Array.from(groupedRates.entries()).map(
+											([lenderId, lenderRates]) => {
+												const firstRate = lenderRates[0];
+												return (
+													<div key={lenderId}>
+														<div className="flex items-center gap-2 px-2 py-1">
+															<LenderLogo
+																lenderId={firstRate.lenderId}
+																size={20}
+																isCustom={firstRate.isCustom}
+															/>
+															<span className="text-sm font-medium">
+																{firstRate.lenderName}
+															</span>
+														</div>
+														<div className="space-y-1 ml-7">
+															{lenderRates.map((rate) => (
+																<button
+																	key={`${rate.lenderId}-${rate.id}-${rate.isCustom}`}
+																	type="button"
+																	className={`w-full text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted transition-colors ${
+																		selectedRate?.id === rate.id &&
+																		selectedRate?.lenderId === rate.lenderId &&
+																		selectedRate?.isCustom === rate.isCustom
+																			? "bg-primary/10 border border-primary"
+																			: ""
+																	}`}
+																	onClick={() => setSelectedRate(rate)}
+																>
+																	<div className="flex items-center justify-between">
+																		<span>{rate.name}</span>
+																		<span className="font-medium">
+																			{rate.rate.toFixed(2)}%
+																		</span>
+																	</div>
+																	<div className="text-xs text-muted-foreground">
+																		{rate.type === "fixed" && rate.fixedTerm
+																			? `${rate.fixedTerm} year fixed`
+																			: "Variable"}
+																		{rate.isCustom && " • Custom"}
+																	</div>
+																</button>
+															))}
+														</div>
 													</div>
-													<div className="space-y-1 ml-7">
-														{lenderRates.map((rate) => (
-															<button
-																key={`${rate.lenderId}-${rate.id}-${rate.isCustom}`}
-																type="button"
-																className={`w-full text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted transition-colors ${
-																	selectedRate?.id === rate.id &&
-																	selectedRate?.lenderId === rate.lenderId &&
-																	selectedRate?.isCustom === rate.isCustom
-																		? "bg-primary/10 border border-primary"
-																		: ""
-																}`}
-																onClick={() => setSelectedRate(rate)}
-															>
-																<div className="flex items-center justify-between">
-																	<span>{rate.name}</span>
-																	<span className="font-medium">
-																		{rate.rate.toFixed(2)}%
-																	</span>
-																</div>
-																<div className="text-xs text-muted-foreground">
-																	{rate.type === "fixed" && rate.fixedTerm
-																		? `${rate.fixedTerm} year fixed`
-																		: "Variable"}
-																	{rate.isCustom && " • Custom"}
-																</div>
-															</button>
-														))}
-													</div>
-												</div>
-											);
-										},
-									)
-								)}
-							</div>
-						</ScrollArea>
-					</div>
-
-					{/* Start Year and Month */}
-					<div className="space-y-2">
-						<Label>Starts at</Label>
-						<div className="grid grid-cols-2 gap-4">
-							<div className="space-y-1">
-								<Label
-									htmlFor="startYear"
-									className="text-xs text-muted-foreground"
-								>
-									Year
-								</Label>
-								<Select
-									value={String(startYear)}
-									onValueChange={(v) => setStartYear(Number(v))}
-								>
-									<SelectTrigger id="startYear" className="w-full">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										{Array.from(
-											{ length: Math.ceil(totalMonths / 12) },
-											(_, i) => i + 1,
-										).map((year) => (
-											<SelectItem key={year} value={String(year)}>
-												Year {year}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
-							<div className="space-y-1">
-								<Label
-									htmlFor="startMonthOfYear"
-									className="text-xs text-muted-foreground"
-								>
-									Month
-								</Label>
-								<Select
-									value={String(startMonthOfYear)}
-									onValueChange={(v) => setStartMonthOfYear(Number(v))}
-								>
-									<SelectTrigger id="startMonthOfYear" className="w-full">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										{Array.from({ length: 12 }, (_, i) => i + 1).map(
-											(month) => (
-												<SelectItem key={month} value={String(month)}>
-													Month {month}
-												</SelectItem>
-											),
-										)}
-									</SelectContent>
-								</Select>
-							</div>
-						</div>
+												);
+											},
+										)
+									)}
+								</div>
+							</ScrollArea>
+						)}
 					</div>
 
 					{/* Duration */}
@@ -398,11 +314,27 @@ export function SimulateAddRatePeriodDialog({
 						{isDurationLocked ? (
 							<div className="space-y-1.5">
 								<div className="flex h-10 w-full items-center rounded-md border border-input bg-muted px-3 py-2 text-sm">
-									{selectedRate?.fixedTerm} year
-									{selectedRate?.fixedTerm !== 1 && "s"} (fixed term)
+									{selectedRate?.type === "fixed" && selectedRate.fixedTerm ? (
+										<>
+											{selectedRate.fixedTerm} year
+											{selectedRate.fixedTerm !== 1 && "s"} (fixed term)
+										</>
+									) : durationMonths === 0 ? (
+										"Until end of mortgage"
+									) : (
+										<>
+											{durationYears > 0 &&
+												`${durationYears} year${durationYears !== 1 ? "s" : ""}`}
+											{durationYears > 0 && durationExtraMonths > 0 && " "}
+											{durationExtraMonths > 0 &&
+												`${durationExtraMonths} month${durationExtraMonths !== 1 ? "s" : ""}`}
+										</>
+									)}
 								</div>
 								<p className="text-xs text-muted-foreground">
-									Fixed rate duration is determined by the rate's fixed term
+									{selectedRate?.type === "fixed"
+										? "Fixed rate duration is determined by the rate's fixed term"
+										: "Duration cannot be changed for earlier rate periods"}
 								</p>
 							</div>
 						) : (
@@ -468,21 +400,6 @@ export function SimulateAddRatePeriodDialog({
 							</div>
 						)}
 					</div>
-
-					{/* Overlap Warning */}
-					{hasOverlap && (
-						<div className="flex items-start gap-2 p-3 rounded-md bg-destructive/10 text-destructive text-sm">
-							<AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-							<div>
-								<p className="font-medium">
-									This period overlaps with an existing rate period.
-								</p>
-								<p className="text-destructive/80 text-xs mt-1">
-									Adjust the start date or duration to avoid conflicts.
-								</p>
-							</div>
-						</div>
-					)}
 
 					{/* Custom Label */}
 					<div className="space-y-2">
