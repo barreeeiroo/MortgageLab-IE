@@ -93,7 +93,7 @@ export function SimulateRatePeriodEvent({
 			<PopoverTrigger asChild>
 				<button
 					type="button"
-					className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors hover:bg-muted/50 ${
+					className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors cursor-pointer hover:bg-muted/50 ${
 						hasError
 							? "border-destructive/50"
 							: hasWarnings
@@ -262,7 +262,7 @@ export function SimulateOverpaymentEvent({
 			<PopoverTrigger asChild>
 				<button
 					type="button"
-					className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors hover:bg-muted/50 ${
+					className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors cursor-pointer hover:bg-muted/50 ${
 						hasWarnings ? "border-yellow-500/50" : "border-border"
 					}`}
 				>

@@ -7,13 +7,22 @@ import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "./ThemeToggle";
 import logoLight from "../assets/logos/mortgagelab-logo-horizontal-light.svg";
 import logoDark from "../assets/logos/mortgagelab-logo-horizontal-dark.svg";
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+	const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+	const normalizedPath = currentPath.replace(/\/$/, "");
+	const fullHref = `${base}${href}`.replace(/\/$/, "");
+	return normalizedPath === fullHref || normalizedPath.startsWith(`${fullHref}/`);
+}
 ---
 
 <header class="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 	<div class="container mx-auto px-4">
 		<nav class="flex h-14 items-center justify-between">
 			<div class="flex items-center gap-2 md:gap-8">
-				<MobileNav client:load logoLight={logoLight.src} logoDark={logoDark.src} />
+				<MobileNav client:load logoLight={logoLight.src} logoDark={logoDark.src} currentPath={currentPath} />
 				<a href={getPath("/")} class="shrink-0 hover:opacity-80 transition-opacity">
 					<Image
 						src={logoLight}
@@ -26,18 +35,28 @@ import logoDark from "../assets/logos/mortgagelab-logo-horizontal-dark.svg";
 						class="h-8 w-auto min-w-max hidden dark:block"
 					/>
 				</a>
-				<DesktopNav client:load />
+				<DesktopNav client:load currentPath={currentPath} />
 			</div>
 			<div class="flex items-center gap-4">
 				<a
 					href={getPath("/glossary")}
-					class="hidden md:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+					class:list={[
+						"hidden md:block text-sm transition-colors",
+						isActive("/glossary")
+							? "text-foreground font-medium"
+							: "text-muted-foreground hover:text-foreground"
+					]}
 				>
 					Glossary
 				</a>
 				<a
 					href={getPath("/resources")}
-					class="hidden md:block text-sm text-muted-foreground hover:text-foreground transition-colors"
+					class:list={[
+						"hidden md:block text-sm transition-colors",
+						isActive("/resources")
+							? "text-foreground font-medium"
+							: "text-muted-foreground hover:text-foreground"
+					]}
 				>
 					Resources
 				</a>

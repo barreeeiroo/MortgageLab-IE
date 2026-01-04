@@ -90,9 +90,9 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
 	{
 		id: "principal",
 		term: "Principal",
-		shortDescription: "The amount that reduces your loan balance",
+		shortDescription: "The original amount borrowed",
 		fullDescription:
-			"Principal is the original amount of money borrowed, separate from interest. In the amortization table, this column shows the portion of each payment that goes toward reducing your outstanding loan balance. Early in your mortgage, most of your payment covers interest, but over time the principal portion increases as your balance decreases.",
+			"The principal is the original amount of money you borrow, excluding interest. In the amortization table, this column shows how much of each payment goes toward reducing this balance. Early in your mortgage, most of your payment covers interest, but over time the principal portion increases.",
 		relatedTerms: ["interest", "overpayment"],
 	},
 	{

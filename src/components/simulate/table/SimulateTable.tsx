@@ -110,6 +110,18 @@ export function SimulateTable({
 							<span className="text-muted-foreground">Total Interest: </span>
 							<span className="font-medium">
 								{formatEuro(summary.totalInterest)}
+								{yearlySchedule[0]?.openingBalance > 0 && (
+									<span className="text-muted-foreground font-normal">
+										{" "}
+										(
+										{(
+											(summary.totalInterest /
+												yearlySchedule[0].openingBalance) *
+											100
+										).toFixed(1)}
+										%)
+									</span>
+								)}
 							</span>
 						</div>
 						<div>

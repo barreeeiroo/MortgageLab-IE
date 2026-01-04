@@ -1,7 +1,7 @@
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { NAV_ITEMS } from "../lib/constants";
-import { getPath } from "../lib/utils";
+import { cn, getPath } from "../lib/utils";
 import { Button } from "./ui/button";
 import {
 	Sheet,
@@ -15,9 +15,23 @@ import {
 interface MobileNavProps {
 	logoLight: string;
 	logoDark: string;
+	currentPath: string;
 }
 
-export function MobileNav({ logoLight, logoDark }: MobileNavProps) {
+function isPathActive(currentPath: string, href: string): boolean {
+	const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+	const normalizedPath = currentPath.replace(/\/$/, "");
+	const fullHref = `${base}${href}`.replace(/\/$/, "");
+	return (
+		normalizedPath === fullHref || normalizedPath.startsWith(`${fullHref}/`)
+	);
+}
+
+export function MobileNav({
+	logoLight,
+	logoDark,
+	currentPath,
+}: MobileNavProps) {
 	const [open, setOpen] = useState(false);
 
 	return (
@@ -55,23 +69,36 @@ export function MobileNav({ logoLight, logoDark }: MobileNavProps) {
 									{item.label}
 								</span>
 								<div className="flex flex-col pl-3">
-									{item.children.map((child) => (
-										<SheetClose asChild key={child.href}>
-											<a
-												href={getPath(child.href)}
-												className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-											>
-												{child.label}
-											</a>
-										</SheetClose>
-									))}
+									{item.children.map((child) => {
+										const isActive = isPathActive(currentPath, child.href);
+										return (
+											<SheetClose asChild key={child.href}>
+												<a
+													href={getPath(child.href)}
+													className={cn(
+														"px-3 py-2 text-sm rounded-md transition-colors",
+														isActive
+															? "text-foreground bg-accent/50 font-medium"
+															: "text-muted-foreground hover:text-foreground hover:bg-accent",
+													)}
+												>
+													{child.label}
+												</a>
+											</SheetClose>
+										);
+									})}
 								</div>
 							</div>
 						) : (
 							<SheetClose asChild key={item.href}>
 								<a
 									href={getPath(item.href)}
-									className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+									className={cn(
+										"px-3 py-2 text-sm rounded-md transition-colors",
+										isPathActive(currentPath, item.href)
+											? "text-foreground bg-accent/50 font-medium"
+											: "text-muted-foreground hover:text-foreground hover:bg-accent",
+									)}
 								>
 									{item.label}
 								</a>
@@ -81,7 +108,12 @@ export function MobileNav({ logoLight, logoDark }: MobileNavProps) {
 					<SheetClose asChild>
 						<a
 							href={getPath("/glossary")}
-							className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+							className={cn(
+								"px-3 py-2 text-sm rounded-md transition-colors",
+								isPathActive(currentPath, "/glossary")
+									? "text-foreground bg-accent/50 font-medium"
+									: "text-muted-foreground hover:text-foreground hover:bg-accent",
+							)}
 						>
 							Glossary
 						</a>
@@ -89,7 +121,12 @@ export function MobileNav({ logoLight, logoDark }: MobileNavProps) {
 					<SheetClose asChild>
 						<a
 							href={getPath("/resources")}
-							className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+							className={cn(
+								"px-3 py-2 text-sm rounded-md transition-colors",
+								isPathActive(currentPath, "/resources")
+									? "text-foreground bg-accent/50 font-medium"
+									: "text-muted-foreground hover:text-foreground hover:bg-accent",
+							)}
 						>
 							Resources
 						</a>

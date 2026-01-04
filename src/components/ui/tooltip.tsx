@@ -1,12 +1,20 @@
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import type * as React from "react";
+import {
+	type ComponentProps,
+	createContext,
+	useContext,
+	useState,
+} from "react";
 
 import { cn } from "@/lib/utils";
+
+// Context to share toggle function for mobile click support
+const TooltipToggleContext = createContext<(() => void) | null>(null);
 
 function TooltipProvider({
 	delayDuration = 0,
 	...props
-}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
+}: ComponentProps<typeof TooltipPrimitive.Provider>) {
 	return (
 		<TooltipPrimitive.Provider
 			data-slot="tooltip-provider"
@@ -17,19 +25,56 @@ function TooltipProvider({
 }
 
 function Tooltip({
+	open: controlledOpen,
+	onOpenChange: controlledOnOpenChange,
+	children,
 	...props
-}: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+}: ComponentProps<typeof TooltipPrimitive.Root>) {
+	const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+
+	const isControlled = controlledOpen !== undefined;
+	const open = isControlled ? controlledOpen : uncontrolledOpen;
+	const onOpenChange = isControlled
+		? controlledOnOpenChange
+		: setUncontrolledOpen;
+
+	const toggle = () => onOpenChange?.(!open);
+
 	return (
 		<TooltipProvider>
-			<TooltipPrimitive.Root data-slot="tooltip" {...props} />
+			<TooltipPrimitive.Root
+				data-slot="tooltip"
+				open={open}
+				onOpenChange={onOpenChange}
+				{...props}
+			>
+				<TooltipToggleContext.Provider value={toggle}>
+					{children}
+				</TooltipToggleContext.Provider>
+			</TooltipPrimitive.Root>
 		</TooltipProvider>
 	);
 }
 
 function TooltipTrigger({
+	onClick,
 	...props
-}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-	return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
+}: ComponentProps<typeof TooltipPrimitive.Trigger>) {
+	const toggle = useContext(TooltipToggleContext);
+
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+		// Toggle on click for mobile support
+		toggle?.();
+		onClick?.(e);
+	};
+
+	return (
+		<TooltipPrimitive.Trigger
+			data-slot="tooltip-trigger"
+			onClick={handleClick}
+			{...props}
+		/>
+	);
 }
 
 function TooltipContent({
@@ -37,7 +82,7 @@ function TooltipContent({
 	sideOffset = 0,
 	children,
 	...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+}: ComponentProps<typeof TooltipPrimitive.Content>) {
 	return (
 		<TooltipPrimitive.Portal>
 			<TooltipPrimitive.Content
