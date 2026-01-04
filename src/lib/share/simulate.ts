@@ -1,3 +1,4 @@
+import type { BerRating } from "@/lib/constants";
 import type {
 	OverpaymentConfig,
 	RatePeriod,
@@ -44,9 +45,10 @@ interface CompressedOverpayment {
 interface CompressedSimulation {
 	i: {
 		a: number; // mortgageAmount (cents)
-		t: number; // mortgageTerm (years)
+		t: number; // mortgageTermMonths
 		p: number; // propertyValue (cents)
 		d?: string; // startDate (ISO), optional
+		b: string; // ber rating
 	};
 	r: CompressedRatePeriod[];
 	o?: CompressedOverpayment[];
@@ -115,9 +117,10 @@ function compressState(
 	return {
 		i: {
 			a: state.input.mortgageAmount,
-			t: state.input.mortgageTerm,
+			t: state.input.mortgageTermMonths,
 			p: state.input.propertyValue,
 			d: state.input.startDate,
+			b: state.input.ber,
 		},
 		r: state.ratePeriods.map(compressRatePeriod),
 		o:
@@ -146,9 +149,10 @@ function decompressState(
 		state: {
 			input: {
 				mortgageAmount: compressed.i.a,
-				mortgageTerm: compressed.i.t,
+				mortgageTermMonths: compressed.i.t,
 				propertyValue: compressed.i.p,
 				startDate: compressed.i.d,
+				ber: compressed.i.b as BerRating,
 			},
 			ratePeriods: compressed.r.map(decompressRatePeriod),
 			overpaymentConfigs: compressed.o?.map(decompressOverpayment) ?? [],

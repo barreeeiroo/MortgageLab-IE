@@ -1,5 +1,8 @@
 import { computed } from "nanostores";
-import { calculateMonthlyPayment } from "@/lib/mortgage/payments";
+import {
+	calculateMonthlyPayment,
+	findVariableRate,
+} from "@/lib/mortgage/payments";
 import type { Lender } from "@/lib/schemas/lender";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { MortgageRate } from "@/lib/schemas/rate";
@@ -107,6 +110,7 @@ function resolveRatePeriod(
 
 	return {
 		id: period.id,
+		rateId: period.rateId,
 		rate: rate.rate,
 		type: rate.type,
 		fixedTerm: rate.fixedTerm,
@@ -290,7 +294,7 @@ export function calculateAmortization(
 
 	if (
 		input.mortgageAmount <= 0 ||
-		input.mortgageTerm <= 0 ||
+		input.mortgageTermMonths <= 0 ||
 		ratePeriods.length === 0
 	) {
 		return { months, appliedOverpayments, warnings };
@@ -301,7 +305,7 @@ export function calculateAmortization(
 	let cumulativePrincipal = 0;
 	let cumulativeOverpayments = 0;
 	let month = 1;
-	const maxMonths = input.mortgageTerm * 12;
+	const maxMonths = input.mortgageTermMonths;
 
 	// Track current monthly payment (can change with reduce_payment effect)
 	let currentMonthlyPayment: number | null = null;
@@ -557,18 +561,22 @@ export function aggregateByYear(
  */
 export function calculateBaselineInterest(
 	mortgageAmount: number,
-	mortgageTerm: number,
+	mortgageTermMonths: number,
 	ratePeriods: RatePeriod[],
 	resolvedPeriods: Map<string, ResolvedRatePeriod>,
 ): number {
-	if (mortgageAmount <= 0 || mortgageTerm <= 0 || ratePeriods.length === 0) {
+	if (
+		mortgageAmount <= 0 ||
+		mortgageTermMonths <= 0 ||
+		ratePeriods.length === 0
+	) {
 		return 0;
 	}
 
 	let balance = mortgageAmount;
 	let totalInterest = 0;
 	let month = 1;
-	const maxMonths = mortgageTerm * 12;
+	const maxMonths = mortgageTermMonths;
 
 	let currentMonthlyPayment: number | null = null;
 	let lastRatePeriodId: string | null = null;
@@ -620,7 +628,7 @@ export function calculateBaselineInterest(
 export function calculateSummary(
 	months: AmortizationMonth[],
 	baselineInterest: number,
-	mortgageTerm: number,
+	mortgageTermMonths: number,
 ): SimulationSummary {
 	if (months.length === 0) {
 		return {
@@ -634,7 +642,6 @@ export function calculateSummary(
 
 	const lastMonth = months[months.length - 1];
 	const actualTermMonths = months.length;
-	const expectedTermMonths = mortgageTerm * 12;
 
 	// Calculate interest saved by comparing to baseline (no overpayments)
 	const actualInterest = lastMonth.cumulativeInterest;
@@ -645,7 +652,7 @@ export function calculateSummary(
 		totalPaid: lastMonth.cumulativeTotal,
 		actualTermMonths,
 		interestSaved,
-		monthsSaved: expectedTermMonths - actualTermMonths,
+		monthsSaved: mortgageTermMonths - actualTermMonths,
 	};
 }
 
@@ -713,12 +720,16 @@ export const $simulationSummary = computed(
 		// Calculate baseline interest (without overpayments)
 		const baselineInterest = calculateBaselineInterest(
 			state.input.mortgageAmount,
-			state.input.mortgageTerm,
+			state.input.mortgageTermMonths,
 			state.ratePeriods,
 			resolvedPeriods,
 		);
 
-		return calculateSummary(months, baselineInterest, state.input.mortgageTerm);
+		return calculateSummary(
+			months,
+			baselineInterest,
+			state.input.mortgageTermMonths,
+		);
 	},
 );
 
@@ -887,7 +898,7 @@ export interface SimulationCompleteness {
 export const $simulationCompleteness = computed(
 	[$amortizationSchedule, $simulationState],
 	(months, state): SimulationCompleteness => {
-		const totalMonths = state.input.mortgageTerm * 12;
+		const totalMonths = state.input.mortgageTermMonths;
 
 		if (months.length === 0) {
 			return {
@@ -910,5 +921,94 @@ export const $simulationCompleteness = computed(
 			totalMonths,
 			missingMonths: Math.max(0, totalMonths - months.length),
 		};
+	},
+);
+
+/**
+ * Buffer suggestion: detected transitions where a 1-month variable buffer is recommended.
+ * A buffer is suggested when:
+ * - Current period is fixed
+ * - Next period is NOT the natural follow-on rate (findVariableRate result)
+ *
+ * Returns an array of objects with:
+ * - afterIndex: index of the fixed period (buffer would be inserted after this)
+ * - fixedRate: the MortgageRate of the fixed period
+ * - suggestedRate: the natural follow-on variable rate (for the buffer)
+ * - ltvAtEnd: LTV at the end of the fixed period (for rate eligibility)
+ */
+export interface BufferSuggestion {
+	afterIndex: number;
+	fixedRate: MortgageRate;
+	suggestedRate: MortgageRate;
+	ltvAtEnd: number;
+	lenderName: string; // Name of the lender for the follow-on rate
+}
+
+export const $bufferSuggestions = computed(
+	[
+		$simulationState,
+		$rates,
+		$customRates,
+		$resolvedRatePeriods,
+		$amortizationSchedule,
+	],
+	(state, allRates, customRates, resolvedPeriods, amortizationSchedule) => {
+		const suggestions: BufferSuggestion[] = [];
+		const propertyValue = state.input.propertyValue;
+
+		if (resolvedPeriods.length < 2 || propertyValue <= 0) {
+			return suggestions;
+		}
+
+		for (let i = 0; i < resolvedPeriods.length - 1; i++) {
+			const current = resolvedPeriods[i];
+			const next = resolvedPeriods[i + 1];
+
+			// Only suggest buffer after fixed periods
+			if (current.type !== "fixed") continue;
+
+			// Find the actual MortgageRate for the current fixed period
+			const currentRate = current.isCustom
+				? customRates.find((r) => r.id === current.rateId)
+				: allRates.find((r) => r.id === current.rateId);
+
+			if (!currentRate) continue;
+
+			// Calculate LTV at end of fixed period
+			const endMonth = current.startMonth + current.durationMonths - 1;
+			const monthData = amortizationSchedule.find((m) => m.month === endMonth);
+			const balanceAtEnd =
+				monthData?.closingBalance ?? state.input.mortgageAmount;
+			const ltvAtEnd = (balanceAtEnd / propertyValue) * 100;
+
+			// Find the natural follow-on rate for the current fixed period
+			const naturalFollowOn = findVariableRate(
+				currentRate as MortgageRate,
+				allRates,
+				ltvAtEnd,
+				state.input.ber,
+			);
+
+			// If no natural follow-on found, we can't suggest a buffer
+			if (!naturalFollowOn) continue;
+
+			// Check if next period is the natural follow-on
+			const isNaturalFollowOn =
+				next.rateId === naturalFollowOn.id &&
+				next.lenderId === naturalFollowOn.lenderId &&
+				!next.isCustom;
+
+			if (!isNaturalFollowOn) {
+				suggestions.push({
+					afterIndex: i,
+					fixedRate: currentRate as MortgageRate,
+					suggestedRate: naturalFollowOn,
+					ltvAtEnd,
+					lenderName: current.lenderName,
+				});
+			}
+		}
+
+		return suggestions;
 	},
 );

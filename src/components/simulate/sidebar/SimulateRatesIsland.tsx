@@ -32,11 +32,13 @@ import {
 	updateRatePeriod,
 } from "@/lib/stores/simulate";
 import {
+	$bufferSuggestions,
 	$resolvedRatePeriods,
 	$simulationWarnings,
 } from "@/lib/stores/simulate/simulate-calculations";
 import { formatTransitionDate } from "@/lib/utils/date";
 import { SimulateAddRatePeriodDialog } from "./SimulateAddRatePeriodDialog";
+import { SimulateBufferSuggestion } from "./SimulateBufferSuggestion";
 import { SimulateRatePeriodEvent } from "./SimulateEventCard";
 
 export function SimulateRatesIsland() {
@@ -46,6 +48,7 @@ export function SimulateRatesIsland() {
 	const coveredMonths = useStore($coveredMonths);
 	const resolvedRatePeriods = useStore($resolvedRatePeriods);
 	const warnings = useStore($simulationWarnings);
+	const bufferSuggestions = useStore($bufferSuggestions);
 	const rates = useStore($rates);
 	const customRates = useStore($customRates);
 	const lenders = useStore($lenders);
@@ -175,6 +178,15 @@ export function SimulateRatesIsland() {
 													nextPeriodStartMonth,
 												)}
 											</span>
+											{/* Buffer suggestion warning */}
+											{(() => {
+												const suggestion = bufferSuggestions.find(
+													(s) => s.afterIndex === index,
+												);
+												return suggestion ? (
+													<SimulateBufferSuggestion suggestion={suggestion} />
+												) : null;
+											})()}
 										</div>
 									)}
 								</div>

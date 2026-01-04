@@ -20,6 +20,8 @@ export const BER_RATINGS = [
 
 export type BerRating = (typeof BER_RATINGS)[number];
 
+export const DEFAULT_BER: BerRating = "C1";
+
 // BER group aliases
 export const BER_GROUP_A: BerRating[] = ["A1", "A2", "A3"];
 export const BER_GROUP_B: BerRating[] = ["B1", "B2", "B3"];

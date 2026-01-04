@@ -30,7 +30,7 @@ import { formatCurrency } from "@/lib/utils";
 interface SimulateHeaderProps {
 	hasRequiredData: boolean;
 	mortgageAmount: number;
-	mortgageTerm: number;
+	mortgageTermMonths: number;
 	startDate?: string;
 	ratePeriodCount: number;
 	overpaymentCount: number;
@@ -57,10 +57,20 @@ function formatDateLocal(date: Date): string {
 	return `${year}-${month}-${day}`;
 }
 
+// Format term in months as "X years" or "X years Y months"
+function formatTermDisplay(months: number): string {
+	const years = Math.floor(months / 12);
+	const remainingMonths = months % 12;
+	if (remainingMonths === 0) {
+		return `${years} years`;
+	}
+	return `${years}y ${remainingMonths}m`;
+}
+
 export function SimulateHeader({
 	hasRequiredData,
 	mortgageAmount,
-	mortgageTerm,
+	mortgageTermMonths,
 	startDate,
 	ratePeriodCount,
 	overpaymentCount,
@@ -159,7 +169,9 @@ export function SimulateHeader({
 								<CalendarClock className="h-3.5 w-3.5" />
 								Original Term
 							</CardDescription>
-							<CardTitle className="text-2xl">{mortgageTerm} years</CardTitle>
+							<CardTitle className="text-2xl">
+								{formatTermDisplay(mortgageTermMonths)}
+							</CardTitle>
 						</CardHeader>
 					</Card>
 					<Card>
@@ -222,11 +234,11 @@ export function SimulateHeader({
 						<AlertTitle>Incomplete Simulation</AlertTitle>
 						<AlertDescription>
 							Your rate periods only cover {completeness.coveredMonths} of{" "}
-							{completeness.totalMonths} months ({mortgageTerm} years). There is
-							a remaining balance of{" "}
-							{formatCurrency(completeness.remainingBalance / 100)} that is not
-							covered. Add more rate periods or overpayments to complete the
-							simulation.
+							{completeness.totalMonths} months (
+							{formatTermDisplay(mortgageTermMonths)}). There is a remaining
+							balance of {formatCurrency(completeness.remainingBalance / 100)}{" "}
+							that is not covered. Add more rate periods or overpayments to
+							complete the simulation.
 						</AlertDescription>
 					</Alert>
 				)}

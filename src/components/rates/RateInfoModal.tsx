@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+	type BerRating,
+	DEFAULT_BER,
 	GLOSSARY_TERMS_MAP,
 	getIncorrectRateUrl,
 	type RatesMode,
@@ -469,8 +471,9 @@ export function RateInfoModal({
 
 		initializeFromRate({
 			mortgageAmount: mortgageAmountCents,
-			mortgageTerm: selectedTerm,
+			mortgageTermMonths: selectedTerm * 12,
 			propertyValue: propertyValueCents,
+			ber: (berRating as BerRating) ?? DEFAULT_BER,
 			lenderId: rate.lenderId,
 			rateId: rate.id,
 			isCustom: isCustom,

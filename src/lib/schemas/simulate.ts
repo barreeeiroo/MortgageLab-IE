@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BerRatingSchema } from "./rate";
 
 // Rate Period - references a rate by lenderId + rateId with isCustom flag
 // Stack-based model: periods are sequential, startMonth is computed from position
@@ -43,9 +44,10 @@ export type OverpaymentConfig = z.infer<typeof OverpaymentConfigSchema>;
 // Simulation Input Values
 export const SimulateInputValuesSchema = z.object({
 	mortgageAmount: z.number().positive(), // Principal amount in cents
-	mortgageTerm: z.number().int().positive(), // Total term in years
+	mortgageTermMonths: z.number().int().positive(), // Total term in months
 	propertyValue: z.number().positive(), // For LTV calculations
 	startDate: z.string().optional(), // ISO date string "2025-02-01", undefined = relative periods
+	ber: BerRatingSchema, // BER rating for green rate eligibility
 });
 export type SimulateInputValues = z.infer<typeof SimulateInputValuesSchema>;
 
@@ -139,6 +141,7 @@ export interface AmortizationResult {
 // startMonth is computed from stack position, not stored
 export interface ResolvedRatePeriod {
 	id: string;
+	rateId: string; // Reference to the rate
 	rate: number;
 	type: "fixed" | "variable";
 	fixedTerm?: number;

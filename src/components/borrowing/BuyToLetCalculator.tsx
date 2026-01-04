@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
 	CENTRAL_BANK_MORTGAGE_MEASURES_URL,
+	DEFAULT_BER,
 	LENDER_ALLOWANCES,
 	LTI_LIMITS,
 	LTV_LIMITS,
@@ -71,7 +72,7 @@ export function BuyToLetCalculator() {
 	const [birthDate2, setBirthDate2] = useState<Date | undefined>(undefined);
 	const [deposit, setDeposit] = useState("");
 	const [expectedRent, setExpectedRent] = useState("");
-	const [berRating, setBerRating] = useState("C1");
+	const [berRating, setBerRating] = useState(DEFAULT_BER);
 	const [calculationResult, setCalculationResult] =
 		useState<CalculationResult | null>(null);
 	const [showResultDialog, setShowResultDialog] = useState(false);

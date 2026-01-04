@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
 	CENTRAL_BANK_MORTGAGE_MEASURES_URL,
+	DEFAULT_BER,
 	LENDER_ALLOWANCES,
 	LTI_LIMITS,
 	LTV_LIMITS,
@@ -58,7 +59,7 @@ export function HomeMoverCalculator() {
 	const [currentPropertyValue, setCurrentPropertyValue] = useState("");
 	const [outstandingMortgage, setOutstandingMortgage] = useState("");
 	const [additionalSavings, setAdditionalSavings] = useState("");
-	const [berRating, setBerRating] = useState("C1");
+	const [berRating, setBerRating] = useState(DEFAULT_BER);
 	const [calculationResult, setCalculationResult] =
 		useState<CalculationResult | null>(null);
 	const [showResultDialog, setShowResultDialog] = useState(false);

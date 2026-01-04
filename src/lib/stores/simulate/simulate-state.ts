@@ -1,4 +1,5 @@
 import { atom, computed } from "nanostores";
+import { DEFAULT_BER } from "@/lib/constants";
 import type {
 	OverpaymentConfig,
 	RatePeriod,
@@ -35,9 +36,10 @@ function getDefaultStartDate(): string {
 // Default input values
 export const DEFAULT_INPUT: SimulateInputValues = {
 	mortgageAmount: 0,
-	mortgageTerm: 30,
+	mortgageTermMonths: 360, // 30 years
 	propertyValue: 0,
 	startDate: undefined,
+	ber: DEFAULT_BER,
 };
 
 // Default simulation state
@@ -108,7 +110,7 @@ export const $hasRequiredData = computed($simulationState, (state) => {
 	const { input, ratePeriods } = state;
 	return (
 		input.mortgageAmount > 0 &&
-		input.mortgageTerm > 0 &&
+		input.mortgageTermMonths > 0 &&
 		input.propertyValue > 0 &&
 		ratePeriods.length > 0
 	);
@@ -160,7 +162,7 @@ export const $ltv = computed($input, (input) =>
 // Computed: total mortgage term in months
 export const $totalMonths = computed(
 	$input,
-	(input) => input.mortgageTerm * 12,
+	(input) => input.mortgageTermMonths,
 );
 
 // Computed: list of custom rate IDs used (for sharing)
@@ -227,6 +229,24 @@ export function setRatePeriods(periods: RatePeriod[]): void {
 	$simulationState.set({
 		...current,
 		ratePeriods: periods,
+	});
+}
+
+// Insert a rate period at a specific index (for variable buffer insertion)
+export function insertRatePeriodAt(
+	period: Omit<RatePeriod, "id">,
+	index: number,
+): void {
+	const current = $simulationState.get();
+	const newPeriod: RatePeriod = {
+		...period,
+		id: crypto.randomUUID(),
+	};
+	const newPeriods = [...current.ratePeriods];
+	newPeriods.splice(index, 0, newPeriod);
+	$simulationState.set({
+		...current,
+		ratePeriods: newPeriods,
 	});
 }
 
@@ -305,8 +325,9 @@ export function resetSimulation(): void {
 // Initialize simulation from rates page data
 export function initializeFromRate(params: {
 	mortgageAmount: number;
-	mortgageTerm: number;
+	mortgageTermMonths: number;
 	propertyValue: number;
+	ber: SimulateInputValues["ber"];
 	lenderId: string;
 	rateId: string;
 	isCustom: boolean;
@@ -321,8 +342,9 @@ export function initializeFromRate(params: {
 }): void {
 	const {
 		mortgageAmount,
-		mortgageTerm,
+		mortgageTermMonths,
 		propertyValue,
+		ber,
 		lenderId,
 		rateId,
 		isCustom,
@@ -362,9 +384,10 @@ export function initializeFromRate(params: {
 	const newState: SimulationState = {
 		input: {
 			mortgageAmount,
-			mortgageTerm,
+			mortgageTermMonths,
 			propertyValue,
 			startDate,
+			ber,
 		},
 		ratePeriods,
 		overpaymentConfigs: [],

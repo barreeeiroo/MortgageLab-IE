@@ -1,5 +1,5 @@
 import { atom, computed } from "nanostores";
-import type { RatesMode } from "@/lib/constants";
+import { DEFAULT_BER, type RatesMode } from "@/lib/constants";
 import { parseCurrency } from "@/lib/utils";
 
 export interface RatesInputValues {
@@ -20,7 +20,7 @@ export const DEFAULT_VALUES: RatesInputValues = {
 	mortgageAmount: "",
 	monthlyRepayment: "",
 	mortgageTerm: "30",
-	berRating: "C1",
+	berRating: DEFAULT_BER,
 	buyerType: "ftb",
 	currentLender: "",
 };
@@ -59,6 +59,13 @@ export const $mortgageTerm = computed(
 	$formValues,
 	(values) => Number.parseInt(values.mortgageTerm, 10) || 30,
 );
+
+export const $mortgageTermMonths = computed(
+	$mortgageTerm,
+	(years) => years * 12,
+);
+
+export const $berRating = computed($formValues, (values) => values.berRating);
 
 export const $isPrimaryResidence = computed(
 	$formValues,

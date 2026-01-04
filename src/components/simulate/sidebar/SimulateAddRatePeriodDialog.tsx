@@ -349,7 +349,11 @@ export function SimulateAddRatePeriodDialog({
 						{editingPeriod ? "Edit Rate Period" : "Add Rate Period"}
 					</DialogTitle>
 					<DialogDescription>
-						Select a rate and configure when it applies to your mortgage.
+						{editingPeriod
+							? isLastPeriod && selectedRate?.type === "variable"
+								? "Update the duration or label for this rate period."
+								: "Update the label for this rate period."
+							: "Select a rate and configure when it applies to your mortgage."}
 					</DialogDescription>
 				</DialogHeader>
 

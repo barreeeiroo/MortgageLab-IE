@@ -71,7 +71,7 @@ export function SimulateHeaderIsland() {
 		<SimulateHeader
 			hasRequiredData={hasRequiredData}
 			mortgageAmount={simulationState.input.mortgageAmount}
-			mortgageTerm={simulationState.input.mortgageTerm}
+			mortgageTermMonths={simulationState.input.mortgageTermMonths}
 			startDate={simulationState.input.startDate}
 			ratePeriodCount={simulationState.ratePeriods.length}
 			overpaymentCount={simulationState.overpaymentConfigs.length}
