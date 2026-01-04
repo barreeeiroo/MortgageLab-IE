@@ -103,9 +103,9 @@ export function SimulateTable({
 	return (
 		<Card>
 			<CardHeader className="pb-2">
-				<div className="flex items-center justify-between">
+				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 					<CardTitle>Amortization Schedule</CardTitle>
-					<div className="flex gap-4 text-sm">
+					<div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
 						<div>
 							<span className="text-muted-foreground">Total Interest: </span>
 							<span className="font-medium">
