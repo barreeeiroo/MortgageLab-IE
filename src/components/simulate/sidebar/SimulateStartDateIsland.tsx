@@ -73,6 +73,12 @@ export function SimulateStartDateIsland() {
 						/>
 					</PopoverContent>
 				</Popover>
+				{startDate && (
+					<p className="text-xs text-muted-foreground mt-2">
+						Periods are stored relatively. Changing the start date shifts all
+						rates and overpayments accordingly.
+					</p>
+				)}
 			</CardContent>
 		</Card>
 	);
