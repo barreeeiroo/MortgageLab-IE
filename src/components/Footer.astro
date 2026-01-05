@@ -1,23 +1,20 @@
 ---
 import { Github, Mail } from "lucide-react";
 import { AUTHOR } from "@/lib/constants";
+import { FooterLinks } from "@/components/FooterLinks";
 
 const currentYear = new Date().getFullYear();
 ---
 
 <footer class="border-t border-border bg-muted/30">
 	<div class="container mx-auto px-4 py-8">
-		<div class="flex flex-col gap-4 text-sm text-muted-foreground">
-			<p class="text-xs leading-relaxed">
-				The information provided on this website is intended for general informational purposes only.
-				While efforts are made to keep the information accurate and up-to-date, no representations
-				or warranties of any kind are made about the completeness, accuracy, or reliability of the
-				information provided. Any reliance placed on such information is done strictly at your own risk.
-				This website should not be considered as financial advice. A qualified financial advisor should
-				be consulted before making any mortgage decisions.
-			</p>
-			<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
-				<p>
+		<div class="flex flex-col gap-4 text-muted-foreground">
+			<!-- Row 1: Modals (left) and GitHub links (right) -->
+			<FooterLinks client:load />
+
+			<!-- Row 2: Copyright (left) and Contact links (right) -->
+			<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+				<p class="text-sm">
 					&copy; {currentYear} <a
 						href={AUTHOR.website}
 						target="_blank"
@@ -25,7 +22,7 @@ const currentYear = new Date().getFullYear();
 						class="text-primary hover:underline"
 					>{AUTHOR.name}</a>. All rights reserved.
 				</p>
-				<div class="flex items-center gap-4">
+				<div class="flex items-center gap-4 text-sm">
 					<a
 						href={`mailto:${AUTHOR.email}`}
 						class="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
