@@ -47,7 +47,7 @@ export function SimulateEmptyState() {
 										mode: "first-mortgage",
 										buyerType: "ftb",
 									});
-									window.location.href = `${getPath("/rates")}#first-mortgage`;
+									window.location.href = `${getPath("/rates")}?from=simulate#first-mortgage`;
 								}}
 							>
 								Compare Rates
