@@ -405,7 +405,8 @@ export function calculateAmortization(
 		// Check if we need to start tracking a new year
 		const isNewYear =
 			!yearlyOverpaymentsByPeriod.has(periodYear) ||
-			(calendarYear !== undefined && isFirstMonthOfCalendarYear(input.startDate, month));
+			(calendarYear !== undefined &&
+				isFirstMonthOfCalendarYear(input.startDate, month));
 
 		if (isNewYear && !yearlyOverpaymentsByPeriod.has(periodYear)) {
 			yearlyOverpaymentsByPeriod.set(periodYear, 0);

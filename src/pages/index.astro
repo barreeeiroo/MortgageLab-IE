@@ -1,21 +1,371 @@
 ---
+import {
+	// E2E Journey
+	Calculator,
+	TrendingUp,
+	LineChart,
+	ChevronRight,
+	// Key Features
+	Shield,
+	RefreshCw,
+	Share2,
+	HardDrive,
+	Github,
+	// Affordability
+	Home,
+	ArrowRightLeft,
+	Building,
+	// Hero
+	BarChart3,
+	Play,
+	// UI
+	ArrowRight,
+} from "lucide-react";
+import { AUTHOR } from "@/lib/constants/site";
+import { FeedbackButtonsIsland } from "@/components/FeedbackButtonsIsland";
+import { LenderLogosIsland } from "@/components/lenders";
 import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import Layout from "../layouts/Layout.astro";
+import { getPath } from "@/lib/utils";
+
+const journeySteps = [
+	{
+		step: 1,
+		title: "Check Affordability",
+		description: "Calculate how much you can borrow",
+		href: "/affordability/first-time-buyer",
+		Icon: Calculator,
+	},
+	{
+		step: 2,
+		title: "Compare Rates",
+		description: "Find the best rates from Irish lenders",
+		href: "/rates",
+		Icon: TrendingUp,
+	},
+	{
+		step: 3,
+		title: "Simulate",
+		description: "Model your mortgage journey over time",
+		href: "/simulate",
+		Icon: LineChart,
+	},
+];
+
+const keyFeatures = [
+	{
+		title: "100% Local",
+		description:
+			"Everything runs in your browser. No server calls, no data collection. Your financial details stay private.",
+		Icon: Shield,
+	},
+	{
+		title: "Daily Rate Updates",
+		description:
+			"Rates are updated daily from official lender websites, so you always see current pricing.",
+		Icon: RefreshCw,
+	},
+	{
+		title: "Shareable URLs",
+		description:
+			"Share your calculations with others via URL. Great for comparing options with a partner or advisor.",
+		Icon: Share2,
+	},
+	{
+		title: "Persistent State",
+		description:
+			"Your searches, rate selections, and simulations are saved in your browser automatically.",
+		Icon: HardDrive,
+	},
+	{
+		title: "Open Source",
+		description:
+			"Fully open source. Inspect the code, suggest improvements, or contribute on GitHub.",
+		Icon: Github,
+		href: AUTHOR.github,
+	},
+];
+
+const affordabilityCalculators = [
+	{
+		title: "First Time Buyer",
+		description:
+			"Calculate your maximum borrowing capacity as a first-time buyer with Central Bank lending rules.",
+		href: "/affordability/first-time-buyer",
+		Icon: Home,
+	},
+	{
+		title: "Home Mover",
+		description:
+			"Moving to a new home? Calculate how much you can borrow based on your current equity and income.",
+		href: "/affordability/home-mover",
+		Icon: ArrowRightLeft,
+	},
+	{
+		title: "Buy to Let",
+		description:
+			"Explore buy-to-let mortgage options with calculations based on rental income and investment rules.",
+		href: "/affordability/buy-to-let",
+		Icon: Building,
+	},
+];
+
+const tools = [
+	{
+		title: "Rates Comparison",
+		description:
+			"Compare current mortgage rates from all major Irish lenders. Filter by LTV, fixed period, buyer type, and property characteristics.",
+		href: "/rates",
+		Icon: TrendingUp,
+	},
+	{
+		title: "Mortgage Simulator",
+		description:
+			"Simulate new mortgages or remortgages with rate changes over time, overpayment scenarios, and interactive charts.",
+		href: "/simulate",
+		Icon: LineChart,
+	},
+];
+
 ---
 
 <Layout
 	description="Compare mortgage rates, calculate affordability, and simulate your full mortgage journey in Ireland. Tools for first-time buyers, home movers, switchers, and buy-to-let investors."
 >
-	<div class="container mx-auto px-4 py-16">
-		<div class="max-w-2xl mx-auto text-center space-y-6">
-			<h1 class="text-4xl font-bold tracking-tight">MortgageLab Ireland</h1>
-			<p class="text-muted-foreground text-lg">
-				Compare and simulate mortgages from Irish lenders
+	<!-- Hero Section -->
+	<div class="container mx-auto px-4 py-20">
+		<div class="max-w-3xl mx-auto text-center space-y-6">
+			<h1 class="text-4xl md:text-5xl font-bold tracking-tight">
+				Your Complete Mortgage Toolkit for Ireland
+			</h1>
+			<p class="text-xl text-muted-foreground">
+				Compare rates, calculate affordability, and simulate your entire
+				mortgage journey with tools designed for Irish home buyers.
 			</p>
-			<div class="flex gap-4 justify-center">
-				<Button client:load>Get Started</Button>
-				<Button variant="outline" client:load>Learn More</Button>
+			<div class="flex gap-4 justify-center flex-wrap">
+				<a href={getPath("/rates")}>
+					<Button size="lg" className="gap-2" client:load>
+						<BarChart3 className="h-5 w-5" />
+						Compare Rates
+					</Button>
+				</a>
+				<a href={getPath("/simulate")}>
+					<Button variant="outline" size="lg" className="gap-2" client:load>
+						<Play className="h-5 w-5" />
+						Try Simulator
+					</Button>
+				</a>
 			</div>
 		</div>
 	</div>
+
+	<!-- E2E Journey Section -->
+	<section class="container mx-auto px-4 py-12">
+		<div class="max-w-5xl mx-auto">
+			<div class="text-center mb-10">
+				<h2 class="text-3xl font-bold tracking-tight mb-2">
+					Your Mortgage Journey
+				</h2>
+				<p class="text-muted-foreground">
+					Three steps to understand and plan your mortgage
+				</p>
+			</div>
+
+			<div
+				class="grid gap-4 md:grid-cols-3 md:gap-0 items-center justify-center"
+			>
+				{
+					journeySteps.map((step, index) => (
+						<div class="flex items-center">
+							<a
+								href={getPath(step.href)}
+								class="flex-1 group block text-center p-6 rounded-xl hover:bg-muted/50 transition-colors"
+							>
+								<div class="inline-flex items-center justify-center p-4 rounded-full bg-primary/10 mb-4">
+									<step.Icon className="h-8 w-8 text-primary" />
+								</div>
+								<div class="text-sm font-medium text-primary mb-1">
+									Step {step.step}
+								</div>
+								<h3 class="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">
+									{step.title}
+								</h3>
+								<p class="text-sm text-muted-foreground">{step.description}</p>
+							</a>
+							{index < journeySteps.length - 1 && (
+								<div class="hidden md:flex items-center justify-center px-2">
+									<ChevronRight className="h-6 w-6 text-muted-foreground" />
+								</div>
+							)}
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Key Features Section -->
+	<section class="bg-muted/30 py-12">
+		<div class="container mx-auto px-4">
+			<div class="max-w-5xl mx-auto">
+				<div class="text-center mb-10">
+					<h2 class="text-3xl font-bold tracking-tight mb-2">
+						Built Different
+					</h2>
+					<p class="text-muted-foreground">
+						What makes MortgageLab stand out
+					</p>
+				</div>
+
+				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+					{
+						keyFeatures.map((feature) => (
+							<div class="text-center p-4">
+								<div class="inline-flex items-center justify-center p-3 rounded-lg bg-primary/10 mb-3">
+									<feature.Icon className="h-5 w-5 text-primary" />
+								</div>
+								<h3 class="font-semibold mb-1">{feature.title}</h3>
+								<p class="text-sm text-muted-foreground">
+									{feature.description}
+								</p>
+								{feature.href && (
+									<a
+										href={feature.href}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="inline-flex items-center gap-1 mt-2 text-sm text-primary hover:underline"
+									>
+										View on GitHub
+										<ArrowRight className="h-3 w-3" />
+									</a>
+								)}
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Affordability Section -->
+	<section class="container mx-auto px-4 py-12">
+		<div class="max-w-5xl mx-auto">
+			<div class="text-center mb-10">
+				<h2 class="text-3xl font-bold tracking-tight mb-2">
+					Affordability Calculators
+				</h2>
+				<p class="text-muted-foreground">
+					Find out how much you can borrow based on your situation
+				</p>
+			</div>
+
+			<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+				{
+					affordabilityCalculators.map((calc) => (
+						<a href={getPath(calc.href)} class="block group">
+							<Card className="h-full hover:border-primary/50 transition-colors">
+								<CardHeader>
+									<div class="flex items-center gap-3">
+										<div class="p-2.5 rounded-lg bg-primary/10">
+											<calc.Icon className="h-5 w-5 text-primary" />
+										</div>
+										<CardTitle className="text-lg">{calc.title}</CardTitle>
+									</div>
+									<CardDescription>{calc.description}</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<span class="inline-flex items-center gap-1 text-primary font-medium text-sm group-hover:gap-2 transition-all">
+										Calculate <ArrowRight className="h-4 w-4" />
+									</span>
+								</CardContent>
+							</Card>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Tools Section -->
+	<section class="bg-muted/30 py-12">
+		<div class="container mx-auto px-4">
+			<div class="max-w-5xl mx-auto">
+				<div class="text-center mb-10">
+					<h2 class="text-3xl font-bold tracking-tight mb-2">Powerful Tools</h2>
+					<p class="text-muted-foreground">
+						Compare rates and simulate your mortgage journey
+					</p>
+				</div>
+
+				<div class="grid gap-6 md:grid-cols-2">
+					{
+						tools.map((tool) => (
+							<a href={getPath(tool.href)} class="block group">
+								<Card className="h-full hover:border-primary/50 transition-colors">
+									<CardHeader>
+										<div class="flex items-center gap-3">
+											<div class="p-2.5 rounded-lg bg-primary/10">
+												<tool.Icon className="h-5 w-5 text-primary" />
+											</div>
+											<CardTitle className="text-lg">{tool.title}</CardTitle>
+										</div>
+										<CardDescription>{tool.description}</CardDescription>
+									</CardHeader>
+									<CardContent>
+										<span class="inline-flex items-center gap-1 text-primary font-medium text-sm group-hover:gap-2 transition-all">
+											Get Started <ArrowRight className="h-4 w-4" />
+										</span>
+									</CardContent>
+								</Card>
+							</a>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Lenders Section -->
+	<section class="container mx-auto px-4 py-12">
+		<div class="max-w-5xl mx-auto">
+			<div class="text-center mb-10">
+				<h2 class="text-3xl font-bold tracking-tight mb-2">
+					All Major Irish Lenders
+				</h2>
+				<p class="text-muted-foreground">
+					Compare rates from every mortgage provider in Ireland
+				</p>
+			</div>
+
+			<LenderLogosIsland client:load />
+		</div>
+	</section>
+
+	<!-- Beta Notice Section -->
+	<section class="bg-muted/30 py-12">
+		<div class="container mx-auto px-4">
+			<div class="max-w-2xl mx-auto text-center">
+				<div
+					class="inline-block px-3 py-1 mb-4 text-xs font-medium rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400"
+				>
+					Beta
+				</div>
+				<h2 class="text-2xl font-bold tracking-tight mb-3">
+					Help Us Improve
+				</h2>
+				<p class="text-muted-foreground mb-6">
+					MortgageLab is currently in beta. If you encounter any bugs or have
+					ideas for new features, we'd love to hear from you.
+				</p>
+				<FeedbackButtonsIsland client:load />
+			</div>
+		</div>
+	</section>
 </Layout>

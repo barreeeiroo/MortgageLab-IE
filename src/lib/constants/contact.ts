@@ -118,7 +118,8 @@ interface BugReportParams {
 	expectedBehaviour?: string;
 	steps?: string;
 	browser?: string;
-	context?: string;
+	/** Where the report was generated from (e.g., "Landing page") */
+	reportSource?: string;
 }
 
 /**
@@ -129,7 +130,7 @@ export function getBugReportUrl({
 	expectedBehaviour,
 	steps,
 	browser,
-	context,
+	reportSource,
 }: BugReportParams = {}): string {
 	const params = new URLSearchParams({
 		template: "1-bug-report.yml",
@@ -151,8 +152,44 @@ export function getBugReportUrl({
 		params.set("browser", browser);
 	}
 
-	if (context) {
-		params.set("context", context);
+	// Build context with report source footer
+	if (reportSource) {
+		params.set("context", `\n\n_Reported from ${reportSource}_`);
+	}
+
+	return `${AUTHOR.github}/issues/new?${params.toString()}`;
+}
+
+interface FeatureRequestParams {
+	description?: string;
+	useCase?: string;
+	/** Where the report was generated from (e.g., "Landing page") */
+	reportSource?: string;
+}
+
+/**
+ * Generate a URL for requesting a new feature
+ */
+export function getFeatureRequestUrl({
+	description,
+	useCase,
+	reportSource,
+}: FeatureRequestParams = {}): string {
+	const params = new URLSearchParams({
+		template: "2-feature-request.yml",
+	});
+
+	if (description) {
+		params.set("description", description);
+	}
+
+	if (useCase) {
+		params.set("use-case", useCase);
+	}
+
+	// Build context with report source footer
+	if (reportSource) {
+		params.set("context", `\n\n_Reported from ${reportSource}_`);
 	}
 
 	return `${AUTHOR.github}/issues/new?${params.toString()}`;
