@@ -1,7 +1,6 @@
 import { AlertCircle, HelpCircle, Info, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { RatesMode } from "@/lib/constants";
-import { GLOSSARY_TERMS_MAP } from "@/lib/constants/glossary";
 import type { Lender } from "@/lib/schemas";
 import type { RatesInputValues } from "@/lib/stores";
 import {
@@ -14,6 +13,7 @@ import { LenderOption } from "../lenders";
 import { BerSelector } from "../selectors/BerSelector";
 import { BuyerTypeSelector } from "../selectors/BuyerTypeSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
+import { GlossaryTermTooltip } from "../tooltips";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
@@ -331,24 +331,7 @@ export function RatesInput({
 										<Label htmlFor="ltvRange" className="text-xs">
 											LTV
 										</Label>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<button
-													type="button"
-													className="text-muted-foreground hover:text-foreground"
-												>
-													<HelpCircle className="h-3 w-3" />
-												</button>
-											</TooltipTrigger>
-											<TooltipContent className="max-w-xs">
-												<p className="font-medium mb-1">
-													{GLOSSARY_TERMS_MAP.ltv.term}
-												</p>
-												<p className="text-sm">
-													{GLOSSARY_TERMS_MAP.ltv.fullDescription}
-												</p>
-											</TooltipContent>
-										</Tooltip>
+										<GlossaryTermTooltip termId="ltv" size="sm" />
 									</div>
 									<Input
 										id="ltvRange"

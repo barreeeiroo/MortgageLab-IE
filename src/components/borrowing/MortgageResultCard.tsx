@@ -1,18 +1,12 @@
-import { HelpCircle } from "lucide-react";
 import type { ReactNode } from "react";
-import { GLOSSARY_TERMS_MAP } from "@/lib/constants/glossary";
 import {
 	calculateStampDuty,
 	ESTIMATED_LEGAL_FEES,
 	formatCurrency,
 } from "@/lib/utils";
+import { GlossaryTermTooltip } from "../tooltips";
 import { Card, CardContent } from "../ui/card";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "../ui/tooltip";
+import { TooltipProvider } from "../ui/tooltip";
 
 export interface MortgageResult {
 	propertyValue: number;
@@ -49,9 +43,6 @@ export function MortgageResultCard({
 	const cardStyles = isConstrained
 		? "bg-amber-500/10 border-amber-500/30"
 		: "bg-primary/5 border-primary/20";
-
-	const ltvTerm = GLOSSARY_TERMS_MAP.ltv;
-	const ltiTerm = GLOSSARY_TERMS_MAP.lti;
 
 	return (
 		<TooltipProvider>
@@ -90,20 +81,7 @@ export function MortgageResultCard({
 								<p className="text-sm text-muted-foreground">
 									Loan-to-Value (LTV)
 								</p>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<button
-											type="button"
-											className="text-muted-foreground hover:text-foreground"
-										>
-											<HelpCircle className="h-3.5 w-3.5" />
-										</button>
-									</TooltipTrigger>
-									<TooltipContent className="max-w-xs">
-										<p className="font-medium mb-1">{ltvTerm.term}</p>
-										<p className="text-sm">{ltvTerm.fullDescription}</p>
-									</TooltipContent>
-								</Tooltip>
+								<GlossaryTermTooltip termId="ltv" />
 							</div>
 							<p
 								className={`text-lg font-semibold ${result.ltv > maxLtv ? "text-destructive" : ""}`}
@@ -116,20 +94,7 @@ export function MortgageResultCard({
 								<p className="text-sm text-muted-foreground">
 									Loan-to-Income (LTI)
 								</p>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<button
-											type="button"
-											className="text-muted-foreground hover:text-foreground"
-										>
-											<HelpCircle className="h-3.5 w-3.5" />
-										</button>
-									</TooltipTrigger>
-									<TooltipContent className="max-w-xs">
-										<p className="font-medium mb-1">{ltiTerm.term}</p>
-										<p className="text-sm">{ltiTerm.fullDescription}</p>
-									</TooltipContent>
-								</Tooltip>
+								<GlossaryTermTooltip termId="lti" />
 							</div>
 							<p
 								className={`text-lg font-semibold ${result.lti > maxLti ? "text-destructive" : ""}`}

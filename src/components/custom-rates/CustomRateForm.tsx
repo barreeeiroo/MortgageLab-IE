@@ -1,6 +1,7 @@
-import { CircleHelp, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LenderOption } from "@/components/lenders";
+import { GlossaryTermTooltip } from "@/components/tooltips";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,15 +15,9 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
 	BER_GROUPS,
 	BUYER_TYPE_LABELS,
 	FIRST_MORTGAGE_BUYER_TYPES,
-	GLOSSARY_TERMS_MAP,
 	GREEN_BER_GROUPS,
 	OTHER_BER_GROUPS,
 	SWITCHER_BUYER_TYPES,
@@ -531,16 +526,11 @@ export function CustomRateForm({
 											className="flex items-center gap-1"
 										>
 											Valuation Fee
-											<Tooltip>
-												<TooltipTrigger asChild>
-													<CircleHelp className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-												</TooltipTrigger>
-												<TooltipContent side="top" className="max-w-xs">
-													<p className="text-xs">
-														{GLOSSARY_TERMS_MAP.valuationFee?.shortDescription}
-													</p>
-												</TooltipContent>
-											</Tooltip>
+											<GlossaryTermTooltip
+												termId="valuationFee"
+												showFull={false}
+												side="top"
+											/>
 										</Label>
 										<div className="relative">
 											<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -566,19 +556,11 @@ export function CustomRateForm({
 											className="flex items-center gap-1"
 										>
 											Release Fee
-											<Tooltip>
-												<TooltipTrigger asChild>
-													<CircleHelp className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-												</TooltipTrigger>
-												<TooltipContent side="top" className="max-w-xs">
-													<p className="text-xs">
-														{
-															GLOSSARY_TERMS_MAP.securityReleaseFee
-																?.shortDescription
-														}
-													</p>
-												</TooltipContent>
-											</Tooltip>
+											<GlossaryTermTooltip
+												termId="securityReleaseFee"
+												showFull={false}
+												side="top"
+											/>
 										</Label>
 										<div className="relative">
 											<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -603,16 +585,11 @@ export function CustomRateForm({
 								<div className="space-y-2">
 									<Label htmlFor="aprc" className="flex items-center gap-1">
 										APRC
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<CircleHelp className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-											</TooltipTrigger>
-											<TooltipContent side="top" className="max-w-xs">
-												<p className="text-xs">
-													{GLOSSARY_TERMS_MAP.aprc?.shortDescription}
-												</p>
-											</TooltipContent>
-										</Tooltip>
+										<GlossaryTermTooltip
+											termId="aprc"
+											showFull={false}
+											side="top"
+										/>
 									</Label>
 									<div className="relative w-28">
 										<Input

@@ -1,5 +1,9 @@
-import { HelpCircle, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { useState } from "react";
+import {
+	type GlossaryTermId,
+	GlossaryTermTooltip,
+} from "@/components/tooltips";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Table,
@@ -14,7 +18,6 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { GLOSSARY_TERMS_MAP } from "@/lib/constants/glossary";
 import type {
 	AmortizationYear,
 	Milestone,
@@ -45,32 +48,15 @@ function HeaderWithTooltip({
 	align = "right",
 }: {
 	label: string;
-	glossaryId: string;
+	glossaryId: GlossaryTermId;
 	align?: "left" | "right";
 }) {
-	const term = GLOSSARY_TERMS_MAP[glossaryId];
-	if (!term) {
-		return <span>{label}</span>;
-	}
-
 	return (
 		<div
 			className={`flex items-center gap-1 ${align === "right" ? "justify-end" : ""}`}
 		>
 			<span>{label}</span>
-			<Tooltip>
-				<TooltipTrigger asChild>
-					<span className="inline-flex items-center justify-center cursor-help">
-						<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-					</span>
-				</TooltipTrigger>
-				<TooltipContent side="top" className="max-w-xs">
-					<p className="font-medium">{term.shortDescription}</p>
-					<p className="text-xs text-muted-foreground mt-1">
-						{term.fullDescription}
-					</p>
-				</TooltipContent>
-			</Tooltip>
+			<GlossaryTermTooltip termId={glossaryId} side="top" />
 		</div>
 	);
 }

@@ -4,7 +4,6 @@ import {
 	ChevronDown,
 	Coins,
 	Copy,
-	HelpCircle,
 	Infinity as InfinityIcon,
 	type LucideIcon,
 	PiggyBank,
@@ -17,7 +16,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	type BerRating,
 	DEFAULT_BER,
-	GLOSSARY_TERMS_MAP,
 	getIncorrectRateUrl,
 	type RatesMode,
 } from "@/lib/constants";
@@ -49,6 +47,7 @@ import { addRatePeriod, initializeFromRate } from "@/lib/stores/simulate";
 import { formatCurrency } from "@/lib/utils";
 import { getPath } from "@/lib/utils/path";
 import { LenderLogo } from "../lenders";
+import { type GlossaryTermId, GlossaryTermTooltip } from "../tooltips";
 import { Button } from "../ui/button";
 import {
 	Dialog,
@@ -273,31 +272,15 @@ function InfoRow({
 	value: string | React.ReactNode;
 	muted?: boolean;
 	highlight?: boolean;
-	glossaryTermId?: string;
+	glossaryTermId?: GlossaryTermId;
 }) {
-	const glossaryTerm = glossaryTermId
-		? GLOSSARY_TERMS_MAP[glossaryTermId]
-		: null;
-
 	return (
 		<tr className="border-b border-border/50 last:border-0">
 			<td className="py-2 pr-4 text-muted-foreground text-sm">
-				{glossaryTerm ? (
+				{glossaryTermId ? (
 					<span className="inline-flex items-center gap-1">
 						{label}
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<span className="inline-flex items-center justify-center cursor-help">
-									<HelpCircle className="h-3 w-3 text-muted-foreground" />
-								</span>
-							</TooltipTrigger>
-							<TooltipContent className="max-w-xs">
-								<p className="font-medium">{glossaryTerm.shortDescription}</p>
-								<p className="text-xs text-muted-foreground mt-1">
-									{glossaryTerm.fullDescription}
-								</p>
-							</TooltipContent>
-						</Tooltip>
+						<GlossaryTermTooltip termId={glossaryTermId} size="sm" />
 					</span>
 				) : (
 					label
