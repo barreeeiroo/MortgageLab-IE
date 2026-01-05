@@ -120,6 +120,8 @@ interface RatePeriodEventProps {
 	// Additional props needed for trim dialog LTV calculations
 	propertyValue?: number;
 	amortizationSchedule?: AmortizationMonth[];
+	/** Whether this is the first rate period in the simulation */
+	isFirstRate?: boolean;
 }
 
 export function SimulateRatePeriodEvent({
@@ -132,6 +134,7 @@ export function SimulateRatePeriodEvent({
 	onExtend,
 	propertyValue = 0,
 	amortizationSchedule = [],
+	isFirstRate = false,
 }: RatePeriodEventProps) {
 	const [trimDialogOpen, setTrimDialogOpen] = useState(false);
 	const hasWarnings = warnings.length > 0;
@@ -226,7 +229,14 @@ export function SimulateRatePeriodEvent({
 							isCustom={period.isCustom}
 						/>
 						<div className="flex-1">
-							<h4 className="font-medium text-sm">{period.rateName}</h4>
+							<h4 className="font-medium text-sm flex items-center gap-2">
+								{period.rateName}
+								{period.isCustom && (
+									<span className="text-xs font-normal px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+										Custom
+									</span>
+								)}
+							</h4>
 							<p className="text-xs text-muted-foreground">
 								{period.lenderName}
 							</p>
@@ -313,6 +323,7 @@ export function SimulateRatePeriodEvent({
 								periodStartMonth={period.startMonth}
 								propertyValue={propertyValue}
 								amortizationSchedule={amortizationSchedule}
+								isFirstRate={isFirstRate}
 							/>
 						)}
 						{onExtend && (

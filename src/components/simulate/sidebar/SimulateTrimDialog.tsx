@@ -24,6 +24,8 @@ interface SimulateTrimDialogProps {
 	periodStartMonth: number;
 	propertyValue: number;
 	amortizationSchedule: AmortizationMonth[];
+	/** Whether this is the first rate period in the simulation */
+	isFirstRate?: boolean;
 }
 
 export function SimulateTrimDialog({
@@ -33,18 +35,22 @@ export function SimulateTrimDialog({
 	periodStartMonth,
 	propertyValue,
 	amortizationSchedule,
+	isFirstRate = false,
 }: SimulateTrimDialogProps) {
 	// Calculate available trim options based on LTV thresholds
 	const trimOptions = useMemo(() => {
 		const options: TrimOption[] = [];
 
-		// Always show "Trim to 1 month" option
-		options.push({
-			label: "Trim to 1 month",
-			description:
-				"Reduces this rate period to 1 month. Useful to apply an overpayment before switching to a different rate.",
-			durationMonths: 1,
-		});
+		// Show "Trim to 1 month" option only for non-first rates
+		// (first rate needs at least some duration before switching)
+		if (!isFirstRate) {
+			options.push({
+				label: "Trim to 1 month",
+				description:
+					"Reduces this rate period to 1 month. Useful to apply an overpayment before switching to a different rate.",
+				durationMonths: 1,
+			});
+		}
 
 		if (propertyValue <= 0 || amortizationSchedule.length === 0) {
 			return options;
@@ -106,7 +112,7 @@ export function SimulateTrimDialog({
 		}
 
 		return options;
-	}, [periodStartMonth, propertyValue, amortizationSchedule]);
+	}, [periodStartMonth, propertyValue, amortizationSchedule, isFirstRate]);
 
 	const handleSelect = (option: TrimOption) => {
 		onTrim(option.durationMonths);

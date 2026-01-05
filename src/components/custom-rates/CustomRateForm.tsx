@@ -159,6 +159,12 @@ export function CustomRateForm({
 			: createInitialFormState(currentBuyerType),
 	);
 
+	// Filter out custom lenders that have the same ID as existing lenders
+	const filteredCustomLenders = useMemo(() => {
+		const existingLenderIds = new Set(lenders.map((l) => l.id));
+		return customLenders.filter((cl) => !existingLenderIds.has(cl.id));
+	}, [lenders, customLenders]);
+
 	// Reset form when initialRate changes
 	useEffect(() => {
 		if (initialRate) {
@@ -181,10 +187,15 @@ export function CustomRateForm({
 		}
 	}, [form.lenderId, lenders]);
 
-	const isCustomLender = form.lenderId === CUSTOM_LENDER_VALUE;
+	const isNewCustomLender = form.lenderId === CUSTOM_LENDER_VALUE;
+
+	// Check if selected lender is a pre-existing custom lender
+	const selectedCustomLender = useMemo(() => {
+		return filteredCustomLenders.find((cl) => cl.id === form.lenderId);
+	}, [filteredCustomLenders, form.lenderId]);
 
 	const effectiveLenderId = useMemo(() => {
-		if (isCustomLender) {
+		if (isNewCustomLender) {
 			return (
 				form.customLenderName
 					.toLowerCase()
@@ -193,11 +204,11 @@ export function CustomRateForm({
 			);
 		}
 		return form.lenderId;
-	}, [isCustomLender, form.lenderId, form.customLenderName]);
+	}, [isNewCustomLender, form.lenderId, form.customLenderName]);
 
 	const isFormValid = useMemo(() => {
 		if (!form.lenderId) return false;
-		if (isCustomLender && !form.customLenderName.trim()) return false;
+		if (isNewCustomLender && !form.customLenderName.trim()) return false;
 		if (!form.name.trim()) return false;
 		if (!form.rate || Number.isNaN(Number(form.rate)) || Number(form.rate) <= 0)
 			return false;
@@ -234,7 +245,7 @@ export function CustomRateForm({
 				return false;
 		}
 		return true;
-	}, [form, isCustomLender, showAprcCalculation]);
+	}, [form, isNewCustomLender, showAprcCalculation]);
 
 	const handleSubmit = useCallback(() => {
 		if (!isFormValid) return;
@@ -247,7 +258,16 @@ export function CustomRateForm({
 				valuationFee: Number(form.valuationFee),
 				securityReleaseFee: Number(form.securityReleaseFee),
 			};
-			apr = calculateAprc(Number(form.rate), aprcConfig);
+			// For fixed rates, use fixed term; for variable, use 0 (entire term at this rate)
+			const fixedTermMonths =
+				form.type === "fixed" ? Number(form.fixedTerm) * 12 : 0;
+			// Use the same rate as follow-on since we don't have a separate follow-on rate
+			apr = calculateAprc(
+				Number(form.rate),
+				fixedTermMonths,
+				Number(form.rate),
+				aprcConfig,
+			);
 		} else {
 			apr = Number(form.aprc);
 		}
@@ -269,9 +289,9 @@ export function CustomRateForm({
 				? undefined
 				: (form.berEligible as MortgageRate["berEligible"]),
 			perks: form.perks,
-			customLenderName: isCustomLender
+			customLenderName: isNewCustomLender
 				? form.customLenderName.trim()
-				: undefined,
+				: selectedCustomLender?.name,
 		};
 
 		onSubmit(customRate);
@@ -279,7 +299,8 @@ export function CustomRateForm({
 		form,
 		isFormValid,
 		effectiveLenderId,
-		isCustomLender,
+		isNewCustomLender,
+		selectedCustomLender,
 		initialRate,
 		onSubmit,
 		showAprcCalculation,
@@ -371,10 +392,10 @@ export function CustomRateForm({
 										<LenderOption lenderId={lender.id} name={lender.name} />
 									</SelectItem>
 								))}
-								{customLenders.length > 0 && (
+								{filteredCustomLenders.length > 0 && (
 									<>
 										<SelectSeparator />
-										{customLenders.map((customLender) => (
+										{filteredCustomLenders.map((customLender) => (
 											<SelectItem key={customLender.id} value={customLender.id}>
 												<LenderOption
 													lenderId={customLender.id}
@@ -395,7 +416,7 @@ export function CustomRateForm({
 							</SelectContent>
 						</Select>
 
-						{isCustomLender && (
+						{isNewCustomLender && (
 							<Input
 								placeholder="Enter custom lender name"
 								value={form.customLenderName}

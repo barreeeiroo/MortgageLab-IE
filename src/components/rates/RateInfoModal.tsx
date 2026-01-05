@@ -434,16 +434,20 @@ export function RateInfoModal({
 
 	// Handler for navigating to simulation
 	const handleSimulate = (includeFollowOn = true) => {
-		if (!rate || !lender) return;
+		if (!rate) return;
 
 		// Convert euros to cents for simulation state
 		const mortgageAmountCents = Math.round(mortgageAmount * 100);
 		const propertyValueCents = Math.round((mortgageAmount / ltv) * 100 * 100);
 
+		// Get lender name for labels
+		const lenderName =
+			(rate as { customLenderName?: string }).customLenderName ??
+			lender?.name ??
+			rate.lenderId;
+
 		// Generate label for the rate period
-		const rateLabel = `${
-			(rate as { customLenderName?: string }).customLenderName ?? lender.name
-		} ${rate.type === "fixed" && rate.fixedTerm ? `${rate.fixedTerm}-Year Fixed` : "Variable"} @ ${rate.rate.toFixed(2)}%`;
+		const rateLabel = `${lenderName} ${rate.type === "fixed" && rate.fixedTerm ? `${rate.fixedTerm}-Year Fixed` : "Variable"} @ ${rate.rate.toFixed(2)}%`;
 
 		// Prepare follow-on rate if available (for fixed rates) and includeFollowOn is true
 		const followOn =
@@ -454,7 +458,7 @@ export function RateInfoModal({
 						isCustom:
 							(calculations.followOnRate as { isCustom?: boolean }).isCustom ??
 							false,
-						label: `${lender.name} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
+						label: `${lenderName} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
 					}
 				: undefined;
 
@@ -476,12 +480,16 @@ export function RateInfoModal({
 
 	// Handler for adding a rate to an existing simulation (remortgage mode)
 	const handleAddToSimulation = (includeFollowOn = true) => {
-		if (!rate || !lender) return;
+		if (!rate) return;
+
+		// Get lender name for labels
+		const lenderName =
+			(rate as { customLenderName?: string }).customLenderName ??
+			lender?.name ??
+			rate.lenderId;
 
 		// Generate label for the rate period
-		const rateLabel = `${
-			(rate as { customLenderName?: string }).customLenderName ?? lender.name
-		} ${rate.type === "fixed" && rate.fixedTerm ? `${rate.fixedTerm}-Year Fixed` : "Variable"} @ ${rate.rate.toFixed(2)}%`;
+		const rateLabel = `${lenderName} ${rate.type === "fixed" && rate.fixedTerm ? `${rate.fixedTerm}-Year Fixed` : "Variable"} @ ${rate.rate.toFixed(2)}%`;
 
 		// Add the rate period to simulation state
 		addRatePeriod({
@@ -502,7 +510,7 @@ export function RateInfoModal({
 				rateId: calculations.followOnRate.id,
 				isCustom: followOnIsCustom,
 				durationMonths: 0, // Until end of mortgage
-				label: `${lender.name} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
+				label: `${lenderName} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
 			});
 		}
 

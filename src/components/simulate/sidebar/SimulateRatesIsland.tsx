@@ -223,6 +223,7 @@ export function SimulateRatesIsland() {
 										overpaymentPolicy={overpaymentPolicy}
 										propertyValue={simulationState.input.propertyValue}
 										amortizationSchedule={amortizationSchedule}
+										isFirstRate={index === 0}
 										onEdit={() => {
 											setEditingRatePeriod(originalPeriod);
 											setEditingIsLastPeriod(isLastPeriod);
