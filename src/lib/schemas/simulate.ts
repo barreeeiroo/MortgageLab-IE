@@ -89,6 +89,10 @@ export interface SimulationWarning {
 	month: number;
 	message: string;
 	severity: SimulationWarningSeverity;
+	/** For allowance_exceeded warnings: which overpayment config triggered this */
+	configId?: string;
+	/** For allowance_exceeded warnings: label of the overpayment config */
+	overpaymentLabel?: string;
 }
 
 // Amortization Month (computed)

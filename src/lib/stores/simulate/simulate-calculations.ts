@@ -411,17 +411,32 @@ export function calculateAmortization(
 			(yearlyOverpaymentsByPeriod.get(periodYear) ?? 0) + overpayment,
 		);
 
-		// Add warnings for allowance exceeded
-		if (overpaymentResult.exceededAllowance) {
-			const policy = policies.find(
-				(p) => p.id === resolved.overpaymentPolicyId,
-			);
-			warnings.push({
-				type: "allowance_exceeded",
-				month,
-				message: `Overpayment exceeds ${policy?.label ?? "free allowance"} by €${(overpaymentResult.excessAmount / 100).toFixed(2)}`,
-				severity: "warning",
-			});
+		// Add warnings for each overpayment that exceeded allowance
+		for (const applied of overpaymentResult.applied) {
+			if (!applied.withinAllowance) {
+				const config = overpaymentConfigs.find(
+					(c) => c.id === applied.configId,
+				);
+				const policy = policies.find(
+					(p) => p.id === resolved.overpaymentPolicyId,
+				);
+				const overpaymentLabel =
+					config?.label ||
+					(config?.type === "one_time" ? "One-time" : "Recurring");
+				const excessFormatted = (applied.excessAmount / 100).toLocaleString(
+					"en-IE",
+					{ minimumFractionDigits: 2, maximumFractionDigits: 2 },
+				);
+				const policyLabel = policy?.label ?? "free allowance";
+				warnings.push({
+					type: "allowance_exceeded",
+					month,
+					message: `Exceeds ${policyLabel} allowance by €${excessFormatted}`,
+					severity: "warning",
+					configId: applied.configId,
+					overpaymentLabel,
+				});
+			}
 		}
 
 		// Update balances

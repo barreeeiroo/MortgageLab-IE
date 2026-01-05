@@ -101,14 +101,16 @@ export function SimulateYearRow({
 	overpaymentLabels,
 	onToggle,
 }: YearRowProps) {
-	const hasWarnings = warnings.length > 0;
+	const hasAllowanceWarnings = warnings.some(
+		(w) => w.type === "allowance_exceeded",
+	);
 
 	return (
 		<Fragment>
 			<TableRow
 				className={cn(
 					"cursor-pointer hover:bg-muted/50",
-					hasWarnings && "bg-yellow-50 dark:bg-yellow-900/10",
+					hasAllowanceWarnings && "bg-yellow-50 dark:bg-yellow-900/10",
 				)}
 				onClick={onToggle}
 			>
@@ -129,9 +131,6 @@ export function SimulateYearRow({
 							milestones.map((m) => (
 								<MilestoneIcon key={`${m.type}-${m.month}`} milestone={m} />
 							))}
-						{hasWarnings && (
-							<AlertTriangle className="h-4 w-4 text-yellow-600" />
-						)}
 					</div>
 				</TableCell>
 				<TableCell className="text-right">
@@ -144,9 +143,27 @@ export function SimulateYearRow({
 					{formatEuro(year.totalPrincipal)}
 				</TableCell>
 				<TableCell className="text-right">
-					{year.totalOverpayments > 0
-						? formatEuro(year.totalOverpayments)
-						: "—"}
+					{year.totalOverpayments > 0 ? (
+						<span className="inline-flex items-center gap-1 justify-end">
+							{formatEuro(year.totalOverpayments)}
+							{warnings.some((w) => w.type === "allowance_exceeded") && (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<span className="inline-flex cursor-help">
+											<AlertTriangle className="h-3.5 w-3.5 text-yellow-500" />
+										</span>
+									</TooltipTrigger>
+									<TooltipContent side="top">
+										<p className="text-xs">
+											Some overpayments exceed free allowance
+										</p>
+									</TooltipContent>
+								</Tooltip>
+							)}
+						</span>
+					) : (
+						"—"
+					)}
 				</TableCell>
 				<TableCell className="text-right font-medium">
 					{formatEuro(year.totalPayments)}
@@ -189,7 +206,7 @@ export function SimulateYearRow({
 							<SimulateMonthRow
 								key={month.month}
 								month={month}
-								hasWarnings={monthWarnings.length > 0}
+								warnings={monthWarnings}
 								milestones={monthMilestones}
 							/>
 						);
@@ -219,29 +236,6 @@ export function SimulateYearRow({
 							{formatEuro(year.closingBalance)}
 						</TableCell>
 					</TableRow>
-					{/* Warnings for this year */}
-					{hasWarnings && (
-						<TableRow className="bg-yellow-50 dark:bg-yellow-900/20">
-							<TableCell colSpan={8} className="py-2 pl-12">
-								<div className="space-y-1">
-									{warnings.map((warning) => (
-										<div
-											key={`${warning.type}-${warning.month}`}
-											className={cn(
-												"text-sm flex items-center gap-2",
-												warning.severity === "error"
-													? "text-destructive"
-													: "text-yellow-700 dark:text-yellow-500",
-											)}
-										>
-											<AlertTriangle className="h-3.5 w-3.5" />
-											{warning.message}
-										</div>
-									))}
-								</div>
-							</TableCell>
-						</TableRow>
-					)}
 				</>
 			)}
 		</Fragment>

@@ -49,6 +49,39 @@ function formatDuration(months: number): string {
 	return `${years}y ${remainingMonths}m`;
 }
 
+// Helper to format warning months list
+function formatWarningMonths(warnings: SimulationWarning[]): string {
+	const months = warnings.map((w) => w.month).sort((a, b) => a - b);
+	if (months.length === 0) return "";
+	if (months.length === 1) return formatPeriod(months[0]);
+
+	// Group consecutive months into ranges
+	const ranges: Array<{ start: number; end: number }> = [];
+	let currentStart = months[0];
+	let currentEnd = months[0];
+
+	for (let i = 1; i < months.length; i++) {
+		if (months[i] === currentEnd + 1) {
+			currentEnd = months[i];
+		} else {
+			ranges.push({ start: currentStart, end: currentEnd });
+			currentStart = months[i];
+			currentEnd = months[i];
+		}
+	}
+	ranges.push({ start: currentStart, end: currentEnd });
+
+	// Format ranges
+	return ranges
+		.map((range) => {
+			if (range.start === range.end) {
+				return formatPeriod(range.start);
+			}
+			return `${formatPeriod(range.start)} – ${formatPeriod(range.end)}`;
+		})
+		.join(", ");
+}
+
 // Milestone icon mapping
 const MILESTONE_ICONS: Record<MilestoneType, typeof Flag> = {
 	mortgage_start: Flag,
@@ -450,9 +483,10 @@ export function SimulateOverpaymentEvent({
 
 					{/* Warnings */}
 					{hasWarnings && (
-						<div className="pt-2 border-t">
-							<p className="text-xs text-yellow-600 dark:text-yellow-500">
-								Some overpayments may exceed the free allowance
+						<div className="pt-2 border-t space-y-1">
+							<p className="text-xs font-medium">Exceeds free allowance</p>
+							<p className="text-xs text-muted-foreground">
+								{formatWarningMonths(warnings)}
 							</p>
 						</div>
 					)}

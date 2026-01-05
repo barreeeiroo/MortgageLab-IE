@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { CheckCircle2, Flag, Percent } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Flag, Percent } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import {
 	Tooltip,
@@ -10,6 +10,7 @@ import type {
 	AmortizationMonth,
 	Milestone,
 	MilestoneType,
+	SimulationWarning,
 } from "@/lib/schemas/simulate";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils/index";
@@ -75,15 +76,19 @@ function MilestoneIcon({ milestone }: { milestone: Milestone }) {
 
 interface MonthRowProps {
 	month: AmortizationMonth;
-	hasWarnings: boolean;
+	warnings: SimulationWarning[];
 	milestones?: Milestone[];
 }
 
 export function SimulateMonthRow({
 	month,
-	hasWarnings,
+	warnings,
 	milestones = [],
 }: MonthRowProps) {
+	const hasWarnings = warnings.length > 0;
+	const overpaymentWarnings = warnings.filter(
+		(w) => w.type === "allowance_exceeded",
+	);
 	return (
 		<TableRow
 			className={cn(
@@ -110,7 +115,35 @@ export function SimulateMonthRow({
 				{formatEuro(month.principalPortion)}
 			</TableCell>
 			<TableCell className="text-right text-muted-foreground">
-				{month.overpayment > 0 ? formatEuro(month.overpayment) : "—"}
+				{month.overpayment > 0 ? (
+					<span className="inline-flex items-center gap-1 justify-end">
+						{formatEuro(month.overpayment)}
+						{overpaymentWarnings.length > 0 && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span className="inline-flex cursor-help">
+										<AlertTriangle className="h-3.5 w-3.5 text-yellow-500" />
+									</span>
+								</TooltipTrigger>
+								<TooltipContent side="top" className="max-w-xs">
+									<p className="font-medium">Exceeds free allowance</p>
+									<div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+										{overpaymentWarnings.map((w) => (
+											<p key={w.configId}>
+												<span className="font-medium">
+													{w.overpaymentLabel}:
+												</span>{" "}
+												{w.message}
+											</p>
+										))}
+									</div>
+								</TooltipContent>
+							</Tooltip>
+						)}
+					</span>
+				) : (
+					"—"
+				)}
 			</TableCell>
 			<TableCell className="text-right">
 				{formatEuro(month.totalPayment)}

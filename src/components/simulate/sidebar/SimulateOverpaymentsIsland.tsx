@@ -151,8 +151,7 @@ export function SimulateOverpaymentsIsland() {
 									const configWarnings = warnings.filter(
 										(w) =>
 											w.type === "allowance_exceeded" &&
-											w.month >= config.startMonth &&
-											(!config.endMonth || w.month <= config.endMonth),
+											w.configId === config.id,
 									);
 
 									return (
