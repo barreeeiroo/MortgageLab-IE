@@ -188,6 +188,7 @@ export function CustomRateForm({
 	}, [form.lenderId, lenders]);
 
 	const isNewCustomLender = form.lenderId === CUSTOM_LENDER_VALUE;
+	const isEditMode = !!initialRate;
 
 	// Check if selected lender is a pre-existing custom lender
 	const selectedCustomLender = useMemo(() => {
@@ -382,6 +383,7 @@ export function CustomRateForm({
 						<Select
 							value={form.lenderId}
 							onValueChange={(value) => updateForm("lenderId", value)}
+							disabled={isEditMode}
 						>
 							<SelectTrigger className="w-full">
 								<SelectValue placeholder="Select a lender..." />
@@ -421,6 +423,7 @@ export function CustomRateForm({
 								placeholder="Enter custom lender name"
 								value={form.customLenderName}
 								onChange={(e) => updateForm("customLenderName", e.target.value)}
+								disabled={isEditMode}
 							/>
 						)}
 					</div>
