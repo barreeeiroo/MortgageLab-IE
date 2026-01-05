@@ -9,6 +9,7 @@ import {
 	$ratesMetadata,
 	$sorting,
 	fetchRatesData,
+	initializeStore,
 	initializeTableState,
 	setColumnVisibility,
 } from "@/lib/stores";
@@ -25,6 +26,7 @@ export function RatesToolbarIsland() {
 
 	// Initialize stores on mount
 	useEffect(() => {
+		initializeStore();
 		initializeTableState();
 		// Ensure data is fetched (in case this island loads before others)
 		fetchRatesData();
