@@ -143,8 +143,9 @@ export function SimulateAddOverpaymentDialog({
 			selectedPeriod,
 			mortgageAmount,
 			totalMonths,
+			startDate,
 		);
-	}, [selectedPeriod, selectedPolicy, mortgageAmount, totalMonths]);
+	}, [selectedPeriod, selectedPolicy, mortgageAmount, totalMonths, startDate]);
 
 	// Summary for display
 	const maximizeSummary = useMemo(() => {

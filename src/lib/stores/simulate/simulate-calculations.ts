@@ -43,6 +43,38 @@ function addMonthsToDate(dateStr: string | undefined, months: number): string {
 	return `${newYear}-${String(newMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+// Helper: Get the calendar year for a given mortgage month
+// Returns undefined if no start date (falls back to mortgage year tracking)
+function getCalendarYearForMonth(
+	startDate: string | undefined,
+	mortgageMonth: number,
+): number | undefined {
+	if (!startDate) return undefined;
+
+	const [startYear, startMonth] = startDate.split("-").map(Number);
+
+	// Calculate total months from year 0
+	const totalMonths = startYear * 12 + (startMonth - 1) + (mortgageMonth - 1);
+	return Math.floor(totalMonths / 12);
+}
+
+// Helper: Check if this month is the first month of a new calendar year
+function isFirstMonthOfCalendarYear(
+	startDate: string | undefined,
+	mortgageMonth: number,
+): boolean {
+	if (!startDate) return false;
+	if (mortgageMonth === 1) return true; // First month is always a "new year" for tracking
+
+	const [startYear, startMonth] = startDate.split("-").map(Number);
+
+	// Calculate the calendar month (1-12) for this mortgage month
+	const totalMonths = startYear * 12 + (startMonth - 1) + (mortgageMonth - 1);
+	const calendarMonth = (totalMonths % 12) + 1;
+
+	return calendarMonth === 1; // January
+}
+
 // Helper: Find rate period for a given month (stack-based model)
 // Returns both the period and its computed startMonth
 function findRatePeriodForMonth(
@@ -362,8 +394,20 @@ export function calculateAmortization(
 		const monthlyRate = resolved.rate / 100 / 12;
 
 		// Track yearly overpayments by rate period + year
-		const periodYear = `${ratePeriod.id}-${Math.ceil(month / 12)}`;
-		if (!yearlyOverpaymentsByPeriod.has(periodYear)) {
+		// Use calendar year if startDate is provided, otherwise use mortgage year
+		const calendarYear = getCalendarYearForMonth(input.startDate, month);
+		const yearKey =
+			calendarYear !== undefined
+				? String(calendarYear) // Calendar year (e.g., "2025")
+				: String(Math.ceil(month / 12)); // Mortgage year (e.g., "1", "2")
+		const periodYear = `${ratePeriod.id}-${yearKey}`;
+
+		// Check if we need to start tracking a new year
+		const isNewYear =
+			!yearlyOverpaymentsByPeriod.has(periodYear) ||
+			(calendarYear !== undefined && isFirstMonthOfCalendarYear(input.startDate, month));
+
+		if (isNewYear && !yearlyOverpaymentsByPeriod.has(periodYear)) {
 			yearlyOverpaymentsByPeriod.set(periodYear, 0);
 			// Record balance at start of this year for allowance calculation
 			yearStartBalanceByPeriod.set(periodYear, balance);

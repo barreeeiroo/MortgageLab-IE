@@ -69,14 +69,87 @@ export function isConstantAllowancePolicy(policy: OverpaymentPolicy): boolean {
 }
 
 /**
+ * Get calendar year boundaries for a mortgage month range
+ * Returns array of {startMonth, endMonth, calendarYear} for each calendar year in the range
+ */
+function getCalendarYearBoundaries(
+	startDate: string | undefined,
+	periodStartMonth: number,
+	periodEndMonth: number,
+): Array<{ startMonth: number; endMonth: number; calendarYear: number }> {
+	// If no startDate, fall back to mortgage year boundaries
+	if (!startDate) {
+		const boundaries: Array<{
+			startMonth: number;
+			endMonth: number;
+			calendarYear: number;
+		}> = [];
+		let currentStart = periodStartMonth;
+		let yearIndex = 1;
+
+		while (currentStart <= periodEndMonth) {
+			const yearEndMonth = Math.min(currentStart + 11, periodEndMonth);
+			boundaries.push({
+				startMonth: currentStart,
+				endMonth: yearEndMonth,
+				calendarYear: yearIndex,
+			});
+			currentStart = yearEndMonth + 1;
+			yearIndex++;
+		}
+		return boundaries;
+	}
+
+	// Parse start date to get calendar alignment
+	const [startYear, startMonthOfYear] = startDate.split("-").map(Number);
+
+	const boundaries: Array<{
+		startMonth: number;
+		endMonth: number;
+		calendarYear: number;
+	}> = [];
+
+	let currentMortgageMonth = periodStartMonth;
+
+	while (currentMortgageMonth <= periodEndMonth) {
+		// Calculate which calendar month this mortgage month falls in
+		// mortgageMonth 1 = startMonthOfYear of startYear
+		const totalMonthsFromEpoch =
+			startYear * 12 + (startMonthOfYear - 1) + (currentMortgageMonth - 1);
+		const calendarYear = Math.floor(totalMonthsFromEpoch / 12);
+		const calendarMonth = (totalMonthsFromEpoch % 12) + 1;
+
+		// Find the end of this calendar year (December)
+		// Months remaining until end of year = 12 - calendarMonth
+		const monthsUntilYearEnd = 12 - calendarMonth;
+		const yearEndMortgageMonth = Math.min(
+			currentMortgageMonth + monthsUntilYearEnd,
+			periodEndMonth,
+		);
+
+		boundaries.push({
+			startMonth: currentMortgageMonth,
+			endMonth: yearEndMortgageMonth,
+			calendarYear,
+		});
+
+		currentMortgageMonth = yearEndMortgageMonth + 1;
+	}
+
+	return boundaries;
+}
+
+/**
  * Calculate yearly overpayment plans for a fixed rate period
  * Returns plans that maximize fee-free overpayments
+ * When startDate is provided, aligns to calendar years (Jan-Dec)
  */
 export function calculateYearlyOverpaymentPlans(
 	policy: OverpaymentPolicy,
 	period: ResolvedRatePeriod,
 	mortgageAmount: number,
 	totalMonths: number,
+	startDate?: string,
 ): YearlyOverpaymentPlan[] {
 	const plans: YearlyOverpaymentPlan[] = [];
 	const periodDurationMonths =
@@ -114,13 +187,18 @@ export function calculateYearlyOverpaymentPlans(
 	}
 
 	// For balance-based policies, calculate per-year since amount decreases
-	const numYears = Math.ceil(periodDurationMonths / 12);
+	// Use calendar year boundaries when startDate is provided
+	const yearBoundaries = getCalendarYearBoundaries(
+		startDate,
+		period.startMonth,
+		periodEndMonth,
+	);
+
 	let estimatedBalance = mortgageAmount;
 	const monthlyRate = period.rate / 100 / 12;
 
-	for (let yearIndex = 0; yearIndex < numYears; yearIndex++) {
-		const yearStartMonth = period.startMonth + yearIndex * 12;
-		const yearEndMonth = Math.min(yearStartMonth + 11, periodEndMonth);
+	for (let yearIndex = 0; yearIndex < yearBoundaries.length; yearIndex++) {
+		const boundary = yearBoundaries[yearIndex];
 
 		// Calculate max monthly overpayment for this year based on balance at year start
 		const monthlyAmount = calculateMaxMonthlyOverpaymentForYear(
@@ -132,15 +210,15 @@ export function calculateYearlyOverpaymentPlans(
 		if (monthlyAmount > 0) {
 			plans.push({
 				year: yearIndex + 1,
-				startMonth: yearStartMonth,
-				endMonth: yearEndMonth,
+				startMonth: boundary.startMonth,
+				endMonth: boundary.endMonth,
 				monthlyAmount,
 				estimatedBalance,
 			});
 		}
 
 		// Estimate balance at start of next year
-		const monthsInThisYear = yearEndMonth - yearStartMonth + 1;
+		const monthsInThisYear = boundary.endMonth - boundary.startMonth + 1;
 
 		for (let m = 0; m < monthsInThisYear; m++) {
 			const interestPortion = estimatedBalance * monthlyRate;
