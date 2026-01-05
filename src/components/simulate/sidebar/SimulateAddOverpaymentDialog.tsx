@@ -1,4 +1,4 @@
-import { Info, Sparkles } from "lucide-react";
+import { CircleDollarSign, Info, Repeat, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { LenderLogo } from "@/components/lenders";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
 	Select,
 	SelectContent,
@@ -21,20 +19,24 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { calculateMonthlyPayment } from "@/lib/mortgage/payments";
+import {
+	calculateYearlyOverpaymentPlans,
+	formatPolicyDescription,
+	isConstantAllowancePolicy,
+	type YearlyOverpaymentPlan,
+} from "@/lib/mortgage/overpayments";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type {
 	OverpaymentConfig,
 	OverpaymentFrequency,
 	ResolvedRatePeriod,
 } from "@/lib/schemas/simulate";
-import {
-	formatCurrency,
-	formatCurrencyInput,
-	parseCurrency,
-} from "@/lib/utils";
+import { formatCurrency, parseCurrency } from "@/lib/utils";
+import { formatTransitionDate } from "@/lib/utils/date";
+import { SimulateOverpaymentForm } from "./SimulateOverpaymentForm";
+import type { TimingMode } from "./SimulateTimingSelector";
 
-interface AddOverpaymentDialogProps {
+interface SimulateAddOverpaymentDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onAdd: (config: Omit<OverpaymentConfig, "id">) => void;
@@ -42,167 +44,11 @@ interface AddOverpaymentDialogProps {
 	mortgageAmount: number;
 	resolvedRatePeriods: ResolvedRatePeriod[];
 	overpaymentPolicies: OverpaymentPolicy[];
-	editingConfig?: OverpaymentConfig;
 	existingConfigs?: OverpaymentConfig[];
+	startDate?: string;
 }
 
-// Helper: Format duration
-function formatDuration(months: number): string {
-	if (months === 0) return "Until end";
-	const years = Math.floor(months / 12);
-	const remainingMonths = months % 12;
-	if (years === 0)
-		return `${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
-	if (remainingMonths === 0) return `${years} year${years !== 1 ? "s" : ""}`;
-	return `${years}y ${remainingMonths}m`;
-}
-
-// Helper: Calculate maximum monthly overpayment for a single year
-function calculateMaxMonthlyOverpaymentForYear(
-	policy: OverpaymentPolicy,
-	balance: number,
-	monthlyPayment: number,
-): number {
-	let amount = 0;
-
-	switch (policy.allowanceType) {
-		case "percentage":
-			if (policy.allowanceBasis === "balance") {
-				// e.g., 10% of balance per year → divide by 12 for monthly
-				const yearlyAmount = (balance * policy.allowanceValue) / 100;
-				amount = Math.floor(yearlyAmount / 12);
-			} else if (policy.allowanceBasis === "monthly") {
-				// e.g., 10% of monthly payment per month
-				amount = Math.floor((monthlyPayment * policy.allowanceValue) / 100);
-			}
-			break;
-		case "flat":
-			// e.g., €5,000 per year → divide by 12 for monthly (value is in cents)
-			amount = Math.floor((policy.allowanceValue * 100) / 12);
-			break;
-	}
-
-	// Apply minimum amount if specified (e.g., BOI's €65 minimum)
-	// minAmount is in euros, convert to cents
-	if (policy.minAmount !== undefined && policy.minAmount > 0) {
-		const minAmountCents = policy.minAmount * 100;
-		amount = Math.max(amount, minAmountCents);
-	}
-
-	return amount;
-}
-
-// Represents a yearly overpayment plan
-interface YearlyOverpaymentPlan {
-	year: number;
-	startMonth: number;
-	endMonth: number;
-	monthlyAmount: number;
-	estimatedBalance: number;
-}
-
-// Check if a policy has a constant allowance (doesn't depend on balance)
-function isConstantAllowancePolicy(policy: OverpaymentPolicy): boolean {
-	// Monthly-payment-based policies: amount is constant since monthly payment is fixed
-	if (
-		policy.allowanceType === "percentage" &&
-		policy.allowanceBasis === "monthly"
-	) {
-		return true;
-	}
-	// Flat policies: amount is always the same
-	if (policy.allowanceType === "flat") {
-		return true;
-	}
-	return false;
-}
-
-// Helper: Calculate yearly overpayment plans for a fixed rate period
-function calculateYearlyOverpaymentPlans(
-	policy: OverpaymentPolicy,
-	period: ResolvedRatePeriod,
-	mortgageAmount: number,
-	totalMonths: number,
-): YearlyOverpaymentPlan[] {
-	const plans: YearlyOverpaymentPlan[] = [];
-	const periodDurationMonths =
-		period.durationMonths || totalMonths - period.startMonth + 1;
-	const periodEndMonth = period.startMonth + periodDurationMonths - 1;
-
-	// Calculate monthly payment ONCE at start of period (same as actual amortization)
-	const remainingMonthsAtStart = totalMonths - period.startMonth + 1;
-	const fixedMonthlyPayment =
-		calculateMonthlyPayment(
-			mortgageAmount / 100, // Convert cents to euros
-			period.rate,
-			remainingMonthsAtStart,
-		) * 100; // Convert back to cents
-
-	// For constant-allowance policies (monthly-based or flat), create a single plan
-	// for the entire period since the amount doesn't change
-	if (isConstantAllowancePolicy(policy)) {
-		const monthlyAmount = calculateMaxMonthlyOverpaymentForYear(
-			policy,
-			mortgageAmount, // Balance doesn't matter for these policies
-			fixedMonthlyPayment,
-		);
-
-		if (monthlyAmount > 0) {
-			plans.push({
-				year: 1,
-				startMonth: period.startMonth,
-				endMonth: periodEndMonth,
-				monthlyAmount,
-				estimatedBalance: mortgageAmount,
-			});
-		}
-		return plans;
-	}
-
-	// For balance-based policies, calculate per-year since amount decreases
-	const numYears = Math.ceil(periodDurationMonths / 12);
-	let estimatedBalance = mortgageAmount;
-	const monthlyRate = period.rate / 100 / 12;
-
-	for (let yearIndex = 0; yearIndex < numYears; yearIndex++) {
-		const yearStartMonth = period.startMonth + yearIndex * 12;
-		const yearEndMonth = Math.min(yearStartMonth + 11, periodEndMonth);
-
-		// Calculate max monthly overpayment for this year based on balance at year start
-		const monthlyAmount = calculateMaxMonthlyOverpaymentForYear(
-			policy,
-			estimatedBalance,
-			fixedMonthlyPayment,
-		);
-
-		if (monthlyAmount > 0) {
-			plans.push({
-				year: yearIndex + 1,
-				startMonth: yearStartMonth,
-				endMonth: yearEndMonth,
-				monthlyAmount,
-				estimatedBalance,
-			});
-		}
-
-		// Estimate balance at start of next year
-		const monthsInThisYear = yearEndMonth - yearStartMonth + 1;
-
-		for (let m = 0; m < monthsInThisYear; m++) {
-			const interestPortion = estimatedBalance * monthlyRate;
-			const principalPortion = fixedMonthlyPayment - interestPortion;
-			const overpayment = monthlyAmount;
-			estimatedBalance = Math.max(
-				0,
-				estimatedBalance - principalPortion - overpayment,
-			);
-		}
-
-		if (estimatedBalance <= 0) break;
-	}
-
-	return plans;
-}
+type TabMode = "maximize" | "one_time" | "recurring";
 
 export function SimulateAddOverpaymentDialog({
 	open,
@@ -212,36 +58,30 @@ export function SimulateAddOverpaymentDialog({
 	mortgageAmount,
 	resolvedRatePeriods,
 	overpaymentPolicies,
-	editingConfig,
 	existingConfigs = [],
-}: AddOverpaymentDialogProps) {
-	// Tab mode
-	const [mode, setMode] = useState<"maximize" | "custom">("maximize");
+	startDate,
+}: SimulateAddOverpaymentDialogProps) {
+	// Tab mode - determines overpayment type
+	const [mode, setMode] = useState<TabMode>("maximize");
 
-	// Maximize mode state
+	// Maximize mode state - for fixed rate period selection
 	const [selectedPeriodId, setSelectedPeriodId] = useState<string>("");
 
-	// Custom mode state
-	const [type, setType] = useState<"one_time" | "recurring">("one_time");
+	// Custom mode (one_time/recurring) - rate period selection
+	const [customRatePeriodId, setCustomRatePeriodId] = useState<string>("");
+
+	// Shared state for one_time and recurring
 	const [frequency, setFrequency] = useState<OverpaymentFrequency>("monthly");
 	const [amount, setAmount] = useState("");
-	const [startYear, setStartYear] = useState(1);
-	const [startMonthOfYear, setStartMonthOfYear] = useState(1);
-	const [endYear, setEndYear] = useState<number | undefined>(undefined);
-	const [endMonthOfYear, setEndMonthOfYear] = useState<number | undefined>(
-		undefined,
-	);
+	const [startMonth, setStartMonth] = useState(1);
+	const [endMonth, setEndMonth] = useState<number | undefined>(undefined);
 	const [effect, setEffect] = useState<"reduce_term" | "reduce_payment">(
 		"reduce_term",
 	);
 	const [label, setLabel] = useState("");
-
-	// Calculate actual month numbers from year and month (custom mode)
-	const startMonth = (startYear - 1) * 12 + startMonthOfYear;
-	const endMonth =
-		endYear !== undefined && endMonthOfYear !== undefined
-			? (endYear - 1) * 12 + endMonthOfYear
-			: undefined;
+	const [timingMode, setTimingMode] = useState<TimingMode>(
+		startDate ? "calendar" : "duration",
+	);
 
 	// Filter fixed rate periods for maximize mode
 	const fixedRatePeriods = useMemo(
@@ -308,7 +148,7 @@ export function SimulateAddOverpaymentDialog({
 
 	// Summary for display
 	const maximizeSummary = useMemo(() => {
-		if (yearlyPlans.length === 0) return null;
+		if (yearlyPlans.length === 0 || !selectedPolicy) return null;
 
 		const totalMonthlyAverage =
 			yearlyPlans.reduce((sum, p) => sum + p.monthlyAmount, 0) /
@@ -319,55 +159,87 @@ export function SimulateAddOverpaymentDialog({
 			firstYearAmount: yearlyPlans[0].monthlyAmount,
 			lastYearAmount: yearlyPlans[yearlyPlans.length - 1].monthlyAmount,
 			averageAmount: Math.floor(totalMonthlyAverage),
-			policyDescription:
-				selectedPolicy?.allowanceType === "percentage" &&
-				selectedPolicy?.allowanceBasis === "balance"
-					? `${selectedPolicy.allowanceValue}% of balance per year`
-					: selectedPolicy?.allowanceType === "percentage" &&
-							selectedPolicy?.allowanceBasis === "monthly"
-						? `${selectedPolicy.allowanceValue}% of monthly payment`
-						: selectedPolicy?.allowanceType === "flat"
-							? `€${((selectedPolicy?.allowanceValue ?? 0) / 100).toLocaleString()} per year`
-							: "No allowance",
+			policyDescription: formatPolicyDescription(selectedPolicy),
 		};
 	}, [yearlyPlans, selectedPolicy]);
+
+	// Get bounds for the selected custom rate period (for one-time/recurring)
+	const customRatePeriodBounds = useMemo(() => {
+		const period = resolvedRatePeriods.find((p) => p.id === customRatePeriodId);
+		if (!period) return null;
+
+		const periodEndMonth =
+			period.durationMonths === 0
+				? totalMonths
+				: period.startMonth + period.durationMonths - 1;
+
+		return {
+			startMonth: period.startMonth,
+			endMonth: periodEndMonth,
+			period,
+		};
+	}, [customRatePeriodId, resolvedRatePeriods, totalMonths]);
+
+	// Check if selected custom period is fixed (for info message)
+	const isCustomPeriodFixed = customRatePeriodBounds?.period?.type === "fixed";
 
 	// Reset form when opening
 	useEffect(() => {
 		if (open) {
-			if (editingConfig) {
-				// Editing mode - always use custom tab
-				setMode("custom");
-				setType(editingConfig.type);
-				setFrequency(editingConfig.frequency ?? "monthly");
-				setAmount(String(Math.round(editingConfig.amount / 100)));
-				setStartYear(Math.ceil(editingConfig.startMonth / 12));
-				setStartMonthOfYear(((editingConfig.startMonth - 1) % 12) + 1);
-				if (editingConfig.endMonth) {
-					setEndYear(Math.ceil(editingConfig.endMonth / 12));
-					setEndMonthOfYear(((editingConfig.endMonth - 1) % 12) + 1);
-				} else {
-					setEndYear(undefined);
-					setEndMonthOfYear(undefined);
-				}
-				setEffect(editingConfig.effect);
-				setLabel(editingConfig.label || "");
+			// Adding new - default to maximize if available fixed periods exist
+			setMode(availableFixedPeriods.length > 0 ? "maximize" : "one_time");
+			setSelectedPeriodId(availableFixedPeriods[0]?.id ?? "");
+			// Default custom rate period to first period
+			const firstPeriod = resolvedRatePeriods[0];
+			setCustomRatePeriodId(firstPeriod?.id ?? "");
+			setFrequency("monthly");
+			setAmount("");
+			// Start month defaults to first month of selected period
+			setStartMonth(firstPeriod?.startMonth ?? 1);
+
+			// Calculate end month based on first period
+			// If period goes until end of mortgage, leave undefined (for "Until end" checkbox)
+			// Otherwise, set to period's end month
+			if (firstPeriod) {
+				const periodEndMonth =
+					firstPeriod.durationMonths === 0
+						? totalMonths
+						: firstPeriod.startMonth + firstPeriod.durationMonths - 1;
+				const isPeriodUntilEnd = periodEndMonth === totalMonths;
+				setEndMonth(isPeriodUntilEnd ? undefined : periodEndMonth);
 			} else {
-				// Adding new - default to maximize if available fixed periods exist
-				setMode(availableFixedPeriods.length > 0 ? "maximize" : "custom");
-				setSelectedPeriodId(availableFixedPeriods[0]?.id ?? "");
-				setType("one_time");
-				setFrequency("monthly");
-				setAmount("");
-				setStartYear(1);
-				setStartMonthOfYear(1);
-				setEndYear(undefined);
-				setEndMonthOfYear(undefined);
-				setEffect("reduce_term");
-				setLabel("");
+				setEndMonth(undefined);
 			}
+
+			setEffect("reduce_term");
+			setLabel("");
+			setTimingMode(startDate ? "calendar" : "duration");
 		}
-	}, [open, editingConfig, availableFixedPeriods]);
+	}, [
+		open,
+		availableFixedPeriods,
+		resolvedRatePeriods,
+		startDate,
+		totalMonths,
+	]);
+
+	// Reset timing when rate period changes - ALWAYS reset to period bounds
+	useEffect(() => {
+		const period = resolvedRatePeriods.find((p) => p.id === customRatePeriodId);
+		if (!period) return;
+
+		const periodEndMonth =
+			period.durationMonths === 0
+				? totalMonths
+				: period.startMonth + period.durationMonths - 1;
+		const isPeriodUntilEnd = periodEndMonth === totalMonths;
+
+		// Always reset start to period's start
+		setStartMonth(period.startMonth);
+
+		// Always reset end: undefined for "until end" (last period), or period's end month
+		setEndMonth(isPeriodUntilEnd ? undefined : periodEndMonth);
+	}, [customRatePeriodId, resolvedRatePeriods, totalMonths]);
 
 	const handleMaximizeSubmit = () => {
 		if (yearlyPlans.length === 0 || !selectedPeriod || !selectedPolicy) return;
@@ -378,6 +250,7 @@ export function SimulateAddOverpaymentDialog({
 
 		for (const plan of yearlyPlans) {
 			onAdd({
+				ratePeriodId: selectedPeriod.id,
 				type: "recurring",
 				frequency: "monthly",
 				amount: plan.monthlyAmount,
@@ -396,9 +269,12 @@ export function SimulateAddOverpaymentDialog({
 	const handleCustomSubmit = () => {
 		const amountValue = parseCurrency(amount);
 		const amountCents = Math.round(amountValue * 100);
-		if (amountCents <= 0) return;
+		if (amountCents <= 0 || !customRatePeriodId) return;
+
+		const type = mode === "one_time" ? "one_time" : "recurring";
 
 		onAdd({
+			ratePeriodId: customRatePeriodId,
 			type,
 			amount: amountCents,
 			startMonth,
@@ -412,222 +288,124 @@ export function SimulateAddOverpaymentDialog({
 	};
 
 	const customAmountNum = parseCurrency(amount);
-	const isCustomValid = customAmountNum > 0 && startMonth >= 1;
+	const isCustomValid =
+		customAmountNum > 0 && startMonth >= 1 && !!customRatePeriodId;
 	const isMaximizeValid = selectedPeriod && yearlyPlans.length > 0;
+
+	// Determine if we should show 2 or 3 tabs
+	const hasFixedPeriods = fixedRatePeriods.length > 0;
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-md">
-				<DialogHeader>
-					<DialogTitle>
-						{editingConfig ? "Edit Overpayment" : "Add Overpayment"}
-					</DialogTitle>
+			<DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col">
+				<DialogHeader className="shrink-0">
+					<DialogTitle>Add Overpayment</DialogTitle>
 					<DialogDescription>
 						Configure an overpayment to see how it affects your mortgage.
 					</DialogDescription>
 				</DialogHeader>
 
-				{/* Only show tabs when adding new (not editing) */}
-				{!editingConfig && fixedRatePeriods.length > 0 ? (
-					<Tabs
-						value={mode}
-						onValueChange={(v) => setMode(v as "maximize" | "custom")}
-					>
-						<TabsList className="grid w-full grid-cols-2">
-							<TabsTrigger value="maximize" className="gap-1.5">
-								<Sparkles className="h-3.5 w-3.5" />
-								Maximize
+				<div className="flex-1 overflow-y-auto min-h-0 -mx-6 px-6">
+					<Tabs value={mode} onValueChange={(v) => setMode(v as TabMode)}>
+						<TabsList
+							className={`grid w-full ${hasFixedPeriods ? "grid-cols-3" : "grid-cols-2"}`}
+						>
+							{hasFixedPeriods && (
+								<TabsTrigger value="maximize" className="gap-1.5">
+									<Sparkles className="h-3.5 w-3.5" />
+									Maximize
+								</TabsTrigger>
+							)}
+							<TabsTrigger value="one_time" className="gap-1.5">
+								<CircleDollarSign className="h-3.5 w-3.5" />
+								One-time
 							</TabsTrigger>
-							<TabsTrigger value="custom">Custom</TabsTrigger>
+							<TabsTrigger value="recurring" className="gap-1.5">
+								<Repeat className="h-3.5 w-3.5" />
+								Recurring
+							</TabsTrigger>
 						</TabsList>
 
-						<TabsContent value="maximize" className="mt-4 space-y-4">
-							{/* Period Selection */}
-							{availableFixedPeriods.length === 0 ? (
-								<div className="rounded-lg border border-muted bg-muted/50 p-4">
-									<p className="text-sm text-muted-foreground">
-										All fixed rate periods already have maximum overpayments
-										configured. Use the Custom tab to add additional
-										overpayments.
-									</p>
-								</div>
-							) : (
-								<div className="space-y-2">
-									<Label>Fixed Rate Period</Label>
-									<Select
-										value={selectedPeriodId}
-										onValueChange={setSelectedPeriodId}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Select a fixed rate period" />
-										</SelectTrigger>
-										<SelectContent>
-											{availableFixedPeriods.map((period) => (
-												<SelectItem key={period.id} value={period.id}>
-													<div className="flex items-center gap-2">
-														<LenderLogo
-															lenderId={period.lenderId}
-															size={20}
-															isCustom={period.isCustom}
-														/>
-														<span>{period.rateName}</span>
-														<span className="text-muted-foreground">
-															({formatDuration(period.durationMonths)})
-														</span>
-													</div>
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-							)}
+						{hasFixedPeriods && (
+							<TabsContent value="maximize" className="mt-4 space-y-4">
+								<MaximizeContent
+									availableFixedPeriods={availableFixedPeriods}
+									selectedPeriodId={selectedPeriodId}
+									setSelectedPeriodId={setSelectedPeriodId}
+									selectedPeriod={selectedPeriod}
+									selectedPolicy={selectedPolicy}
+									yearlyPlans={yearlyPlans}
+									maximizeSummary={maximizeSummary}
+									startDate={startDate}
+								/>
+							</TabsContent>
+						)}
 
-							{/* Calculated Result */}
-							{selectedPeriod &&
-								selectedPolicy &&
-								yearlyPlans.length > 0 &&
-								maximizeSummary && (
-									<div className="rounded-lg border bg-muted/50 p-4 space-y-3">
-										<div className="flex items-start gap-3">
-											<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-												<Sparkles className="h-5 w-5 text-primary" />
-											</div>
-											<div className="flex-1">
-												<div className="text-2xl font-bold">
-													{formatCurrency(
-														maximizeSummary.firstYearAmount / 100,
-													)}
-													<span className="text-base font-normal text-muted-foreground">
-														/month
-													</span>
-												</div>
-												<p className="text-sm text-muted-foreground">
-													{yearlyPlans.length > 1
-														? `Year 1 (decreases yearly as balance drops)`
-														: "Maximum overpayment without fees"}
-												</p>
-											</div>
-										</div>
-
-										<div className="space-y-1.5 text-sm">
-											<div className="flex justify-between">
-												<span className="text-muted-foreground">Policy</span>
-												<span className="font-medium">
-													{selectedPolicy.label}
-												</span>
-											</div>
-											<div className="flex justify-between">
-												<span className="text-muted-foreground">Allowance</span>
-												<span>{maximizeSummary.policyDescription}</span>
-											</div>
-										</div>
-
-										{/* Yearly breakdown */}
-										{yearlyPlans.length > 1 && (
-											<div className="pt-2 border-t space-y-1.5">
-												<span className="text-xs text-muted-foreground font-medium">
-													Yearly Breakdown
-												</span>
-												<div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-													{yearlyPlans.map((plan) => (
-														<div
-															key={plan.year}
-															className="flex justify-between"
-														>
-															<span className="text-muted-foreground">
-																Year {plan.year}
-															</span>
-															<span className="font-medium">
-																{formatCurrency(plan.monthlyAmount / 100)}/mo
-															</span>
-														</div>
-													))}
-												</div>
-											</div>
-										)}
-
-										<div className="flex items-start gap-2 pt-2 border-t text-xs text-muted-foreground">
-											<Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-											<p>
-												{yearlyPlans.length > 1
-													? `This creates ${yearlyPlans.length} separate yearly overpayments, each adjusted for the decreasing balance.`
-													: "This creates a recurring monthly overpayment for the duration of the fixed rate period."}
-											</p>
-										</div>
-									</div>
-								)}
-
-							{selectedPeriod && !selectedPolicy && (
-								<div className="rounded-lg border border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/20 p-4">
-									<p className="text-sm text-yellow-800 dark:text-yellow-200">
-										This lender doesn't have an overpayment policy configured.
-										Use the Custom tab to manually enter an overpayment.
-									</p>
-								</div>
-							)}
-						</TabsContent>
-
-						<TabsContent value="custom" className="mt-4 space-y-4">
-							<CustomOverpaymentForm
-								type={type}
-								setType={setType}
-								frequency={frequency}
-								setFrequency={setFrequency}
+						<TabsContent value="one_time" className="mt-4 space-y-4">
+							<SimulateOverpaymentForm
+								type="one_time"
 								amount={amount}
 								setAmount={setAmount}
-								startYear={startYear}
-								setStartYear={setStartYear}
-								startMonthOfYear={startMonthOfYear}
-								setStartMonthOfYear={setStartMonthOfYear}
-								endYear={endYear}
-								setEndYear={setEndYear}
-								endMonthOfYear={endMonthOfYear}
-								setEndMonthOfYear={setEndMonthOfYear}
+								startMonth={startMonth}
+								setStartMonth={setStartMonth}
 								effect={effect}
 								setEffect={setEffect}
 								label={label}
 								setLabel={setLabel}
 								totalMonths={totalMonths}
+								startDate={startDate}
+								timingMode={timingMode}
+								setTimingMode={setTimingMode}
+								resolvedRatePeriods={resolvedRatePeriods}
+								selectedRatePeriodId={customRatePeriodId}
+								setSelectedRatePeriodId={setCustomRatePeriodId}
+								periodBounds={customRatePeriodBounds}
+								isFixedPeriod={isCustomPeriodFixed}
+								isEditing={false}
+							/>
+						</TabsContent>
+
+						<TabsContent value="recurring" className="mt-4 space-y-4">
+							<SimulateOverpaymentForm
+								type="recurring"
+								frequency={frequency}
+								setFrequency={setFrequency}
+								amount={amount}
+								setAmount={setAmount}
+								startMonth={startMonth}
+								setStartMonth={setStartMonth}
+								endMonth={endMonth}
+								setEndMonth={setEndMonth}
+								effect={effect}
+								setEffect={setEffect}
+								label={label}
+								setLabel={setLabel}
+								totalMonths={totalMonths}
+								startDate={startDate}
+								timingMode={timingMode}
+								setTimingMode={setTimingMode}
+								resolvedRatePeriods={resolvedRatePeriods}
+								selectedRatePeriodId={customRatePeriodId}
+								setSelectedRatePeriodId={setCustomRatePeriodId}
+								periodBounds={customRatePeriodBounds}
+								isFixedPeriod={isCustomPeriodFixed}
+								isEditing={false}
 							/>
 						</TabsContent>
 					</Tabs>
-				) : (
-					<div className="space-y-4 py-4">
-						<CustomOverpaymentForm
-							type={type}
-							setType={setType}
-							frequency={frequency}
-							setFrequency={setFrequency}
-							amount={amount}
-							setAmount={setAmount}
-							startYear={startYear}
-							setStartYear={setStartYear}
-							startMonthOfYear={startMonthOfYear}
-							setStartMonthOfYear={setStartMonthOfYear}
-							endYear={endYear}
-							setEndYear={setEndYear}
-							endMonthOfYear={endMonthOfYear}
-							setEndMonthOfYear={setEndMonthOfYear}
-							effect={effect}
-							setEffect={setEffect}
-							label={label}
-							setLabel={setLabel}
-							totalMonths={totalMonths}
-						/>
-					</div>
-				)}
+				</div>
 
-				<DialogFooter>
+				<DialogFooter className="shrink-0 border-t pt-4">
 					<Button variant="outline" onClick={() => onOpenChange(false)}>
 						Cancel
 					</Button>
-					{mode === "maximize" && !editingConfig ? (
+					{mode === "maximize" ? (
 						<Button onClick={handleMaximizeSubmit} disabled={!isMaximizeValid}>
 							Add Overpayment
 						</Button>
 					) : (
 						<Button onClick={handleCustomSubmit} disabled={!isCustomValid}>
-							{editingConfig ? "Save Changes" : "Add Overpayment"}
+							Add Overpayment
 						</Button>
 					)}
 				</DialogFooter>
@@ -636,304 +414,148 @@ export function SimulateAddOverpaymentDialog({
 	);
 }
 
-// Extracted custom form to avoid repetition
-interface CustomOverpaymentFormProps {
-	type: "one_time" | "recurring";
-	setType: (type: "one_time" | "recurring") => void;
-	frequency: OverpaymentFrequency;
-	setFrequency: (freq: OverpaymentFrequency) => void;
-	amount: string;
-	setAmount: (amount: string) => void;
-	startYear: number;
-	setStartYear: (year: number) => void;
-	startMonthOfYear: number;
-	setStartMonthOfYear: (month: number) => void;
-	endYear: number | undefined;
-	setEndYear: (year: number | undefined) => void;
-	endMonthOfYear: number | undefined;
-	setEndMonthOfYear: (month: number | undefined) => void;
-	effect: "reduce_term" | "reduce_payment";
-	setEffect: (effect: "reduce_term" | "reduce_payment") => void;
-	label: string;
-	setLabel: (label: string) => void;
-	totalMonths: number;
+// Maximize tab content
+interface MaximizeContentProps {
+	availableFixedPeriods: ResolvedRatePeriod[];
+	selectedPeriodId: string;
+	setSelectedPeriodId: (id: string) => void;
+	selectedPeriod: ResolvedRatePeriod | undefined;
+	selectedPolicy: OverpaymentPolicy | undefined;
+	yearlyPlans: YearlyOverpaymentPlan[];
+	maximizeSummary: {
+		yearCount: number;
+		firstYearAmount: number;
+		lastYearAmount: number;
+		averageAmount: number;
+		policyDescription: string;
+	} | null;
+	startDate?: string;
 }
 
-function CustomOverpaymentForm({
-	type,
-	setType,
-	frequency,
-	setFrequency,
-	amount,
-	setAmount,
-	startYear,
-	setStartYear,
-	startMonthOfYear,
-	setStartMonthOfYear,
-	endYear,
-	setEndYear,
-	endMonthOfYear,
-	setEndMonthOfYear,
-	effect,
-	setEffect,
-	label,
-	setLabel,
-	totalMonths,
-}: CustomOverpaymentFormProps) {
+function MaximizeContent({
+	availableFixedPeriods,
+	selectedPeriodId,
+	setSelectedPeriodId,
+	selectedPeriod,
+	selectedPolicy,
+	yearlyPlans,
+	maximizeSummary,
+	startDate,
+}: MaximizeContentProps) {
 	return (
 		<>
-			{/* Type Selection */}
-			<div className="space-y-2">
-				<Label>Type</Label>
-				<RadioGroup
-					value={type}
-					onValueChange={(v) => setType(v as "one_time" | "recurring")}
-					className="flex gap-4"
-				>
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="one_time" id="one_time" />
-						<Label htmlFor="one_time" className="font-normal cursor-pointer">
-							One-time lump sum
-						</Label>
-					</div>
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="recurring" id="recurring" />
-						<Label htmlFor="recurring" className="font-normal cursor-pointer">
-							Recurring
-						</Label>
-					</div>
-				</RadioGroup>
-			</div>
-
-			{/* Frequency Selection (for recurring) */}
-			{type === "recurring" && (
+			{/* Period Selection */}
+			{availableFixedPeriods.length === 0 ? (
+				<div className="rounded-lg border border-muted bg-muted/50 p-4">
+					<p className="text-sm text-muted-foreground">
+						All fixed rate periods already have maximum overpayments configured.
+						Use the One-time or Recurring tabs to add additional overpayments.
+					</p>
+				</div>
+			) : (
 				<div className="space-y-2">
-					<Label>Frequency</Label>
-					<RadioGroup
-						value={frequency}
-						onValueChange={(v) => setFrequency(v as OverpaymentFrequency)}
-						className="flex gap-4"
-					>
-						<div className="flex items-center space-x-2">
-							<RadioGroupItem value="monthly" id="custom_monthly" />
-							<Label
-								htmlFor="custom_monthly"
-								className="font-normal cursor-pointer"
-							>
-								Monthly
-							</Label>
-						</div>
-						<div className="flex items-center space-x-2">
-							<RadioGroupItem value="yearly" id="custom_yearly" />
-							<Label
-								htmlFor="custom_yearly"
-								className="font-normal cursor-pointer"
-							>
-								Yearly
-							</Label>
-						</div>
-					</RadioGroup>
+					<Label>Fixed Rate Period</Label>
+					<Select value={selectedPeriodId} onValueChange={setSelectedPeriodId}>
+						<SelectTrigger className="w-full">
+							<SelectValue placeholder="Select a fixed rate period" />
+						</SelectTrigger>
+						<SelectContent>
+							{availableFixedPeriods.map((period) => (
+								<SelectItem key={period.id} value={period.id}>
+									<div className="flex items-center gap-2">
+										<LenderLogo
+											lenderId={period.lenderId}
+											size={20}
+											isCustom={period.isCustom}
+										/>
+										<span>{period.rateName}</span>
+										<span className="text-muted-foreground">
+											({formatTransitionDate(startDate, period.startMonth)})
+										</span>
+									</div>
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 				</div>
 			)}
 
-			{/* Amount */}
-			<div className="space-y-2">
-				<Label htmlFor="custom_amount">
-					Amount{" "}
-					{type === "recurring" &&
-						(frequency === "monthly" ? "(per month)" : "(per year)")}
-				</Label>
-				<Input
-					id="custom_amount"
-					type="text"
-					inputMode="numeric"
-					placeholder="€1,000"
-					value={amount ? formatCurrencyInput(amount) : ""}
-					onChange={(e) => {
-						const raw = e.target.value.replace(/[^0-9]/g, "");
-						setAmount(raw);
-					}}
-					className="w-full"
-				/>
-			</div>
-
-			{/* Timing - Start */}
-			<div className="space-y-2">
-				<Label>{type === "one_time" ? "When" : "Starts at"}</Label>
-				<div className="grid grid-cols-2 gap-4">
-					<div className="space-y-1">
-						<Label
-							htmlFor="custom_startYear"
-							className="text-xs text-muted-foreground"
-						>
-							Year
-						</Label>
-						<Select
-							value={String(startYear)}
-							onValueChange={(v) => setStartYear(Number(v))}
-						>
-							<SelectTrigger id="custom_startYear" className="w-full">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{Array.from(
-									{ length: Math.ceil(totalMonths / 12) },
-									(_, i) => i + 1,
-								).map((year) => (
-									<SelectItem key={year} value={String(year)}>
-										Year {year}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-					<div className="space-y-1">
-						<Label
-							htmlFor="custom_startMonthOfYear"
-							className="text-xs text-muted-foreground"
-						>
-							Month
-						</Label>
-						<Select
-							value={String(startMonthOfYear)}
-							onValueChange={(v) => setStartMonthOfYear(Number(v))}
-						>
-							<SelectTrigger id="custom_startMonthOfYear" className="w-full">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-									<SelectItem key={month} value={String(month)}>
-										Month {month}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-				</div>
-			</div>
-
-			{/* Timing - End (for recurring) */}
-			{type === "recurring" && (
-				<div className="space-y-2">
-					<Label>Ends at (optional)</Label>
-					<div className="grid grid-cols-2 gap-4">
-						<div className="space-y-1">
-							<Label
-								htmlFor="custom_endYear"
-								className="text-xs text-muted-foreground"
-							>
-								Year
-							</Label>
-							<Select
-								value={endYear !== undefined ? String(endYear) : "until_end"}
-								onValueChange={(v) => {
-									if (v === "until_end") {
-										setEndYear(undefined);
-										setEndMonthOfYear(undefined);
-									} else {
-										setEndYear(Number(v));
-										if (endMonthOfYear === undefined) {
-											setEndMonthOfYear(12);
-										}
-									}
-								}}
-							>
-								<SelectTrigger id="custom_endYear" className="w-full">
-									<SelectValue placeholder="Until end" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="until_end">Until end</SelectItem>
-									{Array.from(
-										{ length: Math.ceil(totalMonths / 12) },
-										(_, i) => i + 1,
-									).map((year) => (
-										<SelectItem key={year} value={String(year)}>
-											Year {year}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
+			{/* Calculated Result */}
+			{selectedPeriod &&
+				selectedPolicy &&
+				yearlyPlans.length > 0 &&
+				maximizeSummary && (
+					<div className="rounded-lg border bg-muted/50 p-4 space-y-3">
+						<div className="flex items-start gap-3">
+							<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+								<Sparkles className="h-5 w-5 text-primary" />
+							</div>
+							<div className="flex-1">
+								<div className="text-2xl font-bold">
+									{formatCurrency(maximizeSummary.firstYearAmount / 100)}
+									<span className="text-base font-normal text-muted-foreground">
+										/month
+									</span>
+								</div>
+								<p className="text-sm text-muted-foreground">
+									{yearlyPlans.length > 1
+										? `Year 1 (decreases yearly as balance drops)`
+										: "Maximum overpayment without fees"}
+								</p>
+							</div>
 						</div>
-						<div className="space-y-1">
-							<Label
-								htmlFor="custom_endMonthOfYear"
-								className="text-xs text-muted-foreground"
-							>
-								Month
-							</Label>
-							<Select
-								value={
-									endMonthOfYear !== undefined ? String(endMonthOfYear) : ""
-								}
-								onValueChange={(v) =>
-									setEndMonthOfYear(v ? Number(v) : undefined)
-								}
-								disabled={endYear === undefined}
-							>
-								<SelectTrigger id="custom_endMonthOfYear" className="w-full">
-									<SelectValue placeholder="-" />
-								</SelectTrigger>
-								<SelectContent>
-									{Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-										<SelectItem key={month} value={String(month)}>
-											Month {month}
-										</SelectItem>
+
+						<div className="space-y-1.5 text-sm">
+							<div className="flex justify-between">
+								<span className="text-muted-foreground">Policy</span>
+								<span className="font-medium">{selectedPolicy.label}</span>
+							</div>
+							<div className="flex justify-between">
+								<span className="text-muted-foreground">Allowance</span>
+								<span>{maximizeSummary.policyDescription}</span>
+							</div>
+						</div>
+
+						{/* Yearly breakdown */}
+						{yearlyPlans.length > 1 && (
+							<div className="pt-2 border-t space-y-1.5">
+								<span className="text-xs text-muted-foreground font-medium">
+									Yearly Breakdown
+								</span>
+								<div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+									{yearlyPlans.map((plan) => (
+										<div key={plan.year} className="flex justify-between">
+											<span className="text-muted-foreground">
+												Year {plan.year}
+											</span>
+											<span className="font-medium">
+												{formatCurrency(plan.monthlyAmount / 100)}/mo
+											</span>
+										</div>
 									))}
-								</SelectContent>
-							</Select>
+								</div>
+							</div>
+						)}
+
+						<div className="flex items-start gap-2 pt-2 border-t text-xs text-muted-foreground">
+							<Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+							<p>
+								{yearlyPlans.length > 1
+									? `This creates ${yearlyPlans.length} separate yearly overpayments, each adjusted for the decreasing balance.`
+									: "This creates a recurring monthly overpayment for the duration of the fixed rate period."}
+							</p>
 						</div>
 					</div>
+				)}
+
+			{selectedPeriod && !selectedPolicy && (
+				<div className="rounded-lg border border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/20 p-4">
+					<p className="text-sm text-yellow-800 dark:text-yellow-200">
+						This lender doesn't have an overpayment policy configured. Use the
+						One-time or Recurring tabs to manually enter an overpayment.
+					</p>
 				</div>
 			)}
-
-			{/* Effect */}
-			<div className="space-y-2">
-				<Label>Effect</Label>
-				<Select
-					value={effect}
-					onValueChange={(v) =>
-						setEffect(v as "reduce_term" | "reduce_payment")
-					}
-				>
-					<SelectTrigger>
-						<SelectValue />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="reduce_term">
-							<div>
-								<div>Reduce term</div>
-								<div className="text-xs text-muted-foreground">
-									Keep payment, pay off faster
-								</div>
-							</div>
-						</SelectItem>
-						<SelectItem value="reduce_payment">
-							<div>
-								<div>Reduce payment</div>
-								<div className="text-xs text-muted-foreground">
-									Keep term, lower monthly payment
-								</div>
-							</div>
-						</SelectItem>
-					</SelectContent>
-				</Select>
-				<p className="text-xs text-muted-foreground">
-					During fixed rate periods, overpayments may only reduce the remaining
-					principal for the follow-on rate.
-				</p>
-			</div>
-
-			{/* Label */}
-			<div className="space-y-2">
-				<Label htmlFor="custom_label">Note (optional)</Label>
-				<Input
-					id="custom_label"
-					placeholder="e.g., Annual bonus"
-					value={label}
-					onChange={(e) => setLabel(e.target.value)}
-				/>
-			</div>
 		</>
 	);
 }

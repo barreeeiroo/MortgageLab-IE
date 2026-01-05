@@ -24,13 +24,19 @@ export const OverpaymentTypeSchema = z.enum(OVERPAYMENT_TYPES);
 export type OverpaymentType = z.infer<typeof OverpaymentTypeSchema>;
 
 // Overpayment frequency (for recurring)
-export const OVERPAYMENT_FREQUENCIES = ["monthly", "yearly"] as const;
+export const OVERPAYMENT_FREQUENCIES = [
+	"monthly",
+	"quarterly",
+	"yearly",
+] as const;
 export const OverpaymentFrequencySchema = z.enum(OVERPAYMENT_FREQUENCIES);
 export type OverpaymentFrequency = z.infer<typeof OverpaymentFrequencySchema>;
 
 // Overpayment Config - user input for overpayments
+// Each overpayment is linked to a specific rate period
 export const OverpaymentConfigSchema = z.object({
 	id: z.string(),
+	ratePeriodId: z.string(), // Link to the rate period this overpayment belongs to
 	type: OverpaymentTypeSchema,
 	frequency: OverpaymentFrequencySchema.optional(), // For recurring: monthly or yearly (defaults to monthly)
 	amount: z.number().positive(), // Amount in cents
@@ -38,6 +44,7 @@ export const OverpaymentConfigSchema = z.object({
 	endMonth: z.number().int().positive().optional(), // For recurring: when it ends (inclusive)
 	effect: OverpaymentEffectSchema, // What happens after overpayment
 	label: z.string().optional(), // User note
+	enabled: z.boolean().default(true), // Whether this overpayment is active in simulation
 });
 export type OverpaymentConfig = z.infer<typeof OverpaymentConfigSchema>;
 

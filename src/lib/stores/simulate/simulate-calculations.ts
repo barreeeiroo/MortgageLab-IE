@@ -192,6 +192,9 @@ function getOverpaymentForMonth(
 	const applied: AppliedOverpayment[] = [];
 
 	for (const config of configs) {
+		// Skip disabled overpayments
+		if (config.enabled === false) continue;
+
 		// Check if this config applies to this month
 		let applies = false;
 
@@ -205,12 +208,15 @@ function getOverpaymentForMonth(
 
 			if (inRange) {
 				const frequency = config.frequency ?? "monthly"; // Default to monthly for backwards compatibility
+				const monthsSinceStart = month - config.startMonth;
+
 				if (frequency === "monthly") {
 					applies = true;
+				} else if (frequency === "quarterly") {
+					// Quarterly: apply every 3 months from start
+					applies = monthsSinceStart % 3 === 0;
 				} else {
-					// Yearly: only apply on anniversary months
-					// Calculate months since start and check if it's a 12-month interval
-					const monthsSinceStart = month - config.startMonth;
+					// Yearly: only apply on anniversary months (every 12 months)
 					applies = monthsSinceStart % 12 === 0;
 				}
 			}
@@ -466,19 +472,30 @@ export function calculateAmortization(
 		});
 
 		// Handle reduce_payment effect for variable rates
+		// Only recalculate payment based on the "reduce_payment" portion of overpayments
+		// "reduce_term" overpayments should NOT affect the monthly payment recalculation
 		if (overpayment > 0 && resolved.type === "variable") {
-			const config = overpaymentConfigs.find((c) =>
-				overpaymentResult.applied.some((a) => a.configId === c.id),
-			);
-			if (config?.effect === "reduce_payment") {
-				// Recalculate payment based on new balance and remaining term
-				const remainingMonths = maxMonths - month;
-				if (remainingMonths > 0) {
-					currentMonthlyPayment = calculateMonthlyPayment(
-						closingBalance,
-						resolved.rate,
-						remainingMonths,
-					);
+			// Calculate how much of the overpayment has reduce_payment effect
+			let reducePaymentAmount = 0;
+			for (const applied of overpaymentResult.applied) {
+				const config = overpaymentConfigs.find(
+					(c) => c.id === applied.configId,
+				);
+				if (config?.effect === "reduce_payment") {
+					reducePaymentAmount += applied.amount;
+				}
+			}
+
+			if (reducePaymentAmount > 0) {
+				// Proportionally reduce payment based on the reduce_payment portion
+				// This preserves the term achieved by reduce_term overpayments
+				// while still reducing payments from the reduce_payment portion
+				const balanceWithoutReducePayment =
+					closingBalance + reducePaymentAmount;
+				if (balanceWithoutReducePayment > 0) {
+					currentMonthlyPayment =
+						currentMonthlyPayment *
+						(closingBalance / balanceWithoutReducePayment);
 				}
 			}
 		}

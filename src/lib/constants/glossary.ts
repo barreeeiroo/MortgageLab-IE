@@ -111,6 +111,22 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
 			"Interest is the cost charged by the lender for borrowing money, calculated as a percentage of your outstanding balance. Each month, interest is calculated on your remaining balance and forms part of your monthly payment. The lower your balance, the less interest you pay, which is why overpayments can save significant money over time.",
 		relatedTerms: ["apr", "principal"],
 	},
+	{
+		id: "ltv",
+		term: "LTV",
+		shortDescription: "Loan-to-Value ratio",
+		fullDescription:
+			"Loan-to-Value (LTV) is the ratio of your mortgage amount to the property value, expressed as a percentage. For example, if you borrow €270,000 on a €300,000 property, your LTV is 90%. Central Bank of Ireland rules limit LTV to 90% for first-time buyers and 80% for other buyers. Lower LTV typically means better interest rates and lower monthly payments.",
+		relatedTerms: ["lti"],
+	},
+	{
+		id: "lti",
+		term: "LTI",
+		shortDescription: "Loan-to-Income ratio",
+		fullDescription:
+			"Loan-to-Income (LTI) is the ratio of your mortgage amount to your gross annual income. For example, if you earn €80,000 and borrow €320,000, your LTI is 4×. Central Bank of Ireland rules limit LTI to 4× for first-time buyers and 3.5× for other buyers. Lenders can exceed these limits for a small percentage of their lending.",
+		relatedTerms: ["ltv"],
+	},
 ];
 
 export const GLOSSARY_TERMS_MAP = Object.fromEntries(

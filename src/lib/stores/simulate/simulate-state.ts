@@ -137,6 +137,72 @@ export function getPeriodsWithStartMonths(
 	});
 }
 
+// Helper: Get the bounds (startMonth, endMonth) for a rate period
+export function getPeriodBounds(
+	periods: RatePeriod[],
+	periodId: string,
+	totalMonths: number,
+): { startMonth: number; endMonth: number } | undefined {
+	const periodsWithStarts = getPeriodsWithStartMonths(periods);
+	const period = periodsWithStarts.find((p) => p.id === periodId);
+	if (!period) return undefined;
+
+	const endMonth =
+		period.durationMonths === 0
+			? totalMonths
+			: period.startMonth + period.durationMonths - 1;
+
+	return { startMonth: period.startMonth, endMonth };
+}
+
+// Helper: Get overpayments that would be affected by shortening a rate period
+export function getAffectedOverpaymentsByDurationChange(
+	periods: RatePeriod[],
+	periodId: string,
+	newDurationMonths: number,
+	totalMonths: number,
+	overpayments: OverpaymentConfig[],
+): {
+	toDelete: OverpaymentConfig[];
+	toAdjust: OverpaymentConfig[];
+} {
+	const periodsWithStarts = getPeriodsWithStartMonths(periods);
+	const period = periodsWithStarts.find((p) => p.id === periodId);
+	if (!period) return { toDelete: [], toAdjust: [] };
+
+	const newEndMonth =
+		newDurationMonths === 0
+			? totalMonths
+			: period.startMonth + newDurationMonths - 1;
+
+	const linkedOverpayments = overpayments.filter(
+		(o) => o.ratePeriodId === periodId,
+	);
+
+	const toDelete: OverpaymentConfig[] = [];
+	const toAdjust: OverpaymentConfig[] = [];
+
+	for (const op of linkedOverpayments) {
+		if (op.type === "one_time") {
+			// Delete if falls outside new bounds
+			if (op.startMonth > newEndMonth) {
+				toDelete.push(op);
+			}
+		} else {
+			// Recurring: check if starts after new end
+			if (op.startMonth > newEndMonth) {
+				toDelete.push(op);
+			} else if (op.endMonth && op.endMonth > newEndMonth) {
+				// Needs endMonth adjustment
+				toAdjust.push(op);
+			}
+			// If endMonth is undefined (until end), no adjustment needed
+		}
+	}
+
+	return { toDelete, toAdjust };
+}
+
 // Computed: total duration covered by rate periods (in months)
 // Stack-based: sum of all durations, -1 if last period has duration 0 (until end)
 export const $coveredMonths = computed($ratePeriods, (periods) => {
@@ -240,11 +306,50 @@ export function updateRatePeriod(
 	});
 }
 
+// Update rate period AND apply overpayment adjustments (for duration changes)
+export function updateRatePeriodWithOverpaymentAdjustments(
+	id: string,
+	updates: Partial<Omit<RatePeriod, "id">>,
+	overpaymentAdjustments: {
+		toDelete: string[];
+		toAdjust: Array<{ id: string; newEndMonth: number }>;
+	},
+): void {
+	const current = $simulationState.get();
+
+	// Filter out deleted overpayments and apply endMonth adjustments
+	let updatedOverpayments = current.overpaymentConfigs.filter(
+		(c) => !overpaymentAdjustments.toDelete.includes(c.id),
+	);
+
+	updatedOverpayments = updatedOverpayments.map((c) => {
+		const adjustment = overpaymentAdjustments.toAdjust.find(
+			(a) => a.id === c.id,
+		);
+		if (adjustment) {
+			return { ...c, endMonth: adjustment.newEndMonth };
+		}
+		return c;
+	});
+
+	$simulationState.set({
+		...current,
+		ratePeriods: current.ratePeriods.map((p) =>
+			p.id === id ? { ...p, ...updates } : p,
+		),
+		overpaymentConfigs: updatedOverpayments,
+	});
+}
+
 export function removeRatePeriod(id: string): void {
 	const current = $simulationState.get();
 	$simulationState.set({
 		...current,
 		ratePeriods: current.ratePeriods.filter((p) => p.id !== id),
+		// Cascade delete: remove all overpayments linked to this period
+		overpaymentConfigs: current.overpaymentConfigs.filter(
+			(c) => c.ratePeriodId !== id,
+		),
 	});
 }
 
@@ -308,6 +413,16 @@ export function removeOverpaymentConfig(id: string): void {
 	$simulationState.set({
 		...current,
 		overpaymentConfigs: current.overpaymentConfigs.filter((c) => c.id !== id),
+	});
+}
+
+export function toggleOverpaymentEnabled(id: string): void {
+	const current = $simulationState.get();
+	$simulationState.set({
+		...current,
+		overpaymentConfigs: current.overpaymentConfigs.map((c) =>
+			c.id === id ? { ...c, enabled: c.enabled === false } : c,
+		),
 	});
 }
 

@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { $hasRequiredData } from "@/lib/stores/simulate";
+import { $hasRequiredData, $simulationState } from "@/lib/stores/simulate";
 import {
 	$milestones,
 	$resolvedRatePeriods,
@@ -16,6 +16,7 @@ export function SimulateTableIsland() {
 	const warnings = useStore($simulationWarnings);
 	const resolvedRatePeriods = useStore($resolvedRatePeriods);
 	const milestones = useStore($milestones);
+	const simulationState = useStore($simulationState);
 
 	if (!hasRequiredData) {
 		return null;
@@ -33,6 +34,7 @@ export function SimulateTableIsland() {
 			warnings={warnings}
 			ratePeriodLabels={ratePeriodLabels}
 			milestones={milestones}
+			overpaymentConfigs={simulationState.overpaymentConfigs}
 		/>
 	);
 }

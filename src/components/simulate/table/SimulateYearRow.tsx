@@ -88,6 +88,7 @@ interface YearRowProps {
 	warnings: SimulationWarning[];
 	milestones: Milestone[];
 	ratePeriodLabels: Map<string, string>;
+	overpaymentLabels: string[];
 	onToggle: () => void;
 }
 
@@ -97,6 +98,7 @@ export function SimulateYearRow({
 	warnings,
 	milestones,
 	ratePeriodLabels,
+	overpaymentLabels,
 	onToggle,
 }: YearRowProps) {
 	const hasWarnings = warnings.length > 0;
@@ -163,6 +165,15 @@ export function SimulateYearRow({
 								{year.rateChanges
 									.map((id) => ratePeriodLabels.get(id) || id)
 									.join(", ")}
+							</TableCell>
+						</TableRow>
+					)}
+					{/* Overpayments for this year */}
+					{overpaymentLabels.length > 0 && (
+						<TableRow className="bg-muted/30">
+							<TableCell colSpan={8} className="py-2 pl-12 text-sm">
+								<span className="text-muted-foreground">Overpayments: </span>
+								{overpaymentLabels.join(", ")}
 							</TableCell>
 						</TableRow>
 					)}

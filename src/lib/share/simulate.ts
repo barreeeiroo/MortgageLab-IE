@@ -34,12 +34,15 @@ interface CompressedRatePeriod {
 }
 
 interface CompressedOverpayment {
+	p: number; // ratePeriodIndex (index into rate periods array, mapped to ID on decompress)
 	y: "o" | "r"; // type (one_time/recurring)
+	q?: "m" | "q" | "y"; // frequency (monthly/quarterly/yearly) - only for recurring
 	a: number; // amount (cents)
 	s: number; // startMonth
 	e?: number; // endMonth (recurring only)
 	f: "t" | "p"; // effect (reduce_term / reduce_payment)
 	b?: string; // label
+	n?: boolean; // enabled=false (only included when disabled, to save space)
 }
 
 interface CompressedSimulation {
@@ -76,28 +79,58 @@ function decompressRatePeriod(compressed: CompressedRatePeriod): RatePeriod {
 	};
 }
 
-function compressOverpayment(config: OverpaymentConfig): CompressedOverpayment {
+function compressOverpayment(
+	config: OverpaymentConfig,
+	ratePeriods: RatePeriod[],
+): CompressedOverpayment {
+	// Find the index of the rate period this overpayment belongs to
+	const periodIndex = ratePeriods.findIndex(
+		(p) => p.id === config.ratePeriodId,
+	);
+
+	// Compress frequency: only include if not monthly (default)
+	let q: "m" | "q" | "y" | undefined;
+	if (config.frequency === "quarterly") q = "q";
+	else if (config.frequency === "yearly") q = "y";
+	// Don't include for monthly (it's the default)
+
 	return {
+		p: periodIndex >= 0 ? periodIndex : 0,
 		y: config.type === "one_time" ? "o" : "r",
+		q,
 		a: config.amount,
 		s: config.startMonth,
 		e: config.endMonth,
 		f: config.effect === "reduce_term" ? "t" : "p",
 		b: config.label,
+		n: config.enabled === false ? true : undefined, // Only include when disabled
 	};
 }
 
 function decompressOverpayment(
 	compressed: CompressedOverpayment,
+	ratePeriods: RatePeriod[],
 ): OverpaymentConfig {
+	// Map period index back to the rate period ID
+	const ratePeriodId =
+		ratePeriods[compressed.p]?.id ?? ratePeriods[0]?.id ?? "";
+
+	// Decompress frequency: default to monthly if not specified
+	let frequency: "monthly" | "quarterly" | "yearly" = "monthly";
+	if (compressed.q === "q") frequency = "quarterly";
+	else if (compressed.q === "y") frequency = "yearly";
+
 	return {
 		id: crypto.randomUUID(),
+		ratePeriodId,
 		type: compressed.y === "o" ? "one_time" : "recurring",
+		frequency,
 		amount: compressed.a,
 		startMonth: compressed.s,
 		endMonth: compressed.e,
 		effect: compressed.f === "t" ? "reduce_term" : "reduce_payment",
 		label: compressed.b,
+		enabled: compressed.n !== true, // Default to enabled
 	};
 }
 
@@ -125,7 +158,9 @@ function compressState(
 		r: state.ratePeriods.map(compressRatePeriod),
 		o:
 			state.overpaymentConfigs.length > 0
-				? state.overpaymentConfigs.map(compressOverpayment)
+				? state.overpaymentConfigs.map((c) =>
+						compressOverpayment(c, state.ratePeriods),
+					)
 				: undefined,
 		cr:
 			usedCustomRates.length > 0
@@ -145,6 +180,9 @@ export interface ParsedSimulateShareState {
 function decompressState(
 	compressed: CompressedSimulation,
 ): ParsedSimulateShareState {
+	// Decompress rate periods first so we have their IDs for overpayments
+	const ratePeriods = compressed.r.map(decompressRatePeriod);
+
 	return {
 		state: {
 			input: {
@@ -154,8 +192,9 @@ function decompressState(
 				startDate: compressed.i.d,
 				ber: compressed.i.b as BerRating,
 			},
-			ratePeriods: compressed.r.map(decompressRatePeriod),
-			overpaymentConfigs: compressed.o?.map(decompressOverpayment) ?? [],
+			ratePeriods,
+			overpaymentConfigs:
+				compressed.o?.map((o) => decompressOverpayment(o, ratePeriods)) ?? [],
 			initialized: true,
 		},
 		embeddedCustomRates: compressed.cr?.map(decompressCustomRate) ?? [],

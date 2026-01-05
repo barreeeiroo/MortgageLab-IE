@@ -18,6 +18,7 @@ import { GLOSSARY_TERMS_MAP } from "@/lib/constants/glossary";
 import type {
 	AmortizationYear,
 	Milestone,
+	OverpaymentConfig,
 	SimulationSummary,
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
@@ -30,6 +31,7 @@ interface SimulateTableProps {
 	warnings: SimulationWarning[];
 	ratePeriodLabels: Map<string, string>;
 	milestones: Milestone[];
+	overpaymentConfigs: OverpaymentConfig[];
 }
 
 function formatEuro(cents: number): string {
@@ -79,6 +81,7 @@ export function SimulateTable({
 	warnings,
 	ratePeriodLabels,
 	milestones,
+	overpaymentConfigs,
 }: SimulateTableProps) {
 	const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
 
@@ -122,6 +125,57 @@ export function SimulateTable({
 		const existing = milestonesByYear.get(year) || [];
 		existing.push(milestone);
 		milestonesByYear.set(year, existing);
+	}
+
+	// Generate display label for an overpayment config
+	const getOverpaymentDisplayLabel = (config: OverpaymentConfig): string => {
+		if (config.label) return config.label;
+
+		const amount = formatEuro(config.amount);
+		if (config.type === "one_time") {
+			return `${amount} Once`;
+		}
+		// Recurring
+		const frequencyLabel =
+			config.frequency === "yearly"
+				? "Yearly"
+				: config.frequency === "quarterly"
+					? "Quarterly"
+					: "Monthly";
+		return `${amount} ${frequencyLabel}`;
+	};
+
+	// Group overpayments by year with display labels (counting duplicates)
+	const overpaymentCountsByYear = new Map<number, Map<string, number>>();
+	for (const config of overpaymentConfigs) {
+		const displayLabel = getOverpaymentDisplayLabel(config);
+
+		// Find all years this overpayment is active in
+		const endMonth = config.endMonth ?? Number.MAX_SAFE_INTEGER;
+		for (const yearData of yearlySchedule) {
+			const yearStartMonth = yearData.months[0]?.month ?? 1;
+			const yearEndMonth =
+				yearData.months[yearData.months.length - 1]?.month ?? yearStartMonth;
+
+			// Check if overpayment is active during this year
+			if (config.startMonth <= yearEndMonth && endMonth >= yearStartMonth) {
+				const yearCounts =
+					overpaymentCountsByYear.get(yearData.year) ||
+					new Map<string, number>();
+				yearCounts.set(displayLabel, (yearCounts.get(displayLabel) || 0) + 1);
+				overpaymentCountsByYear.set(yearData.year, yearCounts);
+			}
+		}
+	}
+
+	// Convert counts to display labels (e.g., "€100 Monthly (x2)")
+	const overpaymentLabelsByYear = new Map<number, string[]>();
+	for (const [year, counts] of overpaymentCountsByYear) {
+		const labels: string[] = [];
+		for (const [label, count] of counts) {
+			labels.push(count > 1 ? `${label} (x${count})` : label);
+		}
+		overpaymentLabelsByYear.set(year, labels);
 	}
 
 	return (
@@ -246,6 +300,9 @@ export function SimulateTable({
 									warnings={warningsByYear.get(year.year) || []}
 									milestones={milestonesByYear.get(year.year) || []}
 									ratePeriodLabels={ratePeriodLabels}
+									overpaymentLabels={
+										overpaymentLabelsByYear.get(year.year) || []
+									}
 									onToggle={() => toggleYear(year.year)}
 								/>
 							))}

@@ -1,6 +1,7 @@
 import { AlertCircle, HelpCircle, Info, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { RatesMode } from "@/lib/constants";
+import { GLOSSARY_TERMS_MAP } from "@/lib/constants/glossary";
 import type { Lender } from "@/lib/schemas";
 import type { RatesInputValues } from "@/lib/stores";
 import {
@@ -326,9 +327,29 @@ export function RatesInput({
 									</div>
 								)}
 								<div className="space-y-1 flex-1">
-									<Label htmlFor="ltvRange" className="text-xs">
-										LTV
-									</Label>
+									<div className="flex items-center gap-1">
+										<Label htmlFor="ltvRange" className="text-xs">
+											LTV
+										</Label>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<button
+													type="button"
+													className="text-muted-foreground hover:text-foreground"
+												>
+													<HelpCircle className="h-3 w-3" />
+												</button>
+											</TooltipTrigger>
+											<TooltipContent className="max-w-xs">
+												<p className="font-medium mb-1">
+													{GLOSSARY_TERMS_MAP.ltv.term}
+												</p>
+												<p className="text-sm">
+													{GLOSSARY_TERMS_MAP.ltv.fullDescription}
+												</p>
+											</TooltipContent>
+										</Tooltip>
+									</div>
 									<Input
 										id="ltvRange"
 										type="text"

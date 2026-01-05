@@ -119,6 +119,19 @@ export function SimulateHeader({
 						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
 							<div className="flex items-center gap-3">
 								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+									<Home className="h-4 w-4 text-primary" />
+								</div>
+								<div className="min-w-0">
+									<p className="text-xs text-muted-foreground">
+										Property Value
+									</p>
+									<p className="font-semibold truncate">
+										{formatCurrency(propertyValue / 100, { compact: true })}
+									</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-3">
+								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
 									<Banknote className="h-4 w-4 text-primary" />
 								</div>
 								<div className="min-w-0">
@@ -133,23 +146,10 @@ export function SimulateHeader({
 							</div>
 							<div className="flex items-center gap-3">
 								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-									<Home className="h-4 w-4 text-primary" />
-								</div>
-								<div className="min-w-0">
-									<p className="text-xs text-muted-foreground">
-										Property Value
-									</p>
-									<p className="font-semibold truncate">
-										{formatCurrency(propertyValue / 100, { compact: true })}
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-3">
-								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
 									<CalendarClock className="h-4 w-4 text-primary" />
 								</div>
 								<div className="min-w-0">
-									<p className="text-xs text-muted-foreground">Term</p>
+									<p className="text-xs text-muted-foreground">Original Term</p>
 									<p className="font-semibold">
 										{formatTermDisplay(mortgageTermMonths)}
 									</p>

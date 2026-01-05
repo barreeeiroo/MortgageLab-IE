@@ -1,6 +1,8 @@
 import {
 	ArrowRightToLine,
 	CheckCircle2,
+	Eye,
+	EyeOff,
 	Flag,
 	Pencil,
 	Percent,
@@ -317,6 +319,7 @@ interface OverpaymentEventProps {
 	warnings: SimulationWarning[];
 	onEdit: () => void;
 	onDelete: () => void;
+	onToggleEnabled: () => void;
 }
 
 export function SimulateOverpaymentEvent({
@@ -324,8 +327,10 @@ export function SimulateOverpaymentEvent({
 	warnings,
 	onEdit,
 	onDelete,
+	onToggleEnabled,
 }: OverpaymentEventProps) {
 	const hasWarnings = warnings.length > 0;
+	const isEnabled = config.enabled !== false;
 	const frequency = config.frequency ?? "monthly";
 	const frequencyLabel =
 		config.type === "one_time"
@@ -342,11 +347,25 @@ export function SimulateOverpaymentEvent({
 				<button
 					type="button"
 					className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors cursor-pointer hover:bg-muted/50 ${
-						hasWarnings ? "border-yellow-500/50" : "border-border"
+						!isEnabled
+							? "opacity-50 border-dashed"
+							: hasWarnings
+								? "border-yellow-500/50"
+								: "border-border"
 					}`}
 				>
-					<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-						<TrendingDown className="h-4 w-4 text-green-600 dark:text-green-400" />
+					<div
+						className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+							isEnabled ? "bg-green-100 dark:bg-green-900" : "bg-muted"
+						}`}
+					>
+						<TrendingDown
+							className={`h-4 w-4 ${
+								isEnabled
+									? "text-green-600 dark:text-green-400"
+									: "text-muted-foreground"
+							}`}
+						/>
 					</div>
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center gap-2">
@@ -364,18 +383,10 @@ export function SimulateOverpaymentEvent({
 								{frequencyLabel}
 							</span>
 						</div>
-						<div className="flex items-center gap-2 text-xs text-muted-foreground">
-							<span>
-								{config.type === "one_time"
-									? formatPeriod(config.startMonth)
-									: `${formatPeriod(config.startMonth)} → ${config.endMonth ? formatPeriod(config.endMonth) : "End"}`}
-							</span>
-							{config.label && (
-								<>
-									<span>•</span>
-									<span className="truncate">{config.label}</span>
-								</>
-							)}
+						<div className="text-xs text-muted-foreground">
+							{config.type === "one_time"
+								? formatPeriod(config.startMonth)
+								: `${formatPeriod(config.startMonth)} → ${config.endMonth ? formatPeriod(config.endMonth) : "End"}`}
 						</div>
 					</div>
 				</button>
@@ -448,6 +459,18 @@ export function SimulateOverpaymentEvent({
 
 					{/* Actions */}
 					<div className="flex gap-2 pt-2 border-t">
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={onToggleEnabled}
+							title={isEnabled ? "Disable overpayment" : "Enable overpayment"}
+						>
+							{isEnabled ? (
+								<Eye className="h-3.5 w-3.5" />
+							) : (
+								<EyeOff className="h-3.5 w-3.5" />
+							)}
+						</Button>
 						<Button
 							variant="outline"
 							size="sm"

@@ -1,6 +1,6 @@
 import { useStore } from "@nanostores/react";
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -21,13 +21,16 @@ import {
 	addOverpaymentConfig,
 	clearOverpaymentConfigs,
 	removeOverpaymentConfig,
+	toggleOverpaymentEnabled,
 	updateOverpaymentConfig,
 } from "@/lib/stores/simulate";
 import {
 	$resolvedRatePeriods,
 	$simulationWarnings,
 } from "@/lib/stores/simulate/simulate-calculations";
+import { formatTransitionDate } from "@/lib/utils/date";
 import { SimulateAddOverpaymentDialog } from "./SimulateAddOverpaymentDialog";
+import { SimulateEditOverpaymentDialog } from "./SimulateEditOverpaymentDialog";
 import { SimulateOverpaymentEvent } from "./SimulateEventCard";
 
 export function SimulateOverpaymentsIsland() {
@@ -47,16 +50,60 @@ export function SimulateOverpaymentsIsland() {
 	);
 	const [showDeleteAll, setShowDeleteAll] = useState(false);
 
+	const { overpaymentConfigs, input } = simulationState;
+
+	// Group overpayments by ratePeriodId, sorted by rate period start month
+	const groupedOverpayments = useMemo(() => {
+		// Group by ratePeriodId
+		const groups = new Map<string, (typeof overpaymentConfigs)[number][]>();
+
+		for (const config of overpaymentConfigs) {
+			const existing = groups.get(config.ratePeriodId) || [];
+			existing.push(config);
+			groups.set(config.ratePeriodId, existing);
+		}
+
+		// Create sorted groups with period info
+		const sortedGroups: Array<{
+			periodId: string;
+			period: (typeof resolvedRatePeriods)[number] | undefined;
+			overpayments: (typeof overpaymentConfigs)[number][];
+		}> = [];
+
+		for (const [periodId, overpayments] of groups) {
+			const period = resolvedRatePeriods.find((p) => p.id === periodId);
+			sortedGroups.push({
+				periodId,
+				period,
+				overpayments: overpayments.sort((a, b) => a.startMonth - b.startMonth),
+			});
+		}
+
+		// Sort by period start month
+		return sortedGroups.sort((a, b) => {
+			const aStart = a.period?.startMonth ?? 0;
+			const bStart = b.period?.startMonth ?? 0;
+			return aStart - bStart;
+		});
+	}, [overpaymentConfigs, resolvedRatePeriods]);
+
+	// Format group header text
+	const formatGroupHeader = (
+		period: (typeof resolvedRatePeriods)[number] | undefined,
+	): string => {
+		if (!period) return "Unknown period";
+
+		// Use label if available, otherwise rate name
+		const displayName = period.label || period.rateName;
+
+		// Always include date info
+		const dateStr = formatTransitionDate(input.startDate, period.startMonth);
+		return `${displayName} (${dateStr})`;
+	};
+
 	if (!hasRequiredData) {
 		return null;
 	}
-
-	const { overpaymentConfigs } = simulationState;
-
-	// Sort overpayment configs by start month
-	const sortedOverpayments = [...overpaymentConfigs].sort(
-		(a, b) => a.startMonth - b.startMonth,
-	);
 
 	return (
 		<Card className="py-0 gap-0">
@@ -87,30 +134,42 @@ export function SimulateOverpaymentsIsland() {
 				</div>
 			</CardHeader>
 			<CardContent className="pt-0 px-3 pb-3">
-				{sortedOverpayments.length === 0 ? (
+				{groupedOverpayments.length === 0 ? (
 					<p className="text-sm text-muted-foreground text-center py-4">
 						No overpayments configured.
 					</p>
 				) : (
-					<div className="space-y-2">
-						{sortedOverpayments.map((config) => {
-							const configWarnings = warnings.filter(
-								(w) =>
-									w.type === "allowance_exceeded" &&
-									w.month >= config.startMonth &&
-									(!config.endMonth || w.month <= config.endMonth),
-							);
+					<div className="space-y-4">
+						{groupedOverpayments.map(({ periodId, period, overpayments }) => (
+							<div key={periodId} className="space-y-2">
+								{/* Group header - ghost text */}
+								<div className="text-xs text-muted-foreground px-1">
+									{formatGroupHeader(period)}
+								</div>
+								{/* Overpayments in this group */}
+								{overpayments.map((config) => {
+									const configWarnings = warnings.filter(
+										(w) =>
+											w.type === "allowance_exceeded" &&
+											w.month >= config.startMonth &&
+											(!config.endMonth || w.month <= config.endMonth),
+									);
 
-							return (
-								<SimulateOverpaymentEvent
-									key={config.id}
-									config={config}
-									warnings={configWarnings}
-									onEdit={() => setEditingOverpayment(config)}
-									onDelete={() => setDeletingOverpayment(config.id)}
-								/>
-							);
-						})}
+									return (
+										<SimulateOverpaymentEvent
+											key={config.id}
+											config={config}
+											warnings={configWarnings}
+											onEdit={() => setEditingOverpayment(config)}
+											onDelete={() => setDeletingOverpayment(config.id)}
+											onToggleEnabled={() =>
+												toggleOverpaymentEnabled(config.id)
+											}
+										/>
+									);
+								})}
+							</div>
+						))}
 					</div>
 				)}
 			</CardContent>
@@ -125,22 +184,22 @@ export function SimulateOverpaymentsIsland() {
 				resolvedRatePeriods={resolvedRatePeriods}
 				overpaymentPolicies={overpaymentPolicies}
 				existingConfigs={overpaymentConfigs}
+				startDate={simulationState.input.startDate}
 			/>
 
 			{/* Edit Overpayment Dialog */}
 			{editingOverpayment && (
-				<SimulateAddOverpaymentDialog
+				<SimulateEditOverpaymentDialog
 					open={!!editingOverpayment}
 					onOpenChange={(open) => !open && setEditingOverpayment(null)}
-					onAdd={(config) => {
+					onSave={(config) => {
 						updateOverpaymentConfig(editingOverpayment.id, config);
 						setEditingOverpayment(null);
 					}}
-					totalMonths={totalMonths}
-					mortgageAmount={simulationState.input.mortgageAmount}
-					resolvedRatePeriods={resolvedRatePeriods}
-					overpaymentPolicies={overpaymentPolicies}
 					editingConfig={editingOverpayment}
+					totalMonths={totalMonths}
+					resolvedRatePeriods={resolvedRatePeriods}
+					startDate={simulationState.input.startDate}
 				/>
 			)}
 

@@ -1,3 +1,4 @@
+import { AlertTriangle } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LenderLogo } from "@/components/lenders";
 import { Button } from "@/components/ui/button";
@@ -21,8 +22,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Lender } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
-import type { RatePeriod } from "@/lib/schemas/simulate";
+import type { OverpaymentConfig, RatePeriod } from "@/lib/schemas/simulate";
 import type { CustomRate } from "@/lib/stores/custom-rates";
+import { getAffectedOverpaymentsByDurationChange } from "@/lib/stores/simulate";
 import { getCalendarDate } from "@/lib/utils/date";
 
 type DurationMode = "calendar" | "duration" | "end";
@@ -41,6 +43,9 @@ interface EditRatePeriodDialogProps {
 	isLastPeriod?: boolean;
 	startDate?: string;
 	periodStartMonth?: number;
+	// For overpayment adjustment warnings
+	ratePeriods?: RatePeriod[];
+	overpaymentConfigs?: OverpaymentConfig[];
 }
 
 interface RateInfo {
@@ -64,6 +69,8 @@ export function SimulateEditRatePeriodDialog({
 	isLastPeriod = true,
 	startDate,
 	periodStartMonth = 1,
+	ratePeriods = [],
+	overpaymentConfigs = [],
 }: EditRatePeriodDialogProps) {
 	const [durationMode, setDurationMode] = useState<DurationMode>("duration");
 	const [durationYears, setDurationYears] = useState(0);
@@ -221,6 +228,46 @@ export function SimulateEditRatePeriodDialog({
 	const isDurationLocked =
 		(rateInfo?.type === "fixed" && !!rateInfo.fixedTerm) || !isLastPeriod;
 
+	// Calculate affected overpayments when duration is shortened
+	const affectedOverpayments = useMemo(() => {
+		if (
+			ratePeriods.length === 0 ||
+			overpaymentConfigs.length === 0 ||
+			isDurationLocked
+		) {
+			return { toDelete: [], toAdjust: [] };
+		}
+
+		// Only calculate if duration is being shortened
+		const currentDuration = editingPeriod.durationMonths;
+		if (durationMonths >= currentDuration && currentDuration !== 0) {
+			// Extending or keeping the same, or "until end" - no overpayments affected
+			return { toDelete: [], toAdjust: [] };
+		}
+
+		// If changing FROM "until end" (0) to a specific duration, need to check
+		// Or if shortening an existing duration
+		return getAffectedOverpaymentsByDurationChange(
+			ratePeriods,
+			editingPeriod.id,
+			durationMonths,
+			totalMonths,
+			overpaymentConfigs,
+		);
+	}, [
+		ratePeriods,
+		overpaymentConfigs,
+		editingPeriod.id,
+		editingPeriod.durationMonths,
+		durationMonths,
+		totalMonths,
+		isDurationLocked,
+	]);
+
+	const hasAffectedOverpayments =
+		affectedOverpayments.toDelete.length > 0 ||
+		affectedOverpayments.toAdjust.length > 0;
+
 	const handleSubmit = () => {
 		if (!rateInfo) return;
 
@@ -243,8 +290,8 @@ export function SimulateEditRatePeriodDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-lg">
-				<DialogHeader>
+			<DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col">
+				<DialogHeader className="shrink-0">
 					<DialogTitle>Edit Rate Period</DialogTitle>
 					<DialogDescription>
 						{isLastPeriod && rateInfo?.type === "variable"
@@ -253,261 +300,300 @@ export function SimulateEditRatePeriodDialog({
 					</DialogDescription>
 				</DialogHeader>
 
-				<div className="space-y-4 py-4">
-					{/* Rate Display (read-only) */}
-					<div className="space-y-2">
-						<Label>Rate</Label>
-						{rateInfo ? (
-							<div className="flex items-center gap-3 rounded-md border border-input bg-muted p-3">
-								<LenderLogo
-									lenderId={editingPeriod.lenderId}
-									size={32}
-									isCustom={rateInfo.isCustom}
-								/>
-								<div className="flex-1 min-w-0">
-									<div className="flex items-center gap-2">
-										<span className="font-medium text-sm truncate">
-											{rateInfo.name}
-										</span>
-										<span
-											className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
-												rateInfo.type === "fixed"
-													? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-													: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-											}`}
-										>
-											{rateInfo.type === "fixed" ? "Fix" : "Var"}
-										</span>
+				<div className="flex-1 overflow-y-auto min-h-0 -mx-6 px-6">
+					<div className="space-y-4 py-4">
+						{/* Rate Display (read-only) */}
+						<div className="space-y-2">
+							<Label>Rate</Label>
+							{rateInfo ? (
+								<div className="flex items-center gap-3 rounded-md border border-input bg-muted p-3">
+									<LenderLogo
+										lenderId={editingPeriod.lenderId}
+										size={32}
+										isCustom={rateInfo.isCustom}
+									/>
+									<div className="flex-1 min-w-0">
+										<div className="flex items-center gap-2">
+											<span className="font-medium text-sm truncate">
+												{rateInfo.name}
+											</span>
+											<span
+												className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
+													rateInfo.type === "fixed"
+														? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+														: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+												}`}
+											>
+												{rateInfo.type === "fixed" ? "Fix" : "Var"}
+											</span>
+										</div>
+										<div className="flex items-center gap-2 text-xs text-muted-foreground">
+											<span>{rateInfo.lenderName}</span>
+											<span>•</span>
+											<span className="font-medium text-foreground">
+												{rateInfo.rate.toFixed(2)}%
+											</span>
+											{rateInfo.type === "fixed" && rateInfo.fixedTerm && (
+												<>
+													<span>•</span>
+													<span>{rateInfo.fixedTerm}-year term</span>
+												</>
+											)}
+										</div>
 									</div>
-									<div className="flex items-center gap-2 text-xs text-muted-foreground">
-										<span>{rateInfo.lenderName}</span>
-										<span>•</span>
-										<span className="font-medium text-foreground">
-											{rateInfo.rate.toFixed(2)}%
-										</span>
-										{rateInfo.type === "fixed" && rateInfo.fixedTerm && (
+								</div>
+							) : (
+								<div className="rounded-md border border-input bg-muted p-3 text-sm text-muted-foreground">
+									Rate not found
+								</div>
+							)}
+						</div>
+
+						{/* Duration */}
+						<div className="space-y-2">
+							<Label>Until</Label>
+							{isDurationLocked ? (
+								<div className="space-y-1.5">
+									<div className="flex h-10 w-full items-center rounded-md border border-input bg-muted px-3 py-2 text-sm">
+										{rateInfo?.type === "fixed" && rateInfo.fixedTerm ? (
 											<>
-												<span>•</span>
-												<span>{rateInfo.fixedTerm}-year term</span>
+												{rateInfo.fixedTerm} year
+												{rateInfo.fixedTerm !== 1 && "s"} (fixed term)
+											</>
+										) : durationMonths === 0 ? (
+											"End of mortgage"
+										) : (
+											<>
+												{durationYears > 0 &&
+													`${durationYears} year${durationYears !== 1 ? "s" : ""}`}
+												{durationYears > 0 && durationExtraMonths > 0 && " "}
+												{durationExtraMonths > 0 &&
+													`${durationExtraMonths} month${durationExtraMonths !== 1 ? "s" : ""}`}
 											</>
 										)}
 									</div>
+									<p className="text-xs text-muted-foreground">
+										{rateInfo?.type === "fixed"
+											? "Fixed rate duration is determined by the rate's fixed term"
+											: "Duration cannot be changed for earlier rate periods"}
+									</p>
 								</div>
-							</div>
-						) : (
-							<div className="rounded-md border border-input bg-muted p-3 text-sm text-muted-foreground">
-								Rate not found
-							</div>
-						)}
-					</div>
+							) : (
+								<Tabs
+									value={durationMode}
+									onValueChange={(v) => setDurationMode(v as DurationMode)}
+								>
+									<TabsList>
+										<TabsTrigger value="calendar" className="text-xs">
+											Natural Calendar
+										</TabsTrigger>
+										<TabsTrigger value="duration" className="text-xs">
+											Mortgage Duration
+										</TabsTrigger>
+										<TabsTrigger value="end" className="text-xs">
+											End Of Mortgage
+										</TabsTrigger>
+									</TabsList>
 
-					{/* Duration */}
-					<div className="space-y-2">
-						<Label>Until</Label>
-						{isDurationLocked ? (
-							<div className="space-y-1.5">
-								<div className="flex h-10 w-full items-center rounded-md border border-input bg-muted px-3 py-2 text-sm">
-									{rateInfo?.type === "fixed" && rateInfo.fixedTerm ? (
-										<>
-											{rateInfo.fixedTerm} year
-											{rateInfo.fixedTerm !== 1 && "s"} (fixed term)
-										</>
-									) : durationMonths === 0 ? (
-										"End of mortgage"
-									) : (
-										<>
-											{durationYears > 0 &&
-												`${durationYears} year${durationYears !== 1 ? "s" : ""}`}
-											{durationYears > 0 && durationExtraMonths > 0 && " "}
-											{durationExtraMonths > 0 &&
-												`${durationExtraMonths} month${durationExtraMonths !== 1 ? "s" : ""}`}
-										</>
-									)}
-								</div>
-								<p className="text-xs text-muted-foreground">
-									{rateInfo?.type === "fixed"
-										? "Fixed rate duration is determined by the rate's fixed term"
-										: "Duration cannot be changed for earlier rate periods"}
-								</p>
-							</div>
-						) : (
-							<Tabs
-								value={durationMode}
-								onValueChange={(v) => setDurationMode(v as DurationMode)}
-							>
-								<TabsList>
-									<TabsTrigger value="calendar">Calendar</TabsTrigger>
-									<TabsTrigger value="duration">Duration</TabsTrigger>
-									<TabsTrigger value="end">End</TabsTrigger>
-								</TabsList>
-
-								<TabsContent value="calendar" className="mt-3">
-									<div className="grid grid-cols-2 gap-4">
-										<div className="space-y-1">
-											<Label
-												htmlFor="targetYear"
-												className="text-xs text-muted-foreground"
-											>
-												Year
-											</Label>
-											<Select
-												key={`year-${durationMode}-${targetYear}`}
-												value={String(targetYear)}
-												onValueChange={(v) => setTargetYear(Number(v))}
-											>
-												<SelectTrigger id="targetYear" className="w-full">
-													<SelectValue />
-												</SelectTrigger>
-												<SelectContent>
-													{startDate
-														? Array.from({ length: 40 }, (_, i) => {
-																const year = new Date().getFullYear() + i;
-																return (
+									<TabsContent value="calendar" className="mt-3">
+										<div className="grid grid-cols-2 gap-4">
+											<div className="space-y-1">
+												<Label
+													htmlFor="targetYear"
+													className="text-xs text-muted-foreground"
+												>
+													Year
+												</Label>
+												<Select
+													key={`year-${durationMode}-${targetYear}`}
+													value={String(targetYear)}
+													onValueChange={(v) => setTargetYear(Number(v))}
+												>
+													<SelectTrigger id="targetYear" className="w-full">
+														<SelectValue />
+													</SelectTrigger>
+													<SelectContent>
+														{startDate
+															? Array.from({ length: 40 }, (_, i) => {
+																	const year = new Date().getFullYear() + i;
+																	return (
+																		<SelectItem key={year} value={String(year)}>
+																			{year}
+																		</SelectItem>
+																	);
+																})
+															: Array.from(
+																	{
+																		length: Math.max(
+																			Math.ceil(totalMonths / 12) + 1,
+																			targetYear + 1,
+																		),
+																	},
+																	(_, i) => i + 1,
+																).map((year) => (
 																	<SelectItem key={year} value={String(year)}>
-																		{year}
+																		Year {year}
 																	</SelectItem>
-																);
-															})
-														: Array.from(
-																{
-																	length: Math.max(
-																		Math.ceil(totalMonths / 12) + 1,
-																		targetYear + 1,
-																	),
-																},
-																(_, i) => i + 1,
-															).map((year) => (
-																<SelectItem key={year} value={String(year)}>
-																	Year {year}
-																</SelectItem>
-															))}
-												</SelectContent>
-											</Select>
+																))}
+													</SelectContent>
+												</Select>
+											</div>
+											<div className="space-y-1">
+												<Label
+													htmlFor="targetMonth"
+													className="text-xs text-muted-foreground"
+												>
+													Month
+												</Label>
+												<Select
+													key={`month-${durationMode}-${targetMonth}`}
+													value={String(targetMonth)}
+													onValueChange={(v) => setTargetMonth(Number(v))}
+												>
+													<SelectTrigger id="targetMonth" className="w-full">
+														<SelectValue />
+													</SelectTrigger>
+													<SelectContent>
+														{Array.from({ length: 12 }, (_, i) => i + 1).map(
+															(month) =>
+																startDate ? (
+																	<SelectItem key={month} value={String(month)}>
+																		{new Date(2000, month - 1).toLocaleString(
+																			"en-IE",
+																			{ month: "long" },
+																		)}
+																	</SelectItem>
+																) : (
+																	<SelectItem key={month} value={String(month)}>
+																		Month {month}
+																	</SelectItem>
+																),
+														)}
+													</SelectContent>
+												</Select>
+											</div>
 										</div>
-										<div className="space-y-1">
-											<Label
-												htmlFor="targetMonth"
-												className="text-xs text-muted-foreground"
-											>
-												Month
-											</Label>
-											<Select
-												key={`month-${durationMode}-${targetMonth}`}
-												value={String(targetMonth)}
-												onValueChange={(v) => setTargetMonth(Number(v))}
-											>
-												<SelectTrigger id="targetMonth" className="w-full">
-													<SelectValue />
-												</SelectTrigger>
-												<SelectContent>
-													{Array.from({ length: 12 }, (_, i) => i + 1).map(
-														(month) =>
-															startDate ? (
+									</TabsContent>
+
+									<TabsContent value="duration" className="mt-3">
+										<div className="grid grid-cols-2 gap-4">
+											<div className="space-y-1">
+												<Label
+													htmlFor="durationYears"
+													className="text-xs text-muted-foreground"
+												>
+													Years
+												</Label>
+												<Select
+													value={String(durationYears)}
+													onValueChange={(v) => setDurationYears(Number(v))}
+												>
+													<SelectTrigger id="durationYears" className="w-full">
+														<SelectValue />
+													</SelectTrigger>
+													<SelectContent>
+														{Array.from(
+															{ length: Math.ceil(totalMonths / 12) + 1 },
+															(_, i) => i,
+														).map((year) => (
+															<SelectItem key={year} value={String(year)}>
+																{year} year{year !== 1 && "s"}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											</div>
+											<div className="space-y-1">
+												<Label
+													htmlFor="durationMonths"
+													className="text-xs text-muted-foreground"
+												>
+													Months
+												</Label>
+												<Select
+													value={String(durationExtraMonths)}
+													onValueChange={(v) =>
+														setDurationExtraMonths(Number(v))
+													}
+												>
+													<SelectTrigger id="durationMonths" className="w-full">
+														<SelectValue />
+													</SelectTrigger>
+													<SelectContent>
+														{Array.from({ length: 12 }, (_, i) => i).map(
+															(month) => (
 																<SelectItem key={month} value={String(month)}>
-																	{new Date(2000, month - 1).toLocaleString(
-																		"en-IE",
-																		{ month: "long" },
-																	)}
-																</SelectItem>
-															) : (
-																<SelectItem key={month} value={String(month)}>
-																	Month {month}
+																	{month} month{month !== 1 && "s"}
 																</SelectItem>
 															),
-													)}
-												</SelectContent>
-											</Select>
+														)}
+													</SelectContent>
+												</Select>
+											</div>
 										</div>
-									</div>
-								</TabsContent>
+									</TabsContent>
 
-								<TabsContent value="duration" className="mt-3">
-									<div className="grid grid-cols-2 gap-4">
-										<div className="space-y-1">
-											<Label
-												htmlFor="durationYears"
-												className="text-xs text-muted-foreground"
-											>
-												Years
-											</Label>
-											<Select
-												value={String(durationYears)}
-												onValueChange={(v) => setDurationYears(Number(v))}
-											>
-												<SelectTrigger id="durationYears" className="w-full">
-													<SelectValue />
-												</SelectTrigger>
-												<SelectContent>
-													{Array.from(
-														{ length: Math.ceil(totalMonths / 12) + 1 },
-														(_, i) => i,
-													).map((year) => (
-														<SelectItem key={year} value={String(year)}>
-															{year} year{year !== 1 && "s"}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</div>
-										<div className="space-y-1">
-											<Label
-												htmlFor="durationMonths"
-												className="text-xs text-muted-foreground"
-											>
-												Months
-											</Label>
-											<Select
-												value={String(durationExtraMonths)}
-												onValueChange={(v) => setDurationExtraMonths(Number(v))}
-											>
-												<SelectTrigger id="durationMonths" className="w-full">
-													<SelectValue />
-												</SelectTrigger>
-												<SelectContent>
-													{Array.from({ length: 12 }, (_, i) => i).map(
-														(month) => (
-															<SelectItem key={month} value={String(month)}>
-																{month} month{month !== 1 && "s"}
-															</SelectItem>
-														),
-													)}
-												</SelectContent>
-											</Select>
-										</div>
-									</div>
-								</TabsContent>
+									<TabsContent value="end" className="mt-3">
+										<p className="text-sm text-muted-foreground">
+											This rate will apply until the end of the mortgage.
+										</p>
+									</TabsContent>
 
-								<TabsContent value="end" className="mt-3">
-									<p className="text-sm text-muted-foreground">
-										This rate will apply until the end of the mortgage.
-									</p>
-								</TabsContent>
+									{durationMode === "calendar" && durationMonths > 0 && (
+										<p className="text-xs text-muted-foreground mt-2">
+											= {Math.floor(durationMonths / 12)} year
+											{Math.floor(durationMonths / 12) !== 1 && "s"}
+											{durationMonths % 12 > 0 &&
+												` ${durationMonths % 12} month${durationMonths % 12 !== 1 ? "s" : ""}`}
+										</p>
+									)}
+								</Tabs>
+							)}
+						</div>
 
-								{durationMode === "calendar" && durationMonths > 0 && (
-									<p className="text-xs text-muted-foreground mt-2">
-										= {Math.floor(durationMonths / 12)} year
-										{Math.floor(durationMonths / 12) !== 1 && "s"}
-										{durationMonths % 12 > 0 &&
-											` ${durationMonths % 12} month${durationMonths % 12 !== 1 ? "s" : ""}`}
-									</p>
-								)}
-							</Tabs>
+						{/* Custom Label */}
+						<div className="space-y-2">
+							<Label htmlFor="label">Label</Label>
+							<Input
+								id="label"
+								placeholder="e.g., Initial Fixed Rate"
+								value={customLabel}
+								onChange={(e) => setCustomLabel(e.target.value)}
+							/>
+						</div>
+
+						{/* Overpayment Warning */}
+						{hasAffectedOverpayments && (
+							<div className="rounded-lg border border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/20 p-3 space-y-1.5">
+								<div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+									<AlertTriangle className="h-4 w-4 shrink-0" />
+									<span className="text-sm font-medium">
+										Overpayments will be affected
+									</span>
+								</div>
+								<ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-0.5 pl-6">
+									{affectedOverpayments.toDelete.length > 0 && (
+										<li>
+											{affectedOverpayments.toDelete.length} overpayment
+											{affectedOverpayments.toDelete.length !== 1 && "s"} will
+											be deleted
+										</li>
+									)}
+									{affectedOverpayments.toAdjust.length > 0 && (
+										<li>
+											{affectedOverpayments.toAdjust.length} recurring
+											overpayment
+											{affectedOverpayments.toAdjust.length !== 1 && "s"} will
+											have end date adjusted
+										</li>
+									)}
+								</ul>
+							</div>
 						)}
-					</div>
-
-					{/* Custom Label */}
-					<div className="space-y-2">
-						<Label htmlFor="label">Label (optional)</Label>
-						<Input
-							id="label"
-							placeholder="e.g., Initial Fixed Rate"
-							value={customLabel}
-							onChange={(e) => setCustomLabel(e.target.value)}
-						/>
 					</div>
 				</div>
 
-				<DialogFooter>
+				<DialogFooter className="shrink-0 border-t pt-4">
 					<Button variant="outline" onClick={() => onOpenChange(false)}>
 						Cancel
 					</Button>

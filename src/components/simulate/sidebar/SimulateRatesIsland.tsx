@@ -28,8 +28,10 @@ import {
 	$hasRequiredData,
 	$simulationState,
 	$totalMonths,
+	getAffectedOverpaymentsByDurationChange,
 	removeRatePeriod,
 	updateRatePeriod,
+	updateRatePeriodWithOverpaymentAdjustments,
 } from "@/lib/stores/simulate";
 import {
 	$amortizationSchedule,
@@ -276,7 +278,46 @@ export function SimulateRatesIsland() {
 					open={!!editingRatePeriod}
 					onOpenChange={(open) => !open && setEditingRatePeriod(null)}
 					onSave={(period) => {
-						updateRatePeriod(editingRatePeriod.id, period);
+						// Check if duration is being shortened and overpayments are affected
+						const { ratePeriods, overpaymentConfigs } = simulationState;
+						const affectedOverpayments =
+							getAffectedOverpaymentsByDurationChange(
+								ratePeriods,
+								editingRatePeriod.id,
+								period.durationMonths,
+								totalMonths,
+								overpaymentConfigs,
+							);
+
+						const hasAffectedOverpayments =
+							affectedOverpayments.toDelete.length > 0 ||
+							affectedOverpayments.toAdjust.length > 0;
+
+						if (hasAffectedOverpayments) {
+							// Use the special update function that handles overpayment adjustments
+							const newEndMonth =
+								period.durationMonths === 0
+									? totalMonths
+									: (resolvedRatePeriods.find(
+											(p) => p.id === editingRatePeriod.id,
+										)?.startMonth ?? 1) +
+										period.durationMonths -
+										1;
+
+							updateRatePeriodWithOverpaymentAdjustments(
+								editingRatePeriod.id,
+								period,
+								{
+									toDelete: affectedOverpayments.toDelete.map((o) => o.id),
+									toAdjust: affectedOverpayments.toAdjust.map((o) => ({
+										id: o.id,
+										newEndMonth,
+									})),
+								},
+							);
+						} else {
+							updateRatePeriod(editingRatePeriod.id, period);
+						}
 						setEditingRatePeriod(null);
 					}}
 					rates={rates}
@@ -292,6 +333,8 @@ export function SimulateRatesIsland() {
 						resolvedRatePeriods.find((p) => p.id === editingRatePeriod.id)
 							?.startMonth ?? 1
 					}
+					ratePeriods={simulationState.ratePeriods}
+					overpaymentConfigs={simulationState.overpaymentConfigs}
 				/>
 			)}
 
