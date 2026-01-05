@@ -4,7 +4,7 @@ import {
 	$columnFilters,
 	$columnVisibility,
 	$formValues,
-	$isFormValid,
+	$isLoading,
 	$lenders,
 	$ratesMetadata,
 	$sorting,
@@ -16,7 +16,7 @@ import {
 import { RatesToolbar } from "./RatesToolbar";
 
 export function RatesToolbarIsland() {
-	const isFormValid = useStore($isFormValid);
+	const isLoading = useStore($isLoading);
 	const lenders = useStore($lenders);
 	const ratesMetadata = useStore($ratesMetadata);
 	const inputValues = useStore($formValues);
@@ -41,7 +41,7 @@ export function RatesToolbarIsland() {
 			columnFilters={columnFilters}
 			sorting={sorting}
 			onColumnVisibilityChange={setColumnVisibility}
-			disabled={!isFormValid}
+			disabled={isLoading}
 		/>
 	);
 }
