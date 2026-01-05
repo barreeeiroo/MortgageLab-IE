@@ -1,13 +1,10 @@
 import {
-	Check,
 	Coins,
 	type LucideIcon,
 	PiggyBank,
-	Share2,
 	TriangleAlert,
 	X,
 } from "lucide-react";
-import { useState } from "react";
 import {
 	getLender,
 	type Lender,
@@ -18,7 +15,7 @@ import {
 import { useIsDesktop } from "@/lib/hooks";
 import { cn, formatCurrency } from "@/lib/utils";
 import { LenderLogo } from "../lenders";
-import { Button } from "../ui/button";
+import { ShareButton } from "../ShareButton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 // Map perk icon names to lucide components
@@ -215,12 +212,14 @@ export function CompareRatesModal({
 }: CompareRatesModalProps) {
 	// Track if we're on desktop (lg breakpoint) for sticky columns
 	const isDesktop = useIsDesktop();
-	const [copied, setCopied] = useState(false);
 
-	const handleShare = async () => {
-		await onShare();
-		setCopied(true);
-		setTimeout(() => setCopied(false), 2000);
+	const handleShare = async (): Promise<boolean> => {
+		try {
+			await onShare();
+			return true;
+		} catch {
+			return false;
+		}
 	};
 
 	if (rates.length === 0) return null;
@@ -482,24 +481,7 @@ export function CompareRatesModal({
 
 				{/* Sticky Footer */}
 				<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex justify-end">
-					<Button
-						variant="outline"
-						size="sm"
-						className="gap-1.5"
-						onClick={handleShare}
-					>
-						{copied ? (
-							<>
-								<Check className="h-4 w-4" />
-								Copied!
-							</>
-						) : (
-							<>
-								<Share2 className="h-4 w-4" />
-								Share Comparison
-							</>
-						)}
-					</Button>
+					<ShareButton onShare={handleShare} label="Share Comparison" />
 				</div>
 			</DialogContent>
 		</Dialog>

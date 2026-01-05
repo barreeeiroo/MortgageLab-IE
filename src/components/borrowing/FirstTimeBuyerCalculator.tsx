@@ -1,5 +1,5 @@
 import { ExternalLink } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
 	CENTRAL_BANK_MORTGAGE_MEASURES_URL,
@@ -8,6 +8,13 @@ import {
 	LTI_LIMITS,
 	LTV_LIMITS,
 } from "@/lib/constants";
+import {
+	clearBorrowingShareParam,
+	copyBorrowingShareUrl,
+	type FtbShareState,
+	hasBorrowingShareParam,
+	parseBorrowingShareState,
+} from "@/lib/share";
 import { loadFtbForm, saveFtbForm, saveRatesForm } from "@/lib/storage";
 import {
 	calculateJointMaxTerm,
@@ -17,6 +24,7 @@ import {
 	isApplicantTooOld,
 	parseCurrency,
 } from "@/lib/utils";
+import { ShareButton } from "../ShareButton";
 import { BerSelector } from "../selectors/BerSelector";
 import {
 	AlertDialog,
@@ -61,9 +69,32 @@ export function FirstTimeBuyerCalculator() {
 	const [calculationResult, setCalculationResult] =
 		useState<CalculationResult | null>(null);
 	const [showResultDialog, setShowResultDialog] = useState(false);
+	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
 
-	// Load from localStorage on mount
+	// Load from shared URL or localStorage on mount
 	useEffect(() => {
+		// Check for shared URL first
+		if (hasBorrowingShareParam()) {
+			const shared = parseBorrowingShareState();
+			if (shared && shared.type === "ftb") {
+				setApplicationType(shared.applicationType);
+				setIncome1(shared.income1);
+				setIncome2(shared.income2);
+				setBirthDate1(
+					shared.birthDate1 ? new Date(shared.birthDate1) : undefined,
+				);
+				setBirthDate2(
+					shared.birthDate2 ? new Date(shared.birthDate2) : undefined,
+				);
+				setSavings(shared.savings);
+				setBerRating(shared.berRating);
+				clearBorrowingShareParam();
+				setShouldAutoCalculate(true);
+				return;
+			}
+		}
+
+		// Fall back to localStorage
 		const saved = loadFtbForm();
 		if (saved.applicationType) setApplicationType(saved.applicationType);
 		if (saved.income1) setIncome1(saved.income1);
@@ -113,7 +144,7 @@ export function FirstTimeBuyerCalculator() {
 		hasSavings &&
 		(!isJoint || (hasIncome2 && birthDate2 !== undefined));
 
-	const calculate = () => {
+	const calculate = useCallback(() => {
 		const totalIncome =
 			parseCurrency(income1) + (isJoint ? parseCurrency(income2) : 0);
 		const totalSavings = parseCurrency(savings);
@@ -163,6 +194,28 @@ export function FirstTimeBuyerCalculator() {
 				: undefined,
 		});
 		setShowResultDialog(true);
+	}, [income1, income2, isJoint, savings, maxMortgageTerm, berRating]);
+
+	// Auto-calculate when loaded from shared URL
+	useEffect(() => {
+		if (shouldAutoCalculate && isFormComplete && !isAnyAgeTooOld) {
+			calculate();
+			setShouldAutoCalculate(false);
+		}
+	}, [shouldAutoCalculate, isFormComplete, isAnyAgeTooOld, calculate]);
+
+	const handleShare = async (): Promise<boolean> => {
+		const state: FtbShareState = {
+			type: "ftb",
+			applicationType,
+			income1,
+			income2,
+			birthDate1: birthDate1?.toISOString() ?? null,
+			birthDate2: birthDate2?.toISOString() ?? null,
+			savings,
+			berRating,
+		};
+		return copyBorrowingShareUrl(state);
 	};
 
 	return (
@@ -288,26 +341,31 @@ export function FirstTimeBuyerCalculator() {
 							/>
 						)}
 					</AlertDialogBody>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Close</AlertDialogCancel>
-						<AlertDialogAction
-							onClick={() => {
-								if (!calculationResult) return;
-								const { result } = calculationResult;
-								saveRatesForm({
-									mode: "first-mortgage",
-									propertyValue: Math.round(result.propertyValue).toString(),
-									mortgageAmount: Math.round(result.mortgageAmount).toString(),
-									monthlyRepayment: "",
-									mortgageTerm: result.mortgageTerm.toString(),
-									berRating: result.berRating,
-									buyerType: "ftb",
-								});
-								window.location.href = getPath("/rates");
-							}}
-						>
-							Compare Mortgage Rates
-						</AlertDialogAction>
+					<AlertDialogFooter className="sm:justify-between">
+						<ShareButton onShare={handleShare} />
+						<div className="flex flex-col-reverse gap-2 sm:flex-row">
+							<AlertDialogCancel>Close</AlertDialogCancel>
+							<AlertDialogAction
+								onClick={() => {
+									if (!calculationResult) return;
+									const { result } = calculationResult;
+									saveRatesForm({
+										mode: "first-mortgage",
+										propertyValue: Math.round(result.propertyValue).toString(),
+										mortgageAmount: Math.round(
+											result.mortgageAmount,
+										).toString(),
+										monthlyRepayment: "",
+										mortgageTerm: result.mortgageTerm.toString(),
+										berRating: result.berRating,
+										buyerType: "ftb",
+									});
+									window.location.href = getPath("/rates");
+								}}
+							>
+								Compare Mortgage Rates
+							</AlertDialogAction>
+						</div>
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>

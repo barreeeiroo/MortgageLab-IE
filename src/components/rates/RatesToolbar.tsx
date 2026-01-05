@@ -3,11 +3,12 @@ import type {
 	SortingState,
 	VisibilityState,
 } from "@tanstack/react-table";
-import { Check, Settings2, Share2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { Settings2 } from "lucide-react";
+import { useCallback } from "react";
 import type { Lender, RatesMetadata } from "@/lib/schemas";
 import { generateRatesShareUrl } from "@/lib/share";
 import { $storedCustomRates, type RatesInputValues } from "@/lib/stores";
+import { ShareButton } from "../ShareButton";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
@@ -74,23 +75,24 @@ export function RatesToolbar({
 	onColumnVisibilityChange,
 	disabled = false,
 }: RatesToolbarProps) {
-	const [copied, setCopied] = useState(false);
-
-	const handleShare = useCallback(async () => {
-		// Read custom rates on demand (no subscription needed)
-		const customRates = $storedCustomRates.get();
-		const url = generateRatesShareUrl({
-			input: inputValues,
-			table: {
-				columnVisibility,
-				columnFilters,
-				sorting,
-			},
-			customRates: customRates.length > 0 ? customRates : undefined,
-		});
-		await navigator.clipboard.writeText(url);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 2000);
+	const handleShare = useCallback(async (): Promise<boolean> => {
+		try {
+			// Read custom rates on demand (no subscription needed)
+			const customRates = $storedCustomRates.get();
+			const url = generateRatesShareUrl({
+				input: inputValues,
+				table: {
+					columnVisibility,
+					columnFilters,
+					sorting,
+				},
+				customRates: customRates.length > 0 ? customRates : undefined,
+			});
+			await navigator.clipboard.writeText(url);
+			return true;
+		} catch {
+			return false;
+		}
 	}, [inputValues, columnVisibility, columnFilters, sorting]);
 
 	const toggleColumnVisibility = useCallback(
@@ -140,21 +142,7 @@ export function RatesToolbar({
 			</DropdownMenu>
 			<div className="flex gap-2">
 				<RateUpdatesDialog lenders={lenders} ratesMetadata={ratesMetadata} />
-				<Button
-					variant="outline"
-					size="sm"
-					className="h-8 gap-1.5"
-					onClick={handleShare}
-				>
-					{copied ? (
-						<Check className="h-4 w-4" />
-					) : (
-						<Share2 className="h-4 w-4" />
-					)}
-					<span className="hidden sm:inline">
-						{copied ? "Copied!" : "Share"}
-					</span>
-				</Button>
+				<ShareButton onShare={handleShare} responsive className="h-8" />
 			</div>
 		</div>
 	);

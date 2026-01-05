@@ -1,11 +1,24 @@
 // Common share utilities
+
+// Borrowing calculator share utilities
+export {
+	BORROWING_SHARE_PARAM,
+	type BorrowingCalculatorType,
+	type BorrowingShareState,
+	type BtlShareState,
+	clearBorrowingShareParam,
+	copyBorrowingShareUrl,
+	type FtbShareState,
+	hasBorrowingShareParam,
+	type MoverShareState,
+	parseBorrowingShareState,
+} from "./borrowing";
 export {
 	clearUrlParam,
 	compressToUrl,
 	decompressFromUrl,
 	getUrlParam,
 } from "./common";
-
 // Rates page share utilities
 export {
 	clearRatesShareParam,

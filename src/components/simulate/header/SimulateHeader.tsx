@@ -2,15 +2,13 @@ import {
 	AlertTriangle,
 	Banknote,
 	CalendarClock,
-	Check,
 	Home,
 	Leaf,
 	Percent,
 	PiggyBank,
 	RotateCcw,
-	Share2,
 } from "lucide-react";
-import { useState } from "react";
+import { ShareButton } from "@/components/ShareButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -53,16 +51,6 @@ export function SimulateHeader({
 	onReset,
 	onShare,
 }: SimulateHeaderProps) {
-	const [copied, setCopied] = useState(false);
-
-	const handleShare = async () => {
-		const success = await onShare();
-		if (success) {
-			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
-		}
-	};
-
 	// Calculate LTV
 	const ltv = propertyValue > 0 ? (mortgageAmount / propertyValue) * 100 : 0;
 
@@ -81,24 +69,7 @@ export function SimulateHeader({
 				</div>
 				{hasRequiredData && (
 					<div className="flex gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							className="gap-1.5"
-							onClick={handleShare}
-						>
-							{copied ? (
-								<>
-									<Check className="h-4 w-4" />
-									Copied!
-								</>
-							) : (
-								<>
-									<Share2 className="h-4 w-4" />
-									Share
-								</>
-							)}
-						</Button>
+						<ShareButton onShare={onShare} />
 						<Button
 							variant="outline"
 							size="sm"

@@ -1,5 +1,5 @@
 import { ExternalLink } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
 	CENTRAL_BANK_MORTGAGE_MEASURES_URL,
@@ -8,6 +8,13 @@ import {
 	LTI_LIMITS,
 	LTV_LIMITS,
 } from "@/lib/constants";
+import {
+	clearBorrowingShareParam,
+	copyBorrowingShareUrl,
+	hasBorrowingShareParam,
+	type MoverShareState,
+	parseBorrowingShareState,
+} from "@/lib/share";
 import { loadMoverForm, saveMoverForm, saveRatesForm } from "@/lib/storage";
 import {
 	calculateJointMaxTerm,
@@ -17,6 +24,7 @@ import {
 	isApplicantTooOld,
 	parseCurrency,
 } from "@/lib/utils";
+import { ShareButton } from "../ShareButton";
 import { BerSelector } from "../selectors/BerSelector";
 import {
 	AlertDialog,
@@ -63,9 +71,34 @@ export function HomeMoverCalculator() {
 	const [calculationResult, setCalculationResult] =
 		useState<CalculationResult | null>(null);
 	const [showResultDialog, setShowResultDialog] = useState(false);
+	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
 
-	// Load from localStorage on mount
+	// Load from shared URL or localStorage on mount
 	useEffect(() => {
+		// Check for shared URL first
+		if (hasBorrowingShareParam()) {
+			const shared = parseBorrowingShareState();
+			if (shared && shared.type === "mover") {
+				setApplicationType(shared.applicationType);
+				setIncome1(shared.income1);
+				setIncome2(shared.income2);
+				setBirthDate1(
+					shared.birthDate1 ? new Date(shared.birthDate1) : undefined,
+				);
+				setBirthDate2(
+					shared.birthDate2 ? new Date(shared.birthDate2) : undefined,
+				);
+				setCurrentPropertyValue(shared.currentPropertyValue);
+				setOutstandingMortgage(shared.outstandingMortgage);
+				setAdditionalSavings(shared.additionalSavings);
+				setBerRating(shared.berRating);
+				clearBorrowingShareParam();
+				setShouldAutoCalculate(true);
+				return;
+			}
+		}
+
+		// Fall back to localStorage
 		const saved = loadMoverForm();
 		if (saved.applicationType) setApplicationType(saved.applicationType);
 		if (saved.income1) setIncome1(saved.income1);
@@ -130,7 +163,7 @@ export function HomeMoverCalculator() {
 		hasDeposit &&
 		(!isJoint || (hasIncome2 && birthDate2 !== undefined));
 
-	const calculate = () => {
+	const calculate = useCallback(() => {
 		const totalIncome =
 			parseCurrency(income1) + (isJoint ? parseCurrency(income2) : 0);
 
@@ -174,6 +207,37 @@ export function HomeMoverCalculator() {
 				: undefined,
 		});
 		setShowResultDialog(true);
+	}, [
+		income1,
+		income2,
+		isJoint,
+		maxMortgageTerm,
+		berRating,
+		totalDepositAvailable,
+	]);
+
+	// Auto-calculate when loaded from shared URL
+	useEffect(() => {
+		if (shouldAutoCalculate && isFormComplete && !isAnyAgeTooOld) {
+			calculate();
+			setShouldAutoCalculate(false);
+		}
+	}, [shouldAutoCalculate, isFormComplete, isAnyAgeTooOld, calculate]);
+
+	const handleShare = async (): Promise<boolean> => {
+		const state: MoverShareState = {
+			type: "mover",
+			applicationType,
+			income1,
+			income2,
+			birthDate1: birthDate1?.toISOString() ?? null,
+			birthDate2: birthDate2?.toISOString() ?? null,
+			currentPropertyValue,
+			outstandingMortgage,
+			additionalSavings,
+			berRating,
+		};
+		return copyBorrowingShareUrl(state);
 	};
 
 	return (
@@ -358,26 +422,31 @@ export function HomeMoverCalculator() {
 							/>
 						)}
 					</AlertDialogBody>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Close</AlertDialogCancel>
-						<AlertDialogAction
-							onClick={() => {
-								if (!calculationResult) return;
-								const { result } = calculationResult;
-								saveRatesForm({
-									mode: "first-mortgage",
-									propertyValue: Math.round(result.propertyValue).toString(),
-									mortgageAmount: Math.round(result.mortgageAmount).toString(),
-									monthlyRepayment: "",
-									mortgageTerm: result.mortgageTerm.toString(),
-									berRating: result.berRating,
-									buyerType: "mover",
-								});
-								window.location.href = getPath("/rates");
-							}}
-						>
-							Compare Mortgage Rates
-						</AlertDialogAction>
+					<AlertDialogFooter className="sm:justify-between">
+						<ShareButton onShare={handleShare} />
+						<div className="flex flex-col-reverse gap-2 sm:flex-row">
+							<AlertDialogCancel>Close</AlertDialogCancel>
+							<AlertDialogAction
+								onClick={() => {
+									if (!calculationResult) return;
+									const { result } = calculationResult;
+									saveRatesForm({
+										mode: "first-mortgage",
+										propertyValue: Math.round(result.propertyValue).toString(),
+										mortgageAmount: Math.round(
+											result.mortgageAmount,
+										).toString(),
+										monthlyRepayment: "",
+										mortgageTerm: result.mortgageTerm.toString(),
+										berRating: result.berRating,
+										buyerType: "mover",
+									});
+									window.location.href = getPath("/rates");
+								}}
+							>
+								Compare Mortgage Rates
+							</AlertDialogAction>
+						</div>
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
