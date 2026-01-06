@@ -1,6 +1,5 @@
-import { ArrowLeft, Plus, X } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { LenderLogo } from "@/components/lenders";
+import { ArrowLeft, Plus, Sparkles, X } from "lucide-react";
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -10,59 +9,34 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import type { Lender } from "@/lib/data";
-import type { BuyerType } from "@/lib/schemas/buyer";
 import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
-import type { Perk } from "@/lib/schemas/perk";
-import type { StoredCustomRate } from "@/lib/stores";
-import { type CustomLenderInfo, CustomRateForm } from "./CustomRateForm";
+import { CustomPerkForm } from "./CustomPerkForm";
 
-interface AddCustomRateDialogProps {
+interface AddCustomPerkDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	lenders: Lender[];
-	customLenders: CustomLenderInfo[];
-	perks: Perk[];
-	customPerks?: StoredCustomPerk[];
-	currentBuyerType: BuyerType;
-	onAddRate: (rate: StoredCustomRate) => void;
+	onAddPerk: (perk: StoredCustomPerk) => void;
 	onBack?: () => void;
 }
 
-export function AddCustomRateDialog({
+export function AddCustomPerkDialog({
 	open,
 	onOpenChange,
-	lenders,
-	customLenders,
-	perks,
-	customPerks = [],
-	currentBuyerType,
-	onAddRate,
+	onAddPerk,
 	onBack,
-}: AddCustomRateDialogProps) {
+}: AddCustomPerkDialogProps) {
 	const handleSubmit = useCallback(
-		(rate: StoredCustomRate) => {
-			onAddRate(rate);
+		(perk: StoredCustomPerk) => {
+			onAddPerk(perk);
 			onOpenChange(false);
 		},
-		[onAddRate, onOpenChange],
+		[onAddPerk, onOpenChange],
 	);
-
-	// Combine standard perks with custom perks
-	const allPerks = useMemo((): Perk[] => {
-		const customAsPerk: Perk[] = customPerks.map((cp) => ({
-			id: cp.id,
-			label: cp.label,
-			description: cp.description,
-			icon: cp.icon,
-		}));
-		return [...perks, ...customAsPerk];
-	}, [perks, customPerks]);
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
-				className="sm:max-w-xl flex flex-col overflow-hidden p-0"
+				className="sm:max-w-md max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0"
 				showCloseButton={false}
 			>
 				{/* Sticky Header */}
@@ -80,11 +54,13 @@ export function AddCustomRateDialog({
 										<span className="sr-only">Back</span>
 									</button>
 								)}
-								<LenderLogo lenderId="custom" size={40} isCustom />
+								<div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
+									<Sparkles className="h-5 w-5 text-primary" />
+								</div>
 								<div>
-									<DialogTitle>Add Custom Rate</DialogTitle>
+									<DialogTitle>Add Custom Perk</DialogTitle>
 									<DialogDescription>
-										Create a custom rate to compare against lender rates.
+										Create a custom perk to use with your custom rates.
 									</DialogDescription>
 								</div>
 							</div>
@@ -96,17 +72,12 @@ export function AddCustomRateDialog({
 					</DialogHeader>
 				</div>
 
-				<CustomRateForm
-					lenders={lenders}
-					customLenders={customLenders}
-					perks={allPerks}
-					currentBuyerType={currentBuyerType}
+				<CustomPerkForm
 					onSubmit={handleSubmit}
-					showAprcCalculation
 					submitButton={({ onClick, disabled }) => (
 						<Button onClick={onClick} disabled={disabled} className="gap-1.5">
 							<Plus className="h-4 w-4" />
-							Create Rate
+							Create Perk
 						</Button>
 					)}
 				/>

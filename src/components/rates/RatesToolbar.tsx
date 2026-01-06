@@ -7,7 +7,11 @@ import { Settings2 } from "lucide-react";
 import { useCallback } from "react";
 import type { Lender, RatesMetadata } from "@/lib/schemas";
 import { generateRatesShareUrl } from "@/lib/share";
-import { $storedCustomRates, type RatesInputValues } from "@/lib/stores";
+import {
+	$storedCustomPerks,
+	$storedCustomRates,
+	type RatesInputValues,
+} from "@/lib/stores";
 import { ShareButton } from "../ShareButton";
 import { Button } from "../ui/button";
 import {
@@ -77,8 +81,9 @@ export function RatesToolbar({
 }: RatesToolbarProps) {
 	const handleShare = useCallback(async (): Promise<boolean> => {
 		try {
-			// Read custom rates on demand (no subscription needed)
+			// Read custom rates and perks on demand (no subscription needed)
 			const customRates = $storedCustomRates.get();
+			const customPerks = $storedCustomPerks.get();
 			const url = generateRatesShareUrl({
 				input: inputValues,
 				table: {
@@ -87,6 +92,7 @@ export function RatesToolbar({
 					sorting,
 				},
 				customRates: customRates.length > 0 ? customRates : undefined,
+				customPerks: customPerks.length > 0 ? customPerks : undefined,
 			});
 			await navigator.clipboard.writeText(url);
 			return true;

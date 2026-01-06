@@ -4,15 +4,30 @@ import {
 	ArrowDown,
 	ArrowUp,
 	ArrowUpDown,
+	Award,
+	BadgeCheck,
 	ChevronDown,
 	ChevronRight,
 	ChevronUp,
 	Coins,
+	Crown,
+	Gem,
+	Gift,
 	GitCompare,
+	Heart,
 	ListFilter,
 	type LucideIcon,
+	Medal,
+	Percent,
 	PiggyBank,
+	Rocket,
+	Shield,
+	Sparkles,
+	Star,
+	ThumbsUp,
 	TriangleAlert,
+	Trophy,
+	Zap,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { getMissingVariableRateUrl } from "@/lib/constants";
@@ -126,8 +141,25 @@ const perksIncludesFilter: FilterFn<RateRow> = (
 
 // Map perk icon names to lucide components
 const PERK_ICONS: Record<string, LucideIcon> = {
+	// Standard perks
 	PiggyBank,
 	Coins,
+	// Custom perk icons
+	Star,
+	Gift,
+	Percent,
+	BadgeCheck,
+	Sparkles,
+	Heart,
+	Trophy,
+	Medal,
+	Crown,
+	ThumbsUp,
+	Zap,
+	Shield,
+	Award,
+	Gem,
+	Rocket,
 };
 
 function SortIcon({ isSorted }: { isSorted: false | "asc" | "desc" }) {

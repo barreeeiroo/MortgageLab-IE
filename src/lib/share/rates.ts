@@ -1,3 +1,4 @@
+import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import type { RatesInputValues, StoredCustomRate } from "@/lib/stores";
 import {
 	clearUrlParam,
@@ -5,6 +6,11 @@ import {
 	decompressFromUrl,
 	getUrlParam,
 } from "./common";
+import {
+	type CompressedCustomPerk,
+	compressCustomPerk,
+	decompressCustomPerk,
+} from "./custom-perks";
 import {
 	type CompressedCustomRate,
 	compressCustomRate,
@@ -31,6 +37,7 @@ export interface RatesShareState {
 	input: RatesInputValues;
 	table: ShareableTableState;
 	customRates?: StoredCustomRate[];
+	customPerks?: StoredCustomPerk[];
 	compare?: CompareShareState;
 }
 
@@ -61,6 +68,7 @@ interface CompressedState {
 	f?: Array<{ id: string; value: unknown }>;
 	s?: Array<{ id: string; desc: boolean }>;
 	c?: CompressedCustomRate[]; // customRates
+	cp?: CompressedCustomPerk[]; // customPerks
 	x?: string[]; // compare rateIds
 }
 
@@ -90,6 +98,10 @@ function compressState(state: RatesShareState): CompressedState {
 			state.customRates && state.customRates.length > 0
 				? state.customRates.map(compressCustomRate)
 				: undefined,
+		cp:
+			state.customPerks && state.customPerks.length > 0
+				? state.customPerks.map(compressCustomPerk)
+				: undefined,
 		x:
 			state.compare && state.compare.rateIds.length > 0
 				? state.compare.rateIds
@@ -116,6 +128,7 @@ function decompressState(compressed: CompressedState): RatesShareState {
 			sorting: compressed.s ?? [],
 		},
 		customRates: compressed.c?.map(decompressCustomRate),
+		customPerks: compressed.cp?.map(decompressCustomPerk),
 		compare: compressed.x ? { rateIds: compressed.x } : undefined,
 	};
 }

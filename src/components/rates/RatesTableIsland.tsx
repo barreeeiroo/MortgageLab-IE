@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
 import { useCallback, useEffect } from "react";
 import {
+	$allPerks,
 	$columnFilters,
 	$columnVisibility,
 	$customRates,
@@ -17,10 +18,10 @@ import {
 	$overpaymentPolicies,
 	$pageIndex,
 	$pageSize,
-	$perks,
 	$rates,
 	$sorting,
 	fetchRatesData,
+	initializeCustomPerks,
 	initializeCustomRates,
 	initializeStore,
 	initializeTableState,
@@ -42,7 +43,7 @@ export function RatesTableIsland() {
 	const customRates = useStore($customRates);
 	const filteredCustomRates = useStore($filteredCustomRates);
 	const lenders = useStore($lenders);
-	const perks = useStore($perks);
+	const allPerks = useStore($allPerks);
 	const overpaymentPolicies = useStore($overpaymentPolicies);
 	const mortgage = useStore($mortgage);
 	const mortgageTerm = useStore($mortgageTerm);
@@ -61,6 +62,7 @@ export function RatesTableIsland() {
 		initializeStore();
 		initializeTableState();
 		initializeCustomRates();
+		initializeCustomPerks();
 		fetchRatesData();
 	}, []);
 
@@ -115,7 +117,7 @@ export function RatesTableIsland() {
 				rates={allDisplayRates}
 				allRates={allRatesWithCustom}
 				lenders={lenders}
-				perks={perks}
+				perks={allPerks}
 				overpaymentPolicies={overpaymentPolicies}
 				mortgageAmount={mortgage}
 				mortgageTerm={mortgageTerm}
