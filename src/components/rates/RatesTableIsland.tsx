@@ -22,6 +22,7 @@ import {
 	$sorting,
 	fetchRatesData,
 	initializeCustomRates,
+	initializeStore,
 	initializeTableState,
 	setColumnFilters,
 	setColumnVisibility,
@@ -57,6 +58,7 @@ export function RatesTableIsland() {
 
 	// Initialize stores on mount
 	useEffect(() => {
+		initializeStore();
 		initializeTableState();
 		initializeCustomRates();
 		fetchRatesData();
