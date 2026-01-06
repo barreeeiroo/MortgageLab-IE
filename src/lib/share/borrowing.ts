@@ -32,7 +32,6 @@ export interface FtbShareState extends BaseApplicantState {
 	// Self Build fields (optional)
 	isSelfBuild?: boolean;
 	siteValue?: string;
-	additionalSavings?: string;
 }
 
 // HomeMover-specific state
@@ -76,7 +75,6 @@ interface CompressedFtb extends CompressedBase {
 	// Self Build fields (optional)
 	sb?: "1" | "0"; // isSelfBuild
 	sv?: string; // siteValue
-	sa?: string; // additionalSavings (self-build)
 }
 
 interface CompressedMover extends CompressedBase {
@@ -116,7 +114,6 @@ function compressState(state: BorrowingShareState): CompressedState {
 				...(state.isSelfBuild && {
 					sb: "1",
 					sv: state.siteValue ?? "",
-					sa: state.additionalSavings ?? "",
 				}),
 			};
 		case "mover":
@@ -155,7 +152,6 @@ function decompressState(compressed: CompressedState): BorrowingShareState {
 				...(compressed.sb === "1" && {
 					isSelfBuild: true,
 					siteValue: compressed.sv ?? "",
-					additionalSavings: compressed.sa ?? "",
 				}),
 			};
 		case "m":

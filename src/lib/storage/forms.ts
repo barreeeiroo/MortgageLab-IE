@@ -21,7 +21,6 @@ export interface FtbFormState {
 	// Self Build fields
 	isSelfBuild?: boolean;
 	siteValue?: string;
-	additionalSavings?: string;
 }
 
 export function loadFtbForm(): Partial<FtbFormState> {

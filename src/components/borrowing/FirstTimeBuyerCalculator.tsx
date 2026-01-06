@@ -75,7 +75,6 @@ export function FirstTimeBuyerCalculator() {
 	// Self Build state
 	const [isSelfBuild, setIsSelfBuild] = useState(false);
 	const [siteValue, setSiteValue] = useState("");
-	const [additionalSavings, setAdditionalSavings] = useState("");
 
 	// Load from shared URL or localStorage on mount
 	useEffect(() => {
@@ -98,7 +97,6 @@ export function FirstTimeBuyerCalculator() {
 				if (shared.isSelfBuild) {
 					setIsSelfBuild(true);
 					setSiteValue(shared.siteValue ?? "");
-					setAdditionalSavings(shared.additionalSavings ?? "");
 				}
 				clearBorrowingShareParam();
 				setShouldAutoCalculate(true);
@@ -118,7 +116,6 @@ export function FirstTimeBuyerCalculator() {
 		// Self Build fields
 		if (saved.isSelfBuild) setIsSelfBuild(saved.isSelfBuild);
 		if (saved.siteValue) setSiteValue(saved.siteValue);
-		if (saved.additionalSavings) setAdditionalSavings(saved.additionalSavings);
 	}, []);
 
 	// Save to localStorage when form changes
@@ -134,7 +131,6 @@ export function FirstTimeBuyerCalculator() {
 			// Self Build fields
 			isSelfBuild,
 			siteValue,
-			additionalSavings,
 		});
 	}, [
 		applicationType,
@@ -146,7 +142,6 @@ export function FirstTimeBuyerCalculator() {
 		berRating,
 		isSelfBuild,
 		siteValue,
-		additionalSavings,
 	]);
 
 	const isJoint = applicationType === "joint";
@@ -180,10 +175,8 @@ export function FirstTimeBuyerCalculator() {
 		// Calculate deposit based on mode
 		let totalDeposit: number;
 		if (isSelfBuild) {
-			// Self Build: site value counts as equity + any additional savings
-			const siteVal = parseCurrency(siteValue);
-			const addSavings = parseCurrency(additionalSavings);
-			totalDeposit = siteVal + addSavings;
+			// Self Build: site value counts as equity + savings
+			totalDeposit = parseCurrency(siteValue) + parseCurrency(savings);
 		} else {
 			// Standard: just savings
 			totalDeposit = parseCurrency(savings);
@@ -241,7 +234,6 @@ export function FirstTimeBuyerCalculator() {
 		berRating,
 		isSelfBuild,
 		siteValue,
-		additionalSavings,
 	]);
 
 	// Auto-calculate when loaded from shared URL
@@ -266,7 +258,6 @@ export function FirstTimeBuyerCalculator() {
 			...(isSelfBuild && {
 				isSelfBuild: true,
 				siteValue,
-				additionalSavings,
 			}),
 		};
 		return copyBorrowingShareUrl(state);
@@ -331,62 +322,47 @@ export function FirstTimeBuyerCalculator() {
 							</Label>
 						</div>
 
-						{isSelfBuild ? (
-							<div className="grid gap-4 sm:grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="siteValue">Site Value</Label>
-									<Input
-										id="siteValue"
-										type="text"
-										inputMode="numeric"
-										placeholder="€100,000"
-										value={formatCurrencyInput(siteValue)}
-										onChange={(e) =>
-											setSiteValue(e.target.value.replace(/[^0-9]/g, ""))
-										}
-									/>
-									<p className="text-xs text-muted-foreground">
-										Value of the land you own.
-									</p>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="additionalSavings">Additional Savings</Label>
-									<Input
-										id="additionalSavings"
-										type="text"
-										inputMode="numeric"
-										placeholder="€20,000"
-										value={formatCurrencyInput(additionalSavings)}
-										onChange={(e) =>
-											setAdditionalSavings(
-												e.target.value.replace(/[^0-9]/g, ""),
-											)
-										}
-									/>
-									<p className="text-xs text-muted-foreground">
-										Include Help to Buy if eligible.
-									</p>
-								</div>
-							</div>
-						) : (
+						{isSelfBuild && (
 							<div className="space-y-2">
-								<Label htmlFor="savings">Total Savings for Deposit</Label>
+								<Label htmlFor="siteValue">Site Value</Label>
 								<Input
-									id="savings"
+									id="siteValue"
 									type="text"
 									inputMode="numeric"
-									placeholder="€30,000"
-									value={formatCurrencyInput(savings)}
+									placeholder="€100,000"
+									value={formatCurrencyInput(siteValue)}
 									onChange={(e) =>
-										setSavings(e.target.value.replace(/[^0-9]/g, ""))
+										setSiteValue(e.target.value.replace(/[^0-9]/g, ""))
 									}
 								/>
 								<p className="text-xs text-muted-foreground">
-									Include any gifts or Help to Buy funds. Exclude Stamp Duty and
-									legal fees.
+									Value of the land you own.
 								</p>
 							</div>
 						)}
+
+						<div className="space-y-2">
+							<Label htmlFor="savings">
+								{isSelfBuild
+									? "Additional Savings"
+									: "Total Savings for Deposit"}
+							</Label>
+							<Input
+								id="savings"
+								type="text"
+								inputMode="numeric"
+								placeholder={isSelfBuild ? "€20,000" : "€30,000"}
+								value={formatCurrencyInput(savings)}
+								onChange={(e) =>
+									setSavings(e.target.value.replace(/[^0-9]/g, ""))
+								}
+							/>
+							<p className="text-xs text-muted-foreground">
+								{isSelfBuild
+									? "Include Help to Buy if eligible."
+									: "Include any gifts or Help to Buy funds. Exclude Stamp Duty and legal fees."}
+							</p>
+						</div>
 
 						<div className="grid gap-4 sm:grid-cols-2">
 							<MortgageTermDisplay maxMortgageTerm={maxMortgageTerm} />
