@@ -27,6 +27,10 @@ import { type AprcConfig, calculateAprc } from "@/lib/mortgage";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import { DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
+
+// Extended perk type that may include isCustom flag
+type ExtendedPerk = Perk & { isCustom?: boolean };
+
 import { RATE_TYPES, type RateType } from "@/lib/schemas/rate";
 import type { StoredCustomRate } from "@/lib/stores";
 
@@ -49,7 +53,7 @@ interface CustomLenderInfo {
 export interface CustomRateFormProps {
 	lenders: Lender[];
 	customLenders: CustomLenderInfo[];
-	perks: Perk[];
+	perks: ExtendedPerk[];
 	currentBuyerType: BuyerType;
 	initialRate?: StoredCustomRate | null;
 	onSubmit: (rate: StoredCustomRate) => void;
@@ -806,10 +810,15 @@ export function CustomRateForm({
 											/>
 											<label
 												htmlFor={id}
-												className="text-sm cursor-pointer"
+												className="text-sm cursor-pointer flex items-center gap-1.5"
 												title={perk.description}
 											>
 												{perk.label}
+												{perk.isCustom && (
+													<span className="text-xs font-normal px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+														Custom
+													</span>
+												)}
 											</label>
 										</div>
 									);

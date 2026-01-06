@@ -48,13 +48,14 @@ export function AddCustomRateDialog({
 		[onAddRate, onOpenChange],
 	);
 
-	// Combine standard perks with custom perks
-	const allPerks = useMemo((): Perk[] => {
-		const customAsPerk: Perk[] = customPerks.map((cp) => ({
+	// Combine standard perks with custom perks (preserving isCustom flag)
+	const allPerks = useMemo(() => {
+		const customAsPerk = customPerks.map((cp) => ({
 			id: cp.id,
 			label: cp.label,
 			description: cp.description,
 			icon: cp.icon,
+			isCustom: true as const,
 		}));
 		return [...perks, ...customAsPerk];
 	}, [perks, customPerks]);
@@ -71,14 +72,16 @@ export function AddCustomRateDialog({
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex items-center gap-3">
 								{onBack && (
-									<button
+									<Button
 										type="button"
+										variant="ghost"
+										size="icon"
 										onClick={onBack}
-										className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 mr-1"
+										className="mr-1"
 									>
 										<ArrowLeft className="h-5 w-5" />
 										<span className="sr-only">Back</span>
-									</button>
+									</Button>
 								)}
 								<LenderLogo lenderId="custom" size={40} isCustom />
 								<div>

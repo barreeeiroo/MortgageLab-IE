@@ -142,14 +142,16 @@ export function ManageCustomPerksDialog({
 							<div className="flex items-start justify-between gap-3">
 								<div className="flex items-center gap-3">
 									{onBack && (
-										<button
+										<Button
 											type="button"
+											variant="ghost"
+											size="icon"
 											onClick={onBack}
-											className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 mr-1"
+											className="mr-1"
 										>
 											<ArrowLeft className="h-5 w-5" />
 											<span className="sr-only">Back</span>
-										</button>
+										</Button>
 									)}
 									<div>
 										<DialogTitle>Custom Perks</DialogTitle>

@@ -164,7 +164,7 @@ export function CustomPerkForm({
 										type="button"
 										onClick={() => updateForm("icon", iconName)}
 										className={cn(
-											"flex items-center justify-center p-3 rounded-md border transition-colors",
+											"flex items-center justify-center p-3 rounded-md border transition-colors cursor-pointer",
 											isSelected
 												? "border-primary bg-primary/10 text-primary"
 												: "border-border hover:border-primary/50 hover:bg-muted",
