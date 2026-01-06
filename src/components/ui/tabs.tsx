@@ -1,34 +1,117 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { ChevronDown } from "lucide-react";
 import type * as React from "react";
+import { Children, createContext, isValidElement, useContext } from "react";
 
 import { cn } from "@/lib/utils";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "./dropdown-menu";
+
+// Context to share tabs value with TabsList for collapse dropdown
+interface TabsContextValue {
+	value?: string;
+	onValueChange?: (value: string) => void;
+}
+
+const TabsContext = createContext<TabsContextValue>({});
 
 function Tabs({
 	className,
+	value,
+	onValueChange,
 	...props
 }: React.ComponentProps<typeof TabsPrimitive.Root>) {
 	return (
-		<TabsPrimitive.Root
-			data-slot="tabs"
-			className={cn("flex flex-col gap-2", className)}
-			{...props}
-		/>
+		<TabsContext.Provider value={{ value, onValueChange }}>
+			<TabsPrimitive.Root
+				data-slot="tabs"
+				className={cn("flex flex-col gap-2", className)}
+				value={value}
+				onValueChange={onValueChange}
+				{...props}
+			/>
+		</TabsContext.Provider>
 	);
+}
+
+interface TabsListProps
+	extends React.ComponentProps<typeof TabsPrimitive.List> {
+	/** If true, shows a dropdown on mobile (< sm) instead of tabs */
+	collapseOnMobile?: boolean;
 }
 
 function TabsList({
 	className,
+	children,
+	collapseOnMobile = false,
 	...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+}: TabsListProps) {
+	const { value, onValueChange } = useContext(TabsContext);
+
+	// Extract tab options from children for the dropdown
+	const options: Array<{ value: string; label: React.ReactNode }> = [];
+	Children.forEach(children, (child) => {
+		if (isValidElement(child) && child.props.value) {
+			options.push({
+				value: child.props.value,
+				label: child.props.children,
+			});
+		}
+	});
+
+	const currentOption = options.find((o) => o.value === value);
+
 	return (
-		<TabsPrimitive.List
-			data-slot="tabs-list"
-			className={cn(
-				"bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
-				className,
+		<>
+			{/* Mobile dropdown - only when collapseOnMobile is true */}
+			{collapseOnMobile && (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<button
+							type="button"
+							className={cn(
+								"bg-muted text-foreground flex h-9 w-full items-center justify-between rounded-lg px-3 text-sm font-medium sm:hidden",
+								className,
+							)}
+						>
+							<span>{currentOption?.label ?? value}</span>
+							<ChevronDown className="ml-auto h-4 w-4 text-muted-foreground" />
+						</button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent
+						align="start"
+						className="w-[var(--radix-dropdown-menu-trigger-width)]"
+					>
+						{options.map((option) => (
+							<DropdownMenuItem
+								key={option.value}
+								onClick={() => onValueChange?.(option.value)}
+								className={cn(option.value === value && "bg-accent")}
+							>
+								{option.label}
+							</DropdownMenuItem>
+						))}
+					</DropdownMenuContent>
+				</DropdownMenu>
 			)}
-			{...props}
-		/>
+
+			{/* Regular tabs - hidden on mobile when collapseOnMobile is true */}
+			<TabsPrimitive.List
+				data-slot="tabs-list"
+				className={cn(
+					"bg-muted text-muted-foreground h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+					collapseOnMobile ? "hidden sm:inline-flex" : "inline-flex",
+					className,
+				)}
+				{...props}
+			>
+				{children}
+			</TabsPrimitive.List>
+		</>
 	);
 }
 
