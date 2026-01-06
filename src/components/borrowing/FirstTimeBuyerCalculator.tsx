@@ -39,6 +39,7 @@ import {
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { ApplicantInputs } from "./ApplicantInputs";
@@ -71,6 +72,11 @@ export function FirstTimeBuyerCalculator() {
 	const [showResultDialog, setShowResultDialog] = useState(false);
 	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
 
+	// Self Build state
+	const [isSelfBuild, setIsSelfBuild] = useState(false);
+	const [siteValue, setSiteValue] = useState("");
+	const [additionalSavings, setAdditionalSavings] = useState("");
+
 	// Load from shared URL or localStorage on mount
 	useEffect(() => {
 		// Check for shared URL first
@@ -88,6 +94,12 @@ export function FirstTimeBuyerCalculator() {
 				);
 				setSavings(shared.savings);
 				setBerRating(shared.berRating);
+				// Self Build fields
+				if (shared.isSelfBuild) {
+					setIsSelfBuild(true);
+					setSiteValue(shared.siteValue ?? "");
+					setAdditionalSavings(shared.additionalSavings ?? "");
+				}
 				clearBorrowingShareParam();
 				setShouldAutoCalculate(true);
 				return;
@@ -103,6 +115,10 @@ export function FirstTimeBuyerCalculator() {
 		if (saved.birthDate2) setBirthDate2(new Date(saved.birthDate2));
 		if (saved.savings) setSavings(saved.savings);
 		if (saved.berRating) setBerRating(saved.berRating);
+		// Self Build fields
+		if (saved.isSelfBuild) setIsSelfBuild(saved.isSelfBuild);
+		if (saved.siteValue) setSiteValue(saved.siteValue);
+		if (saved.additionalSavings) setAdditionalSavings(saved.additionalSavings);
 	}, []);
 
 	// Save to localStorage when form changes
@@ -115,6 +131,10 @@ export function FirstTimeBuyerCalculator() {
 			birthDate2: birthDate2?.toISOString() ?? null,
 			savings,
 			berRating,
+			// Self Build fields
+			isSelfBuild,
+			siteValue,
+			additionalSavings,
 		});
 	}, [
 		applicationType,
@@ -124,6 +144,9 @@ export function FirstTimeBuyerCalculator() {
 		birthDate2,
 		savings,
 		berRating,
+		isSelfBuild,
+		siteValue,
+		additionalSavings,
 	]);
 
 	const isJoint = applicationType === "joint";
@@ -138,38 +161,53 @@ export function FirstTimeBuyerCalculator() {
 	const hasIncome1 = parseCurrency(income1) > 0;
 	const hasIncome2 = parseCurrency(income2) > 0;
 	const hasSavings = parseCurrency(savings) > 0;
+
+	// Self Build validation
+	const hasSiteValue = parseCurrency(siteValue) > 0;
+
 	const isFormComplete =
 		hasIncome1 &&
 		birthDate1 !== undefined &&
-		hasSavings &&
+		(isSelfBuild ? hasSiteValue : hasSavings) &&
 		(!isJoint || (hasIncome2 && birthDate2 !== undefined));
 
 	const calculate = useCallback(() => {
 		const totalIncome =
 			parseCurrency(income1) + (isJoint ? parseCurrency(income2) : 0);
-		const totalSavings = parseCurrency(savings);
 
 		if (totalIncome <= 0 || maxMortgageTerm === null) return;
+
+		// Calculate deposit based on mode
+		let totalDeposit: number;
+		if (isSelfBuild) {
+			// Self Build: site value counts as equity + any additional savings
+			const siteVal = parseCurrency(siteValue);
+			const addSavings = parseCurrency(additionalSavings);
+			totalDeposit = siteVal + addSavings;
+		} else {
+			// Standard: just savings
+			totalDeposit = parseCurrency(savings);
+		}
 
 		// Maximum mortgage based on LTI rule
 		const maxMortgageByIncome = totalIncome * FTB_LTI_LIMIT;
 		// Minimum deposit required for max mortgage (10% of property value)
 		const requiredDepositForMaxMortgage = maxMortgageByIncome / 9;
 
-		// Check if savings are sufficient for maximum mortgage
-		const hasSavingsShortfall = totalSavings < requiredDepositForMaxMortgage;
+		// Check if deposit is sufficient for maximum mortgage
+		const hasSavingsShortfall = totalDeposit < requiredDepositForMaxMortgage;
 
 		let propertyValue: number;
 		let mortgageAmount: number;
 
 		if (hasSavingsShortfall) {
-			// Savings constrained: max property based on 10% deposit
-			propertyValue = totalSavings / (1 - FTB_MAX_LTV);
+			// Deposit constrained: max property based on 10% deposit
+			propertyValue = totalDeposit / (1 - FTB_MAX_LTV);
 			mortgageAmount = propertyValue * FTB_MAX_LTV;
 		} else {
-			// Income constrained: use max mortgage + all savings as deposit
+			// Income constrained: use max mortgage + all deposit
 			mortgageAmount = maxMortgageByIncome;
-			propertyValue = mortgageAmount + totalSavings;
+			propertyValue = mortgageAmount + totalDeposit;
 		}
 
 		const ltv = (mortgageAmount / propertyValue) * 100;
@@ -194,7 +232,17 @@ export function FirstTimeBuyerCalculator() {
 				: undefined,
 		});
 		setShowResultDialog(true);
-	}, [income1, income2, isJoint, savings, maxMortgageTerm, berRating]);
+	}, [
+		income1,
+		income2,
+		isJoint,
+		savings,
+		maxMortgageTerm,
+		berRating,
+		isSelfBuild,
+		siteValue,
+		additionalSavings,
+	]);
 
 	// Auto-calculate when loaded from shared URL
 	useEffect(() => {
@@ -214,6 +262,12 @@ export function FirstTimeBuyerCalculator() {
 			birthDate2: birthDate2?.toISOString() ?? null,
 			savings,
 			berRating,
+			// Self Build fields
+			...(isSelfBuild && {
+				isSelfBuild: true,
+				siteValue,
+				additionalSavings,
+			}),
 		};
 		return copyBorrowingShareUrl(state);
 	};
@@ -262,23 +316,77 @@ export function FirstTimeBuyerCalculator() {
 							}
 						/>
 
-						<div className="space-y-2">
-							<Label htmlFor="savings">Total Savings for Deposit</Label>
-							<Input
-								id="savings"
-								type="text"
-								inputMode="numeric"
-								placeholder="€30,000"
-								value={formatCurrencyInput(savings)}
-								onChange={(e) =>
-									setSavings(e.target.value.replace(/[^0-9]/g, ""))
-								}
+						{/* Self Build Toggle */}
+						<div className="flex items-center space-x-2">
+							<Checkbox
+								id="selfBuild"
+								checked={isSelfBuild}
+								onCheckedChange={(checked) => setIsSelfBuild(checked === true)}
 							/>
-							<p className="text-xs text-muted-foreground">
-								Include any gifts or Help to Buy funds. Exclude Stamp Duty and
-								legal fees.
-							</p>
+							<Label
+								htmlFor="selfBuild"
+								className="text-sm font-normal cursor-pointer"
+							>
+								Self Build (building on land you own)
+							</Label>
 						</div>
+
+						{isSelfBuild ? (
+							<div className="grid gap-4 sm:grid-cols-2">
+								<div className="space-y-2">
+									<Label htmlFor="siteValue">Site Value</Label>
+									<Input
+										id="siteValue"
+										type="text"
+										inputMode="numeric"
+										placeholder="€100,000"
+										value={formatCurrencyInput(siteValue)}
+										onChange={(e) =>
+											setSiteValue(e.target.value.replace(/[^0-9]/g, ""))
+										}
+									/>
+									<p className="text-xs text-muted-foreground">
+										Value of the land you own.
+									</p>
+								</div>
+								<div className="space-y-2">
+									<Label htmlFor="additionalSavings">Additional Savings</Label>
+									<Input
+										id="additionalSavings"
+										type="text"
+										inputMode="numeric"
+										placeholder="€20,000"
+										value={formatCurrencyInput(additionalSavings)}
+										onChange={(e) =>
+											setAdditionalSavings(
+												e.target.value.replace(/[^0-9]/g, ""),
+											)
+										}
+									/>
+									<p className="text-xs text-muted-foreground">
+										Include Help to Buy if eligible.
+									</p>
+								</div>
+							</div>
+						) : (
+							<div className="space-y-2">
+								<Label htmlFor="savings">Total Savings for Deposit</Label>
+								<Input
+									id="savings"
+									type="text"
+									inputMode="numeric"
+									placeholder="€30,000"
+									value={formatCurrencyInput(savings)}
+									onChange={(e) =>
+										setSavings(e.target.value.replace(/[^0-9]/g, ""))
+									}
+								/>
+								<p className="text-xs text-muted-foreground">
+									Include any gifts or Help to Buy funds. Exclude Stamp Duty and
+									legal fees.
+								</p>
+							</div>
+						)}
 
 						<div className="grid gap-4 sm:grid-cols-2">
 							<MortgageTermDisplay maxMortgageTerm={maxMortgageTerm} />

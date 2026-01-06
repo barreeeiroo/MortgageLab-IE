@@ -39,6 +39,7 @@ import {
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { ApplicantInputs } from "./ApplicantInputs";
@@ -73,6 +74,10 @@ export function HomeMoverCalculator() {
 	const [showResultDialog, setShowResultDialog] = useState(false);
 	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
 
+	// Self Build state
+	const [isSelfBuild, setIsSelfBuild] = useState(false);
+	const [siteValue, setSiteValue] = useState("");
+
 	// Load from shared URL or localStorage on mount
 	useEffect(() => {
 		// Check for shared URL first
@@ -92,6 +97,11 @@ export function HomeMoverCalculator() {
 				setOutstandingMortgage(shared.outstandingMortgage);
 				setAdditionalSavings(shared.additionalSavings);
 				setBerRating(shared.berRating);
+				// Self Build fields
+				if (shared.isSelfBuild) {
+					setIsSelfBuild(true);
+					setSiteValue(shared.siteValue ?? "");
+				}
 				clearBorrowingShareParam();
 				setShouldAutoCalculate(true);
 				return;
@@ -111,6 +121,9 @@ export function HomeMoverCalculator() {
 			setOutstandingMortgage(saved.outstandingMortgage);
 		if (saved.additionalSavings) setAdditionalSavings(saved.additionalSavings);
 		if (saved.berRating) setBerRating(saved.berRating);
+		// Self Build fields
+		if (saved.isSelfBuild) setIsSelfBuild(saved.isSelfBuild);
+		if (saved.siteValue) setSiteValue(saved.siteValue);
 	}, []);
 
 	// Save to localStorage when form changes
@@ -125,6 +138,9 @@ export function HomeMoverCalculator() {
 			outstandingMortgage,
 			additionalSavings,
 			berRating,
+			// Self Build fields
+			isSelfBuild,
+			siteValue,
 		});
 	}, [
 		applicationType,
@@ -136,6 +152,8 @@ export function HomeMoverCalculator() {
 		outstandingMortgage,
 		additionalSavings,
 		berRating,
+		isSelfBuild,
+		siteValue,
 	]);
 
 	const isJoint = applicationType === "joint";
@@ -146,21 +164,34 @@ export function HomeMoverCalculator() {
 	);
 	const isAnyAgeTooOld = isApplicantTooOld(birthDate1, birthDate2, isJoint);
 
-	// Calculate equity and total deposit
+	// Calculate equity from current property
 	const propertyVal = parseCurrency(currentPropertyValue);
 	const mortgageVal = parseCurrency(outstandingMortgage);
 	const equity = propertyVal > mortgageVal ? propertyVal - mortgageVal : 0;
 	const savings = parseCurrency(additionalSavings);
-	const totalDepositAvailable = equity + savings;
+
+	// Calculate total deposit based on mode
+	let totalDepositAvailable: number;
+	if (isSelfBuild) {
+		// Self Build: equity + site value + additional savings
+		const siteVal = parseCurrency(siteValue);
+		totalDepositAvailable = equity + siteVal + savings;
+	} else {
+		// Standard: equity + savings
+		totalDepositAvailable = equity + savings;
+	}
 
 	// Validate required fields
 	const hasIncome1 = parseCurrency(income1) > 0;
 	const hasIncome2 = parseCurrency(income2) > 0;
 	const hasDeposit = totalDepositAvailable > 0;
+	const hasSiteValue = parseCurrency(siteValue) > 0;
+
 	const isFormComplete =
 		hasIncome1 &&
 		birthDate1 !== undefined &&
 		hasDeposit &&
+		(isSelfBuild ? hasSiteValue : true) &&
 		(!isJoint || (hasIncome2 && birthDate2 !== undefined));
 
 	const calculate = useCallback(() => {
@@ -236,6 +267,11 @@ export function HomeMoverCalculator() {
 			outstandingMortgage,
 			additionalSavings,
 			berRating,
+			// Self Build fields
+			...(isSelfBuild && {
+				isSelfBuild: true,
+				siteValue,
+			}),
 		};
 		return copyBorrowingShareUrl(state);
 	};
@@ -286,6 +322,21 @@ export function HomeMoverCalculator() {
 							}
 						/>
 
+						{/* Self Build Toggle */}
+						<div className="flex items-center space-x-2">
+							<Checkbox
+								id="selfBuild"
+								checked={isSelfBuild}
+								onCheckedChange={(checked) => setIsSelfBuild(checked === true)}
+							/>
+							<Label
+								htmlFor="selfBuild"
+								className="text-sm font-normal cursor-pointer"
+							>
+								Self Build (selling current home and building on land you own)
+							</Label>
+						</div>
+
 						<div className="grid gap-4 sm:grid-cols-2">
 							<div className="space-y-2">
 								<Label htmlFor="currentPropertyValue">
@@ -332,25 +383,64 @@ export function HomeMoverCalculator() {
 							</p>
 						)}
 
-						<div className="space-y-2">
-							<Label htmlFor="additionalSavings">
-								Additional Savings (Optional)
-							</Label>
-							<Input
-								id="additionalSavings"
-								type="text"
-								inputMode="numeric"
-								placeholder="€0"
-								value={formatCurrencyInput(additionalSavings)}
-								onChange={(e) =>
-									setAdditionalSavings(e.target.value.replace(/[^0-9]/g, ""))
-								}
-							/>
-							<p className="text-xs text-muted-foreground">
-								Any extra savings beyond your property equity. Exclude Stamp
-								Duty and legal fees.
-							</p>
-						</div>
+						{isSelfBuild ? (
+							<div className="grid gap-4 sm:grid-cols-2">
+								<div className="space-y-2">
+									<Label htmlFor="siteValue">Site Value</Label>
+									<Input
+										id="siteValue"
+										type="text"
+										inputMode="numeric"
+										placeholder="€100,000"
+										value={formatCurrencyInput(siteValue)}
+										onChange={(e) =>
+											setSiteValue(e.target.value.replace(/[^0-9]/g, ""))
+										}
+									/>
+									<p className="text-xs text-muted-foreground">
+										Value of the land you own.
+									</p>
+								</div>
+								<div className="space-y-2">
+									<Label htmlFor="additionalSavings">Additional Savings</Label>
+									<Input
+										id="additionalSavings"
+										type="text"
+										inputMode="numeric"
+										placeholder="€0"
+										value={formatCurrencyInput(additionalSavings)}
+										onChange={(e) =>
+											setAdditionalSavings(
+												e.target.value.replace(/[^0-9]/g, ""),
+											)
+										}
+									/>
+									<p className="text-xs text-muted-foreground">
+										Include Help to Buy if eligible.
+									</p>
+								</div>
+							</div>
+						) : (
+							<div className="space-y-2">
+								<Label htmlFor="additionalSavings">
+									Additional Savings (Optional)
+								</Label>
+								<Input
+									id="additionalSavings"
+									type="text"
+									inputMode="numeric"
+									placeholder="€0"
+									value={formatCurrencyInput(additionalSavings)}
+									onChange={(e) =>
+										setAdditionalSavings(e.target.value.replace(/[^0-9]/g, ""))
+									}
+								/>
+								<p className="text-xs text-muted-foreground">
+									Any extra savings beyond your property equity. Exclude Stamp
+									Duty and legal fees.
+								</p>
+							</div>
+						)}
 
 						{totalDepositAvailable > 0 && (
 							<p className="text-sm text-muted-foreground">
@@ -358,6 +448,7 @@ export function HomeMoverCalculator() {
 								<span className="font-medium text-foreground">
 									{formatCurrency(totalDepositAvailable)}
 								</span>
+								{isSelfBuild && " (equity + site value + savings)"}
 							</p>
 						)}
 

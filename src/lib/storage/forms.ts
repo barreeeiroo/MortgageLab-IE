@@ -18,6 +18,10 @@ export interface FtbFormState {
 	birthDate2: string | null;
 	savings: string;
 	berRating: string;
+	// Self Build fields
+	isSelfBuild?: boolean;
+	siteValue?: string;
+	additionalSavings?: string;
 }
 
 export function loadFtbForm(): Partial<FtbFormState> {
@@ -39,6 +43,9 @@ export interface MoverFormState {
 	outstandingMortgage: string;
 	additionalSavings: string;
 	berRating: string;
+	// Self Build fields
+	isSelfBuild?: boolean;
+	siteValue?: string;
 }
 
 export function loadMoverForm(): Partial<MoverFormState> {

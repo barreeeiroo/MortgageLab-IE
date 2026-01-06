@@ -29,6 +29,10 @@ interface BaseApplicantState {
 export interface FtbShareState extends BaseApplicantState {
 	type: "ftb";
 	savings: string;
+	// Self Build fields (optional)
+	isSelfBuild?: boolean;
+	siteValue?: string;
+	additionalSavings?: string;
 }
 
 // HomeMover-specific state
@@ -37,6 +41,9 @@ export interface MoverShareState extends BaseApplicantState {
 	currentPropertyValue: string;
 	outstandingMortgage: string;
 	additionalSavings: string;
+	// Self Build fields (optional)
+	isSelfBuild?: boolean;
+	siteValue?: string;
 }
 
 // BuyToLet-specific state
@@ -66,6 +73,10 @@ interface CompressedBase {
 interface CompressedFtb extends CompressedBase {
 	t: "f";
 	s: string; // savings
+	// Self Build fields (optional)
+	sb?: "1" | "0"; // isSelfBuild
+	sv?: string; // siteValue
+	sa?: string; // additionalSavings (self-build)
 }
 
 interface CompressedMover extends CompressedBase {
@@ -73,6 +84,9 @@ interface CompressedMover extends CompressedBase {
 	cv: string; // currentPropertyValue
 	om: string; // outstandingMortgage
 	as: string; // additionalSavings
+	// Self Build fields (optional)
+	sb?: "1" | "0"; // isSelfBuild
+	sv?: string; // siteValue
 }
 
 interface CompressedBtl extends CompressedBase {
@@ -95,7 +109,16 @@ function compressState(state: BorrowingShareState): CompressedState {
 
 	switch (state.type) {
 		case "ftb":
-			return { t: "f", ...base, s: state.savings };
+			return {
+				t: "f",
+				...base,
+				s: state.savings,
+				...(state.isSelfBuild && {
+					sb: "1",
+					sv: state.siteValue ?? "",
+					sa: state.additionalSavings ?? "",
+				}),
+			};
 		case "mover":
 			return {
 				t: "m",
@@ -103,6 +126,10 @@ function compressState(state: BorrowingShareState): CompressedState {
 				cv: state.currentPropertyValue,
 				om: state.outstandingMortgage,
 				as: state.additionalSavings,
+				...(state.isSelfBuild && {
+					sb: "1",
+					sv: state.siteValue ?? "",
+				}),
 			};
 		case "btl":
 			return { t: "b", ...base, d: state.deposit, er: state.expectedRent };
@@ -121,7 +148,16 @@ function decompressState(compressed: CompressedState): BorrowingShareState {
 
 	switch (compressed.t) {
 		case "f":
-			return { type: "ftb", ...base, savings: compressed.s };
+			return {
+				type: "ftb",
+				...base,
+				savings: compressed.s,
+				...(compressed.sb === "1" && {
+					isSelfBuild: true,
+					siteValue: compressed.sv ?? "",
+					additionalSavings: compressed.sa ?? "",
+				}),
+			};
 		case "m":
 			return {
 				type: "mover",
@@ -129,6 +165,10 @@ function decompressState(compressed: CompressedState): BorrowingShareState {
 				currentPropertyValue: compressed.cv,
 				outstandingMortgage: compressed.om,
 				additionalSavings: compressed.as,
+				...(compressed.sb === "1" && {
+					isSelfBuild: true,
+					siteValue: compressed.sv ?? "",
+				}),
 			};
 		case "b":
 			return {
