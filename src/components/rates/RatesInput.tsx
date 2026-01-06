@@ -375,8 +375,8 @@ export function RatesInput({
 							)}
 						</div>
 
-						{/* Row 2 (lg) / Row 4 (mobile): Buyer Type / Remortgage Type + Current Lender, Term, BER */}
-						<div className="flex gap-3 items-end">
+						{/* Row 4: Term, BER (+ Buyer Type/Remortgage Type + Current Lender on desktop) */}
+						<div className="flex flex-wrap gap-3 items-end">
 							{isRemortgage ? (
 								<>
 									<div className="hidden lg:block space-y-1 flex-1">
@@ -391,7 +391,7 @@ export function RatesInput({
 											variant="remortgage"
 										/>
 									</div>
-									<div className="space-y-1 flex-2 lg:flex-1">
+									<div className="space-y-1 w-full lg:w-auto lg:flex-1">
 										<Label htmlFor="currentLender" className="text-xs">
 											Current Lender
 										</Label>
