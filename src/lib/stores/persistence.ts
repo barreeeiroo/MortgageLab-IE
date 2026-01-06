@@ -1,5 +1,4 @@
 import type { RatesMode } from "@/lib/constants";
-import type { StoredCustomPerk } from "./custom-perks";
 import { hasRatesShareParam } from "@/lib/share";
 import {
 	loadRatesForm,
@@ -11,10 +10,8 @@ import {
 	COMPARE_STORAGE_KEY,
 	loadCompareState,
 } from "./compare";
-import {
-	$storedCustomPerks,
-	CUSTOM_PERKS_STORAGE_KEY,
-} from "./custom-perks";
+import type { StoredCustomPerk } from "./custom-perks";
+import { $storedCustomPerks, CUSTOM_PERKS_STORAGE_KEY } from "./custom-perks";
 import {
 	$storedCustomRates,
 	CUSTOM_RATES_STORAGE_KEY,

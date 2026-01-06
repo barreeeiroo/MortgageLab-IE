@@ -37,9 +37,9 @@ import {
 } from "@/components/ui/tooltip";
 import type { Lender } from "@/lib/data";
 import type { BuyerType } from "@/lib/schemas/buyer";
-import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import type { Perk } from "@/lib/schemas/perk";
 import type { StoredCustomRate } from "@/lib/stores";
+import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import { formatShortDate } from "@/lib/utils/date";
 import { AddCustomRateDialog } from "./AddCustomRateDialog";
 import type { CustomLenderInfo } from "./CustomRateForm";

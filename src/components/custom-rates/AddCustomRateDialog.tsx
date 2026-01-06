@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/dialog";
 import type { Lender } from "@/lib/data";
 import type { BuyerType } from "@/lib/schemas/buyer";
-import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import type { Perk } from "@/lib/schemas/perk";
 import type { StoredCustomRate } from "@/lib/stores";
+import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import { type CustomLenderInfo, CustomRateForm } from "./CustomRateForm";
 
 interface AddCustomRateDialogProps {

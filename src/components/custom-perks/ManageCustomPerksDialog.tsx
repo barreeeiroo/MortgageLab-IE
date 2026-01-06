@@ -296,8 +296,8 @@ export function ManageCustomPerksDialog({
 						<AlertDialogTitle>Delete Custom Perk</AlertDialogTitle>
 						<AlertDialogDescription>
 							Are you sure you want to delete "{deleteConfirmPerk?.label}"? This
-							action cannot be undone. Custom rates using this perk will no longer
-							display it.
+							action cannot be undone. Custom rates using this perk will no
+							longer display it.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

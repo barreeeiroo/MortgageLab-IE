@@ -1,6 +1,5 @@
 import { useStore } from "@nanostores/react";
 import { useCallback, useEffect } from "react";
-import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import {
 	$customLenders,
 	$formValues,
@@ -18,6 +17,7 @@ import {
 	updateCustomPerk,
 	updateCustomRate,
 } from "@/lib/stores";
+import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import { ManageCustomRatesDialog } from "./ManageCustomRatesDialog";
 
 export function CustomRatesIsland() {

@@ -1,5 +1,5 @@
-import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import type { RatesInputValues, StoredCustomRate } from "@/lib/stores";
+import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import {
 	clearUrlParam,
 	compressToUrl,

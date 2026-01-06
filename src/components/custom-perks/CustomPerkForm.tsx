@@ -5,6 +5,7 @@ import {
 	Gem,
 	Gift,
 	Heart,
+	type LucideIcon,
 	Medal,
 	Percent,
 	Rocket,
@@ -14,13 +15,12 @@ import {
 	ThumbsUp,
 	Trophy,
 	Zap,
-	type LucideIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
+import { cn } from "@/lib/utils";
 
 // Available icons for perk selection
 export const PERK_ICON_OPTIONS: Record<string, LucideIcon> = {
@@ -80,7 +80,9 @@ export function CustomPerkForm({
 	submitButton,
 }: CustomPerkFormProps) {
 	const [form, setForm] = useState<FormState>(() =>
-		initialPerk ? createFormStateFromPerk(initialPerk) : createInitialFormState(),
+		initialPerk
+			? createFormStateFromPerk(initialPerk)
+			: createInitialFormState(),
 	);
 
 	// Reset form when initialPerk changes
