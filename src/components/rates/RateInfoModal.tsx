@@ -1120,16 +1120,26 @@ export function RateInfoModal({
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Start New Simulation?</AlertDialogTitle>
-						<AlertDialogDescription>
-							Mortgage switches are typically a continuation of an existing
-							mortgage. Continuing will use this rate as the base for a new
-							simulation.
+						<AlertDialogDescription className="space-y-3">
+							<span className="block">
+								Mortgage switches are typically a continuation of an existing
+								mortgage.
+							</span>
+							<span className="block">
+								To model a switch: on this page, select{" "}
+								<strong>First Mortgage</strong> and click{" "}
+								<strong>Simulate</strong> to create a simulation with your
+								current mortgage. Then, on the Simulate page, click{" "}
+								<strong>Add Rate</strong> and the{" "}
+								<strong>Add to Simulation</strong> button will appear here when
+								clicking on a remortgage product.
+							</span>
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<AlertDialogAction onClick={confirmSimulate}>
-							Continue
+							Start Fresh Instead
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
