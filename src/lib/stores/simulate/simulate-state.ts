@@ -461,6 +461,12 @@ export function resetSimulation(): void {
 	}
 }
 
+// Check if there's an existing simulation with rate periods
+export function hasExistingSimulation(): boolean {
+	const stored = loadFromStorage<SimulationState>(STORAGE_KEY);
+	return !!(stored?.initialized && stored?.ratePeriods?.length > 0);
+}
+
 // Initialize simulation from rates page data
 export function initializeFromRate(params: {
 	mortgageAmount: number;

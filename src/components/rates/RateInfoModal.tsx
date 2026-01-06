@@ -1,4 +1,3 @@
-import { useStore } from "@nanostores/react";
 import {
 	Check,
 	ChevronDown,
@@ -42,12 +41,25 @@ import {
 	addCustomRate,
 	type StoredCustomRate,
 } from "@/lib/stores/custom-rates";
-import { $isAddingToSimulation } from "@/lib/stores/rates-form";
-import { addRatePeriod, initializeFromRate } from "@/lib/stores/simulate";
+import {
+	addRatePeriod,
+	hasExistingSimulation,
+	initializeFromRate,
+} from "@/lib/stores/simulate";
 import { formatCurrency } from "@/lib/utils";
 import { getPath } from "@/lib/utils/path";
 import { LenderLogo } from "../lenders";
 import { type GlossaryTermId, GlossaryTermTooltip } from "../tooltips";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 import {
 	Dialog,
@@ -312,13 +324,25 @@ export function RateInfoModal({
 	open,
 	onOpenChange,
 }: RateInfoModalProps) {
-	const isAddingToSimulation = useStore($isAddingToSimulation);
 	const [selectedTerm, setSelectedTerm] = useState(mortgageTerm);
 	const [highlightedFields, setHighlightedFields] = useState<Set<string>>(
 		new Set(),
 	);
 	const [copiedRateId, setCopiedRateId] = useState<string | null>(null);
 	const prevCalculationsRef = useRef<RateCalculations | null>(null);
+
+	// Simulation confirmation state
+	const [hasExistingSim, setHasExistingSim] = useState(false);
+	const [showSimulateConfirm, setShowSimulateConfirm] = useState(false);
+	const [pendingSimulateWithFollowOn, setPendingSimulateWithFollowOn] =
+		useState(true);
+
+	// Check for existing simulation when modal opens in remortgage mode
+	useEffect(() => {
+		if (open && mode === "remortgage") {
+			setHasExistingSim(hasExistingSimulation());
+		}
+	}, [open, mode]);
 
 	// Reset selected term and copied state when modal opens with new rate
 	useMemo(() => {
@@ -515,6 +539,17 @@ export function RateInfoModal({
 		}
 
 		window.location.href = getPath("/simulate");
+	};
+
+	// Handler for simulate with confirmation (remortgage mode)
+	const handleSimulateWithConfirm = (withFollowOn: boolean) => {
+		setPendingSimulateWithFollowOn(withFollowOn);
+		setShowSimulateConfirm(true);
+	};
+
+	const confirmSimulate = () => {
+		handleSimulate(pendingSimulateWithFollowOn);
+		setShowSimulateConfirm(false);
 	};
 
 	return (
@@ -946,93 +981,159 @@ export function RateInfoModal({
 									Copy as Custom Rate
 								</Button>
 							))}
-						{mode === "first-mortgage" && (
-							<>
-								{/* For fixed rates with a follow-on rate: show split button with dropdown */}
-								{isFixed && hasFollowOn ? (
-									<div className="flex items-center">
-										<Button
-											className="gap-1.5 rounded-r-none"
-											onClick={() => handleSimulate(true)}
-										>
-											<Play className="h-4 w-4" />
-											Simulate
-										</Button>
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button
-													className="rounded-l-none border-l border-primary-foreground/20 px-2"
-													aria-label="More simulation options"
-												>
-													<ChevronDown className="h-4 w-4" />
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="end">
-												<DropdownMenuItem onClick={() => handleSimulate(false)}>
-													<Play className="h-4 w-4" />
-													Simulate Fixed Only
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									</div>
-								) : (
-									/* For variable rates or fixed without follow-on: simple button */
+						{/* First mortgage mode: Simulate button without confirmation */}
+						{mode === "first-mortgage" &&
+							(isFixed && hasFollowOn ? (
+								<div className="flex items-center">
 									<Button
-										className="gap-1.5"
+										className="gap-1.5 rounded-r-none"
 										onClick={() => handleSimulate(true)}
 									>
 										<Play className="h-4 w-4" />
 										Simulate
 									</Button>
-								)}
-							</>
-						)}
-						{isAddingToSimulation && (
-							<>
-								{/* For fixed rates with a follow-on rate: show split button with dropdown */}
-								{isFixed && hasFollowOn ? (
-									<div className="flex items-center">
-										<Button
-											className="gap-1.5 rounded-r-none"
-											onClick={() => handleAddToSimulation(true)}
-										>
-											<PlusCircle className="h-4 w-4" />
-											Add to Simulation
-										</Button>
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button
-													className="rounded-l-none border-l border-primary-foreground/20 px-2"
-													aria-label="More add options"
-												>
-													<ChevronDown className="h-4 w-4" />
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="end">
-												<DropdownMenuItem
-													onClick={() => handleAddToSimulation(false)}
-												>
-													<PlusCircle className="h-4 w-4" />
-													Add Fixed Only
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									</div>
-								) : (
-									/* For variable rates or fixed without follow-on: simple button */
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button
+												className="rounded-l-none border-l border-primary-foreground/20 px-2"
+												aria-label="More simulation options"
+											>
+												<ChevronDown className="h-4 w-4" />
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent align="end">
+											<DropdownMenuItem onClick={() => handleSimulate(false)}>
+												<Play className="h-4 w-4" />
+												Simulate Fixed Only
+											</DropdownMenuItem>
+										</DropdownMenuContent>
+									</DropdownMenu>
+								</div>
+							) : (
+								<Button
+									className="gap-1.5"
+									onClick={() => handleSimulate(true)}
+								>
+									<Play className="h-4 w-4" />
+									Simulate
+								</Button>
+							))}
+
+						{/* Remortgage mode without existing simulation: Simulate with confirmation */}
+						{mode === "remortgage" &&
+							!hasExistingSim &&
+							(isFixed && hasFollowOn ? (
+								<div className="flex items-center">
 									<Button
-										className="gap-1.5"
-										onClick={() => handleAddToSimulation(true)}
+										className="gap-1.5 rounded-r-none"
+										onClick={() => handleSimulateWithConfirm(true)}
 									>
-										<PlusCircle className="h-4 w-4" />
-										Add to Simulation
+										<Play className="h-4 w-4" />
+										Simulate
 									</Button>
-								)}
-							</>
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button
+												className="rounded-l-none border-l border-primary-foreground/20 px-2"
+												aria-label="More simulation options"
+											>
+												<ChevronDown className="h-4 w-4" />
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent align="end">
+											<DropdownMenuItem
+												onClick={() => handleSimulateWithConfirm(false)}
+											>
+												<Play className="h-4 w-4" />
+												Simulate Fixed Only
+											</DropdownMenuItem>
+										</DropdownMenuContent>
+									</DropdownMenu>
+								</div>
+							) : (
+								<Button
+									className="gap-1.5"
+									onClick={() => handleSimulateWithConfirm(true)}
+								>
+									<Play className="h-4 w-4" />
+									Simulate
+								</Button>
+							))}
+
+						{/* Remortgage mode with existing simulation: single split button with all options */}
+						{mode === "remortgage" && hasExistingSim && (
+							<div className="flex items-center">
+								<Button
+									className="gap-1.5 rounded-r-none"
+									onClick={() => handleAddToSimulation(true)}
+								>
+									<PlusCircle className="h-4 w-4" />
+									Add to Simulation
+								</Button>
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button
+											className="rounded-l-none border-l border-primary-foreground/20 px-2"
+											aria-label="More options"
+										>
+											<ChevronDown className="h-4 w-4" />
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end">
+										{/* Fixed with follow-on: show Add Fixed Only option */}
+										{isFixed && hasFollowOn && (
+											<DropdownMenuItem
+												onClick={() => handleAddToSimulation(false)}
+											>
+												<PlusCircle className="h-4 w-4" />
+												Add Fixed Only
+											</DropdownMenuItem>
+										)}
+										<DropdownMenuItem
+											onClick={() => handleSimulateWithConfirm(true)}
+										>
+											<Play className="h-4 w-4" />
+											Simulate
+										</DropdownMenuItem>
+										{/* Fixed with follow-on: show Simulate Fixed Only option */}
+										{isFixed && hasFollowOn && (
+											<DropdownMenuItem
+												onClick={() => handleSimulateWithConfirm(false)}
+											>
+												<Play className="h-4 w-4" />
+												Simulate Fixed Only
+											</DropdownMenuItem>
+										)}
+									</DropdownMenuContent>
+								</DropdownMenu>
+							</div>
 						)}
 					</div>
 				</div>
 			</DialogContent>
+
+			{/* Confirmation dialog for starting new simulation in remortgage mode */}
+			<AlertDialog
+				open={showSimulateConfirm}
+				onOpenChange={setShowSimulateConfirm}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Start New Simulation?</AlertDialogTitle>
+						<AlertDialogDescription>
+							Mortgage switches are typically a continuation of an existing
+							mortgage. Continuing will use this rate as the base for a new
+							simulation.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction onClick={confirmSimulate}>
+							Continue
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</Dialog>
 	);
 }

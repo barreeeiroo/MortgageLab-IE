@@ -2,7 +2,6 @@ import { Info, Play, PlusCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { setAddingToSimulation } from "@/lib/stores/rates-form";
 
 type AlertMode = "simulate" | "simulate-add" | null;
 
@@ -15,11 +14,6 @@ export function SimulateRedirectAlert() {
 
 		if (fromParam === "simulate" || fromParam === "simulate-add") {
 			setAlertMode(fromParam);
-
-			// Set the store so RateInfoModal knows to show "Add to Simulation" button
-			if (fromParam === "simulate-add") {
-				setAddingToSimulation(true);
-			}
 
 			// Clear the URL param without reloading
 			urlParams.delete("from");
