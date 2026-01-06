@@ -1,5 +1,6 @@
-import { HandCoins, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Gift, HandCoins, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { ManageCustomPerksDialog } from "@/components/custom-perks";
 import { LenderLogo } from "@/components/lenders";
 import {
 	AlertDialog,
@@ -38,6 +39,7 @@ import type { Lender } from "@/lib/data";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Perk } from "@/lib/schemas/perk";
 import type { StoredCustomRate } from "@/lib/stores";
+import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import { formatShortDate } from "@/lib/utils/date";
 import { AddCustomRateDialog } from "./AddCustomRateDialog";
 import type { CustomLenderInfo } from "./CustomRateForm";
@@ -48,10 +50,14 @@ interface ManageCustomRatesDialogProps {
 	lenders: Lender[];
 	customLenders: CustomLenderInfo[];
 	perks: Perk[];
+	customPerks: StoredCustomPerk[];
 	currentBuyerType: BuyerType;
 	onAddRate: (rate: StoredCustomRate) => void;
 	onUpdateRate: (rate: StoredCustomRate) => void;
 	onDeleteRate: (rateId: string) => void;
+	onAddPerk: (perk: StoredCustomPerk) => void;
+	onUpdatePerk: (perk: StoredCustomPerk) => void;
+	onDeletePerk: (perkId: string) => void;
 }
 
 const RATE_TYPE_LABELS: Record<string, string> = {
@@ -65,16 +71,21 @@ export function ManageCustomRatesDialog({
 	lenders,
 	customLenders,
 	perks,
+	customPerks,
 	currentBuyerType,
 	onAddRate,
 	onUpdateRate,
 	onDeleteRate,
+	onAddPerk,
+	onUpdatePerk,
+	onDeletePerk,
 }: ManageCustomRatesDialogProps) {
 	const [manageOpen, setManageOpen] = useState(false);
 	const [addOpen, setAddOpen] = useState(false);
 	const [editingRate, setEditingRate] = useState<StoredCustomRate | null>(null);
 	const [deleteConfirmRate, setDeleteConfirmRate] =
 		useState<StoredCustomRate | null>(null);
+	const [managePerksOpen, setManagePerksOpen] = useState(false);
 
 	// Sort by createdAt ascending (oldest first)
 	const sortedRates = useMemo(() => {
@@ -138,6 +149,16 @@ export function ManageCustomRatesDialog({
 		},
 		[lenders],
 	);
+
+	const handleOpenManagePerks = useCallback(() => {
+		setManageOpen(false);
+		setManagePerksOpen(true);
+	}, []);
+
+	const handleBackFromManagePerks = useCallback(() => {
+		setManagePerksOpen(false);
+		setManageOpen(true);
+	}, []);
 
 	const formatPeriod = useCallback((rate: StoredCustomRate) => {
 		if (rate.type === "fixed" && rate.fixedTerm) {
@@ -292,10 +313,21 @@ export function ManageCustomRatesDialog({
 								? "Custom rates are stored locally in your browser."
 								: `${customRates.length} custom rate${customRates.length === 1 ? "" : "s"}`}
 						</p>
-						<Button onClick={handleOpenAdd} className="gap-1.5">
-							<Plus className="h-4 w-4" />
-							Add Custom Rate
-						</Button>
+						<div className="flex items-center gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleOpenManagePerks}
+								className="gap-1.5"
+							>
+								<Gift className="h-4 w-4" />
+								Manage Perks
+							</Button>
+							<Button onClick={handleOpenAdd} className="gap-1.5">
+								<Plus className="h-4 w-4" />
+								Add Custom Rate
+							</Button>
+						</div>
 					</div>
 				</DialogContent>
 			</Dialog>
@@ -307,6 +339,7 @@ export function ManageCustomRatesDialog({
 				lenders={lenders}
 				customLenders={customLenders}
 				perks={perks}
+				customPerks={customPerks}
 				currentBuyerType={currentBuyerType}
 				onAddRate={handleAddRate}
 				onBack={handleBackFromAdd}
@@ -321,6 +354,7 @@ export function ManageCustomRatesDialog({
 					lenders={lenders}
 					customLenders={customLenders}
 					perks={perks}
+					customPerks={customPerks}
 					currentBuyerType={currentBuyerType}
 					onUpdateRate={handleUpdateRate}
 					onBack={handleBackFromEdit}
@@ -351,6 +385,17 @@ export function ManageCustomRatesDialog({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			{/* Manage Custom Perks Dialog */}
+			<ManageCustomPerksDialog
+				open={managePerksOpen}
+				onOpenChange={setManagePerksOpen}
+				customPerks={customPerks}
+				onAddPerk={onAddPerk}
+				onUpdatePerk={onUpdatePerk}
+				onDeletePerk={onDeletePerk}
+				onBack={handleBackFromManagePerks}
+			/>
 		</>
 	);
 }

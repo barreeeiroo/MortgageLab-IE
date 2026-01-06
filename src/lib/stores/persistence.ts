@@ -10,6 +10,8 @@ import {
 	COMPARE_STORAGE_KEY,
 	loadCompareState,
 } from "./compare";
+import type { StoredCustomPerk } from "./custom-perks";
+import { $storedCustomPerks, CUSTOM_PERKS_STORAGE_KEY } from "./custom-perks";
 import {
 	$storedCustomRates,
 	CUSTOM_RATES_STORAGE_KEY,
@@ -86,6 +88,23 @@ export function initializeStore(): void {
 							$storedCustomRates.set(merged);
 							localStorage.setItem(
 								CUSTOM_RATES_STORAGE_KEY,
+								JSON.stringify(merged),
+							);
+						}
+					}
+
+					// Merge shared custom perks with existing ones
+					if (sharedState.customPerks && sharedState.customPerks.length > 0) {
+						const existingPerks = $storedCustomPerks.get();
+						const existingIds = new Set(existingPerks.map((p) => p.id));
+						const newPerks = sharedState.customPerks.filter(
+							(p: StoredCustomPerk) => !existingIds.has(p.id),
+						);
+						if (newPerks.length > 0) {
+							const merged = [...existingPerks, ...newPerks];
+							$storedCustomPerks.set(merged);
+							localStorage.setItem(
+								CUSTOM_PERKS_STORAGE_KEY,
 								JSON.stringify(merged),
 							);
 						}

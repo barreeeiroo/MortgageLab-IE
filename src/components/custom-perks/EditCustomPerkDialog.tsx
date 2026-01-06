@@ -1,6 +1,5 @@
-import { ArrowLeft, Pencil, X } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { LenderLogo } from "@/components/lenders";
+import { ArrowLeft, Pencil, Sparkles, X } from "lucide-react";
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -10,65 +9,36 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import type { Lender } from "@/lib/data";
-import type { BuyerType } from "@/lib/schemas/buyer";
-import type { Perk } from "@/lib/schemas/perk";
-import type { StoredCustomRate } from "@/lib/stores";
 import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
-import { type CustomLenderInfo, CustomRateForm } from "./CustomRateForm";
+import { CustomPerkForm } from "./CustomPerkForm";
 
-interface EditCustomRateDialogProps {
+interface EditCustomPerkDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	rate: StoredCustomRate;
-	lenders: Lender[];
-	customLenders: CustomLenderInfo[];
-	perks: Perk[];
-	customPerks?: StoredCustomPerk[];
-	currentBuyerType: BuyerType;
-	onUpdateRate: (rate: StoredCustomRate) => void;
+	perk: StoredCustomPerk;
+	onUpdatePerk: (perk: StoredCustomPerk) => void;
 	onBack?: () => void;
 }
 
-export function EditCustomRateDialog({
+export function EditCustomPerkDialog({
 	open,
 	onOpenChange,
-	rate,
-	lenders,
-	customLenders,
-	perks,
-	customPerks = [],
-	currentBuyerType,
-	onUpdateRate,
+	perk,
+	onUpdatePerk,
 	onBack,
-}: EditCustomRateDialogProps) {
+}: EditCustomPerkDialogProps) {
 	const handleSubmit = useCallback(
-		(updatedRate: StoredCustomRate) => {
-			onUpdateRate(updatedRate);
+		(updatedPerk: StoredCustomPerk) => {
+			onUpdatePerk(updatedPerk);
 			onOpenChange(false);
 		},
-		[onUpdateRate, onOpenChange],
+		[onUpdatePerk, onOpenChange],
 	);
-
-	// Combine standard perks with custom perks
-	const allPerks = useMemo((): Perk[] => {
-		const customAsPerk: Perk[] = customPerks.map((cp) => ({
-			id: cp.id,
-			label: cp.label,
-			description: cp.description,
-			icon: cp.icon,
-		}));
-		return [...perks, ...customAsPerk];
-	}, [perks, customPerks]);
-
-	// Find lender name for the header
-	const lender = lenders.find((l) => l.id === rate.lenderId);
-	const lenderName = lender?.name || rate.customLenderName || "Custom";
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
-				className="sm:max-w-xl flex flex-col overflow-hidden p-0"
+				className="sm:max-w-md max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0"
 				showCloseButton={false}
 			>
 				{/* Sticky Header */}
@@ -86,15 +56,13 @@ export function EditCustomRateDialog({
 										<span className="sr-only">Back</span>
 									</button>
 								)}
-								<LenderLogo
-									lenderId={rate.lenderId}
-									size={40}
-									isCustom={!!rate.customLenderName}
-								/>
+								<div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
+									<Sparkles className="h-5 w-5 text-primary" />
+								</div>
 								<div>
-									<DialogTitle>Edit Custom Rate</DialogTitle>
+									<DialogTitle>Edit Custom Perk</DialogTitle>
 									<DialogDescription>
-										Modify your custom rate for {lenderName}.
+										Modify your custom perk "{perk.label}".
 									</DialogDescription>
 								</div>
 							</div>
@@ -106,12 +74,8 @@ export function EditCustomRateDialog({
 					</DialogHeader>
 				</div>
 
-				<CustomRateForm
-					lenders={lenders}
-					customLenders={customLenders}
-					perks={allPerks}
-					currentBuyerType={currentBuyerType}
-					initialRate={rate}
+				<CustomPerkForm
+					initialPerk={perk}
 					onSubmit={handleSubmit}
 					submitButton={({ onClick, disabled }) => (
 						<Button onClick={onClick} disabled={disabled} className="gap-1.5">
