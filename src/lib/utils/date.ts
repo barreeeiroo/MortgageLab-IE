@@ -80,10 +80,12 @@ export function formatIncrementalPeriod(month: number): string {
  * Format a transition date showing calendar date (if available) with incremental in parenthesis
  * @param startDate - ISO date string for mortgage start, or undefined
  * @param month - 1-indexed month of mortgage
+ * @param options.short - If true, omits the incremental period part (e.g., "Jan 2026" instead of "Jan 2026 (Year 1)")
  */
 export function formatTransitionDate(
 	startDate: string | undefined,
 	month: number,
+	options?: { short?: boolean },
 ): string {
 	const incremental = formatIncrementalPeriod(month);
 
@@ -93,6 +95,9 @@ export function formatTransitionDate(
 			month: "short",
 			year: "numeric",
 		});
+		if (options?.short) {
+			return formatted;
+		}
 		return `${formatted} (${incremental})`;
 	}
 	return incremental;

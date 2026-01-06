@@ -96,8 +96,10 @@ export function SimulateOverpaymentsIsland() {
 		// Use label if available, otherwise rate name
 		const displayName = period.label || period.rateName;
 
-		// Always include date info
-		const dateStr = formatTransitionDate(input.startDate, period.startMonth);
+		// Always include date info (short format to avoid double parentheses)
+		const dateStr = formatTransitionDate(input.startDate, period.startMonth, {
+			short: true,
+		});
 		return `${displayName} (${dateStr})`;
 	};
 

@@ -97,7 +97,11 @@ export function SimulateOverpaymentForm({
 									/>
 									<span>{period.rateName}</span>
 									<span className="text-muted-foreground">
-										({formatTransitionDate(startDate, period.startMonth)})
+										(
+										{formatTransitionDate(startDate, period.startMonth, {
+											short: true,
+										})}
+										)
 									</span>
 								</div>
 							</SelectItem>
