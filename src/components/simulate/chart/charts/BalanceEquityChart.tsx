@@ -102,7 +102,7 @@ export function BalanceEquityChart({
 													style={{ backgroundColor: CHART_COLORS.equity }}
 												/>
 												<span className="text-muted-foreground text-sm">
-													Equity (Principal Paid)
+													Principal Paid
 												</span>
 											</div>
 											<span className="font-mono font-medium text-sm">

@@ -57,7 +57,7 @@ const VISIBILITY_CONFIGS: Record<
 > = {
 	balance_equity: [
 		{ key: "balance", label: "Balance", color: CHART_COLORS.balance },
-		{ key: "equity", label: "Equity", color: CHART_COLORS.equity },
+		{ key: "equity", label: "Principal", color: CHART_COLORS.equity },
 		{ key: "deposit", label: "Deposit", color: CHART_COLORS.deposit },
 	],
 	payment_breakdown: [

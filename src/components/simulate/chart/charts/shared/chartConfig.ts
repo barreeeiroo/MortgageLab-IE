@@ -27,7 +27,7 @@ export const balanceEquityConfig: ChartConfig = {
 		color: CHART_COLORS.balance,
 	},
 	equity: {
-		label: "Equity (Principal Paid)",
+		label: "Principal Paid",
 		color: CHART_COLORS.equity,
 	},
 	deposit: {
