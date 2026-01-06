@@ -242,10 +242,7 @@ export function CompareRatesModal({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
-				className={cn(
-					getModalWidth(),
-					"flex flex-col overflow-hidden p-0",
-				)}
+				className={cn(getModalWidth(), "flex flex-col overflow-hidden p-0")}
 				showCloseButton={false}
 			>
 				{/* Header */}
