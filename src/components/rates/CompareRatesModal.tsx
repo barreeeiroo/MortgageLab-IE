@@ -244,7 +244,7 @@ export function CompareRatesModal({
 			<DialogContent
 				className={cn(
 					getModalWidth(),
-					"max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0",
+					"flex flex-col overflow-hidden p-0",
 				)}
 				showCloseButton={false}
 			>

@@ -49,7 +49,7 @@ export function RateUpdatesDialog({
 						<span className="hidden sm:inline">Rate Updates</span>
 					</Button>
 				</DialogTrigger>
-				<DialogContent className="sm:max-w-2xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0">
+				<DialogContent className="sm:max-w-2xl flex flex-col overflow-hidden p-0">
 					<DialogHeader className="px-6 pt-6 pb-4">
 						<DialogTitle>Rate Update Information</DialogTitle>
 					</DialogHeader>

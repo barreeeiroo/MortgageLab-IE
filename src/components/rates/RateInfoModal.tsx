@@ -555,7 +555,7 @@ export function RateInfoModal({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
-				className="sm:max-w-3xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-0"
+				className="sm:max-w-3xl flex flex-col overflow-hidden p-0"
 				showCloseButton={false}
 			>
 				{/* Sticky Header */}
