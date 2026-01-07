@@ -256,8 +256,8 @@ export function RateTimelineChart({
 										{/* Show individual rates in muted style at bottom */}
 										{dataPoint.ratesInPeriod && (
 											<div className="text-xs text-muted-foreground pt-1 border-t border-border/50 space-y-0.5">
-												{dataPoint.ratesInPeriod.map((rp, i) => (
-													<div key={i}>
+												{dataPoint.ratesInPeriod.map((rp) => (
+													<div key={`${rp.label}-${rp.rate}`}>
 														{rp.label}: {formatPercentage(rp.rate)} ({rp.months}
 														mo)
 													</div>

@@ -10,7 +10,6 @@ import {
 } from "@/lib/stores/simulate/simulate-calculations";
 import {
 	$chartSettings,
-	type ChartGranularity,
 	type ChartType,
 	type ChartVisibilitySettings,
 	setActiveChart,
