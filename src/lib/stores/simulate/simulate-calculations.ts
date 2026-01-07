@@ -758,6 +758,29 @@ export const $amortizationResult = computed(
 	},
 );
 
+// Baseline schedule (without overpayments) - for overpayment impact chart
+export const $baselineSchedule = computed(
+	[$simulationState, $rates, $customRates, $lenders, $overpaymentPolicies],
+	(state, rates, customRates, lenders, policies) => {
+		if (!state.initialized) {
+			return [];
+		}
+		// Create a copy of state without overpayments
+		const stateWithoutOverpayments: SimulationState = {
+			...state,
+			overpaymentConfigs: [],
+		};
+		const result = calculateAmortization(
+			stateWithoutOverpayments,
+			rates,
+			customRates,
+			lenders,
+			policies,
+		);
+		return result.months;
+	},
+);
+
 export const $amortizationSchedule = computed(
 	$amortizationResult,
 	(result) => result.months,
