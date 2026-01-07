@@ -92,7 +92,6 @@ export function SimulateRatesIsland() {
 			0,
 			input.mortgageTermMonths - lastCoveredMonth,
 		);
-		const remainingTermYears = Math.ceil(remainingMonths / 12);
 
 		// Convert cents to euros for the rates form
 		const propertyValue = Math.round(input.propertyValue / 100);
@@ -107,7 +106,7 @@ export function SimulateRatesIsland() {
 			propertyValue: propertyValue.toString(),
 			mortgageAmount: mortgageAmount.toString(),
 			monthlyRepayment: monthlyRepayment.toString(),
-			mortgageTerm: remainingTermYears.toString(),
+			mortgageTerm: remainingMonths.toString(),
 			berRating: input.ber,
 			buyerType: "switcher-pdh",
 			currentLender,

@@ -13,7 +13,7 @@ import {
 	resolvePerks,
 } from "@/lib/data";
 import { useIsDesktop } from "@/lib/hooks";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, formatTermDisplay } from "@/lib/utils";
 import { LenderLogo } from "../lenders";
 import { ShareButton } from "../ShareButton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -60,7 +60,7 @@ interface CompareRatesModalProps {
 	lenders: Lender[];
 	perks: Perk[];
 	mortgageAmount: number;
-	mortgageTerm: number;
+	mortgageTerm: number; // in months
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onShare: () => Promise<string>;
@@ -98,15 +98,19 @@ function getComparisonValue(rate: RateRow, key: ComparisonKey): string {
 		case "aprc":
 			return rate.indicativeAprc ? `${rate.indicativeAprc.toFixed(2)}%` : "—";
 		case "monthly":
-			return formatCurrency(rate.monthlyPayment);
+			return formatCurrency(rate.monthlyPayment, { showCents: true });
 		case "followOnProduct":
 			return ""; // Handled specially in render
 		case "followOnRate":
 			return rate.followOnRate ? `${rate.followOnRate.rate.toFixed(2)}%` : "—";
 		case "followOnMonthly":
-			return rate.monthlyFollowOn ? formatCurrency(rate.monthlyFollowOn) : "—";
+			return rate.monthlyFollowOn
+				? formatCurrency(rate.monthlyFollowOn, { showCents: true })
+				: "—";
 		case "totalRepayable":
-			return rate.totalRepayable ? formatCurrency(rate.totalRepayable) : "—";
+			return rate.totalRepayable
+				? formatCurrency(rate.totalRepayable, { showCents: true })
+				: "—";
 		case "costOfCredit":
 			return rate.costOfCreditPct !== undefined
 				? `${rate.costOfCreditPct.toFixed(1)}%`
@@ -201,7 +205,7 @@ export function CompareRatesModal({
 	lenders,
 	perks,
 	mortgageAmount,
-	mortgageTerm,
+	mortgageTerm, // in months
 	open,
 	onOpenChange,
 	onShare,
@@ -249,7 +253,8 @@ export function CompareRatesModal({
 								<DialogTitle>Compare Rates</DialogTitle>
 								<DialogDescription>
 									Comparing {rates.length} mortgage rates •{" "}
-									{formatCurrency(mortgageAmount)} over {mortgageTerm} years
+									{formatCurrency(mortgageAmount, { showCents: true })} over{" "}
+									{formatTermDisplay(mortgageTerm)}
 								</DialogDescription>
 							</div>
 							<DialogClose className="cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">

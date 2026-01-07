@@ -215,7 +215,7 @@ export function BuyToLetCalculator() {
 		const monthlyPayment = calculateMonthlyPayment(
 			mortgageAmount,
 			STRESS_TEST_RATE,
-			maxMortgageTerm,
+			maxMortgageTerm * 12,
 		);
 		const rentalCoverage = (monthlyRent / monthlyPayment) * 100;
 
@@ -529,7 +529,7 @@ export function BuyToLetCalculator() {
 											result.mortgageAmount,
 										).toString(),
 										monthlyRepayment: "",
-										mortgageTerm: result.mortgageTerm.toString(),
+										mortgageTerm: (result.mortgageTerm * 12).toString(),
 										berRating: result.berRating,
 										buyerType: "btl",
 									});

@@ -46,7 +46,7 @@ import {
 	hasExistingSimulation,
 	initializeFromRate,
 } from "@/lib/stores/simulate";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatTermDisplay } from "@/lib/utils";
 import { getPath } from "@/lib/utils/path";
 import { LenderLogo } from "../lenders";
 import { type GlossaryTermId, GlossaryTermTooltip } from "../tooltips";
@@ -92,7 +92,7 @@ interface RateInfoModalProps {
 	overpaymentPolicies: OverpaymentPolicy[];
 	combinedPerks: string[];
 	mortgageAmount: number;
-	mortgageTerm: number;
+	mortgageTerm: number; // in months
 	ltv: number;
 	berRating?: string;
 	mode?: RatesMode;
@@ -115,45 +115,58 @@ interface RateCalculations {
 }
 
 /**
- * Generate available term options based on current term and lender maxTerm.
+ * Generate available term options based on current term (in months) and lender maxTerm (in years).
  * Always returns 3 options, aiming for ±5 years from current term.
  * If near boundaries (min 5 years or maxTerm), shifts to show 2 options in one direction.
+ * Returns values in months for consistency with the rest of the modal.
  */
 function getTermOptions(
-	currentTerm: number,
-	maxTerm: number,
+	currentTermMonths: number,
+	maxTermYears: number,
 ): { value: number; label: string }[] {
-	const MIN_TERM = 5;
+	const MIN_TERM_YEARS = 5;
 	const STEP = 5;
 
-	const lower = currentTerm - STEP;
-	const upper = currentTerm + STEP;
+	// Convert current term to years for option generation (rounded down)
+	const currentTermYears = Math.floor(currentTermMonths / 12);
 
-	const canGoDown = lower >= MIN_TERM;
-	const canGoUp = upper <= maxTerm;
+	const lower = currentTermYears - STEP;
+	const upper = currentTermYears + STEP;
+
+	const canGoDown = lower >= MIN_TERM_YEARS;
+	const canGoUp = upper <= maxTermYears;
 
 	let options: number[];
 
 	if (canGoDown && canGoUp) {
 		// Ideal: -5, current, +5
-		options = [lower, currentTerm, upper];
+		options = [lower, currentTermYears, upper];
 	} else if (!canGoUp) {
 		// At or near max: go down twice
-		options = [currentTerm - STEP * 2, currentTerm - STEP, currentTerm];
+		options = [
+			currentTermYears - STEP * 2,
+			currentTermYears - STEP,
+			currentTermYears,
+		];
 	} else {
 		// At or near min: go up twice
-		options = [currentTerm, currentTerm + STEP, currentTerm + STEP * 2];
+		options = [
+			currentTermYears,
+			currentTermYears + STEP,
+			currentTermYears + STEP * 2,
+		];
 	}
 
 	// Filter to valid range, dedupe, and sort
 	const validOptions = options.filter(
-		(term) => term >= MIN_TERM && term <= maxTerm,
+		(term) => term >= MIN_TERM_YEARS && term <= maxTermYears,
 	);
 	const uniqueOptions = [...new Set(validOptions)].sort((a, b) => a - b);
 
-	return uniqueOptions.map((term) => ({
-		value: term,
-		label: `${term} years`,
+	// Return values in months (years * 12)
+	return uniqueOptions.map((termYears) => ({
+		value: termYears * 12,
+		label: `${termYears} years`,
 	}));
 }
 
@@ -164,13 +177,11 @@ function calculateRateInfo(
 	rate: MortgageRate,
 	allRates: MortgageRate[],
 	mortgageAmount: number,
-	termYears: number,
+	termMonths: number,
 	ltv: number,
 	berRating: string | undefined,
 	aprcFees: AprcFees,
 ): RateCalculations {
-	const totalMonths = termYears * 12;
-
 	// Calculate LTV after fixed term ends
 	let followOnLtv = ltv;
 	let remainingBalance: number | undefined;
@@ -180,7 +191,7 @@ function calculateRateInfo(
 		remainingBalance = calculateRemainingBalance(
 			mortgageAmount,
 			rate.rate,
-			totalMonths,
+			termMonths,
 			fixedMonths,
 		);
 		// Remaining LTV = remainingBalance / propertyValue * 100
@@ -203,7 +214,7 @@ function calculateRateInfo(
 	const monthlyPayment = calculateMonthlyPayment(
 		mortgageAmount,
 		rate.rate,
-		totalMonths,
+		termMonths,
 	);
 
 	// Calculate follow-on monthly payment
@@ -211,7 +222,7 @@ function calculateRateInfo(
 		rate,
 		followOnRate,
 		mortgageAmount,
-		termYears,
+		termMonths,
 	);
 
 	// Calculate total repayable
@@ -219,7 +230,7 @@ function calculateRateInfo(
 		rate,
 		monthlyPayment,
 		monthlyFollowOn,
-		termYears,
+		termMonths,
 	);
 
 	// Cost of credit
@@ -232,7 +243,7 @@ function calculateRateInfo(
 	if (!indicativeAprc && rate.type === "fixed" && rate.fixedTerm) {
 		const aprcConfig: AprcConfig = {
 			loanAmount: mortgageAmount,
-			termYears,
+			termMonths,
 			valuationFee: aprcFees.valuationFee,
 			securityReleaseFee: aprcFees.securityReleaseFee,
 		};
@@ -246,7 +257,8 @@ function calculateRateInfo(
 		);
 	}
 
-	// Follow-on term (remaining after fixed)
+	// Follow-on term (remaining after fixed) in years for display
+	const termYears = Math.floor(termMonths / 12);
 	const followOnTerm =
 		rate.type === "fixed" && rate.fixedTerm
 			? termYears - rate.fixedTerm
@@ -488,7 +500,7 @@ export function RateInfoModal({
 
 		initializeFromRate({
 			mortgageAmount: mortgageAmountCents,
-			mortgageTermMonths: selectedTerm * 12,
+			mortgageTermMonths: selectedTerm,
 			propertyValue: propertyValueCents,
 			ber: (berRating as BerRating) ?? DEFAULT_BER,
 			lenderId: rate.lenderId,
@@ -655,7 +667,7 @@ export function RateInfoModal({
 										/>
 										<InfoRow
 											label="Full Term"
-											value={`${selectedTerm} years`}
+											value={formatTermDisplay(selectedTerm)}
 											highlight={highlightedFields.has("term")}
 										/>
 										<InfoRow

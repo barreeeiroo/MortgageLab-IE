@@ -5,3 +5,4 @@ export * from "./contact";
 export * from "./glossary";
 export * from "./rates";
 export * from "./site";
+export * from "./term";

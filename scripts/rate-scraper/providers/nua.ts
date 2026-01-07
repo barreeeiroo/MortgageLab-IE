@@ -11,7 +11,7 @@ const SVR_API_URL = "https://backend.nuamoney.com/v1/dictionaries/svr/current";
 // APRC calculation parameters (per Núa's disclosure)
 const APRC_CONFIG: AprcConfig = {
 	loanAmount: 100000,
-	termYears: 20,
+	termMonths: 20 * 12,
 	valuationFee: 199,
 	securityReleaseFee: 80,
 };

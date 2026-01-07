@@ -1,17 +1,24 @@
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { MAX_TERM_YEARS, MIN_TERM_YEARS } from "@/lib/constants";
+import {
+	cn,
+	combineTerm,
+	formatTermDisplay,
+	isValidTermYears,
+	splitTerm,
+} from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 
 const MORTGAGE_TERMS = [5, 10, 15, 20, 25, 30, 35] as const;
-const MIN_TERM = 5;
-const MAX_TERM = 40;
+const PRESET_MONTHS = [0, 3, 6, 9] as const;
 
 interface MortgageTermSelectorProps {
-	value: string;
+	value: string; // Total months as string
 	onChange: (value: string) => void;
 	id?: string;
 	label?: string;
@@ -26,39 +33,89 @@ export function MortgageTermSelector({
 	compact = false,
 }: MortgageTermSelectorProps) {
 	const [open, setOpen] = useState(false);
-	const [customValue, setCustomValue] = useState("");
+	const [customYears, setCustomYears] = useState("");
+	const [customMonths, setCustomMonths] = useState("");
+	const [withMonths, setWithMonths] = useState(false);
 
-	const handleSelect = (term: number) => {
-		onChange(term.toString());
-		setOpen(false);
-		setCustomValue("");
-	};
+	// Parse value (total months) into years and months
+	const totalMonths = Number.parseInt(value, 10) || 360;
+	const { years, months } = splitTerm(totalMonths);
 
-	const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const raw = e.target.value.replace(/[^0-9]/g, "");
-		setCustomValue(raw);
-	};
+	// Auto-enable withMonths mode if there are months in the value
+	const effectiveWithMonths = withMonths || months > 0;
 
-	const handleCustomSubmit = () => {
-		if (!customValue) return;
-		const num = Number.parseInt(customValue, 10);
-		if (num >= MIN_TERM && num <= MAX_TERM) {
-			onChange(num.toString());
+	const handleSelectYear = (year: number) => {
+		// Preserve months when selecting a new year (only in withMonths mode)
+		const newMonths = effectiveWithMonths ? months : 0;
+		onChange(combineTerm(year, newMonths).toString());
+		if (!effectiveWithMonths) {
 			setOpen(false);
-			setCustomValue("");
+		}
+		setCustomYears("");
+	};
+
+	const handleSelectMonth = (month: number) => {
+		onChange(combineTerm(years, month).toString());
+		setCustomMonths("");
+	};
+
+	const handleCustomYearsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const raw = e.target.value.replace(/[^0-9]/g, "");
+		setCustomYears(raw);
+	};
+
+	const handleCustomMonthsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const raw = e.target.value.replace(/[^0-9]/g, "");
+		// Limit to 0-11
+		const num = Number.parseInt(raw, 10);
+		if (raw === "" || (num >= 0 && num <= 11)) {
+			setCustomMonths(raw);
 		}
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent) => {
+	const handleCustomYearsSubmit = () => {
+		if (!customYears) return;
+		const num = Number.parseInt(customYears, 10);
+		if (isValidTermYears(num)) {
+			const newMonths = effectiveWithMonths ? months : 0;
+			onChange(combineTerm(num, newMonths).toString());
+			setOpen(false);
+			setCustomYears("");
+		}
+	};
+
+	const handleCustomMonthsSubmit = () => {
+		if (customMonths === "") return;
+		const num = Number.parseInt(customMonths, 10);
+		if (num >= 0 && num <= 11) {
+			onChange(combineTerm(years, num).toString());
+			setCustomMonths("");
+		}
+	};
+
+	const handleYearsKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter") {
-			handleCustomSubmit();
+			handleCustomYearsSubmit();
 		}
 	};
 
+	const handleMonthsKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === "Enter") {
+			handleCustomMonthsSubmit();
+		}
+	};
+
+	const handleToggleMode = (mode: boolean) => {
+		setWithMonths(mode);
+		// Reset months to 0 when switching to "Years Only"
+		if (!mode && months > 0) {
+			onChange(combineTerm(years, 0).toString());
+		}
+	};
+
+	// Display value - use formatTermDisplay from utils
 	const displayValue = value
-		? compact
-			? `${value} yrs`
-			: `${value} years`
+		? formatTermDisplay(totalMonths, { compact })
 		: compact
 			? "Term"
 			: "Select term";
@@ -81,51 +138,129 @@ export function MortgageTermSelector({
 					<ChevronsUpDown className="opacity-50" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-[160px] p-0" align="start">
+			<PopoverContent className="p-0 w-[200px] md:w-[300px]" align="start">
+				{/* Mode Toggle */}
 				<div className="p-2 border-b">
-					<div className="flex gap-1">
-						<Input
-							type="text"
-							inputMode="numeric"
-							placeholder="Custom"
-							className="h-8"
-							value={customValue}
-							onChange={handleCustomChange}
-							onKeyDown={handleKeyDown}
-						/>
-						<Button
-							size="sm"
-							className="h-8 px-2"
-							onClick={handleCustomSubmit}
-							disabled={
-								!customValue ||
-								Number.parseInt(customValue, 10) < MIN_TERM ||
-								Number.parseInt(customValue, 10) > MAX_TERM
-							}
-						>
-							Go
-						</Button>
-					</div>
-					<p className="text-xs text-muted-foreground mt-1">
-						{MIN_TERM}-{MAX_TERM} years
-					</p>
+					<Tabs
+						value={effectiveWithMonths ? "with-months" : "years-only"}
+						onValueChange={(v) => handleToggleMode(v === "with-months")}
+						className="w-full"
+					>
+						<TabsList className="w-full h-8">
+							<TabsTrigger
+								value="years-only"
+								className="text-xs flex-1 min-w-[70px]"
+							>
+								Years Only
+							</TabsTrigger>
+							<TabsTrigger
+								value="with-months"
+								className="text-xs flex-1 min-w-[70px]"
+							>
+								With Months
+							</TabsTrigger>
+						</TabsList>
+					</Tabs>
 				</div>
-				<div className="p-1">
-					{MORTGAGE_TERMS.map((term) => (
-						<button
-							key={term}
-							type="button"
-							onClick={() => handleSelect(term)}
-							className={cn(
-								"relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
-							)}
-						>
-							{term} years
-							{value === term.toString() && (
-								<Check className="ml-auto h-4 w-4" />
-							)}
-						</button>
-					))}
+
+				{/* Years and Months Selection */}
+				<div
+					className={cn(effectiveWithMonths ? "flex flex-col md:flex-row" : "")}
+				>
+					{/* Months Section (shown first on mobile when withMonths) */}
+					{effectiveWithMonths && (
+						<div className="border-b md:border-b-0 md:border-r md:order-2 md:w-[130px]">
+							<div className="p-1">
+								{PRESET_MONTHS.map((m) => (
+									<button
+										key={m}
+										type="button"
+										onClick={() => handleSelectMonth(m)}
+										className={cn(
+											"relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+										)}
+									>
+										{m} months
+										{months === m && <Check className="ml-auto h-4 w-4" />}
+									</button>
+								))}
+							</div>
+							<div className="p-2 border-t">
+								<div className="flex gap-1">
+									<Input
+										type="text"
+										inputMode="numeric"
+										placeholder="Custom"
+										className="h-7 text-xs"
+										value={customMonths}
+										onChange={handleCustomMonthsChange}
+										onKeyDown={handleMonthsKeyDown}
+									/>
+									<Button
+										size="sm"
+										className="h-7 px-2 text-xs"
+										onClick={handleCustomMonthsSubmit}
+										disabled={
+											customMonths === "" ||
+											Number.parseInt(customMonths, 10) < 0 ||
+											Number.parseInt(customMonths, 10) > 11
+										}
+									>
+										Go
+									</Button>
+								</div>
+								<p className="text-xs text-muted-foreground mt-1">
+									0-11 months
+								</p>
+							</div>
+						</div>
+					)}
+
+					{/* Years Section */}
+					<div className={cn("flex-1", effectiveWithMonths && "md:order-1")}>
+						<div className="p-1">
+							{MORTGAGE_TERMS.map((term) => (
+								<button
+									key={term}
+									type="button"
+									onClick={() => handleSelectYear(term)}
+									className={cn(
+										"relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+									)}
+								>
+									{term} years
+									{years === term && <Check className="ml-auto h-4 w-4" />}
+								</button>
+							))}
+						</div>
+						<div className="p-2 border-t">
+							<div className="flex gap-1">
+								<Input
+									type="text"
+									inputMode="numeric"
+									placeholder="Custom"
+									className="h-8"
+									value={customYears}
+									onChange={handleCustomYearsChange}
+									onKeyDown={handleYearsKeyDown}
+								/>
+								<Button
+									size="sm"
+									className="h-8 px-2"
+									onClick={handleCustomYearsSubmit}
+									disabled={
+										!customYears ||
+										!isValidTermYears(Number.parseInt(customYears, 10))
+									}
+								>
+									Go
+								</Button>
+							</div>
+							<p className="text-xs text-muted-foreground mt-1">
+								{MIN_TERM_YEARS}-{MAX_TERM_YEARS} years
+							</p>
+						</div>
+					</div>
 				</div>
 			</PopoverContent>
 		</Popover>

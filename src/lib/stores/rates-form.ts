@@ -1,5 +1,9 @@
 import { atom, computed } from "nanostores";
-import { DEFAULT_BER, type RatesMode } from "@/lib/constants";
+import {
+	DEFAULT_BER,
+	DEFAULT_TERM_MONTHS,
+	type RatesMode,
+} from "@/lib/constants";
 import { parseCurrency } from "@/lib/utils";
 
 export interface RatesInputValues {
@@ -13,13 +17,13 @@ export interface RatesInputValues {
 	currentLender: string;
 }
 
-// Default form values
+// Default form values (mortgageTerm stored as total months)
 export const DEFAULT_VALUES: RatesInputValues = {
 	mode: "first-mortgage",
 	propertyValue: "",
 	mortgageAmount: "",
 	monthlyRepayment: "",
-	mortgageTerm: "30",
+	mortgageTerm: String(DEFAULT_TERM_MONTHS),
 	berRating: DEFAULT_BER,
 	buyerType: "ftb",
 	currentLender: "",
@@ -55,14 +59,10 @@ export const $ltv = computed([$property, $mortgage], (property, mortgage) =>
 	property > 0 ? (mortgage / property) * 100 : 0,
 );
 
+// mortgageTerm is stored as total months
 export const $mortgageTerm = computed(
 	$formValues,
-	(values) => Number.parseInt(values.mortgageTerm, 10) || 30,
-);
-
-export const $mortgageTermMonths = computed(
-	$mortgageTerm,
-	(years) => years * 12,
+	(values) => Number.parseInt(values.mortgageTerm, 10) || DEFAULT_TERM_MONTHS,
 );
 
 export const $berRating = computed($formValues, (values) => values.berRating);

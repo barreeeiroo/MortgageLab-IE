@@ -102,28 +102,27 @@ export function findVariableRate(
  * @param rate - The fixed rate
  * @param variableRate - The variable rate to use after fixed term
  * @param principal - Original loan amount
- * @param totalTermYears - Total mortgage term in years
+ * @param totalTermMonths - Total mortgage term in months
  * @returns Monthly payment for the follow-on period, or undefined if not applicable
  */
 export function calculateMonthlyFollowOn(
 	rate: MortgageRate,
 	variableRate: MortgageRate | undefined,
 	principal: number,
-	totalTermYears: number,
+	totalTermMonths: number,
 ): number | undefined {
 	if (rate.type !== "fixed" || !rate.fixedTerm) return undefined;
 	if (!variableRate) return undefined;
 
-	const totalMonths = totalTermYears * 12;
 	const fixedMonths = rate.fixedTerm * 12;
-	const remainingMonths = totalMonths - fixedMonths;
+	const remainingMonths = totalTermMonths - fixedMonths;
 
 	if (remainingMonths <= 0) return undefined;
 
 	const remainingBalance = calculateRemainingBalance(
 		principal,
 		rate.rate,
-		totalMonths,
+		totalTermMonths,
 		fixedMonths,
 	);
 
@@ -141,22 +140,20 @@ export function calculateMonthlyFollowOn(
  * @param rate - The mortgage rate
  * @param monthlyPayment - Monthly payment during initial period
  * @param monthlyFollowOn - Monthly payment during follow-on period (for fixed rates)
- * @param totalTermYears - Total mortgage term in years
+ * @param totalTermMonths - Total mortgage term in months
  * @returns Total amount repayable over the full term
  */
 export function calculateTotalRepayable(
 	rate: MortgageRate,
 	monthlyPayment: number,
 	monthlyFollowOn: number | undefined,
-	totalTermYears: number,
+	totalTermMonths: number,
 ): number {
-	const totalMonths = totalTermYears * 12;
-
 	if (rate.type === "fixed" && rate.fixedTerm && monthlyFollowOn) {
 		const fixedMonths = rate.fixedTerm * 12;
-		const remainingMonths = totalMonths - fixedMonths;
+		const remainingMonths = totalTermMonths - fixedMonths;
 		return monthlyPayment * fixedMonths + monthlyFollowOn * remainingMonths;
 	}
 
-	return monthlyPayment * totalMonths;
+	return monthlyPayment * totalTermMonths;
 }

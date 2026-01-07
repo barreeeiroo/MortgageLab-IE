@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { BerRating } from "@/lib/constants";
 import type { SimulationCompleteness } from "@/lib/stores/simulate/simulate-calculations";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatTermDisplay } from "@/lib/utils";
 
 interface SimulateHeaderProps {
 	hasRequiredData: boolean;
@@ -27,16 +27,6 @@ interface SimulateHeaderProps {
 	completeness: SimulationCompleteness;
 	onReset: () => void;
 	onShare: () => Promise<boolean>;
-}
-
-// Format term in months as "X years" or "X years Y months"
-function formatTermDisplay(months: number): string {
-	const years = Math.floor(months / 12);
-	const remainingMonths = months % 12;
-	if (remainingMonths === 0) {
-		return `${years} years`;
-	}
-	return `${years}y ${remainingMonths}m`;
 }
 
 export function SimulateHeader({

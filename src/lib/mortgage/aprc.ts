@@ -13,8 +13,8 @@ import { calculateMonthlyPayment, calculateRemainingBalance } from "./payments";
 export interface AprcConfig {
 	/** Loan amount used for APRC calculation (e.g., €100,000 or €250,000) */
 	loanAmount: number;
-	/** Total mortgage term in years (typically 20) */
-	termYears: number;
+	/** Total mortgage term in months (e.g., 240 for 20 years) */
+	termMonths: number;
 	/** Valuation fee paid upfront (deducted from loan) */
 	valuationFee: number;
 	/** Security release fee paid at end of loan term */
@@ -40,7 +40,7 @@ export function calculateAprc(
 	followOnRate: number,
 	config: AprcConfig,
 ): number {
-	const totalMonths = config.termYears * 12;
+	const totalMonths = config.termMonths;
 	const variableMonths = totalMonths - fixedTermMonths;
 
 	// Calculate payment schedule (rounded to cents as in practice)
@@ -128,18 +128,17 @@ export function calculateAprc(
  * Useful when lenders don't publicly disclose their SVR but provide APRC figures.
  *
  * @param fixedRate - The fixed interest rate as a percentage
- * @param fixedTermYears - Duration of fixed rate period in years
+ * @param fixedTermMonths - Duration of fixed rate period in months
  * @param observedAprc - The APRC published by the lender
  * @param config - Lender-specific APRC calculation parameters
  * @returns Inferred follow-on rate as a percentage, rounded to 2 decimal places
  */
 export function inferFollowOnRate(
 	fixedRate: number,
-	fixedTermYears: number,
+	fixedTermMonths: number,
 	observedAprc: number,
 	config: AprcConfig,
 ): number {
-	const fixedTermMonths = fixedTermYears * 12;
 	let low = 0.01;
 	let high = 15.0;
 	const tolerance = 0.001;

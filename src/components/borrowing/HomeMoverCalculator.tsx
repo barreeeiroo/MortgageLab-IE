@@ -528,7 +528,7 @@ export function HomeMoverCalculator() {
 											result.mortgageAmount,
 										).toString(),
 										monthlyRepayment: "",
-										mortgageTerm: result.mortgageTerm.toString(),
+										mortgageTerm: (result.mortgageTerm * 12).toString(),
 										berRating: result.berRating,
 										buyerType: "mover",
 									});

@@ -22,7 +22,7 @@ const BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
 // APRC calculation parameters (per MoCo's disclosure)
 const APRC_CONFIG: AprcConfig = {
 	loanAmount: 250000,
-	termYears: 20,
+	termMonths: 20 * 12,
 	valuationFee: 199,
 	securityReleaseFee: 95,
 };
@@ -118,7 +118,7 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		if (rate.type === "fixed" && rate.fixedTerm && rate.apr) {
 			const svr = inferFollowOnRate(
 				rate.rate,
-				rate.fixedTerm,
+				rate.fixedTerm * 12,
 				rate.apr,
 				APRC_CONFIG,
 			);
@@ -136,7 +136,7 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		console.log(`Inferred median SVR: ${medianSvr}%`);
 
 		// Calculate APRC for variable rate (same rate for entire term)
-		const fullTermMonths = APRC_CONFIG.termYears * 12;
+		const fullTermMonths = APRC_CONFIG.termMonths;
 		const svrAprc = calculateAprc(
 			medianSvr,
 			fullTermMonths,

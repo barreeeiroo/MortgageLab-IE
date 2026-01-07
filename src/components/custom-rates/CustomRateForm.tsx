@@ -42,7 +42,7 @@ const DEFAULT_APRC_CONFIG: Omit<
 	"valuationFee" | "securityReleaseFee"
 > = {
 	loanAmount: 250000,
-	termYears: 20,
+	termMonths: 240,
 };
 
 interface CustomLenderInfo {

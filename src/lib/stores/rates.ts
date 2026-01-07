@@ -108,8 +108,8 @@ export const $filteredRates = computed(
 		})
 			.filter((rate) => {
 				const lender = lenderMap.get(rate.lenderId);
-				const maxTerm = lender?.maxTerm ?? DEFAULT_MAX_TERM;
-				return mortgageTerm <= maxTerm;
+				const maxTermMonths = (lender?.maxTerm ?? DEFAULT_MAX_TERM) * 12;
+				return mortgageTerm <= maxTermMonths;
 			})
 			.sort((a, b) => a.rate - b.rate);
 	},

@@ -47,7 +47,7 @@ export function RatesTableIsland() {
 	const allPerks = useStore($allPerks);
 	const overpaymentPolicies = useStore($overpaymentPolicies);
 	const mortgage = useStore($mortgage);
-	const mortgageTerm = useStore($mortgageTerm);
+	const mortgageTerm = useStore($mortgageTerm); // in months
 	const ltv = useStore($ltv);
 	const inputValues = useStore($formValues);
 

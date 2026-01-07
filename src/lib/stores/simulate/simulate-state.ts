@@ -1,5 +1,5 @@
 import { atom, computed } from "nanostores";
-import { DEFAULT_BER } from "@/lib/constants";
+import { DEFAULT_BER, DEFAULT_TERM_MONTHS } from "@/lib/constants";
 import type {
 	OverpaymentConfig,
 	RatePeriod,
@@ -36,7 +36,7 @@ function getDefaultStartDate(): string {
 // Default input values
 export const DEFAULT_INPUT: SimulateInputValues = {
 	mortgageAmount: 0,
-	mortgageTermMonths: 360, // 30 years
+	mortgageTermMonths: DEFAULT_TERM_MONTHS,
 	propertyValue: 0,
 	startDate: undefined,
 	ber: DEFAULT_BER,

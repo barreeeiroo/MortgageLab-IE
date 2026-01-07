@@ -58,10 +58,9 @@ export function isApplicantTooOld(
 export function calculateMonthlyPayment(
 	principal: number,
 	annualRate: number,
-	years: number,
+	months: number,
 ): number {
 	const monthlyRate = annualRate / 12;
-	const months = years * 12;
 	if (monthlyRate === 0) return principal / months;
 	return (
 		(principal * monthlyRate * (1 + monthlyRate) ** months) /

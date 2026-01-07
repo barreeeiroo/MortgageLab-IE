@@ -88,7 +88,7 @@ interface RatesTableProps {
 	perks: Perk[];
 	overpaymentPolicies: OverpaymentPolicy[];
 	mortgageAmount: number;
-	mortgageTerm: number;
+	mortgageTerm: number; // in months
 	ltv: number;
 	inputValues: RatesInputValues;
 	// Table state (controlled from parent/store)
@@ -965,7 +965,7 @@ export function RatesTable({
 	perks,
 	overpaymentPolicies,
 	mortgageAmount,
-	mortgageTerm,
+	mortgageTerm, // in months
 	ltv,
 	inputValues,
 	sorting,
@@ -1084,7 +1084,7 @@ export function RatesTable({
 				// Calculate LTV after fixed term ends (principal paid down)
 				let followOnLtv = ltv;
 				if (rate.type === "fixed" && rate.fixedTerm) {
-					const totalMonths = mortgageTerm * 12;
+					const totalMonths = mortgageTerm;
 					const fixedMonths = rate.fixedTerm * 12;
 					const remainingBalance = calculateRemainingBalance(
 						mortgageAmount,
@@ -1109,12 +1109,12 @@ export function RatesTable({
 							)
 						: undefined;
 
-				const totalMonths = mortgageTerm * 12;
 				const monthlyPayment = calculateMonthlyPayment(
 					mortgageAmount,
 					rate.rate,
-					totalMonths,
+					mortgageTerm,
 				);
+
 				const monthlyFollowOn = calculateMonthlyFollowOn(
 					rate,
 					followOnRate,
@@ -1147,7 +1147,7 @@ export function RatesTable({
 
 					const aprcConfig: AprcConfig = {
 						loanAmount: mortgageAmount,
-						termYears: mortgageTerm,
+						termMonths: mortgageTerm,
 						valuationFee: aprcFees.valuationFee,
 						securityReleaseFee: aprcFees.securityReleaseFee,
 					};
