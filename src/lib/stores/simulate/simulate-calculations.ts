@@ -342,6 +342,7 @@ export function calculateAmortization(
 	let cumulativeInterest = 0;
 	let cumulativePrincipal = 0;
 	let cumulativeOverpayments = 0;
+	let cumulativeReduceTermOverpayments = 0;
 	let month = 1;
 	const maxMonths = input.mortgageTermMonths;
 
@@ -419,8 +420,11 @@ export function calculateAmortization(
 			lastRatePeriodId !== ratePeriod.id || currentMonthlyPayment === null;
 		if (needsRecalc) {
 			const remainingMonths = maxMonths - month + 1;
+			// For reduce_term: calculate payment using balance as if reduce_term
+			// overpayments hadn't happened, so payments stay higher and term shortens
+			const balanceForPaymentCalc = balance + cumulativeReduceTermOverpayments;
 			currentMonthlyPayment = calculateMonthlyPayment(
-				balance,
+				balanceForPaymentCalc,
 				resolved.rate,
 				remainingMonths,
 			);
@@ -449,6 +453,14 @@ export function calculateAmortization(
 
 		const overpayment = overpaymentResult.amount;
 		appliedOverpayments.push(...overpaymentResult.applied);
+
+		// Track reduce_term overpayments separately for payment recalculation
+		for (const applied of overpaymentResult.applied) {
+			const config = overpaymentConfigs.find((c) => c.id === applied.configId);
+			if (config?.effect === "reduce_term") {
+				cumulativeReduceTermOverpayments += applied.amount;
+			}
+		}
 
 		// Track allowance usage
 		yearlyOverpaymentsByPeriod.set(

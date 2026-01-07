@@ -209,32 +209,28 @@ export function SimulateOverpaymentForm({
 						setEffect(v as "reduce_term" | "reduce_payment")
 					}
 				>
-					<SelectTrigger>
+					<SelectTrigger className="w-full">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="reduce_term">
-							<div>
-								<div>Reduce term</div>
-								<div className="text-xs text-muted-foreground">
-									Keep payment, pay off faster
-								</div>
-							</div>
+							<span>
+								Reduce term{" "}
+								<span className="text-muted-foreground">
+									(keep payment, pay off faster)
+								</span>
+							</span>
 						</SelectItem>
 						<SelectItem value="reduce_payment">
-							<div>
-								<div>Reduce payment</div>
-								<div className="text-xs text-muted-foreground">
-									Keep term, lower monthly payment
-								</div>
-							</div>
+							<span>
+								Reduce payment{" "}
+								<span className="text-muted-foreground">
+									(keep term, lower monthly payment)
+								</span>
+							</span>
 						</SelectItem>
 					</SelectContent>
 				</Select>
-				<p className="text-xs text-muted-foreground">
-					During fixed rate periods, overpayments may only reduce the remaining
-					principal for the follow-on rate.
-				</p>
 			</div>
 
 			{/* Label */}
