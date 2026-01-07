@@ -98,6 +98,7 @@ interface RatesTableProps {
 	onColumnFiltersChange: (filters: ColumnFiltersState) => void;
 	columnVisibility: VisibilityState;
 	onColumnVisibilityChange: (visibility: VisibilityState) => void;
+	compactMode: boolean;
 	pagination: { pageIndex: number; pageSize: number };
 	onPaginationChange: (pagination: {
 		pageIndex: number;
@@ -177,6 +178,7 @@ interface ColumnHeaderProps<TData> {
 	title: string;
 	filterOptions?: { label: React.ReactNode; value: string | number }[];
 	align?: "left" | "center" | "right";
+	compact?: boolean;
 }
 
 function ColumnHeader<TData>({
@@ -184,6 +186,7 @@ function ColumnHeader<TData>({
 	title,
 	filterOptions,
 	align = "left",
+	compact = false,
 }: ColumnHeaderProps<TData>) {
 	const selectedValues = new Set(
 		(column.getFilterValue() as (string | number)[]) ?? [],
@@ -201,7 +204,7 @@ function ColumnHeader<TData>({
 			)}
 		>
 			<span className="px-2 text-sm font-medium">{title}</span>
-			{canSort && (
+			{!compact && canSort && (
 				<Button
 					variant="ghost"
 					size="sm"
@@ -211,7 +214,7 @@ function ColumnHeader<TData>({
 					<SortIcon isSorted={isSorted} />
 				</Button>
 			)}
-			{filterOptions && (
+			{!compact && filterOptions && (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button
@@ -276,10 +279,12 @@ function SortableHeader<TData>({
 	column,
 	title,
 	align = "left",
+	compact = false,
 }: {
 	column: Column<TData>;
 	title: string;
 	align?: "left" | "right";
+	compact?: boolean;
 }) {
 	const isSorted = column.getIsSorted();
 
@@ -291,14 +296,16 @@ function SortableHeader<TData>({
 			)}
 		>
 			<span className="px-2 text-sm font-medium">{title}</span>
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={() => column.toggleSorting(isSorted === "asc")}
-				className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
-			>
-				<SortIcon isSorted={isSorted} />
-			</Button>
+			{!compact && (
+				<Button
+					variant="ghost"
+					size="sm"
+					onClick={() => column.toggleSorting(isSorted === "asc")}
+					className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+				>
+					<SortIcon isSorted={isSorted} />
+				</Button>
+			)}
 		</div>
 	);
 }
@@ -320,6 +327,7 @@ function createColumns(
 	inputValues: RatesInputValues,
 	onProductClick: (rate: RateRow) => void,
 	compareContext: CompareContext,
+	compactMode: boolean,
 ): ColumnDef<RateRow>[] {
 	const availableFixedTerms = getAvailableFixedTerms(rates);
 	const periodOptions = availableFixedTerms.map((term) => ({
@@ -343,6 +351,7 @@ function createColumns(
 					column={column}
 					title="Lender"
 					filterOptions={lenderOptions}
+					compact={compactMode}
 				/>
 			),
 			cell: ({ row }) => {
@@ -416,6 +425,7 @@ function createColumns(
 					title="Perks"
 					filterOptions={perkOptions}
 					align="center"
+					compact={compactMode}
 				/>
 			),
 			cell: ({ row }) => {
@@ -462,6 +472,7 @@ function createColumns(
 					title="Type"
 					filterOptions={typeOptions}
 					align="center"
+					compact={compactMode}
 				/>
 			),
 			cell: ({ row }) => (
@@ -478,6 +489,7 @@ function createColumns(
 					title="Period"
 					filterOptions={periodOptions}
 					align="center"
+					compact={compactMode}
 				/>
 			),
 			cell: ({ row }) => (
@@ -497,7 +509,12 @@ function createColumns(
 		{
 			accessorKey: "rate",
 			header: ({ column }) => (
-				<SortableHeader column={column} title="Rate" align="right" />
+				<SortableHeader
+					column={column}
+					title="Rate"
+					align="right"
+					compact={compactMode}
+				/>
 			),
 			cell: ({ row }) => (
 				<div className="text-right font-medium">
@@ -512,15 +529,17 @@ function createColumns(
 				return (
 					<div className="flex items-center gap-0.5 justify-end">
 						<span className="px-2 text-sm font-medium">APRC</span>
-						<GlossaryTermTooltip termId="aprc" />
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => column.toggleSorting(isSorted === "asc")}
-							className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
-						>
-							<SortIcon isSorted={isSorted} />
-						</Button>
+						{!compactMode && <GlossaryTermTooltip termId="aprc" />}
+						{!compactMode && (
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => column.toggleSorting(isSorted === "asc")}
+								className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+							>
+								<SortIcon isSorted={isSorted} />
+							</Button>
+						)}
 					</div>
 				);
 			},
@@ -562,7 +581,12 @@ function createColumns(
 		{
 			accessorKey: "monthlyPayment",
 			header: ({ column }) => (
-				<SortableHeader column={column} title="Monthly" align="right" />
+				<SortableHeader
+					column={column}
+					title="Monthly"
+					align="right"
+					compact={compactMode}
+				/>
 			),
 			cell: ({ row }) => {
 				const isRemortgage = inputValues.mode === "remortgage";
@@ -575,7 +599,7 @@ function createColumns(
 				return (
 					<div className="text-right">
 						<p className="font-medium">
-							{formatCurrency(row.original.monthlyPayment, { showCents: true })}
+							{formatCurrency(row.original.monthlyPayment)}
 						</p>
 						{delta !== null && delta !== 0 && (
 							<p
@@ -589,7 +613,7 @@ function createColumns(
 								) : (
 									<ChevronUp className="h-3 w-3" />
 								)}
-								{formatCurrency(Math.abs(delta), { showCents: true })}
+								{formatCurrency(Math.abs(delta))}
 							</p>
 						)}
 					</div>
@@ -602,7 +626,7 @@ function createColumns(
 			header: () => (
 				<div className="flex items-center gap-0.5">
 					<span className="px-2 text-sm font-medium">Follow-On Product</span>
-					<GlossaryTermTooltip termId="followOnProduct" />
+					{!compactMode && <GlossaryTermTooltip termId="followOnProduct" />}
 				</div>
 			),
 			cell: ({ row }) => {
@@ -696,15 +720,17 @@ function createColumns(
 				return (
 					<div className="flex items-center gap-0.5 justify-end">
 						<span className="px-2 text-sm font-medium">Follow-On Monthly</span>
-						<GlossaryTermTooltip termId="followOnMonthly" />
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => column.toggleSorting(isSorted === "asc")}
-							className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
-						>
-							<SortIcon isSorted={isSorted} />
-						</Button>
+						{!compactMode && <GlossaryTermTooltip termId="followOnMonthly" />}
+						{!compactMode && (
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => column.toggleSorting(isSorted === "asc")}
+								className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+							>
+								<SortIcon isSorted={isSorted} />
+							</Button>
+						)}
 					</div>
 				);
 			},
@@ -719,11 +745,7 @@ function createColumns(
 
 				return (
 					<div className="text-right text-muted-foreground">
-						<p>
-							{monthlyFollowOn
-								? formatCurrency(monthlyFollowOn, { showCents: true })
-								: "—"}
-						</p>
+						<p>{monthlyFollowOn ? formatCurrency(monthlyFollowOn) : "—"}</p>
 						{delta !== null && delta !== 0 && (
 							<p
 								className={cn(
@@ -736,7 +758,7 @@ function createColumns(
 								) : (
 									<ChevronUp className="h-3 w-3" />
 								)}
-								{formatCurrency(Math.abs(delta), { showCents: true })}
+								{formatCurrency(Math.abs(delta))}
 							</p>
 						)}
 					</div>
@@ -755,15 +777,17 @@ function createColumns(
 				return (
 					<div className="flex items-center gap-0.5 justify-end">
 						<span className="px-2 text-sm font-medium">Total Repayable</span>
-						<GlossaryTermTooltip termId="totalRepayable" />
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => column.toggleSorting(isSorted === "asc")}
-							className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
-						>
-							<SortIcon isSorted={isSorted} />
-						</Button>
+						{!compactMode && <GlossaryTermTooltip termId="totalRepayable" />}
+						{!compactMode && (
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => column.toggleSorting(isSorted === "asc")}
+								className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+							>
+								<SortIcon isSorted={isSorted} />
+							</Button>
+						)}
 					</div>
 				);
 			},
@@ -772,7 +796,7 @@ function createColumns(
 				return (
 					<div className="flex items-center justify-end gap-1">
 						{row.original.totalRepayable
-							? formatCurrency(row.original.totalRepayable, { showCents: true })
+							? formatCurrency(row.original.totalRepayable)
 							: "—"}
 						{hasWarning && (
 							<Tooltip>
@@ -807,15 +831,17 @@ function createColumns(
 				return (
 					<div className="flex items-center gap-0.5 justify-end">
 						<span className="px-2 text-sm font-medium">Cost of Credit %</span>
-						<GlossaryTermTooltip termId="costOfCredit" />
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => column.toggleSorting(isSorted === "asc")}
-							className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
-						>
-							<SortIcon isSorted={isSorted} />
-						</Button>
+						{!compactMode && <GlossaryTermTooltip termId="costOfCredit" />}
+						{!compactMode && (
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => column.toggleSorting(isSorted === "asc")}
+								className={cn("h-8 w-8 p-0", isSorted && "text-primary")}
+							>
+								<SortIcon isSorted={isSorted} />
+							</Button>
+						)}
 					</div>
 				);
 			},
@@ -948,6 +974,7 @@ export function RatesTable({
 	onColumnFiltersChange,
 	columnVisibility,
 	onColumnVisibilityChange,
+	compactMode,
 	pagination,
 	onPaginationChange,
 }: RatesTableProps) {
@@ -1038,8 +1065,17 @@ export function RatesTable({
 				inputValues,
 				handleProductClick,
 				compareContext,
+				compactMode,
 			),
-		[rates, lenders, perks, inputValues, handleProductClick, compareContext],
+		[
+			rates,
+			lenders,
+			perks,
+			inputValues,
+			handleProductClick,
+			compareContext,
+			compactMode,
+		],
 	);
 
 	const data = useMemo<RateRow[]>(

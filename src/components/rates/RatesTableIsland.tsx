@@ -4,6 +4,7 @@ import {
 	$allPerks,
 	$columnFilters,
 	$columnVisibility,
+	$compactMode,
 	$customRates,
 	$error,
 	$filteredCustomRates,
@@ -54,6 +55,7 @@ export function RatesTableIsland() {
 	const sorting = useStore($sorting);
 	const columnFilters = useStore($columnFilters);
 	const columnVisibility = useStore($columnVisibility);
+	const compactMode = useStore($compactMode);
 	const pageSize = useStore($pageSize);
 	const pageIndex = useStore($pageIndex);
 
@@ -130,6 +132,7 @@ export function RatesTableIsland() {
 				onColumnFiltersChange={handleColumnFiltersChange}
 				columnVisibility={columnVisibility}
 				onColumnVisibilityChange={setColumnVisibility}
+				compactMode={compactMode}
 				pagination={{ pageIndex, pageSize }}
 				onPaginationChange={handlePaginationChange}
 			/>

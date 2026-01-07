@@ -11,6 +11,7 @@ export const TABLE_STORAGE_KEYS = {
 	sorting: "rates-table-sorting",
 	filters: "rates-table-filters",
 	pageSize: "rates-table-page-size",
+	compactMode: "rates-table-compact",
 } as const;
 
 // Column labels for the visibility toggle
@@ -67,6 +68,7 @@ export const $sorting = atom<SortingState>(DEFAULT_SORTING);
 export const $columnFilters = atom<ColumnFiltersState>(DEFAULT_FILTERS);
 export const $pageSize = atom<number>(DEFAULT_PAGE_SIZE);
 export const $pageIndex = atom<number>(0);
+export const $compactMode = atom<boolean>(false);
 
 // Track if table state has been initialized from localStorage
 let tableStateInitialized = false;
@@ -95,6 +97,13 @@ export function initializeTableState(): void {
 		const storedPageSize = localStorage.getItem(TABLE_STORAGE_KEYS.pageSize);
 		if (storedPageSize) {
 			$pageSize.set(JSON.parse(storedPageSize));
+		}
+
+		const storedCompactMode = localStorage.getItem(
+			TABLE_STORAGE_KEYS.compactMode,
+		);
+		if (storedCompactMode) {
+			$compactMode.set(JSON.parse(storedCompactMode));
 		}
 	} catch {
 		// Ignore parse errors, use defaults
@@ -145,4 +154,18 @@ export function setPageSize(size: number): void {
 
 export function setPageIndex(index: number): void {
 	$pageIndex.set(index);
+}
+
+export function setCompactMode(compact: boolean): void {
+	$compactMode.set(compact);
+	if (typeof window !== "undefined") {
+		localStorage.setItem(
+			TABLE_STORAGE_KEYS.compactMode,
+			JSON.stringify(compact),
+		);
+	}
+}
+
+export function toggleCompactMode(): void {
+	setCompactMode(!$compactMode.get());
 }

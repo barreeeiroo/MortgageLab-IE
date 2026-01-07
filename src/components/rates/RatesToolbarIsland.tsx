@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import {
 	$columnFilters,
 	$columnVisibility,
+	$compactMode,
 	$formValues,
 	$isFormValid,
 	$isLoading,
@@ -13,6 +14,7 @@ import {
 	initializeStore,
 	initializeTableState,
 	setColumnVisibility,
+	setCompactMode,
 } from "@/lib/stores";
 import { RatesToolbar } from "./RatesToolbar";
 
@@ -25,6 +27,7 @@ export function RatesToolbarIsland() {
 	const columnVisibility = useStore($columnVisibility);
 	const columnFilters = useStore($columnFilters);
 	const sorting = useStore($sorting);
+	const compactMode = useStore($compactMode);
 
 	// Initialize stores on mount
 	useEffect(() => {
@@ -42,7 +45,9 @@ export function RatesToolbarIsland() {
 			columnVisibility={columnVisibility}
 			columnFilters={columnFilters}
 			sorting={sorting}
+			compactMode={compactMode}
 			onColumnVisibilityChange={setColumnVisibility}
+			onCompactModeChange={setCompactMode}
 			disabled={isLoading || !isFormValid}
 		/>
 	);

@@ -98,19 +98,15 @@ function getComparisonValue(rate: RateRow, key: ComparisonKey): string {
 		case "aprc":
 			return rate.indicativeAprc ? `${rate.indicativeAprc.toFixed(2)}%` : "—";
 		case "monthly":
-			return formatCurrency(rate.monthlyPayment, { showCents: true });
+			return formatCurrency(rate.monthlyPayment);
 		case "followOnProduct":
 			return ""; // Handled specially in render
 		case "followOnRate":
 			return rate.followOnRate ? `${rate.followOnRate.rate.toFixed(2)}%` : "—";
 		case "followOnMonthly":
-			return rate.monthlyFollowOn
-				? formatCurrency(rate.monthlyFollowOn, { showCents: true })
-				: "—";
+			return rate.monthlyFollowOn ? formatCurrency(rate.monthlyFollowOn) : "—";
 		case "totalRepayable":
-			return rate.totalRepayable
-				? formatCurrency(rate.totalRepayable, { showCents: true })
-				: "—";
+			return rate.totalRepayable ? formatCurrency(rate.totalRepayable) : "—";
 		case "costOfCredit":
 			return rate.costOfCreditPct !== undefined
 				? `${rate.costOfCreditPct.toFixed(1)}%`
