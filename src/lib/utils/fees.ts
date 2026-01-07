@@ -23,3 +23,6 @@ export function calculateStampDuty(propertyValue: number): number {
 
 // Estimated legal fees (solicitor, searches, registration, etc.)
 export const ESTIMATED_LEGAL_FEES = 4000;
+
+// Estimated legal fees for remortgage/switching (includes all outlays)
+export const ESTIMATED_REMORTGAGE_LEGAL_FEES = 1350;

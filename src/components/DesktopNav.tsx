@@ -1,3 +1,13 @@
+import {
+	ArrowRightLeft,
+	Building,
+	Calculator,
+	Home,
+	LineChart,
+	RefreshCcw,
+	Scale,
+	TrendingUp,
+} from "lucide-react";
 import { NAV_ITEMS } from "../lib/constants";
 import { cn, getPath } from "../lib/utils";
 import {
@@ -9,6 +19,17 @@ import {
 	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
+
+const iconMap = {
+	ArrowRightLeft,
+	Building,
+	Calculator,
+	Home,
+	LineChart,
+	RefreshCcw,
+	Scale,
+	TrendingUp,
+} as const;
 
 interface DesktopNavProps {
 	currentPath: string;
@@ -35,6 +56,9 @@ export function DesktopNav({ currentPath }: DesktopNavProps) {
 							)
 						: isPathActive(currentPath, item.href);
 
+					const Icon =
+						"icon" in item ? iconMap[item.icon as keyof typeof iconMap] : null;
+
 					return (
 						<NavigationMenuItem key={item.label}>
 							{hasChildren ? (
@@ -44,20 +68,38 @@ export function DesktopNav({ currentPath }: DesktopNavProps) {
 											isActive && "bg-accent/50 text-accent-foreground",
 										)}
 									>
-										{item.label}
+										<span className="inline-flex items-center">
+											{Icon && <Icon className="mr-1.5 h-4 w-4" />}
+											{item.label}
+										</span>
 									</NavigationMenuTrigger>
 									<NavigationMenuContent>
 										<ul className="grid w-[280px] gap-1 p-2">
-											{item.children.map((child) => (
-												<li key={child.href}>
-													<NavigationMenuLink
-														asChild
-														data-active={isPathActive(currentPath, child.href)}
-													>
-														<a href={getPath(child.href)}>{child.label}</a>
-													</NavigationMenuLink>
-												</li>
-											))}
+											{item.children.map((child) => {
+												const ChildIcon =
+													"icon" in child
+														? iconMap[child.icon as keyof typeof iconMap]
+														: null;
+												return (
+													<li key={child.href}>
+														<NavigationMenuLink
+															asChild
+															data-active={isPathActive(
+																currentPath,
+																child.href,
+															)}
+															className="flex-row items-center gap-2"
+														>
+															<a href={getPath(child.href)}>
+																{ChildIcon && (
+																	<ChildIcon className="h-4 w-4 text-muted-foreground" />
+																)}
+																{child.label}
+															</a>
+														</NavigationMenuLink>
+													</li>
+												);
+											})}
 										</ul>
 									</NavigationMenuContent>
 								</>
@@ -67,7 +109,12 @@ export function DesktopNav({ currentPath }: DesktopNavProps) {
 									data-active={isActive}
 									className={navigationMenuTriggerStyle()}
 								>
-									<a href={getPath(item.href)}>{item.label}</a>
+									<a href={getPath(item.href)}>
+										<span className="inline-flex items-center">
+											{Icon && <Icon className="mr-1.5 h-4 w-4" />}
+											{item.label}
+										</span>
+									</a>
 								</NavigationMenuLink>
 							)}
 						</NavigationMenuItem>

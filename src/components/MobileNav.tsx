@@ -1,4 +1,14 @@
-import { Menu } from "lucide-react";
+import {
+	ArrowRightLeft,
+	Building,
+	Calculator,
+	Home,
+	LineChart,
+	Menu,
+	RefreshCcw,
+	Scale,
+	TrendingUp,
+} from "lucide-react";
 import { useState } from "react";
 import { NAV_ITEMS } from "../lib/constants";
 import { cn, getPath } from "../lib/utils";
@@ -11,6 +21,17 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "./ui/sheet";
+
+const iconMap = {
+	ArrowRightLeft,
+	Building,
+	Calculator,
+	Home,
+	LineChart,
+	RefreshCcw,
+	Scale,
+	TrendingUp,
+} as const;
 
 interface MobileNavProps {
 	logoLight: string;
@@ -62,26 +83,37 @@ export function MobileNav({
 					</SheetTitle>
 				</SheetHeader>
 				<nav className="flex flex-col gap-1 px-2">
-					{NAV_ITEMS.map((item) =>
-						"children" in item ? (
+					{NAV_ITEMS.map((item) => {
+						const Icon =
+							"icon" in item
+								? iconMap[item.icon as keyof typeof iconMap]
+								: null;
+
+						return "children" in item ? (
 							<div key={item.label} className="flex flex-col">
-								<span className="px-3 py-2 text-sm font-medium text-foreground">
+								<span className="px-3 py-2 text-sm font-medium text-foreground flex items-center gap-2">
+									{Icon && <Icon className="h-4 w-4" />}
 									{item.label}
 								</span>
 								<div className="flex flex-col pl-3">
 									{item.children.map((child) => {
 										const isActive = isPathActive(currentPath, child.href);
+										const ChildIcon =
+											"icon" in child
+												? iconMap[child.icon as keyof typeof iconMap]
+												: null;
 										return (
 											<SheetClose asChild key={child.href}>
 												<a
 													href={getPath(child.href)}
 													className={cn(
-														"px-3 py-2 text-sm rounded-md transition-colors",
+														"px-3 py-2 text-sm rounded-md transition-colors flex items-center gap-2",
 														isActive
 															? "text-foreground bg-accent/50 font-medium"
 															: "text-muted-foreground hover:text-foreground hover:bg-accent",
 													)}
 												>
+													{ChildIcon && <ChildIcon className="h-4 w-4" />}
 													{child.label}
 												</a>
 											</SheetClose>
@@ -94,17 +126,18 @@ export function MobileNav({
 								<a
 									href={getPath(item.href)}
 									className={cn(
-										"px-3 py-2 text-sm rounded-md transition-colors",
+										"px-3 py-2 text-sm rounded-md transition-colors flex items-center gap-2",
 										isPathActive(currentPath, item.href)
 											? "text-foreground bg-accent/50 font-medium"
 											: "text-muted-foreground hover:text-foreground hover:bg-accent",
 									)}
 								>
+									{Icon && <Icon className="h-4 w-4" />}
 									{item.label}
 								</a>
 							</SheetClose>
-						),
-					)}
+						);
+					})}
 					<SheetClose asChild>
 						<a
 							href={getPath("/glossary")}

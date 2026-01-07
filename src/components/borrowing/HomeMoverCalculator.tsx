@@ -514,7 +514,7 @@ export function HomeMoverCalculator() {
 						)}
 					</AlertDialogBody>
 					<AlertDialogFooter className="sm:justify-between">
-						<ShareButton onShare={handleShare} />
+						<ShareButton size="default" onShare={handleShare} />
 						<div className="flex flex-col-reverse gap-2 sm:flex-row">
 							<AlertDialogCancel>Close</AlertDialogCancel>
 							<AlertDialogAction

@@ -7,14 +7,45 @@ export const SITE = {
 export const NAV_ITEMS = [
 	{
 		label: "Affordability",
+		href: "/affordability",
+		icon: "Calculator",
 		children: [
-			{ label: "First Time Buyer", href: "/affordability/first-time-buyer" },
-			{ label: "Home Mover", href: "/affordability/home-mover" },
-			{ label: "Buy to Let", href: "/affordability/buy-to-let" },
+			{
+				label: "First Time Buyer",
+				href: "/affordability/first-time-buyer",
+				icon: "Home",
+			},
+			{
+				label: "Home Mover",
+				href: "/affordability/home-mover",
+				icon: "ArrowRightLeft",
+			},
+			{
+				label: "Buy to Let",
+				href: "/affordability/buy-to-let",
+				icon: "Building",
+			},
 		],
 	},
-	{ label: "Rates", href: "/rates" },
-	{ label: "Simulator", href: "/simulate" },
+	{
+		label: "Breakeven",
+		href: "/breakeven",
+		icon: "Scale",
+		children: [
+			{
+				label: "Rent vs Buy",
+				href: "/breakeven/rent-vs-buy",
+				icon: "Scale",
+			},
+			{
+				label: "Remortgage",
+				href: "/breakeven/remortgage",
+				icon: "RefreshCcw",
+			},
+		],
+	},
+	{ label: "Rates", href: "/rates", icon: "TrendingUp" },
+	{ label: "Simulator", href: "/simulate", icon: "LineChart" },
 ] as const;
 
 export const AUTHOR = {

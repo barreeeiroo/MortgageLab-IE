@@ -1,6 +1,6 @@
 import { Check, Share2 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button, type ButtonProps } from "./ui/button";
 
 interface ShareButtonProps {
 	/** Function to call when share is clicked. Should return true on success. */
@@ -11,6 +11,8 @@ interface ShareButtonProps {
 	responsive?: boolean;
 	/** Additional class names for the button. */
 	className?: string;
+	/** Button size. Defaults to "sm". */
+	size?: ButtonProps["size"];
 }
 
 /**
@@ -21,6 +23,7 @@ export function ShareButton({
 	label = "Share",
 	responsive = false,
 	className,
+	size = "sm",
 }: ShareButtonProps) {
 	const [copied, setCopied] = useState(false);
 
@@ -35,7 +38,7 @@ export function ShareButton({
 	return (
 		<Button
 			variant="outline"
-			size="sm"
+			size={size}
 			className={`gap-1.5 ${className ?? ""}`}
 			onClick={handleClick}
 		>
