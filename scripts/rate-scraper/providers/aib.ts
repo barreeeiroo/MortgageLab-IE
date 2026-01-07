@@ -13,7 +13,8 @@ const LENDER_ID = "aib";
 const RATES_URL =
 	"https://aib.ie/our-products/mortgages/mortgage-interest-rates";
 
-const PDH_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
+const PDH_NEW_BUYER_TYPES: BuyerType[] = ["ftb", "mover"];
+const PDH_SWITCHER_BUYER_TYPES: BuyerType[] = ["switcher-pdh"];
 const BTL_BUYER_TYPES: BuyerType[] = ["btl", "switcher-btl"];
 
 interface ParsedRow {
@@ -114,7 +115,6 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 				const isGreen = parsed.isGreen || isGreenSection;
 				const isGreenA = parsed.isGreenA;
 				const isHighValue = parsed.isHighValue || isHighValueSection;
-				const buyerTypes = isBtl ? BTL_BUYER_TYPES : PDH_BUYER_TYPES;
 
 				const idParts = [LENDER_ID];
 				if (isBtl) idParts.push("btl");
@@ -157,23 +157,63 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 					berEligible = GREEN_BER_RATINGS;
 				}
 
-				const mortgageRate: MortgageRate = {
-					id: idParts.join("-"),
-					name: nameParts.join(" ") || parsed.name,
-					lenderId: LENDER_ID,
-					type: parsed.isVariable ? "variable" : "fixed",
-					rate: parsed.rate,
-					apr: parsed.apr,
-					fixedTerm: parsed.isVariable ? undefined : parsed.term,
-					minLtv: parsed.minLtv,
-					maxLtv: isBtl ? 70 : parsed.maxLtv,
-					minLoan: isHighValue ? 250000 : undefined,
-					buyerTypes,
-					berEligible,
-					perks: !isBtl ? ["cashback-2pct"] : [],
-				};
+				const baseId = idParts.join("-");
+				const baseName = nameParts.join(" ") || parsed.name;
 
-				ratesMap.set(mortgageRate.id, mortgageRate);
+				if (isBtl) {
+					// BTL: single rate for btl and switcher-btl, no perks
+					const mortgageRate: MortgageRate = {
+						id: baseId,
+						name: baseName,
+						lenderId: LENDER_ID,
+						type: parsed.isVariable ? "variable" : "fixed",
+						rate: parsed.rate,
+						apr: parsed.apr,
+						fixedTerm: parsed.isVariable ? undefined : parsed.term,
+						minLtv: parsed.minLtv,
+						maxLtv: 70,
+						minLoan: isHighValue ? 250000 : undefined,
+						buyerTypes: BTL_BUYER_TYPES,
+						berEligible,
+						perks: [],
+					};
+					ratesMap.set(mortgageRate.id, mortgageRate);
+				} else {
+					// PDH: split into FTB/mover (no perks) and switcher (€3k perk)
+					const pdhRate: MortgageRate = {
+						id: baseId,
+						name: baseName,
+						lenderId: LENDER_ID,
+						type: parsed.isVariable ? "variable" : "fixed",
+						rate: parsed.rate,
+						apr: parsed.apr,
+						fixedTerm: parsed.isVariable ? undefined : parsed.term,
+						minLtv: parsed.minLtv,
+						maxLtv: parsed.maxLtv,
+						minLoan: isHighValue ? 250000 : undefined,
+						buyerTypes: PDH_NEW_BUYER_TYPES,
+						berEligible,
+						perks: [],
+					};
+					ratesMap.set(pdhRate.id, pdhRate);
+
+					const switcherRate: MortgageRate = {
+						id: `${baseId}-switcher`,
+						name: baseName,
+						lenderId: LENDER_ID,
+						type: parsed.isVariable ? "variable" : "fixed",
+						rate: parsed.rate,
+						apr: parsed.apr,
+						fixedTerm: parsed.isVariable ? undefined : parsed.term,
+						minLtv: parsed.minLtv,
+						maxLtv: parsed.maxLtv,
+						minLoan: isHighValue ? 250000 : undefined,
+						buyerTypes: PDH_SWITCHER_BUYER_TYPES,
+						berEligible,
+						perks: ["switcher-3k"],
+					};
+					ratesMap.set(switcherRate.id, switcherRate);
+				}
 			});
 	});
 
