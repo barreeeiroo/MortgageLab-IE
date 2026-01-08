@@ -178,12 +178,13 @@ export function RateTimelineChart({
 					<CartesianGrid strokeDasharray="3 3" vertical={false} />
 					<XAxis
 						dataKey="period"
+						type="number"
+						domain={["dataMin", "dataMax"]}
 						tickLine={false}
 						axisLine={false}
 						tickMargin={8}
 						tickFormatter={xAxisConfig.tickFormatter}
 						ticks={xAxisConfig.ticks}
-						interval="preserveStartEnd"
 					/>
 					{visibility.ltv && (
 						<YAxis

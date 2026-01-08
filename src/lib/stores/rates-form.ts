@@ -11,6 +11,7 @@ export interface RatesInputValues {
 	propertyValue: string;
 	mortgageAmount: string;
 	monthlyRepayment: string;
+	/** Total mortgage term in months (e.g., "360" for 30 years) */
 	mortgageTerm: string;
 	berRating: string;
 	buyerType: string;
