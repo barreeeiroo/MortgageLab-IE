@@ -1,4 +1,5 @@
 import type { RatesInputValues } from "@/lib/stores/rates-form";
+import type { PropertyType } from "@/lib/utils/fees";
 import { loadFromStorage, saveToStorage } from "./helpers";
 
 // Storage keys
@@ -23,6 +24,9 @@ export interface FtbFormState {
 	// Self Build fields
 	isSelfBuild?: boolean;
 	siteValue?: string;
+	// Property VAT fields
+	propertyType?: PropertyType;
+	priceIncludesVAT?: boolean;
 }
 
 export function loadFtbForm(): Partial<FtbFormState> {
@@ -47,6 +51,9 @@ export interface MoverFormState {
 	// Self Build fields
 	isSelfBuild?: boolean;
 	siteValue?: string;
+	// Property VAT fields
+	propertyType?: PropertyType;
+	priceIncludesVAT?: boolean;
 }
 
 export function loadMoverForm(): Partial<MoverFormState> {
@@ -67,6 +74,9 @@ export interface BtlFormState {
 	deposit: string;
 	expectedRent: string;
 	berRating: string;
+	// Property VAT fields
+	propertyType?: PropertyType;
+	priceIncludesVAT?: boolean;
 }
 
 export function loadBtlForm(): Partial<BtlFormState> {
@@ -105,6 +115,9 @@ export interface RentVsBuyFormState {
 	saleCost: string;
 	serviceCharge: string;
 	serviceChargeIncrease: string;
+	// Property VAT fields
+	propertyType?: PropertyType;
+	priceIncludesVAT?: boolean;
 }
 
 export function loadRentVsBuyForm(): Partial<RentVsBuyFormState> {

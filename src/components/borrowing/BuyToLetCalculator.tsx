@@ -25,8 +25,10 @@ import {
 	isApplicantTooOld,
 	parseCurrency,
 } from "@/lib/utils";
+import type { PropertyType } from "@/lib/utils/fees";
 import { ShareButton } from "../ShareButton";
 import { BerSelector } from "../selectors/BerSelector";
+import { PropertyTypeSelector } from "../selectors/PropertyTypeSelector";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -86,6 +88,10 @@ export function BuyToLetCalculator() {
 	const [showResultDialog, setShowResultDialog] = useState(false);
 	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
 
+	// Property type for VAT calculation
+	const [propertyType, setPropertyType] = useState<PropertyType>("existing");
+	const [priceIncludesVAT, setPriceIncludesVAT] = useState(true);
+
 	// Load from shared URL or localStorage on mount
 	useEffect(() => {
 		// Check for shared URL first
@@ -104,6 +110,11 @@ export function BuyToLetCalculator() {
 				setDeposit(shared.deposit);
 				setExpectedRent(shared.expectedRent);
 				setBerRating(shared.berRating);
+				// Property type fields
+				if (shared.propertyType) {
+					setPropertyType(shared.propertyType);
+					setPriceIncludesVAT(shared.priceIncludesVAT ?? true);
+				}
 				clearBorrowingShareParam();
 				setShouldAutoCalculate(true);
 				return;
@@ -120,6 +131,10 @@ export function BuyToLetCalculator() {
 		if (saved.deposit) setDeposit(saved.deposit);
 		if (saved.expectedRent) setExpectedRent(saved.expectedRent);
 		if (saved.berRating) setBerRating(saved.berRating);
+		// Property type fields
+		if (saved.propertyType) setPropertyType(saved.propertyType);
+		if (saved.priceIncludesVAT !== undefined)
+			setPriceIncludesVAT(saved.priceIncludesVAT);
 	}, []);
 
 	// Save to localStorage when form changes
@@ -133,6 +148,9 @@ export function BuyToLetCalculator() {
 			deposit,
 			expectedRent,
 			berRating,
+			// Property type fields
+			propertyType,
+			priceIncludesVAT,
 		});
 	}, [
 		applicationType,
@@ -143,6 +161,8 @@ export function BuyToLetCalculator() {
 		deposit,
 		expectedRent,
 		berRating,
+		propertyType,
+		priceIncludesVAT,
 	]);
 
 	const isJoint = applicationType === "joint";
@@ -271,6 +291,11 @@ export function BuyToLetCalculator() {
 			deposit,
 			expectedRent,
 			berRating,
+			// Property type fields (only include if non-default)
+			...(propertyType !== "existing" && {
+				propertyType,
+				priceIncludesVAT,
+			}),
 		};
 		return copyBorrowingShareUrl(state);
 	};
@@ -367,13 +392,21 @@ export function BuyToLetCalculator() {
 							</div>
 						</div>
 
-						<div className="grid gap-4 sm:grid-cols-2">
-							<MortgageTermDisplay maxMortgageTerm={maxMortgageTerm} />
+						<div className="grid gap-4 sm:grid-cols-3">
+							<div className="w-full">
+								<MortgageTermDisplay maxMortgageTerm={maxMortgageTerm} />
+							</div>
 							<BerSelector
 								value={berRating}
 								onChange={setBerRating}
 								id="berRating"
 								label="Expected BER Rating"
+							/>
+							<PropertyTypeSelector
+								value={propertyType}
+								onChange={setPropertyType}
+								priceIncludesVAT={priceIncludesVAT}
+								onPriceIncludesVATChange={setPriceIncludesVAT}
 							/>
 						</div>
 
@@ -438,6 +471,8 @@ export function BuyToLetCalculator() {
 								maxLtv={LTV_LIMITS.BTL}
 								maxLti={BTL_LTI_LIMIT}
 								isConstrained={calculationResult.constrainedBy !== "deposit"}
+								propertyType={propertyType}
+								priceIncludesVAT={priceIncludesVAT}
 								additionalMetrics={
 									<>
 										<div>

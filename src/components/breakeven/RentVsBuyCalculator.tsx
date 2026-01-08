@@ -24,11 +24,17 @@ import {
 	formatCurrencyInput,
 	parseCurrency,
 } from "@/lib/utils";
-import { calculateStampDuty, ESTIMATED_LEGAL_FEES } from "@/lib/utils/fees";
+import {
+	calculatePropertyVAT,
+	calculateStampDuty,
+	ESTIMATED_LEGAL_FEES,
+	type PropertyType,
+} from "@/lib/utils/fees";
 import { RatePicker } from "../rates/RatePicker";
 import { ShareButton } from "../ShareButton";
 import { BerSelector } from "../selectors/BerSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
+import { PropertyTypeSelector } from "../selectors/PropertyTypeSelector";
 import {
 	AlertDialog,
 	AlertDialogBody,
@@ -61,6 +67,10 @@ export function RentVsBuyCalculator() {
 	const [berRating, setBerRating] = useState(DEFAULT_BER);
 	const [currentRent, setCurrentRent] = useState("");
 	const [legalFees, setLegalFees] = useState(ESTIMATED_LEGAL_FEES.toString());
+
+	// Property type for VAT calculation
+	const [propertyType, setPropertyType] = useState<PropertyType>("existing");
+	const [priceIncludesVAT, setPriceIncludesVAT] = useState(true);
 
 	// Advanced options (always visible below calculate)
 	const [rentInflation, setRentInflation] = useState(
@@ -96,6 +106,14 @@ export function RentVsBuyCalculator() {
 	const ltv =
 		propertyValueNum > 0 ? (mortgageAmount / propertyValueNum) * 100 : 0;
 
+	// Calculate property VAT
+	const vatResult = calculatePropertyVAT(
+		propertyValueNum,
+		propertyType,
+		priceIncludesVAT,
+	);
+	const hasVAT = vatResult.vatRate > 0;
+
 	// Load from shared URL or localStorage on mount
 	useEffect(() => {
 		// Check for shared URL first
@@ -118,6 +136,11 @@ export function RentVsBuyCalculator() {
 				if (shared.serviceCharge) setServiceCharge(shared.serviceCharge);
 				if (shared.serviceChargeIncrease)
 					setServiceChargeIncrease(shared.serviceChargeIncrease);
+				// Property type fields
+				if (shared.propertyType) {
+					setPropertyType(shared.propertyType);
+					setPriceIncludesVAT(shared.priceIncludesVAT ?? true);
+				}
 				clearBreakevenShareParam();
 				setShouldAutoCalculate(true);
 				return;
@@ -141,6 +164,10 @@ export function RentVsBuyCalculator() {
 		if (saved.serviceCharge) setServiceCharge(saved.serviceCharge);
 		if (saved.serviceChargeIncrease)
 			setServiceChargeIncrease(saved.serviceChargeIncrease);
+		// Property type fields
+		if (saved.propertyType) setPropertyType(saved.propertyType);
+		if (saved.priceIncludesVAT !== undefined)
+			setPriceIncludesVAT(saved.priceIncludesVAT);
 	}, []);
 
 	// Save to localStorage when form changes
@@ -160,6 +187,9 @@ export function RentVsBuyCalculator() {
 			saleCost,
 			serviceCharge,
 			serviceChargeIncrease,
+			// Property type fields
+			propertyType,
+			priceIncludesVAT,
 		});
 	}, [
 		propertyValue,
@@ -176,6 +206,8 @@ export function RentVsBuyCalculator() {
 		saleCost,
 		serviceCharge,
 		serviceChargeIncrease,
+		propertyType,
+		priceIncludesVAT,
 	]);
 
 	// Validation
@@ -262,6 +294,11 @@ export function RentVsBuyCalculator() {
 			saleCost,
 			serviceCharge,
 			serviceChargeIncrease,
+			// Property type fields (only include if non-default)
+			...(propertyType !== "existing" && {
+				propertyType,
+				priceIncludesVAT,
+			}),
 		};
 		return copyBreakevenShareUrl(state);
 	};
@@ -310,7 +347,11 @@ export function RentVsBuyCalculator() {
 								{hasPropertyValue && (
 									<p className="text-xs text-muted-foreground">
 										Stamp Duty:{" "}
-										{formatCurrency(calculateStampDuty(propertyValueNum))}
+										{formatCurrency(calculateStampDuty(vatResult.netPrice))}
+										{hasVAT &&
+											(priceIncludesVAT
+												? ` (VAT in price: ${formatCurrency(vatResult.vatAmount)})`
+												: ` + VAT: ${formatCurrency(vatResult.vatAmount)}`)}
 									</p>
 								)}
 							</div>
@@ -340,6 +381,14 @@ export function RentVsBuyCalculator() {
 							</div>
 						</div>
 
+						{/* Property Type */}
+						<PropertyTypeSelector
+							value={propertyType}
+							onChange={setPropertyType}
+							priceIncludesVAT={priceIncludesVAT}
+							onPriceIncludesVATChange={setPriceIncludesVAT}
+						/>
+
 						{/* Current Rent and Legal Fees */}
 						<div className="grid gap-4 sm:grid-cols-2">
 							<div className="space-y-2">
@@ -368,7 +417,7 @@ export function RentVsBuyCalculator() {
 									}
 								/>
 								<p className="text-xs text-muted-foreground">
-									Typical: €3,000-€5,000
+									Typical: €3,000-€5,000 (excluding Stamp Duty)
 								</p>
 							</div>
 						</div>

@@ -26,3 +26,70 @@ export const ESTIMATED_LEGAL_FEES = 4000;
 
 // Estimated legal fees for remortgage/switching (includes all outlays)
 export const ESTIMATED_REMORTGAGE_LEGAL_FEES = 1350;
+
+// Property VAT rates in Ireland (2025-2030)
+// New builds: 13.5%, New apartments: 9% (reduced until Dec 2030), Existing: 0%
+export const VAT_RATE_NEW_BUILD = 13.5;
+export const VAT_RATE_NEW_APARTMENT = 9;
+export const VAT_RATE_EXISTING = 0;
+
+export type PropertyType = "existing" | "new-build" | "new-apartment";
+
+export interface PropertyVATResult {
+	vatAmount: number;
+	netPrice: number;
+	grossPrice: number;
+	vatRate: number;
+}
+
+/**
+ * Calculate property VAT based on property type and whether price includes VAT.
+ * - Existing properties: No VAT
+ * - New builds from developers: 13.5% VAT
+ * - New apartments: 9% VAT (reduced rate until Dec 2030)
+ */
+export function calculatePropertyVAT(
+	propertyValue: number,
+	propertyType: PropertyType,
+	priceIncludesVAT: boolean,
+): PropertyVATResult {
+	const vatRate =
+		propertyType === "new-build"
+			? VAT_RATE_NEW_BUILD
+			: propertyType === "new-apartment"
+				? VAT_RATE_NEW_APARTMENT
+				: VAT_RATE_EXISTING;
+
+	if (vatRate === 0 || propertyValue <= 0) {
+		return {
+			vatAmount: 0,
+			netPrice: propertyValue,
+			grossPrice: propertyValue,
+			vatRate: 0,
+		};
+	}
+
+	const rate = vatRate / 100;
+
+	if (priceIncludesVAT) {
+		// Extract VAT from inclusive price
+		const netPrice = propertyValue / (1 + rate);
+		const vatAmount = propertyValue - netPrice;
+		return {
+			vatAmount,
+			netPrice,
+			grossPrice: propertyValue,
+			vatRate,
+		};
+	}
+
+	// Add VAT to exclusive price
+	const vatAmount = propertyValue * rate;
+	const grossPrice = propertyValue + vatAmount;
+	return {
+		vatAmount,
+		netPrice: propertyValue,
+		grossPrice,
+		vatRate,
+	};
+}

@@ -1,4 +1,5 @@
 import type { BerRating } from "@/lib/constants";
+import type { PropertyType } from "@/lib/utils/fees";
 import {
 	clearUrlParam,
 	compressToUrl,
@@ -23,6 +24,9 @@ interface BaseApplicantState {
 	birthDate1: string | null;
 	birthDate2: string | null;
 	berRating: BerRating;
+	// Property VAT fields (optional for backwards compatibility)
+	propertyType?: PropertyType;
+	priceIncludesVAT?: boolean;
 }
 
 // FTB-specific state
@@ -67,6 +71,9 @@ interface CompressedBase {
 	b1: string | null; // birthDate1
 	b2: string | null; // birthDate2
 	br: string; // berRating
+	// Property VAT fields (optional for backwards compatibility)
+	pt?: "e" | "n" | "a"; // propertyType: existing/new-build/new-apartment
+	vi?: "1" | "0"; // priceIncludesVAT (vatInclusive)
 }
 
 interface CompressedFtb extends CompressedBase {
@@ -95,6 +102,20 @@ interface CompressedBtl extends CompressedBase {
 
 type CompressedState = CompressedFtb | CompressedMover | CompressedBtl;
 
+function compressPropertyType(
+	pt: PropertyType | undefined,
+): "e" | "n" | "a" | undefined {
+	if (!pt || pt === "existing") return undefined; // Don't include default
+	return pt === "new-build" ? "n" : "a";
+}
+
+function decompressPropertyType(
+	pt: "e" | "n" | "a" | undefined,
+): PropertyType | undefined {
+	if (!pt) return undefined;
+	return pt === "e" ? "existing" : pt === "n" ? "new-build" : "new-apartment";
+}
+
 function compressState(state: BorrowingShareState): CompressedState {
 	const base = {
 		a: state.applicationType === "sole" ? "s" : "j",
@@ -103,6 +124,12 @@ function compressState(state: BorrowingShareState): CompressedState {
 		b1: state.birthDate1,
 		b2: state.birthDate2,
 		br: state.berRating,
+		// Only include property type fields if non-default
+		...(state.propertyType &&
+			state.propertyType !== "existing" && {
+				pt: compressPropertyType(state.propertyType),
+				vi: state.priceIncludesVAT === false ? "0" : "1",
+			}),
 	} as const;
 
 	switch (state.type) {
@@ -134,6 +161,7 @@ function compressState(state: BorrowingShareState): CompressedState {
 }
 
 function decompressState(compressed: CompressedState): BorrowingShareState {
+	const propertyType = decompressPropertyType(compressed.pt);
 	const base = {
 		applicationType: compressed.a === "s" ? "sole" : "joint",
 		income1: compressed.i1,
@@ -141,6 +169,11 @@ function decompressState(compressed: CompressedState): BorrowingShareState {
 		birthDate1: compressed.b1,
 		birthDate2: compressed.b2,
 		berRating: compressed.br as BerRating,
+		// Include property type fields if present
+		...(propertyType && {
+			propertyType,
+			priceIncludesVAT: compressed.vi !== "0",
+		}),
 	} as const;
 
 	switch (compressed.t) {

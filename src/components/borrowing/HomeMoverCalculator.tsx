@@ -24,8 +24,10 @@ import {
 	isApplicantTooOld,
 	parseCurrency,
 } from "@/lib/utils";
+import type { PropertyType } from "@/lib/utils/fees";
 import { ShareButton } from "../ShareButton";
 import { BerSelector } from "../selectors/BerSelector";
+import { PropertyTypeSelector } from "../selectors/PropertyTypeSelector";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -78,6 +80,10 @@ export function HomeMoverCalculator() {
 	const [isSelfBuild, setIsSelfBuild] = useState(false);
 	const [siteValue, setSiteValue] = useState("");
 
+	// Property type for VAT calculation
+	const [propertyType, setPropertyType] = useState<PropertyType>("existing");
+	const [priceIncludesVAT, setPriceIncludesVAT] = useState(true);
+
 	// Load from shared URL or localStorage on mount
 	useEffect(() => {
 		// Check for shared URL first
@@ -102,6 +108,11 @@ export function HomeMoverCalculator() {
 					setIsSelfBuild(true);
 					setSiteValue(shared.siteValue ?? "");
 				}
+				// Property type fields
+				if (shared.propertyType) {
+					setPropertyType(shared.propertyType);
+					setPriceIncludesVAT(shared.priceIncludesVAT ?? true);
+				}
 				clearBorrowingShareParam();
 				setShouldAutoCalculate(true);
 				return;
@@ -124,6 +135,10 @@ export function HomeMoverCalculator() {
 		// Self Build fields
 		if (saved.isSelfBuild) setIsSelfBuild(saved.isSelfBuild);
 		if (saved.siteValue) setSiteValue(saved.siteValue);
+		// Property type fields
+		if (saved.propertyType) setPropertyType(saved.propertyType);
+		if (saved.priceIncludesVAT !== undefined)
+			setPriceIncludesVAT(saved.priceIncludesVAT);
 	}, []);
 
 	// Save to localStorage when form changes
@@ -141,6 +156,9 @@ export function HomeMoverCalculator() {
 			// Self Build fields
 			isSelfBuild,
 			siteValue,
+			// Property type fields
+			propertyType,
+			priceIncludesVAT,
 		});
 	}, [
 		applicationType,
@@ -154,6 +172,8 @@ export function HomeMoverCalculator() {
 		berRating,
 		isSelfBuild,
 		siteValue,
+		propertyType,
+		priceIncludesVAT,
 	]);
 
 	const isJoint = applicationType === "joint";
@@ -271,6 +291,11 @@ export function HomeMoverCalculator() {
 			...(isSelfBuild && {
 				isSelfBuild: true,
 				siteValue,
+			}),
+			// Property type fields (only include if non-default)
+			...(propertyType !== "existing" && {
+				propertyType,
+				priceIncludesVAT,
 			}),
 		};
 		return copyBorrowingShareUrl(state);
@@ -452,13 +477,21 @@ export function HomeMoverCalculator() {
 							</p>
 						)}
 
-						<div className="grid gap-4 sm:grid-cols-2">
-							<MortgageTermDisplay maxMortgageTerm={maxMortgageTerm} />
+						<div className="grid gap-4 sm:grid-cols-3">
+							<div className="w-full">
+								<MortgageTermDisplay maxMortgageTerm={maxMortgageTerm} />
+							</div>
 							<BerSelector
 								value={berRating}
 								onChange={setBerRating}
 								id="berRating"
 								label="Expected BER Rating"
+							/>
+							<PropertyTypeSelector
+								value={propertyType}
+								onChange={setPropertyType}
+								priceIncludesVAT={priceIncludesVAT}
+								onPriceIncludesVATChange={setPriceIncludesVAT}
 							/>
 						</div>
 
@@ -510,6 +543,8 @@ export function HomeMoverCalculator() {
 								maxLtv={LTV_LIMITS.MOVER}
 								maxLti={MOVER_LTI_LIMIT}
 								isConstrained={calculationResult.hasDepositShortfall}
+								propertyType={propertyType}
+								priceIncludesVAT={priceIncludesVAT}
 							/>
 						)}
 					</AlertDialogBody>

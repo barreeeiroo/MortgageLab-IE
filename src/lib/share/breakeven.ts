@@ -1,4 +1,5 @@
 import type { BerRating } from "@/lib/constants";
+import type { PropertyType } from "@/lib/utils/fees";
 import {
 	clearUrlParam,
 	compressToUrl,
@@ -33,6 +34,9 @@ export interface RentVsBuyShareState {
 	saleCost: string;
 	serviceCharge: string;
 	serviceChargeIncrease: string;
+	// Property VAT fields (optional for backwards compatibility)
+	propertyType?: PropertyType;
+	priceIncludesVAT?: boolean;
 }
 
 // Remortgage Breakeven share state
@@ -76,6 +80,9 @@ interface CompressedRentVsBuy {
 	sc: string; // saleCost
 	sv: string; // serviceCharge
 	si: string; // serviceChargeIncrease
+	// Property VAT fields (optional for backwards compatibility)
+	pt?: "e" | "n" | "a"; // propertyType: existing/new-build/new-apartment
+	vi?: "1" | "0"; // priceIncludesVAT (vatInclusive)
 }
 
 interface CompressedRemortgageBreakeven {
@@ -96,6 +103,20 @@ interface CompressedRemortgageBreakeven {
 
 type CompressedState = CompressedRentVsBuy | CompressedRemortgageBreakeven;
 
+function compressPropertyType(
+	pt: PropertyType | undefined,
+): "e" | "n" | "a" | undefined {
+	if (!pt || pt === "existing") return undefined; // Don't include default
+	return pt === "new-build" ? "n" : "a";
+}
+
+function decompressPropertyType(
+	pt: "e" | "n" | "a" | undefined,
+): PropertyType | undefined {
+	if (!pt) return undefined;
+	return pt === "e" ? "existing" : pt === "n" ? "new-build" : "new-apartment";
+}
+
 function compressState(state: BreakevenShareState): CompressedState {
 	if (state.type === "rvb") {
 		const compressed: CompressedRentVsBuy = {
@@ -115,6 +136,12 @@ function compressState(state: BreakevenShareState): CompressedState {
 			sv: state.serviceCharge,
 			si: state.serviceChargeIncrease,
 		};
+
+		// Only include property type fields if non-default
+		if (state.propertyType && state.propertyType !== "existing") {
+			compressed.pt = compressPropertyType(state.propertyType);
+			compressed.vi = state.priceIncludesVAT === false ? "0" : "1";
+		}
 
 		return compressed;
 	}
@@ -141,6 +168,7 @@ function compressState(state: BreakevenShareState): CompressedState {
 
 function decompressState(compressed: CompressedState): BreakevenShareState {
 	if (compressed.t === "r") {
+		const propertyType = decompressPropertyType(compressed.pt);
 		const state: RentVsBuyShareState = {
 			type: "rvb",
 			propertyValue: compressed.pv,
@@ -158,6 +186,12 @@ function decompressState(compressed: CompressedState): BreakevenShareState {
 			serviceCharge: compressed.sv,
 			serviceChargeIncrease: compressed.si,
 		};
+
+		// Include property type fields if present
+		if (propertyType) {
+			state.propertyType = propertyType;
+			state.priceIncludesVAT = compressed.vi !== "0";
+		}
 
 		return state;
 	}

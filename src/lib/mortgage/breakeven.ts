@@ -3,9 +3,11 @@
  */
 
 import {
+	calculatePropertyVAT,
 	calculateStampDuty,
 	ESTIMATED_LEGAL_FEES,
 	ESTIMATED_REMORTGAGE_LEGAL_FEES,
+	type PropertyType,
 } from "@/lib/utils/fees";
 import { calculateMonthlyPayment } from "./payments";
 
@@ -27,6 +29,9 @@ export interface RentVsBuyInputs {
 	mortgageRate: number; // Annual rate as percentage (e.g., 3.5 for 3.5%)
 	currentMonthlyRent: number;
 	legalFees?: number; // Default ESTIMATED_LEGAL_FEES, user-editable
+	// Property VAT fields
+	propertyType?: PropertyType; // Default "existing"
+	priceIncludesVAT?: boolean; // Default true
 	// Advanced options
 	rentInflationRate?: number; // Default 2%
 	homeAppreciationRate?: number; // Default 2%
@@ -165,6 +170,8 @@ export function calculateRentVsBuyBreakeven(
 		mortgageRate,
 		currentMonthlyRent,
 		legalFees = ESTIMATED_LEGAL_FEES,
+		propertyType = "existing",
+		priceIncludesVAT = true,
 		rentInflationRate = DEFAULT_RENT_INFLATION,
 		homeAppreciationRate = DEFAULT_HOME_APPRECIATION,
 		maintenanceRate = DEFAULT_MAINTENANCE_RATE,
@@ -174,9 +181,21 @@ export function calculateRentVsBuyBreakeven(
 		serviceChargeIncrease = DEFAULT_SERVICE_CHARGE_INCREASE,
 	} = inputs;
 
+	// Calculate VAT to get net price for stamp duty
+	const vatResult = calculatePropertyVAT(
+		propertyValue,
+		propertyType,
+		priceIncludesVAT,
+	);
+	const hasVAT = vatResult.vatRate > 0;
+	const vatAddedToTotal = hasVAT && !priceIncludesVAT;
+
 	const mortgageAmount = propertyValue - deposit;
-	const stampDuty = calculateStampDuty(propertyValue);
-	const purchaseCosts = stampDuty + legalFees;
+	// Stamp duty is calculated on the net (VAT-exclusive) price
+	const stampDuty = calculateStampDuty(vatResult.netPrice);
+	// If VAT is exclusive, it's an additional upfront cost
+	const purchaseCosts =
+		stampDuty + legalFees + (vatAddedToTotal ? vatResult.vatAmount : 0);
 	const upfrontCosts = deposit + purchaseCosts;
 
 	const totalMonths = mortgageTermMonths;
@@ -194,7 +213,8 @@ export function calculateRentVsBuyBreakeven(
 
 	let cumulativeRent = 0;
 	let cumulativeOwnership = upfrontCosts; // Start with upfront costs
-	let homeValue = propertyValue;
+	// Home value starts at gross price (actual property value including VAT if applicable)
+	let homeValue = vatAddedToTotal ? vatResult.grossPrice : propertyValue;
 	let mortgageBalance = mortgageAmount;
 	let breakevenMonth: number | null = null;
 	let breakevenDetails: NetWorthBreakevenDetails | null = null;

@@ -41,7 +41,7 @@ export function MortgageTermDisplay({
 				</TooltipProvider>
 			</div>
 			<Select value={maxMortgageTerm?.toString() ?? ""} disabled>
-				<SelectTrigger id="maxMortgageTerm">
+				<SelectTrigger id="maxMortgageTerm" className="w-full">
 					<SelectValue placeholder="Select date of birth first" />
 				</SelectTrigger>
 				<SelectContent>
