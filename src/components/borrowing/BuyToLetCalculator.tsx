@@ -1,4 +1,4 @@
-import { ExternalLink, Info } from "lucide-react";
+import { ExternalLink, Info, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
@@ -537,6 +537,7 @@ export function BuyToLetCalculator() {
 									window.location.href = getPath("/rates");
 								}}
 							>
+								<TrendingUp className="h-4 w-4" />
 								Compare Mortgage Rates
 							</AlertDialogAction>
 						</div>

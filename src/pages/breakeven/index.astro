@@ -1,5 +1,5 @@
 ---
-import { Home, ArrowRightLeft, ArrowRight } from "lucide-react";
+import { Scale, RefreshCcw, ArrowRight } from "lucide-react";
 import Layout from "@/layouts/Layout.astro";
 import {
 	Card,
@@ -16,14 +16,14 @@ const calculators = [
 		description:
 			"Compare the long-term costs of renting versus buying. Factor in rent increases, home appreciation, and building equity.",
 		href: "/breakeven/rent-vs-buy",
-		Icon: Home,
+		Icon: Scale,
 	},
 	{
 		title: "Remortgage",
 		description:
 			"Calculate how long it takes to recoup switching costs when remortgaging to a lower rate.",
 		href: "/breakeven/remortgage",
-		Icon: ArrowRightLeft,
+		Icon: RefreshCcw,
 	},
 ];
 ---

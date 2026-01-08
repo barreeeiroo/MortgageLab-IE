@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Scale, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
@@ -472,8 +472,8 @@ export function FirstTimeBuyerCalculator() {
 												);
 											}}
 										>
+											<Scale className="h-4 w-4" />
 											Rent vs Buy Calculator
-											<ExternalLink className="h-4 w-4 ml-2" />
 										</Button>
 									</CardContent>
 								</Card>
@@ -503,6 +503,7 @@ export function FirstTimeBuyerCalculator() {
 									window.location.href = getPath("/rates");
 								}}
 							>
+								<TrendingUp className="h-4 w-4" />
 								Compare Mortgage Rates
 							</AlertDialogAction>
 						</div>

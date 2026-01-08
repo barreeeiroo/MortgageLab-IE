@@ -18,9 +18,6 @@ import {
 	// Breakeven
 	Scale,
 	RefreshCcw,
-	// Hero
-	BarChart3,
-	Play,
 	// UI
 	ArrowRight,
 } from "lucide-react";
@@ -172,13 +169,13 @@ const tools = [
 			<div class="flex gap-4 justify-center flex-wrap">
 				<a href={getPath("/rates")}>
 					<Button size="lg" className="gap-2" client:load>
-						<BarChart3 className="h-5 w-5" />
+						<TrendingUp className="h-5 w-5" />
 						Compare Rates
 					</Button>
 				</a>
 				<a href={getPath("/simulate")}>
 					<Button variant="outline" size="lg" className="gap-2" client:load>
-						<Play className="h-5 w-5" />
+						<LineChart className="h-5 w-5" />
 						Try Simulator
 					</Button>
 				</a>
