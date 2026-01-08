@@ -5,7 +5,6 @@ import {
 	$isRemortgage,
 	$ltv,
 	$maxLtv,
-	$monthly,
 	$mortgage,
 	$property,
 } from "./rates-form";
@@ -62,10 +61,10 @@ export const $warningMessage = computed($hasWarning, (hasWarning) =>
 );
 
 export const $isFormValid = computed(
-	[$property, $mortgage, $hasError, $isRemortgage, $monthly, $formValues],
-	(property, mortgage, hasError, isRemortgage, monthly, values) =>
+	[$property, $mortgage, $hasError, $isRemortgage, $formValues],
+	(property, mortgage, hasError, isRemortgage, values) =>
 		property > 0 &&
 		mortgage > 0 &&
 		!hasError &&
-		(!isRemortgage || (monthly > 0 && values.currentLender !== "")),
+		(!isRemortgage || values.currentLender !== ""),
 );

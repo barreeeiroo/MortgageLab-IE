@@ -337,7 +337,7 @@ export function RatesInput({
 										id="ltvRange"
 										type="text"
 										className={`h-9 bg-muted ${ltvRange === "above-90" ? "text-destructive" : ""}`}
-										value={property > 0 ? `${ltv.toFixed(0)}%` : "—"}
+										value={property > 0 ? `${ltv.toFixed(2)}%` : "—"}
 										disabled
 									/>
 								</div>
