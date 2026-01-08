@@ -1,10 +1,10 @@
-# mortgagelab.ie
+# MortgageLab.ie
 
 Irish Mortgage Comparator and Simulator
 
 ## Getting Started
 
-Visit [mortgagelab.ie](https://www.mortgagelab.ie) to use the tool.
+Visit [www.mortgagelab.ie](https://www.mortgagelab.ie) to use the tool.
 
 ## Features
 
