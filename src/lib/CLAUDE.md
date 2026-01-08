@@ -7,13 +7,14 @@ Business logic layer. Components should be thin - move pure JS functions here.
 | Directory    | What goes here                                                           |
 | ------------ | ------------------------------------------------------------------------ |
 | utils/       | Pure helper functions (currency formatting, date transforms, borrowing calcs) |
-| mortgage/    | Financial math (monthly payments, APRC, overpayment allowances)          |
+| mortgage/    | Financial math (payments, APRC, overpayments, breakeven analysis)        |
 | stores/      | Nanostores state management                                              |
 | schemas/     | Zod validation schemas (source of truth for types)                       |
 | constants/   | Business rules (Central Bank limits, BER ratings)                        |
 | data/        | Data fetching from JSON files                                            |
-| share/       | URL compression for shareable links                                      |
+| share/       | URL compression and shareable link generation (rates, borrowing, breakeven) |
 | storage/     | localStorage persistence                                                 |
+| hooks/       | React custom hooks (e.g., `useIsDesktop`)                                |
 
 ## Key Patterns
 
@@ -53,13 +54,17 @@ Don't overlook these - they contain reusable logic:
 
 ## Stores Overview
 
-| File                           | Purpose                                              |
-| ------------------------------ | ---------------------------------------------------- |
-| rates-form.ts                  | Form inputs (property, mortgage, term) → computed values (LTV, deposit) |
-| validation.ts                  | Form validity and error messages (all computed, no atoms) |
-| custom-rates.ts                | User-created rates with localStorage persistence     |
-| simulate/simulate-state.ts     | Simulation inputs and rate periods                   |
-| simulate/simulate-calculations.ts | Amortization schedule derivation                  |
+| File                              | Purpose                                              |
+| --------------------------------- | ---------------------------------------------------- |
+| rates-form.ts                     | Form inputs (property, mortgage, term) → computed values (LTV, deposit) |
+| validation.ts                     | Form validity and error messages (all computed, no atoms) |
+| custom-rates.ts                   | User-created rates with localStorage persistence     |
+| custom-perks.ts                   | User-created perks with localStorage persistence     |
+| breakeven.ts                      | Rent vs Buy and Remortgage breakeven result state    |
+| persistence.ts                    | Generic localStorage persistence utilities           |
+| simulate/simulate-state.ts        | Simulation inputs and rate periods                   |
+| simulate/simulate-calculations.ts | Amortization schedule derivation                     |
+| simulate/simulate-chart.ts        | Chart display state (year range, view options)       |
 
 ## Adding New Logic
 

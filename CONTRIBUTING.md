@@ -49,11 +49,11 @@ bun run build
 | `constants/` | Business rules and configuration (Central Bank limits, BER ratings, site metadata) |
 | `schemas/`   | Zod validation schemas for domain objects (rates, lenders, simulation)             |
 | `stores/`    | State management with Nanostores (rates form, simulation state, custom rates)      |
-| `mortgage/`  | Financial calculations (monthly payments, APRC, overpayments)                      |
+| `mortgage/`  | Financial calculations (payments, APRC, overpayments, breakeven analysis)          |
 | `utils/`     | Helper functions (currency formatting, date handling, borrowing calculations)      |
 | `hooks/`     | React custom hooks (e.g., `useIsDesktop`)                                          |
 | `data/`      | Data fetching and filtering (load rates, filter by LTV/BER/buyer type)             |
-| `share/`     | URL compression for shareable links (LZ-string encoding)                           |
+| `share/`     | URL compression for shareable links (rates, borrowing, breakeven)                  |
 | `storage/`   | LocalStorage persistence for form state                                            |
 
 ## Technology Stack
@@ -228,14 +228,14 @@ previous periods' durations. A `durationMonths: 0` means "until end of mortgage"
 
 ### Key Files
 
-| File                                               | Purpose                            |
-|----------------------------------------------------|------------------------------------|
-| `src/lib/stores/simulate/simulate-state.ts`        | Simulation state and actions       |
-| `src/lib/stores/simulate/simulate-calculations.ts` | Amortization calculations          |
-| `src/lib/mortgage/payments.ts`                     | Monthly payment formula            |
-| `src/lib/mortgage/overpayments.ts`                 | Overpayment allowance calculations |
-| `src/components/simulate/SimulateChartIsland.tsx`  | Amortization chart                 |
-| `src/components/simulate/SimulateTableIsland.tsx`  | Monthly/yearly schedule table      |
+| File                                                    | Purpose                            |
+|---------------------------------------------------------|------------------------------------|
+| `src/lib/stores/simulate/simulate-state.ts`             | Simulation state and actions       |
+| `src/lib/stores/simulate/simulate-calculations.ts`      | Amortization calculations          |
+| `src/lib/mortgage/payments.ts`                          | Monthly payment formula            |
+| `src/lib/mortgage/overpayments.ts`                      | Overpayment allowance calculations |
+| `src/components/simulate/chart/SimulateChartIsland.tsx` | Amortization chart                 |
+| `src/components/simulate/table/SimulateTableIsland.tsx` | Monthly/yearly schedule table      |
 
 ### Rates Page Integration
 
@@ -255,3 +255,29 @@ The Rates and Simulate pages share data through two patterns:
 3. `SimulateRedirectAlert` detects the parameter and shows "Add to Simulation" button
 4. When clicked, calls `addRatePeriod()` to append the rate
 5. Navigates back to `/simulate`
+
+## Breakeven Calculators
+
+The Breakeven pages (`/breakeven`) help users analyze financial decisions.
+
+### Available Calculators
+
+* **Rent vs Buy** (`/breakeven/rent-vs-buy`) - Compare renting vs buying over time
+* **Remortgage Breakeven** (`/breakeven/remortgage`) - Calculate when switching rates pays off
+
+### How It Works
+
+1. **Input Collection**: User enters scenario details (current rate, new rate, fees, etc.)
+2. **Calculation**: `src/lib/mortgage/breakeven.ts` computes breakeven points and projections
+3. **Result Display**: `BreakevenResultCard` shows the analysis with charts
+4. **Sharing**: Results can be shared via URL compression (same pattern as other pages)
+
+### Key Files
+
+| File                                                  | Purpose                         |
+|-------------------------------------------------------|---------------------------------|
+| `src/lib/mortgage/breakeven.ts`                       | Breakeven calculations          |
+| `src/lib/stores/breakeven.ts`                         | Result state management         |
+| `src/components/breakeven/RentVsBuyInputsIsland.tsx`  | Rent vs Buy form                |
+| `src/components/breakeven/RemortgageInputsIsland.tsx` | Remortgage form                 |
+| `src/components/breakeven/BreakevenResultCard.tsx`    | Result display with charts      |

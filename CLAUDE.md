@@ -16,10 +16,6 @@ React components (src/components/) should be thin presentation layers. Extract p
 - Data transforms → lib/utils/
 - State logic → lib/stores/
 
-### Use Git Worktrees for Features
-
-New features must be implemented in git worktrees located in .git-wt/. Create a worktree for your feature branch to keep the main working directory clean.
-
 ## Quick Reference
 
 - **Package manager**: Bun (not npm)

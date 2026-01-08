@@ -27,6 +27,11 @@ LTV, fixed period, buyer type, and BER rating.
 Model your mortgage with interactive amortization charts. Simulate rate changes,
 overpayments, and different scenarios.
 
+### Breakeven Calculators
+
+* **Rent vs Buy** - Compare the long-term costs of renting versus buying
+* **Remortgage Breakeven** - Calculate when switching to a new rate pays off
+
 ## Privacy
 
 * All calculations run locally in your browser
