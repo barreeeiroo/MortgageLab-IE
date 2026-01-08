@@ -52,6 +52,16 @@ export interface YearlyComparison {
 	netOwnershipCost: number; // ownership cost - equity built
 }
 
+export interface MonthlyComparison {
+	month: number;
+	cumulativeRent: number;
+	cumulativeOwnership: number;
+	homeValue: number;
+	mortgageBalance: number;
+	equity: number;
+	netOwnershipCost: number;
+}
+
 // Details at each breakeven point for "Why" explanations
 export interface NetWorthBreakevenDetails {
 	cumulativeRent: number;
@@ -92,6 +102,7 @@ export interface RentVsBuyResult {
 	purchaseCosts: number; // stamp duty + legal fees
 	upfrontCosts: number; // deposit + stamp duty + legal fees
 	yearlyBreakdown: YearlyComparison[];
+	monthlyBreakdown: MonthlyComparison[]; // First 24 months for detailed view
 }
 
 // --- Remortgage Types ---
@@ -116,6 +127,17 @@ export interface RemortgageYearlyComparison {
 	interestPaidCurrent: number; // Cumulative interest (current path)
 	interestPaidNew: number; // Cumulative interest (new path)
 	interestSaved: number; // Difference
+}
+
+export interface RemortgageMonthlyComparison {
+	month: number;
+	cumulativeSavings: number;
+	netSavings: number;
+	remainingBalanceCurrent: number;
+	remainingBalanceNew: number;
+	interestPaidCurrent: number;
+	interestPaidNew: number;
+	interestSaved: number;
 }
 
 // Details at breakeven point for "Why" explanations
@@ -150,6 +172,7 @@ export interface RemortgageResult {
 	// New fields for enhanced display
 	interestSavingsDetails: InterestSavingsDetails;
 	yearlyBreakdown: RemortgageYearlyComparison[];
+	monthlyBreakdown: RemortgageMonthlyComparison[]; // First 48 months for detailed view
 }
 
 // --- Rent vs Buy Calculations ---
@@ -223,6 +246,7 @@ export function calculateRentVsBuyBreakeven(
 	let equityRecoveryMonth: number | null = null;
 	let equityRecoveryDetails: EquityBreakevenDetails | null = null;
 	const yearlyBreakdown: YearlyComparison[] = [];
+	const monthlyBreakdown: MonthlyComparison[] = [];
 
 	// Track what the renter's money could have grown to if invested instead
 	// This includes: upfront costs + any monthly savings (when rent < ownership costs)
@@ -320,6 +344,19 @@ export function calculateRentVsBuyBreakeven(
 			};
 		}
 
+		// Store monthly snapshots for first 48 months (for detailed view when breakeven < 2 years)
+		if (month <= 48) {
+			monthlyBreakdown.push({
+				month,
+				cumulativeRent: Math.round(cumulativeRent),
+				cumulativeOwnership: Math.round(cumulativeOwnership),
+				homeValue: Math.round(homeValue),
+				mortgageBalance: Math.round(mortgageBalance),
+				equity: Math.round(equity),
+				netOwnershipCost: Math.round(netOwnershipCost),
+			});
+		}
+
 		// Store yearly snapshots
 		if (month % 12 === 0) {
 			yearlyBreakdown.push({
@@ -349,6 +386,7 @@ export function calculateRentVsBuyBreakeven(
 		purchaseCosts: Math.round(purchaseCosts),
 		upfrontCosts: Math.round(upfrontCosts),
 		yearlyBreakdown,
+		monthlyBreakdown,
 	};
 }
 
@@ -407,6 +445,7 @@ export function calculateRemortgageBreakeven(
 
 	// Yearly breakdown
 	const yearlyBreakdown: RemortgageYearlyComparison[] = [];
+	const monthlyBreakdown: RemortgageMonthlyComparison[] = [];
 
 	// Month-by-month simulation
 	for (let month = 1; month <= remainingMonths; month++) {
@@ -442,6 +481,22 @@ export function calculateRemortgageBreakeven(
 				switchingCosts,
 				cumulativeSavingsAtBreakeven: Math.round(cumulativeSavings),
 			};
+		}
+
+		// Store monthly snapshots for first 48 months (for detailed view when breakeven < 2 years)
+		if (month <= 48) {
+			monthlyBreakdown.push({
+				month,
+				cumulativeSavings: Math.round(cumulativeSavings),
+				netSavings: Math.round(cumulativeSavings - switchingCosts),
+				remainingBalanceCurrent: Math.round(balanceCurrent),
+				remainingBalanceNew: Math.round(balanceNew),
+				interestPaidCurrent: Math.round(cumulativeInterestCurrent),
+				interestPaidNew: Math.round(cumulativeInterestNew),
+				interestSaved: Math.round(
+					cumulativeInterestCurrent - cumulativeInterestNew,
+				),
+			});
 		}
 
 		// Store yearly snapshots
@@ -493,6 +548,7 @@ export function calculateRemortgageBreakeven(
 		totalSavingsOverTerm: Math.round(totalSavingsOverTerm),
 		interestSavingsDetails,
 		yearlyBreakdown,
+		monthlyBreakdown,
 	};
 }
 

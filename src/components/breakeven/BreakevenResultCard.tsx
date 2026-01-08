@@ -109,7 +109,9 @@ export function RentVsBuyResultCard({
 									</div>
 									<NetWorthBreakevenChart
 										data={result.yearlyBreakdown}
+										monthlyData={result.monthlyBreakdown}
 										breakevenYear={netWorthBreakevenYear}
+										breakevenMonth={result.breakevenMonth}
 									/>
 								</details>
 							)}
@@ -179,9 +181,11 @@ export function RentVsBuyResultCard({
 									</div>
 									<SaleBreakevenChart
 										data={result.yearlyBreakdown}
+										monthlyData={result.monthlyBreakdown}
 										upfrontCosts={result.upfrontCosts}
 										saleCostRate={saleCostRate}
 										breakevenYear={saleBreakevenYear}
+										breakevenMonth={result.breakEvenOnSaleMonth}
 									/>
 								</details>
 							)}
@@ -238,8 +242,10 @@ export function RentVsBuyResultCard({
 									</div>
 									<EquityRecoveryChart
 										data={result.yearlyBreakdown}
+										monthlyData={result.monthlyBreakdown}
 										upfrontCosts={result.upfrontCosts}
 										breakevenYear={equityBreakevenYear}
+										breakevenMonth={result.equityRecoveryMonth}
 									/>
 								</details>
 							)}
@@ -487,8 +493,10 @@ export function RemortgageResultCard({
 									{result.yearlyBreakdown.length > 0 && (
 										<SavingsBreakevenChart
 											data={result.yearlyBreakdown}
+											monthlyData={result.monthlyBreakdown}
 											switchingCosts={result.switchingCosts}
 											breakevenYear={breakevenYear}
+											breakevenMonth={result.breakevenMonths}
 										/>
 									)}
 								</details>

@@ -243,22 +243,6 @@ export function RemortgageInputsIsland() {
 					{/* Current Mortgage Details */}
 					<div className="grid gap-4 sm:grid-cols-2">
 						<div className="space-y-2">
-							<Label htmlFor="outstandingBalance">Outstanding Balance</Label>
-							<Input
-								id="outstandingBalance"
-								type="text"
-								inputMode="numeric"
-								placeholder="€250,000"
-								value={formatCurrencyInput(outstandingBalance)}
-								onChange={(e) =>
-									setOutstandingBalance(e.target.value.replace(/[^0-9]/g, ""))
-								}
-							/>
-							<p className="text-xs text-muted-foreground">
-								Current remaining mortgage balance
-							</p>
-						</div>
-						<div className="space-y-2">
 							<Label htmlFor="propertyValue">Property Value</Label>
 							<Input
 								id="propertyValue"
@@ -275,6 +259,22 @@ export function RemortgageInputsIsland() {
 									Current LTV: {ltv.toFixed(1)}%
 								</p>
 							)}
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="outstandingBalance">Outstanding Balance</Label>
+							<Input
+								id="outstandingBalance"
+								type="text"
+								inputMode="numeric"
+								placeholder="€250,000"
+								value={formatCurrencyInput(outstandingBalance)}
+								onChange={(e) =>
+									setOutstandingBalance(e.target.value.replace(/[^0-9]/g, ""))
+								}
+							/>
+							<p className="text-xs text-muted-foreground">
+								Current remaining mortgage balance
+							</p>
 							{hasBalance && !hasValidBalance && (
 								<p className="text-xs text-destructive">
 									Balance cannot exceed property value
