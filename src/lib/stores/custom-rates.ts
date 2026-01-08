@@ -1,6 +1,8 @@
 import { atom, computed } from "nanostores";
+import { DEFAULT_MAX_TERM } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
-import { $formValues, $ltv } from "./rates-form";
+import { $lenders } from "./lenders";
+import { $formValues, $ltv, $mortgageTerm } from "./rates-form";
 
 /**
  * Stored custom rate - what we save to localStorage
@@ -65,8 +67,10 @@ export const $customRates = computed($storedCustomRates, (stored) =>
 
 // Computed: filtered custom rates based on current input values
 export const $filteredCustomRates = computed(
-	[$customRates, $ltv, $formValues],
-	(customRates, ltv, values) => {
+	[$customRates, $ltv, $formValues, $lenders, $mortgageTerm],
+	(customRates, ltv, values, lenders, mortgageTerm) => {
+		const lenderMap = new Map(lenders.map((l) => [l.id, l]));
+
 		return customRates.filter((rate) => {
 			// Filter by LTV
 			if (ltv < rate.minLtv || ltv > rate.maxLtv) return false;
@@ -86,6 +90,11 @@ export const $filteredCustomRates = computed(
 				)
 					return false;
 			}
+			// Filter by lender's maxTerm (if using a known lender)
+			const lender = lenderMap.get(rate.lenderId);
+			const maxTermMonths = (lender?.maxTerm ?? DEFAULT_MAX_TERM) * 12;
+			if (mortgageTerm > maxTermMonths) return false;
+
 			return true;
 		});
 	},
