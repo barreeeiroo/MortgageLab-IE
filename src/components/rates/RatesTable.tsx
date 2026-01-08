@@ -42,9 +42,10 @@ import {
 } from "@/lib/data";
 import {
 	calculateAprc,
+	calculateCostOfCreditPercent,
+	calculateFollowOnLtv,
 	calculateMonthlyFollowOn,
 	calculateMonthlyPayment,
-	calculateRemainingBalance,
 	calculateTotalRepayable,
 	findVariableRate,
 } from "@/lib/mortgage";
@@ -1082,20 +1083,16 @@ export function RatesTable({
 		() =>
 			rates.map((rate) => {
 				// Calculate LTV after fixed term ends (principal paid down)
-				let followOnLtv = ltv;
-				if (rate.type === "fixed" && rate.fixedTerm) {
-					const totalMonths = mortgageTerm;
-					const fixedMonths = rate.fixedTerm * 12;
-					const remainingBalance = calculateRemainingBalance(
-						mortgageAmount,
-						rate.rate,
-						totalMonths,
-						fixedMonths,
-					);
-					// remainingLtv = remainingBalance / propertyValue * 100
-					// propertyValue = mortgageAmount / (ltv / 100)
-					followOnLtv = (remainingBalance / mortgageAmount) * ltv;
-				}
+				const followOnLtv =
+					rate.type === "fixed" && rate.fixedTerm
+						? calculateFollowOnLtv(
+								mortgageAmount,
+								rate.rate,
+								mortgageTerm,
+								rate.fixedTerm * 12,
+								ltv,
+							)
+						: ltv;
 
 				// Use allRates to find follow-on rate (includes newBusiness: false rates and custom rates)
 				const rateIsCustom = isCustomRate(rate);
@@ -1128,9 +1125,10 @@ export function RatesTable({
 					monthlyFollowOn,
 					mortgageTerm,
 				);
-				const costOfCreditPct = totalRepayable
-					? ((totalRepayable - mortgageAmount) / mortgageAmount) * 100
-					: undefined;
+				const costOfCreditPct = calculateCostOfCreditPercent(
+					totalRepayable,
+					mortgageAmount,
+				);
 
 				// Combine lender perks with rate-specific perks (deduplicated)
 				const lender = getLender(lenders, rate.lenderId);

@@ -157,3 +157,44 @@ export function calculateTotalRepayable(
 
 	return monthlyPayment * totalTermMonths;
 }
+
+/**
+ * Calculate the LTV after a fixed term ends, accounting for principal paid down.
+ *
+ * @param principal - Original loan amount
+ * @param annualRate - Annual interest rate as a percentage (e.g., 3.5 for 3.5%)
+ * @param totalMonths - Total loan term in months
+ * @param fixedMonths - Duration of fixed rate period in months
+ * @param originalLtv - Original LTV at mortgage start
+ * @returns LTV after the fixed term ends
+ */
+export function calculateFollowOnLtv(
+	principal: number,
+	annualRate: number,
+	totalMonths: number,
+	fixedMonths: number,
+	originalLtv: number,
+): number {
+	const remainingBalance = calculateRemainingBalance(
+		principal,
+		annualRate,
+		totalMonths,
+		fixedMonths,
+	);
+	return (remainingBalance / principal) * originalLtv;
+}
+
+/**
+ * Calculate the cost of credit as a percentage of the loan amount.
+ *
+ * @param totalRepayable - Total amount repayable over the mortgage term
+ * @param principal - Original loan amount
+ * @returns Cost of credit as a percentage, or undefined if totalRepayable is undefined
+ */
+export function calculateCostOfCreditPercent(
+	totalRepayable: number | undefined,
+	principal: number,
+): number | undefined {
+	if (totalRepayable === undefined) return undefined;
+	return ((totalRepayable - principal) / principal) * 100;
+}
