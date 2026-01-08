@@ -257,7 +257,7 @@ export function SimulateRatesIsland() {
 											{/* Buffer suggestion warning */}
 											{(() => {
 												const suggestion = bufferSuggestions.find(
-													(s) => s.afterIndex === index,
+													(s) => s.afterIndex === index && !s.isTrailing,
 												);
 												return suggestion ? (
 													<SimulateBufferSuggestion suggestion={suggestion} />
@@ -268,6 +268,31 @@ export function SimulateRatesIsland() {
 								</div>
 							);
 						})}
+						{/* Trailing buffer suggestion for uncovered fixed periods */}
+						{(() => {
+							const trailingSuggestion = bufferSuggestions.find(
+								(s) => s.isTrailing,
+							);
+							if (!trailingSuggestion) return null;
+
+							const lastPeriod =
+								resolvedRatePeriods[resolvedRatePeriods.length - 1];
+							const nextMonth =
+								lastPeriod.startMonth + lastPeriod.durationMonths;
+
+							return (
+								<div className="flex items-center gap-2 py-1.5 px-2">
+									<ArrowDown className="h-3 w-3 text-muted-foreground" />
+									<span className="text-xs text-muted-foreground">
+										{formatTransitionDate(
+											simulationState.input.startDate,
+											nextMonth,
+										)}
+									</span>
+									<SimulateBufferSuggestion suggestion={trailingSuggestion} />
+								</div>
+							);
+						})()}
 					</div>
 				)}
 			</CardContent>

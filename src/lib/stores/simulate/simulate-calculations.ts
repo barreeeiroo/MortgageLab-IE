@@ -1041,12 +1041,14 @@ export const $simulationCompleteness = computed(
  * A buffer is suggested when:
  * - Current period is fixed
  * - Next period is NOT the natural follow-on rate (findVariableRate result)
+ * - OR: Last period is fixed and mortgage is not fully covered (isTrailing: true)
  *
  * Returns an array of objects with:
  * - afterIndex: index of the fixed period (buffer would be inserted after this)
  * - fixedRate: the MortgageRate of the fixed period
  * - suggestedRate: the natural follow-on variable rate (for the buffer)
  * - ltvAtEnd: LTV at the end of the fixed period (for rate eligibility)
+ * - isTrailing: true if this is after the last period (mortgage not covered)
  */
 export interface BufferSuggestion {
 	afterIndex: number;
@@ -1054,6 +1056,7 @@ export interface BufferSuggestion {
 	suggestedRate: MortgageRate;
 	ltvAtEnd: number;
 	lenderName: string; // Name of the lender for the follow-on rate
+	isTrailing?: boolean; // true when this is after the last period (mortgage not covered)
 }
 
 export const $bufferSuggestions = computed(
@@ -1068,10 +1071,11 @@ export const $bufferSuggestions = computed(
 		const suggestions: BufferSuggestion[] = [];
 		const propertyValue = state.input.propertyValue;
 
-		if (resolvedPeriods.length < 2 || propertyValue <= 0) {
+		if (resolvedPeriods.length === 0 || propertyValue <= 0) {
 			return suggestions;
 		}
 
+		// Check transitions between periods (existing logic)
 		for (let i = 0; i < resolvedPeriods.length - 1; i++) {
 			const current = resolvedPeriods[i];
 			const next = resolvedPeriods[i + 1];
@@ -1118,6 +1122,48 @@ export const $bufferSuggestions = computed(
 					ltvAtEnd,
 					lenderName: current.lenderName,
 				});
+			}
+		}
+
+		// Check if last period is fixed and mortgage is not fully covered (trailing suggestion)
+		const lastPeriod = resolvedPeriods[resolvedPeriods.length - 1];
+		if (
+			lastPeriod.type === "fixed" &&
+			lastPeriod.durationMonths > 0 // Not "until end" - mortgage not covered
+		) {
+			// Find the actual MortgageRate for the last fixed period
+			const lastRate = lastPeriod.isCustom
+				? customRates.find((r) => r.id === lastPeriod.rateId)
+				: allRates.find((r) => r.id === lastPeriod.rateId);
+
+			if (lastRate) {
+				// Calculate LTV at end of fixed period
+				const endMonth = lastPeriod.startMonth + lastPeriod.durationMonths - 1;
+				const monthData = amortizationSchedule.find(
+					(m) => m.month === endMonth,
+				);
+				const balanceAtEnd =
+					monthData?.closingBalance ?? state.input.mortgageAmount;
+				const ltvAtEnd = (balanceAtEnd / propertyValue) * 100;
+
+				// Find the natural follow-on rate
+				const naturalFollowOn = findVariableRate(
+					lastRate as MortgageRate,
+					allRates,
+					ltvAtEnd,
+					state.input.ber,
+				);
+
+				if (naturalFollowOn) {
+					suggestions.push({
+						afterIndex: resolvedPeriods.length - 1,
+						fixedRate: lastRate as MortgageRate,
+						suggestedRate: naturalFollowOn,
+						ltvAtEnd,
+						lenderName: lastPeriod.lenderName,
+						isTrailing: true,
+					});
+				}
 			}
 		}
 
