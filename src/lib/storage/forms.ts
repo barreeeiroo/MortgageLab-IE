@@ -1,4 +1,4 @@
-import type { RatesInputValues } from "@/lib/stores/form";
+import type { RatesInputValues } from "@/lib/stores/rates-form";
 import { loadFromStorage, saveToStorage } from "./helpers";
 
 // Storage keys
@@ -122,15 +122,16 @@ export interface RemortgageBreakevenFormState {
 	outstandingBalance: string;
 	propertyValue: string;
 	currentRate: string;
-	currentPayment: string;
 	remainingTerm: string;
 	newRate: string;
 	rateInputMode: "picker" | "manual";
 	berRating: string;
 	legalFees: string;
+	// Fixed period tracking ("0" = variable, "1"-"10" = years)
+	fixedPeriodYears: string;
 	// Advanced options
-	showAdvanced: boolean;
 	cashback: string;
+	erc?: string;
 }
 
 export function loadRemortgageBreakevenForm(): Partial<RemortgageBreakevenFormState> {

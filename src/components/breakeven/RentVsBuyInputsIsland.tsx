@@ -384,6 +384,10 @@ export function RentVsBuyInputsIsland() {
 									buyerType="ftb"
 									berRating={berRating}
 									label=""
+									showViewAllRates
+									propertyValue={propertyValue}
+									mortgageAmount={String(mortgageAmount)}
+									mortgageTerm={mortgageTerm}
 								/>
 								<p className="text-xs text-muted-foreground">
 									These rates are for illustrative purposes only. When your

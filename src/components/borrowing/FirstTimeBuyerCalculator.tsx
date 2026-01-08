@@ -15,7 +15,12 @@ import {
 	hasBorrowingShareParam,
 	parseBorrowingShareState,
 } from "@/lib/share";
-import { loadFtbForm, saveFtbForm, saveRatesForm } from "@/lib/storage";
+import {
+	loadFtbForm,
+	saveFtbForm,
+	saveRatesForm,
+	saveRentVsBuyForm,
+} from "@/lib/storage";
 import {
 	calculateJointMaxTerm,
 	formatCurrency,
@@ -24,6 +29,7 @@ import {
 	isApplicantTooOld,
 	parseCurrency,
 } from "@/lib/utils";
+import { ESTIMATED_LEGAL_FEES } from "@/lib/utils/fees";
 import { ShareButton } from "../ShareButton";
 import { BerSelector } from "../selectors/BerSelector";
 import {
@@ -417,12 +423,61 @@ export function FirstTimeBuyerCalculator() {
 					</AlertDialogHeader>
 					<AlertDialogBody>
 						{calculationResult && (
-							<MortgageResultCard
-								result={calculationResult.result}
-								maxLtv={LTV_LIMITS.FTB}
-								maxLti={FTB_LTI_LIMIT}
-								isConstrained={calculationResult.hasSavingsShortfall}
-							/>
+							<div className="space-y-4">
+								<MortgageResultCard
+									result={calculationResult.result}
+									maxLtv={LTV_LIMITS.FTB}
+									maxLti={FTB_LTI_LIMIT}
+									isConstrained={calculationResult.hasSavingsShortfall}
+								/>
+								{/* Rent vs Buy Link */}
+								<Card className="bg-muted/30">
+									<CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+										<div>
+											<p className="font-medium">
+												Should you buy or keep renting?
+											</p>
+											<p className="text-sm text-muted-foreground">
+												Compare long-term costs of buying vs renting with your
+												mortgage details.
+											</p>
+										</div>
+										<Button
+											variant="outline"
+											className="shrink-0"
+											onClick={() => {
+												const { result } = calculationResult;
+												const deposit =
+													result.propertyValue - result.mortgageAmount;
+												saveRentVsBuyForm({
+													propertyValue: Math.round(
+														result.propertyValue,
+													).toString(),
+													deposit: Math.round(deposit).toString(),
+													mortgageTerm: (result.mortgageTerm * 12).toString(),
+													interestRate: "",
+													berRating: result.berRating,
+													currentRent: "",
+													legalFees: ESTIMATED_LEGAL_FEES.toString(),
+													rentInflation: "3",
+													homeAppreciation: "3",
+													maintenanceRate: "1",
+													opportunityCost: "4",
+													saleCost: "3",
+													serviceCharge: "0",
+													serviceChargeIncrease: "3",
+												});
+												window.location.href = getPath(
+													"/breakeven/rent-vs-buy",
+												);
+											}}
+										>
+											Rent vs Buy Calculator
+											<ExternalLink className="h-4 w-4 ml-2" />
+										</Button>
+									</CardContent>
+								</Card>
+							</div>
 						)}
 					</AlertDialogBody>
 					<AlertDialogFooter className="sm:justify-between">
@@ -443,6 +498,7 @@ export function FirstTimeBuyerCalculator() {
 										mortgageTerm: (result.mortgageTerm * 12).toString(),
 										berRating: result.berRating,
 										buyerType: "ftb",
+										currentLender: "",
 									});
 									window.location.href = getPath("/rates");
 								}}

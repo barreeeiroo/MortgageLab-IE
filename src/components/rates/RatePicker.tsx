@@ -1,11 +1,14 @@
+import { ExternalLink } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import type { BerRating } from "@/lib/constants";
 import {
 	fetchAllRates,
 	fetchLendersData,
 	filterRates,
 	getLender,
 } from "@/lib/data";
-import type { BerRating, BuyerType, Lender, MortgageRate } from "@/lib/schemas";
+import type { BuyerType, Lender, MortgageRate } from "@/lib/schemas";
+import { saveRatesForm } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 import { LenderLogo } from "../lenders/LenderLogo";
 import { Input } from "../ui/input";
@@ -28,6 +31,14 @@ interface RatePickerProps {
 	label?: string;
 	id?: string;
 	maxRates?: number;
+	// Callback when a rate is selected (returns full rate info including fixedTermMonths)
+	onRateSelect?: (rate: MortgageRate) => void;
+	// Show "View All Rates" link with prefilled filters
+	showViewAllRates?: boolean;
+	// For generating prefilled rates page link
+	propertyValue?: string;
+	mortgageAmount?: string;
+	mortgageTerm?: string;
 }
 
 interface RateOption {
@@ -48,6 +59,11 @@ export function RatePicker({
 	label = "Interest Rate",
 	id = "interestRate",
 	maxRates = 5,
+	onRateSelect,
+	showViewAllRates = false,
+	propertyValue,
+	mortgageAmount,
+	mortgageTerm,
 }: RatePickerProps) {
 	const [rates, setRates] = useState<MortgageRate[]>([]);
 	const [lenders, setLenders] = useState<Lender[]>([]);
@@ -129,6 +145,7 @@ export function RatePicker({
 		if (selectedRate) {
 			setSelectedRateId(rateId);
 			onChange(selectedRate.rate.rate.toString());
+			onRateSelect?.(selectedRate.rate);
 		}
 	};
 
@@ -212,47 +229,78 @@ export function RatePicker({
 							</p>
 						</div>
 					) : (
-						<RadioGroup
-							value={selectedRateId ?? ""}
-							onValueChange={handleRateSelect}
-							className="gap-1.5"
-						>
-							{rateOptions.map(({ rate, lender }) => (
-								<label
-									key={rate.id}
-									htmlFor={`rate-${rate.id}`}
-									className={cn(
-										"flex items-center gap-2.5 p-2 border rounded-lg cursor-pointer transition-colors",
-										"hover:bg-muted/50",
-										isRateSelected(rate) && "border-primary bg-primary/5",
-									)}
-								>
-									<RadioGroupItem
-										value={rate.id}
-										id={`rate-${rate.id}`}
-										className="shrink-0"
-									/>
-									<LenderLogo lenderId={rate.lenderId} size={32} />
-									<div className="flex-1 min-w-0">
-										<span className="font-medium text-sm truncate block">
-											{rate.name}
-										</span>
-										<p className="text-xs text-muted-foreground truncate">
-											{lender?.name ?? rate.lenderId} · LTV {rate.minLtv}-
-											{rate.maxLtv}%
-										</p>
-									</div>
-									<div className="text-right shrink-0">
-										<span className="font-semibold text-primary text-sm">
-											{rate.rate.toFixed(2)}%
-										</span>
-										<p className="text-xs text-muted-foreground">
-											{formatFixedTerm(rate)}
-										</p>
-									</div>
-								</label>
-							))}
-						</RadioGroup>
+						<>
+							<RadioGroup
+								value={selectedRateId ?? ""}
+								onValueChange={handleRateSelect}
+								className="gap-1.5"
+							>
+								{rateOptions.map(({ rate, lender }) => (
+									<label
+										key={rate.id}
+										htmlFor={`rate-${rate.id}`}
+										className={cn(
+											"flex items-center gap-2.5 p-2 border rounded-lg cursor-pointer transition-colors",
+											"hover:bg-muted/50",
+											isRateSelected(rate) && "border-primary bg-primary/5",
+										)}
+									>
+										<RadioGroupItem
+											value={rate.id}
+											id={`rate-${rate.id}`}
+											className="shrink-0"
+										/>
+										<LenderLogo lenderId={rate.lenderId} size={32} />
+										<div className="flex-1 min-w-0">
+											<span className="font-medium text-sm truncate block">
+												{rate.name}
+											</span>
+											<p className="text-xs text-muted-foreground truncate">
+												{lender?.name ?? rate.lenderId} · LTV {rate.minLtv}-
+												{rate.maxLtv}%
+											</p>
+										</div>
+										<div className="text-right shrink-0">
+											<span className="font-semibold text-primary text-sm">
+												{rate.rate.toFixed(2)}%
+											</span>
+											<p className="text-xs text-muted-foreground">
+												{formatFixedTerm(rate)}
+											</p>
+										</div>
+									</label>
+								))}
+							</RadioGroup>
+							{showViewAllRates && (
+								<div className="flex justify-end mt-2">
+									<a
+										href="/rates"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
+										onClick={() => {
+											const mode = isRemortgage
+												? "remortgage"
+												: "first-mortgage";
+											saveRatesForm({
+												mode,
+												propertyValue: propertyValue ?? "",
+												mortgageAmount: mortgageAmount ?? "",
+												monthlyRepayment: "",
+												mortgageTerm: mortgageTerm ?? "300",
+												berRating: berRating ?? "C1",
+												buyerType: buyerType ?? "ftb",
+												currentLender:
+													currentLender ?? (isRemortgage ? "other" : ""),
+											});
+										}}
+									>
+										View All Rates
+										<ExternalLink className="h-3 w-3" />
+									</a>
+								</div>
+							)}
+						</>
 					)}
 				</div>
 			)}

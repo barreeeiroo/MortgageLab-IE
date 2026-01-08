@@ -90,6 +90,7 @@ export function BreakevenResultIsland() {
 							<RemortgageResultCard
 								result={remortgageResult.result}
 								remainingTermMonths={remortgageResult.remainingTermMonths}
+								fixedPeriodMonths={remortgageResult.fixedPeriodMonths}
 							/>
 						)}
 					</AlertDialogBody>

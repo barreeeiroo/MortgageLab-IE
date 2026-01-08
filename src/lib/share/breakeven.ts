@@ -41,15 +41,16 @@ export interface RemortgageBreakevenShareState {
 	outstandingBalance: string;
 	propertyValue: string;
 	currentRate: string;
-	currentPayment: string;
 	remainingTerm: string;
 	newRate: string;
 	rateInputMode: "picker" | "manual";
 	berRating: BerRating;
 	legalFees: string;
-	// Advanced options (only included if showAdvanced is true)
-	showAdvanced?: boolean;
+	// Fixed period tracking ("0" = variable, "1"-"10" = years)
+	fixedPeriodYears: string;
+	// Advanced options
 	cashback?: string;
+	erc?: string;
 }
 
 // Union type for all breakeven calculator states
@@ -82,15 +83,15 @@ interface CompressedRemortgageBreakeven {
 	ob: string; // outstandingBalance
 	pv: string; // propertyValue
 	cr: string; // currentRate
-	cp: string; // currentPayment
 	rt: string; // remainingTerm
 	nr: string; // newRate
 	rm: "p" | "m"; // rateInputMode: picker/manual
 	br: string; // berRating
 	lf: string; // legalFees
+	fp: string; // fixedPeriodYears ("0" = variable)
 	// Advanced (optional)
-	sa?: "1"; // showAdvanced
 	cb?: string; // cashback
+	er?: string; // erc (early repayment charge)
 }
 
 type CompressedState = CompressedRentVsBuy | CompressedRemortgageBreakeven;
@@ -124,18 +125,16 @@ function compressState(state: BreakevenShareState): CompressedState {
 		ob: state.outstandingBalance,
 		pv: state.propertyValue,
 		cr: state.currentRate,
-		cp: state.currentPayment,
 		rt: state.remainingTerm,
 		nr: state.newRate,
 		rm: state.rateInputMode === "picker" ? "p" : "m",
 		br: state.berRating,
 		lf: state.legalFees,
+		fp: state.fixedPeriodYears,
 	};
 
-	if (state.showAdvanced) {
-		compressed.sa = "1";
-		if (state.cashback) compressed.cb = state.cashback;
-	}
+	if (state.cashback) compressed.cb = state.cashback;
+	if (state.erc) compressed.er = state.erc;
 
 	return compressed;
 }
@@ -169,18 +168,16 @@ function decompressState(compressed: CompressedState): BreakevenShareState {
 		outstandingBalance: compressed.ob,
 		propertyValue: compressed.pv,
 		currentRate: compressed.cr,
-		currentPayment: compressed.cp,
 		remainingTerm: compressed.rt,
 		newRate: compressed.nr,
 		rateInputMode: compressed.rm === "p" ? "picker" : "manual",
 		berRating: compressed.br as BerRating,
 		legalFees: compressed.lf,
+		fixedPeriodYears: compressed.fp ?? "5", // Default to 5 years for old URLs
 	};
 
-	if (compressed.sa === "1") {
-		state.showAdvanced = true;
-		if (compressed.cb) state.cashback = compressed.cb;
-	}
+	if (compressed.cb) state.cashback = compressed.cb;
+	if (compressed.er) state.erc = compressed.er;
 
 	return state;
 }

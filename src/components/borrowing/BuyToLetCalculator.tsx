@@ -532,6 +532,7 @@ export function BuyToLetCalculator() {
 										mortgageTerm: (result.mortgageTerm * 12).toString(),
 										berRating: result.berRating,
 										buyerType: "btl",
+										currentLender: "",
 									});
 									window.location.href = getPath("/rates");
 								}}

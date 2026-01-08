@@ -531,6 +531,7 @@ export function HomeMoverCalculator() {
 										mortgageTerm: (result.mortgageTerm * 12).toString(),
 										berRating: result.berRating,
 										buyerType: "mover",
+										currentLender: "",
 									});
 									window.location.href = getPath("/rates");
 								}}

@@ -99,18 +99,52 @@ export interface RemortgageInputs {
 	legalFees?: number; // Default €1,350, user-editable
 	// Advanced options
 	cashback?: number; // Default €0
+	erc?: number; // Early Repayment Charge, default €0
+}
+
+export interface RemortgageYearlyComparison {
+	year: number;
+	cumulativeSavings: number; // Monthly savings accumulated (gross)
+	netSavings: number; // cumulativeSavings - switchingCosts
+	remainingBalanceCurrent: number; // If stayed with current rate
+	remainingBalanceNew: number; // With new rate
+	interestPaidCurrent: number; // Cumulative interest (current path)
+	interestPaidNew: number; // Cumulative interest (new path)
+	interestSaved: number; // Difference
+}
+
+// Details at breakeven point for "Why" explanations
+export interface RemortgageBreakevenDetails {
+	monthlySavings: number;
+	breakevenMonths: number;
+	switchingCosts: number;
+	cumulativeSavingsAtBreakeven: number;
+}
+
+// Details for total interest saved card
+export interface InterestSavingsDetails {
+	totalInterestCurrent: number; // Total interest if staying
+	totalInterestNew: number; // Total interest if switching
+	interestSaved: number; // Difference
+	switchingCosts: number; // For net calculation
+	netBenefit: number; // interestSaved - switchingCosts
 }
 
 export interface RemortgageResult {
 	breakevenMonths: number;
+	breakevenDetails: RemortgageBreakevenDetails | null;
 	currentMonthlyPayment: number;
 	newMonthlyPayment: number;
 	monthlySavings: number;
 	legalFees: number;
 	cashback: number;
-	switchingCosts: number; // legalFees - cashback
+	erc: number;
+	switchingCosts: number; // legalFees - cashback + erc
 	totalSavingsOverTerm: number;
 	yearOneSavings: number;
+	// New fields for enhanced display
+	interestSavingsDetails: InterestSavingsDetails;
+	yearlyBreakdown: RemortgageYearlyComparison[];
 }
 
 // --- Rent vs Buy Calculations ---
@@ -304,6 +338,7 @@ export function calculateRentVsBuyBreakeven(
  * Calculate the breakeven point and savings for remortgaging/switching.
  *
  * The breakeven point is when cumulative monthly savings exceed the switching costs.
+ * Uses month-by-month simulation to track amortization on both paths.
  */
 export function calculateRemortgageBreakeven(
 	inputs: RemortgageInputs,
@@ -315,6 +350,7 @@ export function calculateRemortgageBreakeven(
 		remainingTermMonths,
 		legalFees = ESTIMATED_REMORTGAGE_LEGAL_FEES,
 		cashback = 0,
+		erc = 0,
 	} = inputs;
 
 	const remainingMonths = remainingTermMonths;
@@ -332,31 +368,111 @@ export function calculateRemortgageBreakeven(
 	);
 
 	const monthlySavings = currentMonthlyPayment - newMonthlyPayment;
-	const switchingCosts = Math.max(0, legalFees - cashback);
+	const switchingCosts = Math.max(0, legalFees - cashback + erc);
 
-	// Breakeven months = switching costs / monthly savings
-	// If monthly savings <= 0, breakeven is never (we'll use Infinity then convert to a large number)
-	let breakevenMonths: number;
-	if (monthlySavings <= 0) {
-		breakevenMonths = Number.POSITIVE_INFINITY;
-	} else {
-		breakevenMonths = switchingCosts / monthlySavings;
+	// Monthly interest rates
+	const currentMonthlyRate = currentRate / 100 / 12;
+	const newMonthlyRate = newRate / 100 / 12;
+
+	// Track balances and cumulative values
+	let balanceCurrent = outstandingBalance;
+	let balanceNew = outstandingBalance;
+	let cumulativeSavings = 0;
+	let cumulativeInterestCurrent = 0;
+	let cumulativeInterestNew = 0;
+
+	// Breakeven tracking
+	let breakevenMonths: number = Number.POSITIVE_INFINITY;
+	let breakevenDetails: RemortgageBreakevenDetails | null = null;
+
+	// Yearly breakdown
+	const yearlyBreakdown: RemortgageYearlyComparison[] = [];
+
+	// Month-by-month simulation
+	for (let month = 1; month <= remainingMonths; month++) {
+		// Calculate interest for this month on both paths
+		const interestCurrent = balanceCurrent * currentMonthlyRate;
+		const interestNew = balanceNew * newMonthlyRate;
+
+		// Add to cumulative interest
+		cumulativeInterestCurrent += interestCurrent;
+		cumulativeInterestNew += interestNew;
+
+		// Calculate principal payments
+		const principalCurrent = currentMonthlyPayment - interestCurrent;
+		const principalNew = newMonthlyPayment - interestNew;
+
+		// Update balances
+		balanceCurrent = Math.max(0, balanceCurrent - principalCurrent);
+		balanceNew = Math.max(0, balanceNew - principalNew);
+
+		// Accumulate monthly savings
+		cumulativeSavings += monthlySavings;
+
+		// Check for breakeven (when cumulative savings exceed switching costs)
+		if (
+			breakevenDetails === null &&
+			monthlySavings > 0 &&
+			cumulativeSavings >= switchingCosts
+		) {
+			breakevenMonths = month;
+			breakevenDetails = {
+				monthlySavings: Math.round(monthlySavings * 100) / 100,
+				breakevenMonths: month,
+				switchingCosts,
+				cumulativeSavingsAtBreakeven: Math.round(cumulativeSavings),
+			};
+		}
+
+		// Store yearly snapshots
+		if (month % 12 === 0) {
+			yearlyBreakdown.push({
+				year: month / 12,
+				cumulativeSavings: Math.round(cumulativeSavings),
+				netSavings: Math.round(cumulativeSavings - switchingCosts),
+				remainingBalanceCurrent: Math.round(balanceCurrent),
+				remainingBalanceNew: Math.round(balanceNew),
+				interestPaidCurrent: Math.round(cumulativeInterestCurrent),
+				interestPaidNew: Math.round(cumulativeInterestNew),
+				interestSaved: Math.round(
+					cumulativeInterestCurrent - cumulativeInterestNew,
+				),
+			});
+		}
 	}
 
-	const yearOneSavings = monthlySavings * 12 - switchingCosts;
+	// Calculate total interest saved
+	const totalInterestCurrent = cumulativeInterestCurrent;
+	const totalInterestNew = cumulativeInterestNew;
+	const interestSaved = totalInterestCurrent - totalInterestNew;
+
+	const interestSavingsDetails: InterestSavingsDetails = {
+		totalInterestCurrent: Math.round(totalInterestCurrent),
+		totalInterestNew: Math.round(totalInterestNew),
+		interestSaved: Math.round(interestSaved),
+		switchingCosts,
+		netBenefit: Math.round(interestSaved - switchingCosts),
+	};
+
+	const yearOneSavings =
+		monthlySavings * Math.min(12, remainingMonths) - switchingCosts;
 	const totalSavingsOverTerm =
 		monthlySavings * remainingMonths - switchingCosts;
 
 	return {
 		breakevenMonths: Math.ceil(breakevenMonths),
+		breakevenDetails,
 		currentMonthlyPayment: Math.round(currentMonthlyPayment * 100) / 100,
 		newMonthlyPayment: Math.round(newMonthlyPayment * 100) / 100,
 		monthlySavings: Math.round(monthlySavings * 100) / 100,
 		legalFees,
 		cashback,
+		erc,
 		switchingCosts,
 		yearOneSavings: Math.round(yearOneSavings),
 		totalSavingsOverTerm: Math.round(totalSavingsOverTerm),
+		interestSavingsDetails,
+		yearlyBreakdown,
 	};
 }
 

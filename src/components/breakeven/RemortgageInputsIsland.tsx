@@ -1,7 +1,7 @@
-import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { DEFAULT_BER } from "@/lib/constants";
 import { calculateRemortgageBreakeven } from "@/lib/mortgage/breakeven";
+import type { MortgageRate } from "@/lib/schemas";
 import {
 	clearBreakevenShareParam,
 	hasBreakevenShareParam,
@@ -19,20 +19,34 @@ import { BerSelector } from "../selectors/BerSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "../ui/collapsible";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+
+// Fixed period options for manual mode (in years, 0 = variable)
+const FIXED_PERIOD_OPTIONS = [
+	{ value: "0", label: "Variable" },
+	{ value: "1", label: "1 Year Fixed" },
+	{ value: "2", label: "2 Years Fixed" },
+	{ value: "3", label: "3 Years Fixed" },
+	{ value: "4", label: "4 Years Fixed" },
+	{ value: "5", label: "5 Years Fixed" },
+	{ value: "7", label: "7 Years Fixed" },
+	{ value: "10", label: "10 Years Fixed" },
+];
 
 export function RemortgageInputsIsland() {
 	// Form state
 	const [outstandingBalance, setOutstandingBalance] = useState("");
 	const [propertyValue, setPropertyValue] = useState("");
 	const [currentRate, setCurrentRate] = useState("");
-	const [currentPayment, setCurrentPayment] = useState("");
 	const [remainingTerm, setRemainingTerm] = useState("240"); // 20 years in months
 	const [newRate, setNewRate] = useState("");
 	const [rateInputMode, setRateInputMode] = useState<"picker" | "manual">(
@@ -43,9 +57,21 @@ export function RemortgageInputsIsland() {
 		ESTIMATED_REMORTGAGE_LEGAL_FEES.toString(),
 	);
 
-	// Advanced options
-	const [showAdvanced, setShowAdvanced] = useState(false);
+	// Fixed period tracking (in years, 0 = variable, null = unknown)
+	const [fixedPeriodYears, setFixedPeriodYears] = useState<string>("5"); // Default to 5 years
+
+	// Advanced options (always visible now)
 	const [cashback, setCashback] = useState("0");
+	const [erc, setErc] = useState("0");
+
+	// Handle rate selection from picker (captures fixed term)
+	const handleRateSelect = useCallback((rate: MortgageRate) => {
+		if (rate.type === "variable") {
+			setFixedPeriodYears("0");
+		} else {
+			setFixedPeriodYears(rate.fixedTerm?.toString() ?? "5");
+		}
+	}, []);
 
 	// Auto-calculate flag
 	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
@@ -65,16 +91,15 @@ export function RemortgageInputsIsland() {
 				setOutstandingBalance(shared.outstandingBalance);
 				setPropertyValue(shared.propertyValue);
 				setCurrentRate(shared.currentRate);
-				setCurrentPayment(shared.currentPayment);
 				setRemainingTerm(shared.remainingTerm);
 				setNewRate(shared.newRate);
 				setRateInputMode(shared.rateInputMode);
 				setBerRating(shared.berRating);
 				setLegalFees(shared.legalFees);
-				if (shared.showAdvanced) {
-					setShowAdvanced(true);
-					if (shared.cashback) setCashback(shared.cashback);
-				}
+				if (shared.cashback) setCashback(shared.cashback);
+				if (shared.erc) setErc(shared.erc);
+				if (shared.fixedPeriodYears)
+					setFixedPeriodYears(shared.fixedPeriodYears);
 				clearBreakevenShareParam();
 				setShouldAutoCalculate(true);
 				return;
@@ -87,14 +112,14 @@ export function RemortgageInputsIsland() {
 			setOutstandingBalance(saved.outstandingBalance);
 		if (saved.propertyValue) setPropertyValue(saved.propertyValue);
 		if (saved.currentRate) setCurrentRate(saved.currentRate);
-		if (saved.currentPayment) setCurrentPayment(saved.currentPayment);
 		if (saved.remainingTerm) setRemainingTerm(saved.remainingTerm);
 		if (saved.newRate) setNewRate(saved.newRate);
 		if (saved.rateInputMode) setRateInputMode(saved.rateInputMode);
 		if (saved.berRating) setBerRating(saved.berRating);
 		if (saved.legalFees) setLegalFees(saved.legalFees);
-		if (saved.showAdvanced) setShowAdvanced(saved.showAdvanced);
 		if (saved.cashback) setCashback(saved.cashback);
+		if (saved.erc) setErc(saved.erc);
+		if (saved.fixedPeriodYears) setFixedPeriodYears(saved.fixedPeriodYears);
 	}, []);
 
 	// Save to localStorage when form changes
@@ -103,27 +128,27 @@ export function RemortgageInputsIsland() {
 			outstandingBalance,
 			propertyValue,
 			currentRate,
-			currentPayment,
 			remainingTerm,
 			newRate,
 			rateInputMode,
 			berRating,
 			legalFees,
-			showAdvanced,
+			fixedPeriodYears,
 			cashback,
+			erc,
 		});
 	}, [
 		outstandingBalance,
 		propertyValue,
 		currentRate,
-		currentPayment,
 		remainingTerm,
 		newRate,
 		rateInputMode,
 		berRating,
 		legalFees,
-		showAdvanced,
 		cashback,
+		erc,
+		fixedPeriodYears,
 	]);
 
 	// Validation
@@ -151,28 +176,32 @@ export function RemortgageInputsIsland() {
 			remainingTermMonths: Number.parseInt(remainingTerm, 10),
 			legalFees:
 				Number.parseFloat(legalFees) || ESTIMATED_REMORTGAGE_LEGAL_FEES,
-			cashback: showAdvanced ? parseCurrency(cashback) : 0,
+			cashback: parseCurrency(cashback),
+			erc: parseCurrency(erc),
 		});
+
+		// Convert fixed period years to months (0 = variable)
+		const fixedYears = Number.parseInt(fixedPeriodYears, 10);
+		const fixedPeriodMonths = fixedYears === 0 ? null : fixedYears * 12;
 
 		// Store the result and open the dialog via the shared store
 		showRemortgageResult({
 			result,
 			remainingTermMonths: Number.parseInt(remainingTerm, 10),
+			fixedPeriodMonths,
 			shareState: {
 				type: "rmb",
 				outstandingBalance,
 				propertyValue,
 				currentRate,
-				currentPayment,
 				remainingTerm,
 				newRate,
 				rateInputMode,
 				berRating,
 				legalFees,
-				...(showAdvanced && {
-					showAdvanced: true,
-					cashback,
-				}),
+				cashback,
+				erc,
+				fixedPeriodYears,
 			},
 		});
 	}, [
@@ -182,13 +211,13 @@ export function RemortgageInputsIsland() {
 		newRate,
 		remainingTerm,
 		legalFees,
-		showAdvanced,
 		cashback,
+		erc,
 		outstandingBalance,
 		propertyValue,
-		currentPayment,
 		rateInputMode,
 		berRating,
+		fixedPeriodYears,
 	]);
 
 	// Auto-calculate when loaded from shared URL
@@ -272,81 +301,129 @@ export function RemortgageInputsIsland() {
 							/>
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="currentPayment">
-								Current Monthly Payment (optional)
-							</Label>
+							<Label htmlFor="legalFees">Estimated Legal Fees</Label>
 							<Input
-								id="currentPayment"
+								id="legalFees"
 								type="text"
 								inputMode="numeric"
-								placeholder="€1,500"
-								value={formatCurrencyInput(currentPayment)}
+								placeholder="€1,350"
+								value={formatCurrencyInput(legalFees)}
 								onChange={(e) =>
-									setCurrentPayment(e.target.value.replace(/[^0-9]/g, ""))
+									setLegalFees(e.target.value.replace(/[^0-9]/g, ""))
 								}
 							/>
 							<p className="text-xs text-muted-foreground">
-								For reference only
+								Typical: €1,200-€1,500
 							</p>
 						</div>
 					</div>
 
-					{/* Remaining Term and BER */}
-					<div className="grid gap-4 sm:grid-cols-2">
-						<MortgageTermSelector
-							value={remainingTerm}
-							onChange={setRemainingTerm}
-							label="Remaining Term"
-						/>
-						<BerSelector value={berRating} onChange={setBerRating} />
-					</div>
-
-					{/* New Rate Picker */}
-					<RatePicker
-						value={newRate}
-						onChange={setNewRate}
-						mode={rateInputMode}
-						onModeChange={setRateInputMode}
-						ltv={ltv}
-						buyerType="switcher-pdh"
-						berRating={berRating}
-						isRemortgage={true}
-						label="New Interest Rate"
-					/>
-
-					{/* Legal Fees */}
-					<div className="space-y-2">
-						<Label htmlFor="legalFees">Estimated Legal Fees</Label>
-						<Input
-							id="legalFees"
-							type="text"
-							inputMode="numeric"
-							placeholder="€1,350"
-							value={formatCurrencyInput(legalFees)}
-							onChange={(e) =>
-								setLegalFees(e.target.value.replace(/[^0-9]/g, ""))
-							}
-						/>
-						<p className="text-xs text-muted-foreground">
-							Typical switching costs are €1,200-€1,500 including all outlays
-						</p>
-					</div>
-
-					{/* Advanced Options */}
-					<Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
-						<CollapsibleTrigger asChild>
-							<Button
-								variant="ghost"
-								className="flex items-center gap-2 p-0 h-auto font-normal hover:bg-transparent"
-							>
-								<ChevronDown
-									className={`h-4 w-4 transition-transform ${showAdvanced ? "rotate-180" : ""}`}
+					{/* New Interest Rate - Tab toggle between picker and manual */}
+					<div className="space-y-3">
+						<Label>New Interest Rate</Label>
+						<Tabs
+							value={rateInputMode}
+							onValueChange={(v) => setRateInputMode(v as "picker" | "manual")}
+						>
+							<TabsList>
+								<TabsTrigger value="picker">Choose from rates</TabsTrigger>
+								<TabsTrigger value="manual">Enter manually</TabsTrigger>
+							</TabsList>
+							<TabsContent value="picker" className="mt-4 space-y-4">
+								<div className="grid gap-4 sm:grid-cols-2">
+									<MortgageTermSelector
+										value={remainingTerm}
+										onChange={setRemainingTerm}
+										label="Remaining Term"
+									/>
+									<BerSelector value={berRating} onChange={setBerRating} />
+								</div>
+								<RatePicker
+									value={newRate}
+									onChange={setNewRate}
+									mode="picker"
+									onModeChange={() => {}}
+									ltv={ltv}
+									buyerType="switcher-pdh"
+									berRating={berRating}
+									label=""
+									onRateSelect={handleRateSelect}
+									showViewAllRates
+									isRemortgage
+									propertyValue={propertyValue}
+									mortgageAmount={outstandingBalance}
+									mortgageTerm={remainingTerm}
 								/>
-								Advanced Options
-							</Button>
-						</CollapsibleTrigger>
-						<CollapsibleContent className="pt-4">
-							<div className="p-4 border rounded-lg bg-muted/30">
+							</TabsContent>
+							<TabsContent value="manual" className="mt-4 space-y-4">
+								<div className="grid gap-4 sm:grid-cols-2">
+									<MortgageTermSelector
+										value={remainingTerm}
+										onChange={setRemainingTerm}
+										label="Remaining Term"
+									/>
+									<div className="space-y-2">
+										<Label htmlFor="newRate">Rate</Label>
+										<div className="flex items-center gap-2">
+											<Input
+												id="newRate"
+												type="text"
+												inputMode="decimal"
+												value={newRate}
+												onChange={(e) => {
+													const val = e.target.value;
+													if (val === "" || /^\d*\.?\d*$/.test(val)) {
+														setNewRate(val);
+													}
+												}}
+												placeholder="e.g. 3.45"
+											/>
+											<span className="text-muted-foreground">%</span>
+										</div>
+									</div>
+								</div>
+								<div className="grid gap-4 sm:grid-cols-2">
+									<div className="space-y-2 sm:col-span-2">
+										<Label htmlFor="fixedPeriod">Rate Type</Label>
+										<Select
+											value={fixedPeriodYears}
+											onValueChange={setFixedPeriodYears}
+										>
+											<SelectTrigger id="fixedPeriod">
+												<SelectValue placeholder="Select rate type" />
+											</SelectTrigger>
+											<SelectContent>
+												{FIXED_PERIOD_OPTIONS.map((opt) => (
+													<SelectItem key={opt.value} value={opt.value}>
+														{opt.label}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<p className="text-xs text-muted-foreground">
+											Used to warn if breakeven exceeds fixed period
+										</p>
+									</div>
+								</div>
+							</TabsContent>
+						</Tabs>
+					</div>
+
+					{/* Calculate Button */}
+					<Button
+						onClick={calculate}
+						disabled={!isFormComplete}
+						className="w-full"
+						size="lg"
+					>
+						Calculate Breakeven
+					</Button>
+
+					{/* Advanced Options - always visible */}
+					<div className="space-y-4">
+						<p className="text-sm font-medium">Advanced Options</p>
+						<div className="p-4 border rounded-lg bg-muted/30">
+							<div className="grid gap-4 sm:grid-cols-2">
 								<div className="space-y-2">
 									<Label htmlFor="cashback">Cashback from New Lender</Label>
 									<Input
@@ -360,23 +437,28 @@ export function RemortgageInputsIsland() {
 										}
 									/>
 									<p className="text-xs text-muted-foreground">
-										Some lenders offer 1-3% cashback on the mortgage amount.
-										This reduces your net switching cost.
+										1-3% cashback reduces your net switching cost
+									</p>
+								</div>
+								<div className="space-y-2">
+									<Label htmlFor="erc">Early Repayment Charge (ERC)</Label>
+									<Input
+										id="erc"
+										type="text"
+										inputMode="numeric"
+										placeholder="€0"
+										value={formatCurrencyInput(erc)}
+										onChange={(e) =>
+											setErc(e.target.value.replace(/[^0-9]/g, ""))
+										}
+									/>
+									<p className="text-xs text-muted-foreground">
+										Check your terms for ERC on fixed rates
 									</p>
 								</div>
 							</div>
-						</CollapsibleContent>
-					</Collapsible>
-
-					{/* Calculate Button */}
-					<Button
-						onClick={calculate}
-						disabled={!isFormComplete}
-						className="w-full"
-						size="lg"
-					>
-						Calculate Breakeven
-					</Button>
+						</div>
+					</div>
 				</div>
 			</CardContent>
 		</Card>
