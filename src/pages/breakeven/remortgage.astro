@@ -1,0 +1,25 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { RemortgageInputsIsland } from "@/components/breakeven/RemortgageInputsIsland";
+import { BreakevenResultIsland } from "@/components/breakeven/BreakevenResultIsland";
+---
+
+<Layout
+	title="Remortgage Breakeven"
+	description="Calculate when switching your mortgage will pay off. Factor in legal fees, cashback offers, and monthly savings to find your breakeven point."
+>
+	<div class="container mx-auto px-4 py-12">
+		<div class="max-w-4xl mx-auto">
+			<div class="mb-8">
+				<h1 class="text-3xl font-bold tracking-tight mb-2">Remortgage Breakeven</h1>
+				<p class="text-muted-foreground">
+					Find out how quickly switching your mortgage will pay off.
+					Compare switching costs against monthly savings to see your breakeven point.
+				</p>
+			</div>
+
+			<RemortgageInputsIsland client:load />
+			<BreakevenResultIsland client:idle />
+		</div>
+	</div>
+</Layout>

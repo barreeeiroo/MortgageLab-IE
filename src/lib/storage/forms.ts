@@ -1,4 +1,4 @@
-import type { RatesInputValues } from "@/lib/stores/form";
+import type { RatesInputValues } from "@/lib/stores/rates-form";
 import { loadFromStorage, saveToStorage } from "./helpers";
 
 // Storage keys
@@ -7,6 +7,8 @@ export const STORAGE_KEYS = {
 	MOVER_CALCULATOR: "mover-calculator",
 	BTL_CALCULATOR: "btl-calculator",
 	RATES_CALCULATOR: "rates-calculator",
+	RENT_VS_BUY_CALCULATOR: "rent-vs-buy-calculator",
+	REMORTGAGE_BREAKEVEN_CALCULATOR: "remortgage-breakeven-calculator",
 } as const;
 
 // FTB Calculator form state
@@ -84,4 +86,62 @@ export function loadRatesForm(): Partial<RatesFormState> {
 
 export function saveRatesForm(state: RatesFormState): void {
 	saveToStorage(STORAGE_KEYS.RATES_CALCULATOR, state);
+}
+
+// Rent vs Buy Calculator form state
+export interface RentVsBuyFormState {
+	propertyValue: string;
+	deposit: string;
+	mortgageTerm: string;
+	interestRate: string;
+	berRating: string;
+	currentRent: string;
+	legalFees: string;
+	// Advanced options (always visible)
+	rentInflation: string;
+	homeAppreciation: string;
+	maintenanceRate: string;
+	opportunityCost: string;
+	saleCost: string;
+	serviceCharge: string;
+	serviceChargeIncrease: string;
+}
+
+export function loadRentVsBuyForm(): Partial<RentVsBuyFormState> {
+	return loadFromStorage<RentVsBuyFormState>(
+		STORAGE_KEYS.RENT_VS_BUY_CALCULATOR,
+	);
+}
+
+export function saveRentVsBuyForm(state: RentVsBuyFormState): void {
+	saveToStorage(STORAGE_KEYS.RENT_VS_BUY_CALCULATOR, state);
+}
+
+// Remortgage Breakeven Calculator form state
+export interface RemortgageBreakevenFormState {
+	outstandingBalance: string;
+	propertyValue: string;
+	currentRate: string;
+	remainingTerm: string;
+	newRate: string;
+	rateInputMode: "picker" | "manual";
+	berRating: string;
+	legalFees: string;
+	// Fixed period tracking ("0" = variable, "1"-"10" = years)
+	fixedPeriodYears: string;
+	// Advanced options
+	cashback: string;
+	erc?: string;
+}
+
+export function loadRemortgageBreakevenForm(): Partial<RemortgageBreakevenFormState> {
+	return loadFromStorage<RemortgageBreakevenFormState>(
+		STORAGE_KEYS.REMORTGAGE_BREAKEVEN_CALCULATOR,
+	);
+}
+
+export function saveRemortgageBreakevenForm(
+	state: RemortgageBreakevenFormState,
+): void {
+	saveToStorage(STORAGE_KEYS.REMORTGAGE_BREAKEVEN_CALCULATOR, state);
 }

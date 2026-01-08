@@ -1,0 +1,81 @@
+---
+import { Home, ArrowRightLeft, Building, ArrowRight } from "lucide-react";
+import Layout from "@/layouts/Layout.astro";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { getPath } from "@/lib/utils";
+
+const calculators = [
+	{
+		title: "First Time Buyer",
+		description:
+			"Calculate your maximum borrowing capacity as a first-time buyer with Central Bank lending rules.",
+		href: "/affordability/first-time-buyer",
+		Icon: Home,
+	},
+	{
+		title: "Home Mover",
+		description:
+			"Moving to a new home? Calculate how much you can borrow based on your current equity and income.",
+		href: "/affordability/home-mover",
+		Icon: ArrowRightLeft,
+	},
+	{
+		title: "Buy to Let",
+		description:
+			"Explore buy-to-let mortgage options with calculations based on rental income and investment rules.",
+		href: "/affordability/buy-to-let",
+		Icon: Building,
+	},
+];
+---
+
+<Layout
+	title="Affordability Calculators"
+	description="Calculate how much you can borrow for a mortgage in Ireland. Tools for first-time buyers, home movers, and buy-to-let investors based on Central Bank lending rules."
+>
+	<div class="container mx-auto px-4 py-12">
+		<div class="max-w-4xl mx-auto">
+			<div class="mb-8">
+				<h1 class="text-3xl font-bold tracking-tight mb-2">
+					Affordability Calculators
+				</h1>
+				<p class="text-muted-foreground">
+					Find out how much you can borrow based on your situation. Our
+					calculators apply Central Bank of Ireland lending rules to give you
+					accurate borrowing estimates.
+				</p>
+			</div>
+
+			<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+				{
+					calculators.map((calc) => (
+						<a href={getPath(calc.href)} class="block group">
+							<Card className="h-full hover:border-primary/50 transition-colors">
+								<CardHeader>
+									<div class="flex items-center gap-3">
+										<div class="p-2.5 rounded-lg bg-primary/10">
+											<calc.Icon className="h-5 w-5 text-primary" />
+										</div>
+										<CardTitle className="text-lg">{calc.title}</CardTitle>
+									</div>
+									<CardDescription>{calc.description}</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<span class="inline-flex items-center gap-1 text-primary font-medium text-sm group-hover:gap-2 transition-all">
+										Calculate <ArrowRight className="h-4 w-4" />
+									</span>
+								</CardContent>
+							</Card>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</Layout>

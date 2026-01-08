@@ -13,6 +13,18 @@ export {
 	type MoverShareState,
 	parseBorrowingShareState,
 } from "./borrowing";
+// Breakeven calculator share utilities
+export {
+	BREAKEVEN_SHARE_PARAM,
+	type BreakevenCalculatorType,
+	type BreakevenShareState,
+	clearBreakevenShareParam,
+	copyBreakevenShareUrl,
+	hasBreakevenShareParam,
+	parseBreakevenShareState,
+	type RemortgageBreakevenShareState,
+	type RentVsBuyShareState,
+} from "./breakeven";
 export {
 	clearUrlParam,
 	compressToUrl,

@@ -1,4 +1,4 @@
-import { ExternalLink, Info } from "lucide-react";
+import { ExternalLink, Info, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
@@ -515,7 +515,7 @@ export function BuyToLetCalculator() {
 						)}
 					</AlertDialogBody>
 					<AlertDialogFooter className="sm:justify-between">
-						<ShareButton onShare={handleShare} />
+						<ShareButton size="default" onShare={handleShare} />
 						<div className="flex flex-col-reverse gap-2 sm:flex-row">
 							<AlertDialogCancel>Close</AlertDialogCancel>
 							<AlertDialogAction
@@ -532,10 +532,12 @@ export function BuyToLetCalculator() {
 										mortgageTerm: (result.mortgageTerm * 12).toString(),
 										berRating: result.berRating,
 										buyerType: "btl",
+										currentLender: "",
 									});
 									window.location.href = getPath("/rates");
 								}}
 							>
+								<TrendingUp className="h-4 w-4" />
 								Compare Mortgage Rates
 							</AlertDialogAction>
 						</div>
