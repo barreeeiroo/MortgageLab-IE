@@ -17,11 +17,20 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"correctness": {
+				"noUndeclaredDependencies": "error"
+			},
+			"suspicious": {
+				"noEmptyBlockStatements": "error",
+				"noVar": "error"
+			},
 			"style": {
-				"noExportedImports": "error"
+				"noExportedImports": "error",
+				"noUnusedTemplateLiteral": "error"
 			},
 			"performance": {
-				"noBarrelFile": "error"
+				"noBarrelFile": "error",
+				"noDelete": "error"
 			}
 		}
 	},

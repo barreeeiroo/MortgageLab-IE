@@ -248,20 +248,20 @@ export function getMissingVariableRateUrl({
 		mode === "remortgage" ? "Remortgage / Switcher" : "First Mortgage";
 
 	const additionalContext = [
-		`**Issue:** Unable to find a matching variable rate for follow-on payment calculation.`,
-		``,
-		`**Fixed Rate Details:**`,
+		"**Issue:** Unable to find a matching variable rate for follow-on payment calculation.",
+		"",
+		"**Fixed Rate Details:**",
 		`- Product: ${fixedRateName}`,
 		`- Rate: ${fixedRate.toFixed(2)}%`,
 		`- Term: ${termInfo}`,
 		`- LTV Range: ${ltvRange}`,
-		``,
+		"",
 		`**User's Search Context:**`,
 		`- Mode: ${modeLabel}`,
 		buyerType ? `- Buyer Type: ${getBuyerTypeLabel(buyerType)}` : null,
 		berRating ? `- BER Rating: ${berRating.toUpperCase()}` : null,
 		`- Current LTV: ${ltv.toFixed(1)}%`,
-		``,
+		"",
 		`**Expected:** A variable rate from ${lenderName} that covers ${ltv.toFixed(1)}% LTV for customers rolling off fixed terms.`,
 	]
 		.filter(Boolean)

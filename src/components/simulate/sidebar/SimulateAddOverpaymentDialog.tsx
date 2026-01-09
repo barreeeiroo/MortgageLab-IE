@@ -506,7 +506,7 @@ function MaximizeContent({
 								</div>
 								<p className="text-sm text-muted-foreground">
 									{yearlyPlans.length > 1
-										? `Year 1 (decreases yearly as balance drops)`
+										? "Year 1 (decreases yearly as balance drops)"
 										: "Maximum overpayment without fees"}
 								</p>
 							</div>

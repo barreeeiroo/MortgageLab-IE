@@ -342,7 +342,6 @@ export function RemortgageInputsIsland() {
 									value={newRate}
 									onChange={setNewRate}
 									mode="picker"
-									onModeChange={() => {}}
 									ltv={ltv}
 									buyerType="switcher-pdh"
 									berRating={berRating}

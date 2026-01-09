@@ -448,7 +448,6 @@ export function RentVsBuyCalculator() {
 										value={interestRate}
 										onChange={setInterestRate}
 										mode="picker"
-										onModeChange={() => {}}
 										ltv={ltv}
 										buyerType="ftb"
 										berRating={berRating}

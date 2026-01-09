@@ -18,7 +18,7 @@ interface RatePickerProps {
 	value: string;
 	onChange: (value: string) => void;
 	mode: "picker" | "manual";
-	onModeChange: (mode: "picker" | "manual") => void;
+	onModeChange?: (mode: "picker" | "manual") => void;
 	// Filter params
 	ltv?: number;
 	buyerType?: BuyerType;
@@ -176,15 +176,17 @@ export function RatePicker({
 			{label && (
 				<div className="flex items-center justify-between">
 					<Label htmlFor={id}>{label}</Label>
-					<button
-						type="button"
-						onClick={() =>
-							onModeChange(mode === "picker" ? "manual" : "picker")
-						}
-						className="text-sm text-primary hover:underline"
-					>
-						{mode === "picker" ? "Enter manually" : "Choose from rates"}
-					</button>
+					{onModeChange && (
+						<button
+							type="button"
+							onClick={() =>
+								onModeChange(mode === "picker" ? "manual" : "picker")
+							}
+							className="text-sm text-primary hover:underline"
+						>
+							{mode === "picker" ? "Enter manually" : "Choose from rates"}
+						</button>
+					)}
 				</div>
 			)}
 
@@ -215,14 +217,19 @@ export function RatePicker({
 						<div className="text-sm text-muted-foreground p-4 border rounded-lg bg-muted/50">
 							<p>No rates found for your criteria.</p>
 							<p className="mt-1">
-								Try adjusting LTV, BER rating, or{" "}
-								<button
-									type="button"
-									onClick={() => onModeChange("manual")}
-									className="text-primary hover:underline"
-								>
-									enter a rate manually
-								</button>
+								Try adjusting LTV, BER rating
+								{onModeChange && (
+									<>
+										, or{" "}
+										<button
+											type="button"
+											onClick={() => onModeChange("manual")}
+											className="text-primary hover:underline"
+										>
+											enter a rate manually
+										</button>
+									</>
+								)}
 								.
 							</p>
 						</div>
