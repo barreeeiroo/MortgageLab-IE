@@ -17,6 +17,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Typecheck
+        run: bun run typecheck
+
       - name: Lint
         run: bun run lint
 
