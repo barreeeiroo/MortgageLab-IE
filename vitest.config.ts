@@ -8,6 +8,8 @@ export default getViteConfig({
 			"tests/integration/**/*.{test,spec}.{js,ts,jsx,tsx}",
 		],
 		globals: true,
+		environment: "happy-dom",
+		setupFiles: ["./src/vitest.setup.ts"],
 		coverage: {
 			provider: "v8",
 			reporter: ["text", "html", "lcov"],
