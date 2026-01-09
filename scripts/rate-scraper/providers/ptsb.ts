@@ -13,8 +13,10 @@ import type { LenderProvider } from "../types";
 const LENDER_ID = "ptsb";
 const RATES_URL = "https://www.ptsb.ie/mortgages/mortgage-interest-rates/";
 
-const PDH_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
-const BTL_BUYER_TYPES: BuyerType[] = ["btl", "switcher-btl"];
+const PDH_NEW_BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
+const PDH_EXISTING_BUYER_TYPES: BuyerType[] = ["switcher-pdh"];
+const BTL_NEW_BUYER_TYPES: BuyerType[] = ["btl", "switcher-btl"];
+const BTL_EXISTING_BUYER_TYPES: BuyerType[] = ["switcher-btl"];
 
 interface ParsedRow {
 	name: string;
@@ -36,13 +38,14 @@ function parseTableRow($: cheerio.CheerioAPI, row: Element): ParsedRow | null {
 	const rateText = $(cells[1]).text().trim();
 	const aprText = $(cells[2]).text().trim();
 
-	// Skip header rows, empty rows, or sub-section headers
+	// Skip header rows, empty rows, sub-section headers, and legacy SVR rates
 	if (
 		!name ||
 		!rateText.includes("%") ||
 		rateText.toLowerCase().includes("rate") ||
 		rateText.toLowerCase().includes("borrowing") ||
-		$(row).find("td[colspan]").length > 0
+		$(row).find("td[colspan]").length > 0 ||
+		name.toLowerCase().includes("svr") // Skip legacy Standard Variable Rate rows
 	) {
 		return null;
 	}
@@ -85,20 +88,30 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	// Use a Map to deduplicate rates by ID
 	const ratesMap = new Map<string, MortgageRate>();
 
-	// Track whether we've hit the "Existing Mortgage Customers" section
-	let hitExistingSection = false;
+	// Track whether we're in the existing customers section
+	let isExistingSection = false;
+	let isExistingBtlSection = false;
 
 	// Find all h4 headings and process each section
 	$("h4").each((_, heading) => {
 		const headingText = $(heading).text().toLowerCase();
 
-		// Stop processing when we hit existing customers section
-		if (headingText.includes("existing")) {
-			hitExistingSection = true;
-			return false; // Break the each loop
+		// Skip irrelevant sections
+		if (
+			headingText.includes("commercial") ||
+			headingText.includes("ulster bank")
+		) {
+			return;
 		}
 
-		if (hitExistingSection) return;
+		// Track section transitions
+		if (headingText.includes("existing") && headingText.includes("btl")) {
+			isExistingBtlSection = true;
+			isExistingSection = true;
+		} else if (headingText.includes("existing")) {
+			isExistingSection = true;
+			isExistingBtlSection = false;
+		}
 
 		// Find the table following this heading
 		const table = $(heading).nextAll("table").first();
@@ -109,22 +122,24 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		const isVariableSection =
 			headingText.includes("variable") && !headingText.includes("buy to let");
 		const isBtlSection =
-			headingText.includes("buy to let") || headingText.includes("btl");
+			headingText.includes("buy to let") ||
+			headingText.includes("btl") ||
+			isExistingBtlSection;
 
-		// For BTL section, track sub-sections within the table
-		let btlSubSection: RateType | null = null;
+		// Track sub-sections within the table (for BTL and existing customer MVR rates)
+		let tableSubSection: RateType | null = null;
 
 		$(table)
 			.find("tbody tr")
 			.each((_, row) => {
-				// Check for BTL sub-section headers
+				// Check for sub-section headers (colspan rows)
 				const colspan = $(row).find("td[colspan]");
 				if (colspan.length > 0) {
 					const subHeading = colspan.text().toLowerCase();
 					if (subHeading.includes("variable")) {
-						btlSubSection = "variable";
+						tableSubSection = "variable";
 					} else if (subHeading.includes("fixed")) {
-						btlSubSection = "fixed";
+						tableSubSection = "fixed";
 					}
 					return; // Skip sub-heading rows
 				}
@@ -134,18 +149,31 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 
 				// Determine if this is a variable rate
 				// Variable section rates are variable even without "variable" in name
-				// BTL variable sub-section rates are variable
+				// Sub-section variable rates are variable
 				const isVariable =
 					parsed.isVariable ||
 					isVariableSection ||
-					(isBtlSection && btlSubSection === "variable");
+					tableSubSection === "variable";
 
 				const isBtl = isBtlSection;
 				const isHighValue = isHighValueSection;
-				const buyerTypes = isBtl ? BTL_BUYER_TYPES : PDH_BUYER_TYPES;
+				const isNewBusiness = !isExistingSection;
+
+				// Determine buyer types based on section
+				let buyerTypes: BuyerType[];
+				if (isBtl) {
+					buyerTypes = isNewBusiness
+						? BTL_NEW_BUYER_TYPES
+						: BTL_EXISTING_BUYER_TYPES;
+				} else {
+					buyerTypes = isNewBusiness
+						? PDH_NEW_BUYER_TYPES
+						: PDH_EXISTING_BUYER_TYPES;
+				}
 
 				// Generate unique ID
 				const idParts = [LENDER_ID];
+				if (!isNewBusiness) idParts.push("existing");
 				if (isBtl) idParts.push("btl");
 				if (isHighValue) idParts.push("hv");
 				if (parsed.isGreen) idParts.push("green");
@@ -174,13 +202,17 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 				nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
 
 				// Determine perks (cashback)
-				// PTSB: 2% cashback for PDH new business, excludes 4 Year Fixed and Green
+				// PTSB: 2% cashback for PDH new business only, excludes 4 Year Fixed and Green
 				const hasCashback =
-					!parsed.excludesCashback && !isVariable && !isBtl && !isHighValue;
+					isNewBusiness &&
+					!parsed.excludesCashback &&
+					!isVariable &&
+					!isBtl &&
+					!isHighValue;
 
-				// High Value non-green rates get cashback
+				// High Value non-green new business rates get cashback
 				const hasHighValueCashback =
-					isHighValue && !parsed.isGreen && !isVariable;
+					isNewBusiness && isHighValue && !parsed.isGreen && !isVariable;
 
 				const mortgageRate: MortgageRate = {
 					id: idParts.join("-"),
@@ -196,6 +228,63 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 					buyerTypes,
 					berEligible: parsed.isGreen ? GREEN_BER_RATINGS : undefined,
 					perks: hasCashback || hasHighValueCashback ? ["cashback-2pct"] : [],
+					newBusiness: isNewBusiness,
+				};
+
+				ratesMap.set(mortgageRate.id, mortgageRate);
+			});
+	});
+
+	// Also process standalone MVR table (existing customer variable rates without h4 heading)
+	// This table contains "Existing Business Managed Variable Rate (MVRs)" colspan
+	$("table").each((_, table) => {
+		const tableHtml = $(table).html() || "";
+		if (
+			!tableHtml.toLowerCase().includes("existing business managed variable")
+		) {
+			return;
+		}
+
+		// This is the existing customer MVR table
+		let inMvrSection = false;
+
+		$(table)
+			.find("tbody tr")
+			.each((_, row) => {
+				const colspan = $(row).find("td[colspan]");
+				if (colspan.length > 0) {
+					const subHeading = colspan.text().toLowerCase();
+					if (subHeading.includes("variable")) {
+						inMvrSection = true;
+					}
+					return;
+				}
+
+				if (!inMvrSection) return;
+
+				const parsed = parseTableRow($, row);
+				if (!parsed) return;
+
+				const idParts = [
+					LENDER_ID,
+					"existing",
+					"variable",
+					String(parsed.maxLtv),
+				];
+				const nameParts = ["Managed Variable Rate", `- LTV ≤${parsed.maxLtv}%`];
+
+				const mortgageRate: MortgageRate = {
+					id: idParts.join("-"),
+					name: nameParts.join(" "),
+					lenderId: LENDER_ID,
+					type: "variable",
+					rate: parsed.rate,
+					apr: parsed.apr,
+					minLtv: parsed.minLtv,
+					maxLtv: parsed.maxLtv,
+					buyerTypes: PDH_EXISTING_BUYER_TYPES,
+					perks: [],
+					newBusiness: false,
 				};
 
 				ratesMap.set(mortgageRate.id, mortgageRate);

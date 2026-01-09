@@ -260,6 +260,15 @@ export function parseLtvFromName(name: string): LtvBand {
 		return { minLtv: 70, maxLtv: 90 };
 	}
 
+	// >90% (existing customers only - very rare)
+	if (
+		lowerName.includes(">90%") ||
+		lowerName.includes("&gt;90%") ||
+		lowerName.includes("greaterthan90%")
+	) {
+		return { minLtv: 90, maxLtv: 100 };
+	}
+
 	// >80% to 90%
 	if (
 		lowerName.includes(">80%") ||
