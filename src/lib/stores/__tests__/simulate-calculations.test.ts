@@ -9,9 +9,11 @@ import type {
 	SimulationState,
 } from "@/lib/schemas/simulate";
 import type { CustomRate } from "@/lib/stores/custom-rates";
+import type { ResolvedRatePeriod } from "@/lib/schemas/simulate";
 import {
 	aggregateByYear,
 	calculateAmortization,
+	calculateBaselineInterest,
 	calculateMilestones,
 	calculateSummary,
 } from "../simulate/simulate-calculations";
@@ -934,5 +936,222 @@ describe("calculateMilestones", () => {
 	it("returns empty array for empty months", () => {
 		const milestones = calculateMilestones([], 10000000, 12000000, "2025-01-15");
 		expect(milestones).toHaveLength(0);
+	});
+});
+
+describe("calculateBaselineInterest", () => {
+	// Helper to create a resolved rate period
+	function createResolvedPeriod(
+		id: string,
+		rate: number,
+		startMonth: number,
+		durationMonths: number,
+	): ResolvedRatePeriod {
+		return {
+			id,
+			rateId: `rate-${id}`,
+			rate,
+			type: "variable",
+			lenderId: "test-lender",
+			lenderName: "Test Bank",
+			rateName: "Test Rate",
+			startMonth,
+			durationMonths,
+			label: `Period ${id}`,
+			isCustom: false,
+		};
+	}
+
+	describe("basic calculations", () => {
+		it("calculates interest for single rate period", () => {
+			const mortgageAmount = 30000000; // €300k in cents
+			const termMonths = 360; // 30 years
+			const ratePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			const interest = calculateBaselineInterest(
+				mortgageAmount,
+				termMonths,
+				ratePeriods,
+				resolvedPeriods,
+			);
+
+			// Should calculate significant interest over 30 years at 4%
+			expect(interest).toBeGreaterThan(mortgageAmount * 0.5); // More than 50% of principal
+			expect(interest).toBeLessThan(mortgageAmount * 1.5); // Less than 150% of principal
+		});
+
+		it("calculates higher interest for higher rate", () => {
+			const mortgageAmount = 30000000;
+			const termMonths = 360;
+
+			const lowRatePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+			];
+			const lowResolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 3.0, 1, 0)],
+			]);
+
+			const highRatePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+			];
+			const highResolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 5.0, 1, 0)],
+			]);
+
+			const lowInterest = calculateBaselineInterest(
+				mortgageAmount,
+				termMonths,
+				lowRatePeriods,
+				lowResolvedPeriods,
+			);
+			const highInterest = calculateBaselineInterest(
+				mortgageAmount,
+				termMonths,
+				highRatePeriods,
+				highResolvedPeriods,
+			);
+
+			expect(highInterest).toBeGreaterThan(lowInterest);
+		});
+
+		it("calculates interest for multiple rate periods", () => {
+			const mortgageAmount = 30000000;
+			const termMonths = 360;
+			const ratePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 36 }, // 3 years fixed
+				{ id: "p2", rateId: "rate-p2", lenderId: "test", durationMonths: 0 }, // Variable until end
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 3.5, 1, 36)],
+				["p2", createResolvedPeriod("p2", 4.5, 37, 0)],
+			]);
+
+			const interest = calculateBaselineInterest(
+				mortgageAmount,
+				termMonths,
+				ratePeriods,
+				resolvedPeriods,
+			);
+
+			expect(interest).toBeGreaterThan(0);
+		});
+	});
+
+	describe("edge cases", () => {
+		it("returns 0 for zero mortgage amount", () => {
+			const ratePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			const interest = calculateBaselineInterest(
+				0,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+			);
+
+			expect(interest).toBe(0);
+		});
+
+		it("returns 0 for zero term months", () => {
+			const ratePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			const interest = calculateBaselineInterest(
+				30000000,
+				0,
+				ratePeriods,
+				resolvedPeriods,
+			);
+
+			expect(interest).toBe(0);
+		});
+
+		it("returns 0 for empty rate periods", () => {
+			const interest = calculateBaselineInterest(
+				30000000,
+				360,
+				[],
+				new Map(),
+			);
+
+			expect(interest).toBe(0);
+		});
+
+		it("handles missing resolved period gracefully", () => {
+			const ratePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+			];
+			// Empty resolved periods map - period not resolved
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>();
+
+			const interest = calculateBaselineInterest(
+				30000000,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+			);
+
+			// Should handle gracefully without crashing
+			expect(interest).toBe(0);
+		});
+
+		it("handles negative mortgage amount", () => {
+			const ratePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			const interest = calculateBaselineInterest(
+				-30000000,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+			);
+
+			expect(interest).toBe(0);
+		});
+	});
+
+	describe("shorter terms", () => {
+		it("calculates less interest for shorter term", () => {
+			const mortgageAmount = 30000000;
+			const ratePeriods: RatePeriod[] = [
+				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			const interest20yr = calculateBaselineInterest(
+				mortgageAmount,
+				240,
+				ratePeriods,
+				resolvedPeriods,
+			);
+			const interest30yr = calculateBaselineInterest(
+				mortgageAmount,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+			);
+
+			// Shorter term means higher monthly payments but less total interest
+			expect(interest20yr).toBeLessThan(interest30yr);
+		});
 	});
 });
