@@ -2,6 +2,7 @@ import { ExternalLink, Info, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
+	type BerRating,
 	CENTRAL_BANK_MORTGAGE_MEASURES_URL,
 	DEFAULT_BER,
 	LENDER_ALLOWANCES,
@@ -130,7 +131,7 @@ export function BuyToLetCalculator() {
 		if (saved.birthDate2) setBirthDate2(new Date(saved.birthDate2));
 		if (saved.deposit) setDeposit(saved.deposit);
 		if (saved.expectedRent) setExpectedRent(saved.expectedRent);
-		if (saved.berRating) setBerRating(saved.berRating);
+		if (saved.berRating) setBerRating(saved.berRating as BerRating);
 		// Property type fields
 		if (saved.propertyType) setPropertyType(saved.propertyType);
 		if (saved.priceIncludesVAT !== undefined)

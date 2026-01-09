@@ -1,5 +1,10 @@
 import * as cheerio from "cheerio";
-import { BER_GROUP_A, GREEN_BER_RATINGS } from "@/lib/constants/ber";
+import type { Element } from "domhandler";
+import {
+	BER_GROUP_A,
+	type BerRating,
+	GREEN_BER_RATINGS,
+} from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
@@ -31,10 +36,7 @@ interface ParsedRow {
 	isVariable: boolean;
 }
 
-function parseTableRow(
-	$: cheerio.CheerioAPI,
-	row: cheerio.Element,
-): ParsedRow | null {
+function parseTableRow($: cheerio.CheerioAPI, row: Element): ParsedRow | null {
 	const cells = $(row).find("td").toArray();
 	if (cells.length < 3) return null;
 
@@ -150,7 +152,7 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 						nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
 				}
 
-				let berEligible: string[] | undefined;
+				let berEligible: BerRating[] | undefined;
 				if (isGreenA) {
 					berEligible = BER_GROUP_A;
 				} else if (isGreen) {

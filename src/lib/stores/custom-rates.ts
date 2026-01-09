@@ -1,4 +1,5 @@
 import { atom, computed } from "nanostores";
+import type { BerRating } from "@/lib/constants/ber";
 import { DEFAULT_MAX_TERM } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import { $lenders } from "./lenders";
@@ -83,11 +84,7 @@ export const $filteredCustomRates = computed(
 				return false;
 			// Filter by BER rating
 			if (values.berRating && rate.berEligible) {
-				if (
-					!rate.berEligible.includes(
-						values.berRating as MortgageRate["berEligible"][number],
-					)
-				)
+				if (!rate.berEligible.includes(values.berRating as BerRating))
 					return false;
 			}
 			// Filter by lender's maxTerm (if using a known lender)

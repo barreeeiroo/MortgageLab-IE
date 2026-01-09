@@ -4,6 +4,9 @@ import {
 	DEFAULT_TERM_MONTHS,
 	type RatesMode,
 } from "@/lib/constants";
+
+export type { RatesMode };
+
 import { parseCurrency } from "@/lib/utils";
 
 export interface RatesInputValues {

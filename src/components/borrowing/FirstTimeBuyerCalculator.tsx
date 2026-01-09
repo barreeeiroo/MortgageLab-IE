@@ -2,6 +2,7 @@ import { ExternalLink, Scale, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
+	type BerRating,
 	CENTRAL_BANK_MORTGAGE_MEASURES_URL,
 	DEFAULT_BER,
 	LENDER_ALLOWANCES,
@@ -129,7 +130,7 @@ export function FirstTimeBuyerCalculator() {
 		if (saved.birthDate1) setBirthDate1(new Date(saved.birthDate1));
 		if (saved.birthDate2) setBirthDate2(new Date(saved.birthDate2));
 		if (saved.savings) setSavings(saved.savings);
-		if (saved.berRating) setBerRating(saved.berRating);
+		if (saved.berRating) setBerRating(saved.berRating as BerRating);
 		// Self Build fields
 		if (saved.isSelfBuild) setIsSelfBuild(saved.isSelfBuild);
 		if (saved.siteValue) setSiteValue(saved.siteValue);

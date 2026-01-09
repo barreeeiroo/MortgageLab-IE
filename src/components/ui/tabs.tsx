@@ -55,7 +55,10 @@ function TabsList({
 	// Extract tab options from children for the dropdown
 	const options: Array<{ value: string; label: React.ReactNode }> = [];
 	Children.forEach(children, (child) => {
-		if (isValidElement(child) && child.props.value) {
+		if (
+			isValidElement<{ value?: string; children?: React.ReactNode }>(child) &&
+			child.props.value
+		) {
 			options.push({
 				value: child.props.value,
 				label: child.props.children,

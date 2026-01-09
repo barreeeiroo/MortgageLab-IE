@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
 import { GREEN_BER_RATINGS } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
@@ -27,10 +28,7 @@ interface ParsedRow {
 	isVariable: boolean;
 }
 
-function parseTableRow(
-	$: cheerio.CheerioAPI,
-	row: cheerio.Element,
-): ParsedRow | null {
+function parseTableRow($: cheerio.CheerioAPI, row: Element): ParsedRow | null {
 	const cells = $(row).find("td").toArray();
 	if (cells.length < 3) return null;
 

@@ -505,7 +505,7 @@ export function RateInfoModal({
 			ber: (berRating as BerRating) ?? DEFAULT_BER,
 			lenderId: rate.lenderId,
 			rateId: rate.id,
-			isCustom: isCustom,
+			isCustom: isCustom ?? false,
 			fixedTerm: rate.fixedTerm,
 			label: rateLabel,
 			followOn,
@@ -531,7 +531,7 @@ export function RateInfoModal({
 		addRatePeriod({
 			lenderId: rate.lenderId,
 			rateId: rate.id,
-			isCustom: isCustom,
+			isCustom: isCustom ?? false,
 			durationMonths:
 				rate.type === "fixed" && rate.fixedTerm ? rate.fixedTerm * 12 : 0,
 			label: rateLabel,

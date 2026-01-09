@@ -30,7 +30,7 @@ import {
 	Zap,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { getMissingVariableRateUrl } from "@/lib/constants";
+import { type BerRating, getMissingVariableRateUrl } from "@/lib/constants";
 import {
 	getAvailableFixedTerms,
 	getLender,
@@ -1102,7 +1102,7 @@ export function RatesTable({
 								rate,
 								allRates,
 								followOnLtv,
-								inputValues.berRating,
+								inputValues.berRating as BerRating | undefined,
 							)
 						: undefined;
 
@@ -1161,7 +1161,7 @@ export function RatesTable({
 
 				// Flag when fixed rate has no follow-on (using fixed rate for whole term)
 				const usesFixedRateForWholeTerm =
-					rate.type === "fixed" && rate.fixedTerm && !followOnRate;
+					rate.type === "fixed" && !!rate.fixedTerm && !followOnRate;
 
 				return {
 					...rate,

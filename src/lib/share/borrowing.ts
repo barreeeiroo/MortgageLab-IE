@@ -128,7 +128,7 @@ function compressState(state: BorrowingShareState): CompressedState {
 		...(state.propertyType &&
 			state.propertyType !== "existing" && {
 				pt: compressPropertyType(state.propertyType),
-				vi: state.priceIncludesVAT === false ? "0" : "1",
+				vi: (state.priceIncludesVAT === false ? "0" : "1") as "0" | "1",
 			}),
 	} as const;
 
@@ -139,7 +139,7 @@ function compressState(state: BorrowingShareState): CompressedState {
 				...base,
 				s: state.savings,
 				...(state.isSelfBuild && {
-					sb: "1",
+					sb: "1" as const,
 					sv: state.siteValue ?? "",
 				}),
 			};
@@ -151,7 +151,7 @@ function compressState(state: BorrowingShareState): CompressedState {
 				om: state.outstandingMortgage,
 				as: state.additionalSavings,
 				...(state.isSelfBuild && {
-					sb: "1",
+					sb: "1" as const,
 					sv: state.siteValue ?? "",
 				}),
 			};

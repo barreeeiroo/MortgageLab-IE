@@ -431,10 +431,13 @@ export function calculateAmortization(
 			lastRatePeriodId = ratePeriod.id;
 		}
 
+		// After needsRecalc block, currentMonthlyPayment is guaranteed to be a number
+		const monthlyPayment = currentMonthlyPayment as number;
+
 		// Calculate interest and principal portions
 		const interestPortion = balance * monthlyRate;
 		const principalPortion = Math.min(
-			currentMonthlyPayment - interestPortion,
+			monthlyPayment - interestPortion,
 			balance,
 		);
 
@@ -447,7 +450,7 @@ export function calculateAmortization(
 			policies,
 			yearlyOverpaymentsByPeriod.get(periodYear) ?? 0,
 			balance,
-			currentMonthlyPayment,
+			monthlyPayment,
 			yearStartBalanceByPeriod.get(periodYear) ?? balance,
 		);
 
@@ -530,11 +533,11 @@ export function calculateAmortization(
 			date: addMonthsToDate(input.startDate, month),
 			openingBalance: balance,
 			closingBalance,
-			scheduledPayment: currentMonthlyPayment,
+			scheduledPayment: monthlyPayment,
 			interestPortion,
 			principalPortion,
 			overpayment,
-			totalPayment: currentMonthlyPayment + overpayment,
+			totalPayment: monthlyPayment + overpayment,
 			rate: resolved.rate,
 			ratePeriodId: ratePeriod.id,
 			cumulativeInterest,
@@ -566,8 +569,7 @@ export function calculateAmortization(
 					closingBalance + reducePaymentAmount;
 				if (balanceWithoutReducePayment > 0) {
 					currentMonthlyPayment =
-						currentMonthlyPayment *
-						(closingBalance / balanceWithoutReducePayment);
+						monthlyPayment * (closingBalance / balanceWithoutReducePayment);
 				}
 			}
 		}
@@ -698,10 +700,13 @@ export function calculateBaselineInterest(
 			lastRatePeriodId = ratePeriod.id;
 		}
 
+		// After the recalc block, currentMonthlyPayment is guaranteed to be a number
+		const monthlyPayment = currentMonthlyPayment as number;
+
 		// Calculate interest portion
 		const interestPortion = balance * monthlyRate;
 		const principalPortion = Math.min(
-			currentMonthlyPayment - interestPortion,
+			monthlyPayment - interestPortion,
 			balance,
 		);
 

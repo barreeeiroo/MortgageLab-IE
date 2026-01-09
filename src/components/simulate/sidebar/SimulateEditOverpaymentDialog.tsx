@@ -111,6 +111,7 @@ export function SimulateEditOverpaymentDialog({
 			endMonth: editingConfig.type === "recurring" ? endMonth : undefined,
 			frequency: editingConfig.type === "recurring" ? frequency : undefined,
 			effect,
+			enabled: true,
 			label: label || undefined,
 		});
 

@@ -3,6 +3,7 @@ import { BER_RATINGS } from "@/lib/constants";
 import { BuyerTypeSchema } from "./buyer";
 
 export const BerRatingSchema = z.enum(BER_RATINGS);
+export type BerRating = z.infer<typeof BerRatingSchema>;
 
 export const RATE_TYPES = ["fixed", "variable"] as const;
 export const RateTypeSchema = z.enum(RATE_TYPES);

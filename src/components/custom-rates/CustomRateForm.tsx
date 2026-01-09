@@ -183,10 +183,11 @@ export function CustomRateForm({
 		if (!form.lenderId || form.lenderId === CUSTOM_LENDER_VALUE) return;
 		const lender = lenders.find((l) => l.id === form.lenderId);
 		if (lender?.aprcFees) {
+			const { aprcFees } = lender;
 			setForm((prev) => ({
 				...prev,
-				valuationFee: lender.aprcFees.valuationFee.toString(),
-				securityReleaseFee: lender.aprcFees.securityReleaseFee.toString(),
+				valuationFee: aprcFees.valuationFee.toString(),
+				securityReleaseFee: aprcFees.securityReleaseFee.toString(),
 			}));
 		}
 	}, [form.lenderId, lenders]);

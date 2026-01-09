@@ -1,4 +1,6 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
+import type { BerRating } from "@/lib/constants/ber";
 import type { BuyerType, MortgageRate } from "@/lib/schemas";
 import { parseTermFromText } from "../parsing.ts";
 import type { LenderProvider } from "../types";
@@ -8,7 +10,7 @@ const RATES_URL =
 	"https://personalbanking.bankofireland.com/borrow/mortgages/mortgage-interest-rates/";
 
 // BER group mappings
-const BER_GROUPS: Record<string, string[]> = {
+const BER_GROUPS: Record<string, BerRating[]> = {
 	A: ["A1", "A2", "A3"],
 	B: ["B1", "B2", "B3"],
 	C: ["C1", "C2", "C3"],
@@ -48,7 +50,7 @@ interface ParsedRow {
 
 function parseMainTableRow(
 	$: cheerio.CheerioAPI,
-	row: cheerio.Element,
+	row: Element,
 ): ParsedRow | null {
 	const cells = $(row).find("td").toArray();
 	// Main table has 6 columns: buyer type, BER, description, rate type, rate, apr

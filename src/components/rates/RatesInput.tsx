@@ -1,6 +1,6 @@
 import { AlertCircle, HelpCircle, Info, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { RatesMode } from "@/lib/constants";
+import type { BerRating, RatesMode } from "@/lib/constants";
 import type { Lender } from "@/lib/schemas";
 import type { RatesInputValues } from "@/lib/stores";
 import {
@@ -446,7 +446,7 @@ export function RatesInput({
 									BER
 								</Label>
 								<BerSelector
-									value={berRating}
+									value={berRating as BerRating}
 									onChange={(v) => updateField("berRating", v)}
 									id="berRating"
 									compact

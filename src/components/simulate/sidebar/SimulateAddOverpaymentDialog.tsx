@@ -258,6 +258,7 @@ export function SimulateAddOverpaymentDialog({
 				startMonth: plan.startMonth,
 				endMonth: plan.endMonth,
 				effect: "reduce_term",
+				enabled: true,
 				label: isSinglePlan
 					? `Max overpayment - ${selectedPeriod.lenderName}`
 					: `Max overpayment Y${plan.year} - ${selectedPeriod.lenderName}`,
@@ -282,6 +283,7 @@ export function SimulateAddOverpaymentDialog({
 			endMonth: type === "recurring" ? endMonth : undefined,
 			frequency: type === "recurring" ? frequency : undefined,
 			effect,
+			enabled: true,
 			label: label || undefined,
 		});
 

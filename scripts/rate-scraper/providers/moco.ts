@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
 import {
 	type AprcConfig,
 	calculateAprc,
@@ -35,10 +36,7 @@ interface ParsedRow {
 	maxLtv: number;
 }
 
-function parseTableRow(
-	$: cheerio.CheerioAPI,
-	row: cheerio.Element,
-): ParsedRow | null {
+function parseTableRow($: cheerio.CheerioAPI, row: Element): ParsedRow | null {
 	const cells = $(row).find("td").toArray();
 	if (cells.length < 4) return null;
 

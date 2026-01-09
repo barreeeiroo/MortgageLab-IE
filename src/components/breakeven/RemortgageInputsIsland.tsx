@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_BER } from "@/lib/constants";
+import { type BerRating, DEFAULT_BER } from "@/lib/constants";
 import { calculateRemortgageBreakeven } from "@/lib/mortgage/breakeven";
 import type { MortgageRate } from "@/lib/schemas";
 import {
@@ -94,7 +94,7 @@ export function RemortgageInputsIsland() {
 				setRemainingTerm(shared.remainingTerm);
 				setNewRate(shared.newRate);
 				setRateInputMode(shared.rateInputMode);
-				setBerRating(shared.berRating);
+				setBerRating(shared.berRating as BerRating);
 				setLegalFees(shared.legalFees);
 				if (shared.cashback) setCashback(shared.cashback);
 				if (shared.erc) setErc(shared.erc);
@@ -115,7 +115,7 @@ export function RemortgageInputsIsland() {
 		if (saved.remainingTerm) setRemainingTerm(saved.remainingTerm);
 		if (saved.newRate) setNewRate(saved.newRate);
 		if (saved.rateInputMode) setRateInputMode(saved.rateInputMode);
-		if (saved.berRating) setBerRating(saved.berRating);
+		if (saved.berRating) setBerRating(saved.berRating as BerRating);
 		if (saved.legalFees) setLegalFees(saved.legalFees);
 		if (saved.cashback) setCashback(saved.cashback);
 		if (saved.erc) setErc(saved.erc);

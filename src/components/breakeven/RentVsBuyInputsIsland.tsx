@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_BER, DEFAULT_TERM_MONTHS } from "@/lib/constants";
+import {
+	type BerRating,
+	DEFAULT_BER,
+	DEFAULT_TERM_MONTHS,
+} from "@/lib/constants";
 import {
 	calculateRentVsBuyBreakeven,
 	DEFAULT_HOME_APPRECIATION,
@@ -107,7 +111,7 @@ export function RentVsBuyInputsIsland() {
 				setDeposit(shared.deposit);
 				if (shared.mortgageTerm) setMortgageTerm(shared.mortgageTerm);
 				setInterestRate(shared.interestRate);
-				if (shared.berRating) setBerRating(shared.berRating);
+				if (shared.berRating) setBerRating(shared.berRating as BerRating);
 				setCurrentRent(shared.currentRent);
 				setLegalFees(shared.legalFees);
 				if (shared.rentInflation) setRentInflation(shared.rentInflation);
@@ -136,7 +140,7 @@ export function RentVsBuyInputsIsland() {
 		if (saved.deposit) setDeposit(saved.deposit);
 		if (saved.mortgageTerm) setMortgageTerm(saved.mortgageTerm);
 		if (saved.interestRate) setInterestRate(saved.interestRate);
-		if (saved.berRating) setBerRating(saved.berRating);
+		if (saved.berRating) setBerRating(saved.berRating as BerRating);
 		if (saved.currentRent) setCurrentRent(saved.currentRent);
 		if (saved.legalFees) setLegalFees(saved.legalFees);
 		if (saved.rentInflation) setRentInflation(saved.rentInflation);

@@ -9,6 +9,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { loadRatesForm, saveRatesForm } from "@/lib/storage";
+import { DEFAULT_VALUES } from "@/lib/stores";
 import { $hasRequiredData, $initialized } from "@/lib/stores/simulate";
 import { getPath } from "@/lib/utils/path";
 
@@ -43,6 +44,7 @@ export function SimulateEmptyState() {
 								onClick={() => {
 									const saved = loadRatesForm();
 									saveRatesForm({
+										...DEFAULT_VALUES,
 										...saved,
 										mode: "first-mortgage",
 										buyerType: "ftb",

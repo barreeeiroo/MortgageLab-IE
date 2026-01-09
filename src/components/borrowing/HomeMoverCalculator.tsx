@@ -2,6 +2,7 @@ import { ExternalLink, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	AGE_LIMITS,
+	type BerRating,
 	CENTRAL_BANK_MORTGAGE_MEASURES_URL,
 	DEFAULT_BER,
 	LENDER_ALLOWANCES,
@@ -131,7 +132,7 @@ export function HomeMoverCalculator() {
 		if (saved.outstandingMortgage)
 			setOutstandingMortgage(saved.outstandingMortgage);
 		if (saved.additionalSavings) setAdditionalSavings(saved.additionalSavings);
-		if (saved.berRating) setBerRating(saved.berRating);
+		if (saved.berRating) setBerRating(saved.berRating as BerRating);
 		// Self Build fields
 		if (saved.isSelfBuild) setIsSelfBuild(saved.isSelfBuild);
 		if (saved.siteValue) setSiteValue(saved.siteValue);

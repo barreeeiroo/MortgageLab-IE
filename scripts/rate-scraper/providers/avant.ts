@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
 import type { BuyerType } from "@/lib/schemas";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
@@ -67,7 +68,7 @@ function parseFlexMortgageTable($: cheerio.CheerioAPI): MortgageRate[] {
 
 function parseFollowOnVariableTable(
 	$: cheerio.CheerioAPI,
-	container: cheerio.Cheerio<cheerio.Element>,
+	container: cheerio.Cheerio<Element>,
 ): MortgageRate[] {
 	const rates: MortgageRate[] = [];
 
@@ -123,7 +124,7 @@ function parseFollowOnVariableTable(
 
 function parseFixedTermTable(
 	$: cheerio.CheerioAPI,
-	container: cheerio.Cheerio<cheerio.Element>,
+	container: cheerio.Cheerio<Element>,
 ): MortgageRate[] {
 	const rates: MortgageRate[] = [];
 
@@ -179,7 +180,7 @@ function parseFixedTermTable(
 
 function parseOneMortgageTable(
 	$: cheerio.CheerioAPI,
-	container: cheerio.Cheerio<cheerio.Element>,
+	container: cheerio.Cheerio<Element>,
 ): MortgageRate[] {
 	const rates: MortgageRate[] = [];
 

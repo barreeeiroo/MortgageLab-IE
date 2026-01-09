@@ -1,4 +1,4 @@
-import { BER_RATINGS } from "@/lib/constants";
+import { BER_RATINGS, type BerRating } from "@/lib/constants";
 import { Label } from "../ui/label";
 import {
 	Select,
@@ -9,8 +9,8 @@ import {
 } from "../ui/select";
 
 interface BerSelectorProps {
-	value: string;
-	onChange: (value: string) => void;
+	value: BerRating;
+	onChange: (value: BerRating) => void;
 	id?: string;
 	label?: string;
 	compact?: boolean;
@@ -25,7 +25,7 @@ export function BerSelector({
 }: BerSelectorProps) {
 	if (compact) {
 		return (
-			<Select value={value} onValueChange={onChange}>
+			<Select value={value} onValueChange={(v) => onChange(v as BerRating)}>
 				<SelectTrigger id={id} className="h-9 w-full">
 					<SelectValue placeholder="BER" />
 				</SelectTrigger>
@@ -43,7 +43,7 @@ export function BerSelector({
 	return (
 		<div className="space-y-2">
 			<Label htmlFor={id}>{label}</Label>
-			<Select value={value} onValueChange={onChange}>
+			<Select value={value} onValueChange={(v) => onChange(v as BerRating)}>
 				<SelectTrigger id={id} className="w-full">
 					<SelectValue placeholder="Select BER" />
 				</SelectTrigger>

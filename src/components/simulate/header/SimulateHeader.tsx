@@ -14,7 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { BerRating } from "@/lib/constants";
 import type { SimulationCompleteness } from "@/lib/stores/simulate/simulate-calculations";
-import { formatCurrency, formatTermDisplay } from "@/lib/utils";
+import {
+	formatCurrency,
+	formatCurrencyShort,
+	formatTermDisplay,
+} from "@/lib/utils";
 
 interface SimulateHeaderProps {
 	hasRequiredData: boolean;
@@ -87,7 +91,7 @@ export function SimulateHeader({
 										Property Value
 									</p>
 									<p className="font-semibold truncate">
-										{formatCurrency(propertyValue / 100, { compact: true })}
+										{formatCurrencyShort(propertyValue / 100)}
 									</p>
 								</div>
 							</div>
@@ -98,7 +102,7 @@ export function SimulateHeader({
 								<div className="min-w-0">
 									<p className="text-xs text-muted-foreground">Mortgage</p>
 									<p className="font-semibold truncate">
-										{formatCurrency(mortgageAmount / 100, { compact: true })}
+										{formatCurrencyShort(mortgageAmount / 100)}
 										<span className="text-xs text-muted-foreground font-normal ml-1">
 											({ltv.toFixed(0)}%)
 										</span>
