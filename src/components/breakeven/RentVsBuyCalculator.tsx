@@ -14,7 +14,7 @@ import {
 } from "@/lib/mortgage/breakeven";
 import {
 	clearBreakevenShareParam,
-	copyBreakevenShareUrl,
+	generateBreakevenShareUrl,
 	hasBreakevenShareParam,
 	parseBreakevenShareState,
 	type RentVsBuyShareState,
@@ -278,7 +278,7 @@ export function RentVsBuyCalculator() {
 		}
 	}, [shouldAutoCalculate, isFormComplete, calculate]);
 
-	const handleShare = async (): Promise<boolean> => {
+	const handleShare = async (): Promise<string> => {
 		const state: RentVsBuyShareState = {
 			type: "rvb",
 			propertyValue,
@@ -301,7 +301,7 @@ export function RentVsBuyCalculator() {
 				priceIncludesVAT,
 			}),
 		};
-		return copyBreakevenShareUrl(state);
+		return generateBreakevenShareUrl(state);
 	};
 
 	// Auto-calculate deposit as 10% of property value

@@ -212,13 +212,8 @@ export function CompareRatesModal({
 	// Track if we're on desktop (lg breakpoint) for sticky columns
 	const isDesktop = useIsDesktop();
 
-	const handleShare = async (): Promise<boolean> => {
-		try {
-			await onShare();
-			return true;
-		} catch {
-			return false;
-		}
+	const handleShare = async (): Promise<string> => {
+		return onShare();
 	};
 
 	if (rates.length === 0) return null;

@@ -27,7 +27,7 @@ interface SimulateHeaderProps {
 	overpaymentCount: number;
 	completeness: SimulationCompleteness;
 	onReset: () => void;
-	onShare: () => Promise<boolean>;
+	onShare: () => Promise<string>;
 }
 
 export function SimulateHeader({

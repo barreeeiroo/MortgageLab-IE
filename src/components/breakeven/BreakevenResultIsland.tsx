@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { copyBreakevenShareUrl } from "@/lib/share/breakeven";
+import { generateBreakevenShareUrl } from "@/lib/share/breakeven";
 import {
 	$remortgageDialogOpen,
 	$remortgageResult,
@@ -61,8 +61,8 @@ export function BreakevenResultIsland() {
 						{rentVsBuyResult && (
 							<ShareButton
 								size="default"
-								onShare={() =>
-									copyBreakevenShareUrl(rentVsBuyResult.shareState)
+								onShare={async () =>
+									generateBreakevenShareUrl(rentVsBuyResult.shareState)
 								}
 							/>
 						)}
@@ -98,8 +98,8 @@ export function BreakevenResultIsland() {
 						{remortgageResult && (
 							<ShareButton
 								size="default"
-								onShare={() =>
-									copyBreakevenShareUrl(remortgageResult.shareState)
+								onShare={async () =>
+									generateBreakevenShareUrl(remortgageResult.shareState)
 								}
 							/>
 						)}

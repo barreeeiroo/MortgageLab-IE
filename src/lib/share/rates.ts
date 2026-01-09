@@ -3,9 +3,9 @@ import type { StoredCustomRate } from "@/lib/stores/custom-rates";
 import type { RatesInputValues } from "@/lib/stores/rates-form";
 import {
 	clearUrlParam,
-	compressToUrl,
-	decompressFromUrl,
-	getUrlParam,
+	generateShareUrl,
+	hasUrlParam,
+	parseShareParam,
 } from "./common";
 import {
 	type CompressedCustomPerk,
@@ -139,23 +139,17 @@ function decompressState(compressed: CompressedState): RatesShareState {
  */
 export function generateRatesShareUrl(state: RatesShareState): string {
 	const compressed = compressState(state);
-	const encoded = compressToUrl(compressed);
-	const url = new URL(window.location.href);
-	url.searchParams.set(RATES_SHARE_PARAM, encoded);
-	url.hash = state.input.mode;
-	return url.toString();
+	return generateShareUrl(RATES_SHARE_PARAM, compressed, {
+		hash: state.input.mode,
+	});
 }
 
 /**
  * Parse rates share state from URL if present
  */
 export function parseRatesShareState(): RatesShareState | null {
-	const encoded = getUrlParam(RATES_SHARE_PARAM);
-	if (!encoded) return null;
-
-	const compressed = decompressFromUrl<CompressedState>(encoded);
+	const compressed = parseShareParam<CompressedState>(RATES_SHARE_PARAM);
 	if (!compressed) return null;
-
 	return decompressState(compressed);
 }
 
@@ -170,7 +164,5 @@ export function clearRatesShareParam(): void {
  * Check if URL has share param
  */
 export function hasRatesShareParam(): boolean {
-	if (typeof window === "undefined") return false;
-	const params = new URLSearchParams(window.location.search);
-	return params.has(RATES_SHARE_PARAM);
+	return hasUrlParam(RATES_SHARE_PARAM);
 }

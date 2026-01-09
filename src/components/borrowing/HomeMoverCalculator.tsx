@@ -10,7 +10,7 @@ import {
 } from "@/lib/constants/central-bank";
 import {
 	clearBorrowingShareParam,
-	copyBorrowingShareUrl,
+	generateBorrowingShareUrl,
 	hasBorrowingShareParam,
 	type MoverShareState,
 	parseBorrowingShareState,
@@ -281,7 +281,7 @@ export function HomeMoverCalculator() {
 		}
 	}, [shouldAutoCalculate, isFormComplete, isAnyAgeTooOld, calculate]);
 
-	const handleShare = async (): Promise<boolean> => {
+	const handleShare = async (): Promise<string> => {
 		const state: MoverShareState = {
 			type: "mover",
 			applicationType,
@@ -304,7 +304,7 @@ export function HomeMoverCalculator() {
 				priceIncludesVAT,
 			}),
 		};
-		return copyBorrowingShareUrl(state);
+		return generateBorrowingShareUrl(state);
 	};
 
 	return (

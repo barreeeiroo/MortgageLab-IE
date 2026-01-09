@@ -2,9 +2,9 @@ import type { BerRating } from "@/lib/constants/ber";
 import type { PropertyType } from "@/lib/utils/fees";
 import {
 	clearUrlParam,
-	compressToUrl,
-	decompressFromUrl,
-	getUrlParam,
+	generateShareUrl,
+	hasUrlParam,
+	parseShareParam,
 } from "./common";
 
 /**
@@ -214,22 +214,15 @@ function decompressState(compressed: CompressedState): BorrowingShareState {
  */
 export function generateBorrowingShareUrl(state: BorrowingShareState): string {
 	const compressed = compressState(state);
-	const encoded = compressToUrl(compressed);
-	const url = new URL(window.location.href);
-	url.searchParams.set(BORROWING_SHARE_PARAM, encoded);
-	return url.toString();
+	return generateShareUrl(BORROWING_SHARE_PARAM, compressed);
 }
 
 /**
  * Parse borrowing calculator share state from URL
  */
 export function parseBorrowingShareState(): BorrowingShareState | null {
-	const encoded = getUrlParam(BORROWING_SHARE_PARAM);
-	if (!encoded) return null;
-
-	const compressed = decompressFromUrl<CompressedState>(encoded);
+	const compressed = parseShareParam<CompressedState>(BORROWING_SHARE_PARAM);
 	if (!compressed) return null;
-
 	return decompressState(compressed);
 }
 
@@ -244,21 +237,5 @@ export function clearBorrowingShareParam(): void {
  * Check if URL has borrowing share param
  */
 export function hasBorrowingShareParam(): boolean {
-	if (typeof window === "undefined") return false;
-	return new URLSearchParams(window.location.search).has(BORROWING_SHARE_PARAM);
-}
-
-/**
- * Copy share URL to clipboard
- */
-export async function copyBorrowingShareUrl(
-	state: BorrowingShareState,
-): Promise<boolean> {
-	try {
-		const url = generateBorrowingShareUrl(state);
-		await navigator.clipboard.writeText(url);
-		return true;
-	} catch {
-		return false;
-	}
+	return hasUrlParam(BORROWING_SHARE_PARAM);
 }

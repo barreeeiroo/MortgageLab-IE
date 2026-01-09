@@ -1,5 +1,33 @@
-import { describe, expect, it } from "vitest";
-import { compressToUrl, decompressFromUrl } from "../common";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	clearUrlParam,
+	compressToUrl,
+	decompressFromUrl,
+	generateShareUrl,
+	getUrlParam,
+	hasUrlParam,
+	parseShareParam,
+} from "../common";
+
+// Helper to create mock window
+function createMockWindow(search = "") {
+	const href = `https://example.com/test${search}`;
+	return {
+		location: {
+			href,
+			search,
+			origin: "https://example.com",
+			pathname: "/test",
+		},
+		history: {
+			replaceState: vi.fn(),
+		},
+	};
+}
+
+function setWindowSearch(search: string) {
+	vi.stubGlobal("window", createMockWindow(search));
+}
 
 describe("compressToUrl", () => {
 	describe("basic compression", () => {
@@ -247,5 +275,115 @@ describe("roundtrip compression", () => {
 		const decompressed = decompressFromUrl<typeof state>(compressed);
 
 		expect(decompressed).toEqual(state);
+	});
+});
+
+describe("browser-dependent functions", () => {
+	beforeEach(() => {
+		vi.stubGlobal("window", createMockWindow());
+	});
+
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	describe("getUrlParam", () => {
+		it("returns value when param exists", () => {
+			setWindowSearch("?key=value");
+			expect(getUrlParam("key")).toBe("value");
+		});
+
+		it("returns null when param does not exist", () => {
+			setWindowSearch("?other=value");
+			expect(getUrlParam("key")).toBeNull();
+		});
+
+		it("returns null when window is undefined", () => {
+			vi.stubGlobal("window", undefined);
+			expect(getUrlParam("key")).toBeNull();
+		});
+
+		it("handles URL-encoded values", () => {
+			setWindowSearch("?key=hello%20world");
+			expect(getUrlParam("key")).toBe("hello world");
+		});
+	});
+
+	describe("clearUrlParam", () => {
+		it("calls replaceState to clear param", () => {
+			setWindowSearch("?share=value&keep=other");
+			clearUrlParam("share");
+			expect(window.history.replaceState).toHaveBeenCalled();
+		});
+
+		it("does nothing when window is undefined", () => {
+			vi.stubGlobal("window", undefined);
+			// Should not throw
+			expect(() => clearUrlParam("key")).not.toThrow();
+		});
+	});
+
+	describe("hasUrlParam", () => {
+		it("returns true when param exists", () => {
+			setWindowSearch("?key=value");
+			expect(hasUrlParam("key")).toBe(true);
+		});
+
+		it("returns false when param does not exist", () => {
+			setWindowSearch("?other=value");
+			expect(hasUrlParam("key")).toBe(false);
+		});
+
+		it("returns false when window is undefined", () => {
+			vi.stubGlobal("window", undefined);
+			expect(hasUrlParam("key")).toBe(false);
+		});
+
+		it("returns true even for empty param value", () => {
+			setWindowSearch("?key=");
+			expect(hasUrlParam("key")).toBe(true);
+		});
+	});
+
+	describe("generateShareUrl", () => {
+		it("generates URL with compressed data", () => {
+			setWindowSearch("");
+			const data = { test: "value" };
+			const url = generateShareUrl("s", data);
+
+			expect(url).toContain("https://example.com");
+			expect(url).toContain("s=");
+		});
+
+		it("includes hash when provided", () => {
+			setWindowSearch("");
+			const url = generateShareUrl("s", { test: "value" }, { hash: "section" });
+
+			expect(url).toContain("#section");
+		});
+	});
+
+	describe("parseShareParam", () => {
+		it("returns data when valid param exists", () => {
+			const data = { test: "value", num: 42 };
+			const compressed = compressToUrl(data);
+			setWindowSearch(`?s=${compressed}`);
+
+			const result = parseShareParam<typeof data>("s");
+
+			expect(result).toEqual(data);
+		});
+
+		it("returns null when param does not exist", () => {
+			setWindowSearch("");
+			const result = parseShareParam("s");
+			expect(result).toBeNull();
+		});
+
+		it("returns null for invalid data", () => {
+			setWindowSearch("?s=invalid-data");
+			const result = parseShareParam("s");
+			expect(result).toBeNull();
+		});
 	});
 });

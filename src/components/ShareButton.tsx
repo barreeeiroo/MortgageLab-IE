@@ -1,10 +1,10 @@
 import { Check, Share2 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, type ButtonProps } from "./ui/button";
 
 interface ShareButtonProps {
-	/** Function to call when share is clicked. Should return true on success. */
-	onShare: () => Promise<boolean>;
+	/** Function that returns the URL to copy. ShareButton handles clipboard copy. */
+	onShare: () => Promise<string>;
 	/** Label text to display. Defaults to "Share". */
 	label?: string;
 	/** If true, hides text on small screens (shows only icon). */
@@ -17,6 +17,7 @@ interface ShareButtonProps {
 
 /**
  * A reusable share button component with "Copied!" feedback.
+ * onShare returns a URL string, and ShareButton handles clipboard copy.
  */
 export function ShareButton({
 	onShare,
@@ -27,13 +28,16 @@ export function ShareButton({
 }: ShareButtonProps) {
 	const [copied, setCopied] = useState(false);
 
-	const handleClick = async () => {
-		const success = await onShare();
-		if (success) {
+	const handleClick = useCallback(async () => {
+		try {
+			const url = await onShare();
+			await navigator.clipboard.writeText(url);
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
+		} catch {
+			// Share or clipboard copy failed
 		}
-	};
+	}, [onShare]);
 
 	return (
 		<Button
