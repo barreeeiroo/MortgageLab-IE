@@ -45,8 +45,8 @@ export type RatesMetadata = z.infer<typeof RatesMetadataSchema>;
 // Schema for individual rate files
 export const RatesFileSchema = z.object({
 	lenderId: z.string(),
-	lastScrapedAt: z.string().datetime(),
-	lastUpdatedAt: z.string().datetime(),
+	lastScrapedAt: z.iso.datetime(),
+	lastUpdatedAt: z.iso.datetime(),
 	ratesHash: z.string(),
 	rates: z.array(MortgageRateSchema),
 });

@@ -107,8 +107,8 @@ export function DateOfBirthPicker({
 							selected={value}
 							onSelect={handleCalendarSelect}
 							captionLayout="dropdown"
-							fromYear={fromYear}
-							toYear={toYear}
+							startMonth={new Date(fromYear, 0)}
+							endMonth={new Date(toYear, 11)}
 							defaultMonth={value || new Date(toYear, 0)}
 							disabled={(date) => date > today}
 						/>
