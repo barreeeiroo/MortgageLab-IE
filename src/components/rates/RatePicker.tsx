@@ -1,15 +1,13 @@
 import { ExternalLink } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import type { BerRating } from "@/lib/constants";
-import {
-	fetchAllRates,
-	fetchLendersData,
-	filterRates,
-	getLender,
-} from "@/lib/data";
-import type { BuyerType, Lender, MortgageRate } from "@/lib/schemas";
-import { saveRatesForm } from "@/lib/storage";
-import { cn } from "@/lib/utils";
+import type { BerRating } from "@/lib/constants/ber";
+import { filterRates, getLender } from "@/lib/data";
+import { fetchAllRates, fetchLendersData } from "@/lib/data/fetch";
+import type { BuyerType } from "@/lib/schemas/buyer";
+import type { Lender } from "@/lib/schemas/lender";
+import type { MortgageRate } from "@/lib/schemas/rate";
+import { saveRatesForm } from "@/lib/storage/forms";
+import { cn } from "@/lib/utils/cn";
 import { LenderLogo } from "../lenders/LenderLogo";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";

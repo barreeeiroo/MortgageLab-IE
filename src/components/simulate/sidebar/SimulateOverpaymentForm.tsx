@@ -1,5 +1,5 @@
 import { Info } from "lucide-react";
-import { LenderLogo } from "@/components/lenders";
+import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -14,7 +14,7 @@ import type {
 	OverpaymentFrequency,
 	ResolvedRatePeriod,
 } from "@/lib/schemas/simulate";
-import { formatCurrencyInput } from "@/lib/utils";
+import { formatCurrencyInput } from "@/lib/utils/currency";
 import { formatTransitionDate } from "@/lib/utils/date";
 import {
 	SimulateTimingSelector,

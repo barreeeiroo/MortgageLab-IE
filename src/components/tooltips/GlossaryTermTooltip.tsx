@@ -4,7 +4,7 @@ import {
 	type GLOSSARY_TERMS,
 	GLOSSARY_TERMS_MAP,
 } from "@/lib/constants/glossary";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 

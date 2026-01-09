@@ -1,7 +1,8 @@
 import * as cheerio from "cheerio";
 import type { Element } from "domhandler";
 import type { BerRating } from "@/lib/constants/ber";
-import type { BuyerType, MortgageRate } from "@/lib/schemas";
+import type { BuyerType } from "@/lib/schemas/buyer";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import { parseTermFromText } from "../parsing.ts";
 import type { LenderProvider } from "../types";
 

@@ -10,8 +10,9 @@ import {
 	TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
-import { NAV_ITEMS } from "../lib/constants";
-import { cn, getPath } from "../lib/utils";
+import { NAV_ITEMS } from "@/lib/constants/site";
+import { cn } from "../lib/utils/cn";
+import { getPath } from "../lib/utils/path";
 import { Button } from "./ui/button";
 import {
 	Sheet,

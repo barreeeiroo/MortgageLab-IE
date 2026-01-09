@@ -12,8 +12,8 @@ import type {
 	MilestoneType,
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
-import { formatCurrency } from "@/lib/utils";
-import { cn } from "@/lib/utils/index";
+import { cn } from "@/lib/utils/cn";
+import { formatCurrency } from "@/lib/utils/currency";
 
 // Milestone icon mapping
 const MILESTONE_ICONS: Record<MilestoneType, typeof Flag> = {

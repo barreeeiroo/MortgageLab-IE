@@ -1,9 +1,10 @@
 import { format, formatDistanceToNow } from "date-fns";
 import { CirclePlus, Clock, ExternalLink } from "lucide-react";
 import { useState } from "react";
-import { getNewRateUrl } from "@/lib/constants";
-import type { Lender, RatesMetadata } from "@/lib/schemas";
-import { LenderLogo } from "../lenders";
+import { getNewRateUrl } from "@/lib/constants/contact";
+import type { Lender } from "@/lib/schemas/lender";
+import type { RatesMetadata } from "@/lib/schemas/rate";
+import { LenderLogo } from "../lenders/LenderLogo";
 import { Button } from "../ui/button";
 import {
 	Dialog,

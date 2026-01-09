@@ -3,18 +3,18 @@
  * All fetch functions use getPath to handle base path correctly.
  */
 
+import { type Lender, LendersFileSchema } from "@/lib/schemas/lender";
 import {
-	type Lender,
-	LendersFileSchema,
-	type MortgageRate,
 	OverpaymentPoliciesFileSchema,
 	type OverpaymentPolicy,
-	type Perk,
-	PerksFileSchema,
+} from "@/lib/schemas/overpayment-policy";
+import { type Perk, PerksFileSchema } from "@/lib/schemas/perk";
+import {
+	type MortgageRate,
 	type RatesFile,
 	RatesFileSchema,
 	type RatesMetadata,
-} from "@/lib/schemas";
+} from "@/lib/schemas/rate";
 import { getPath } from "@/lib/utils/path";
 
 /**

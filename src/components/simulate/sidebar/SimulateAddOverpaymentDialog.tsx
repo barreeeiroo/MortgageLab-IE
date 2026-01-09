@@ -1,6 +1,6 @@
 import { CircleDollarSign, Info, Repeat, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { LenderLogo } from "@/components/lenders";
+import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -31,7 +31,7 @@ import type {
 	OverpaymentFrequency,
 	ResolvedRatePeriod,
 } from "@/lib/schemas/simulate";
-import { formatCurrency, parseCurrency } from "@/lib/utils";
+import { formatCurrency, parseCurrency } from "@/lib/utils/currency";
 import { formatTransitionDate } from "@/lib/utils/date";
 import { SimulateOverpaymentForm } from "./SimulateOverpaymentForm";
 import type { TimingMode } from "./SimulateTimingSelector";

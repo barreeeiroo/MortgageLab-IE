@@ -1,5 +1,5 @@
 import type { ChartConfig } from "@/components/ui/chart";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils";
+import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
 
 // Shared colors for charts
 export const CHART_COLORS = {

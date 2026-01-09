@@ -1,6 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LenderLogo } from "@/components/lenders";
+import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -24,7 +24,7 @@ import type { Lender } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type { OverpaymentConfig, RatePeriod } from "@/lib/schemas/simulate";
 import type { CustomRate } from "@/lib/stores/custom-rates";
-import { getAffectedOverpaymentsByDurationChange } from "@/lib/stores/simulate";
+import { getAffectedOverpaymentsByDurationChange } from "@/lib/stores/simulate/simulate-state";
 import { getCalendarDate } from "@/lib/utils/date";
 
 type DurationMode = "calendar" | "duration" | "end";

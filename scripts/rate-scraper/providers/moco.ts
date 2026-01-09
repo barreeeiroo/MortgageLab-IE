@@ -4,8 +4,8 @@ import {
 	type AprcConfig,
 	calculateAprc,
 	inferFollowOnRate,
-} from "@/lib/mortgage";
-import type { BuyerType } from "@/lib/schemas";
+} from "@/lib/mortgage/aprc";
+import type { BuyerType } from "@/lib/schemas/buyer";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
 	parseLtvBandOrThrow,

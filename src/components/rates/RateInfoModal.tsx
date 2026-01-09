@@ -12,31 +12,27 @@ import {
 	X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
+import { getIncorrectRateUrl } from "@/lib/constants/contact";
+import type { RatesMode } from "@/lib/constants/rates";
+import { getOverpaymentPolicy, resolvePerks } from "@/lib/data";
+import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
 import {
-	type BerRating,
-	DEFAULT_BER,
-	getIncorrectRateUrl,
-	type RatesMode,
-} from "@/lib/constants";
-import {
-	DEFAULT_MAX_TERM,
-	getOverpaymentPolicy,
-	type Lender,
-	type MortgageRate,
-	type OverpaymentPolicy,
-	type Perk,
-	resolvePerks,
-} from "@/lib/data";
-import {
-	calculateAprc,
 	calculateMonthlyFollowOn,
 	calculateMonthlyPayment,
 	calculateRemainingBalance,
 	calculateTotalRepayable,
 	findVariableRate,
-} from "@/lib/mortgage";
-import type { AprcConfig } from "@/lib/mortgage/aprc";
-import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
+} from "@/lib/mortgage/payments";
+import type { Lender } from "@/lib/schemas/lender";
+import {
+	type AprcFees,
+	DEFAULT_APRC_FEES,
+	DEFAULT_MAX_TERM,
+} from "@/lib/schemas/lender";
+import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
+import type { Perk } from "@/lib/schemas/perk";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import {
 	addCustomRate,
 	type StoredCustomRate,
@@ -45,11 +41,15 @@ import {
 	addRatePeriod,
 	hasExistingSimulation,
 	initializeFromRate,
-} from "@/lib/stores/simulate";
-import { formatCurrency, formatTermDisplay } from "@/lib/utils";
+} from "@/lib/stores/simulate/simulate-state";
+import { formatCurrency } from "@/lib/utils/currency";
 import { getPath } from "@/lib/utils/path";
-import { LenderLogo } from "../lenders";
-import { type GlossaryTermId, GlossaryTermTooltip } from "../tooltips";
+import { formatTermDisplay } from "@/lib/utils/term";
+import { LenderLogo } from "../lenders/LenderLogo";
+import {
+	type GlossaryTermId,
+	GlossaryTermTooltip,
+} from "../tooltips/GlossaryTermTooltip";
 import {
 	AlertDialog,
 	AlertDialogAction,

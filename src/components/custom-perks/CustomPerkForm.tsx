@@ -20,7 +20,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 // Available icons for perk selection
 export const PERK_ICON_OPTIONS: Record<string, LucideIcon> = {

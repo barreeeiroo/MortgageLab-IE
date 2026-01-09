@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { AGE_LIMITS } from "@/lib/constants";
-import { calculateAge, formatCurrencyInput } from "@/lib/utils";
+import { AGE_LIMITS } from "@/lib/constants/central-bank";
+import { formatCurrencyInput } from "@/lib/utils/currency";
+import { calculateAge } from "@/lib/utils/date";
 import { DateOfBirthPicker } from "../selectors/DateOfBirthPicker";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";

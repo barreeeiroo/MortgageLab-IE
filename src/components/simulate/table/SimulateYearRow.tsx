@@ -20,8 +20,8 @@ import type {
 	MilestoneType,
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
-import { formatCurrency } from "@/lib/utils";
-import { cn } from "@/lib/utils/index";
+import { cn } from "@/lib/utils/cn";
+import { formatCurrency } from "@/lib/utils/currency";
 import { SimulateMonthRow } from "./SimulateMonthRow";
 
 // Milestone icon mapping

@@ -30,35 +30,36 @@ import {
 	Zap,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { type BerRating, getMissingVariableRateUrl } from "@/lib/constants";
+import type { BerRating } from "@/lib/constants/ber";
+import { getMissingVariableRateUrl } from "@/lib/constants/contact";
+import { getAvailableFixedTerms, getLender, resolvePerks } from "@/lib/data";
+import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
 import {
-	getAvailableFixedTerms,
-	getLender,
-	type Lender,
-	type MortgageRate,
-	type OverpaymentPolicy,
-	type Perk,
-	resolvePerks,
-} from "@/lib/data";
-import {
-	calculateAprc,
 	calculateCostOfCreditPercent,
 	calculateFollowOnLtv,
 	calculateMonthlyFollowOn,
 	calculateMonthlyPayment,
 	calculateTotalRepayable,
 	findVariableRate,
-} from "@/lib/mortgage";
-import type { AprcConfig } from "@/lib/mortgage/aprc";
+} from "@/lib/mortgage/payments";
+import type { Lender } from "@/lib/schemas/lender";
 import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
-import { generateRatesShareUrl } from "@/lib/share";
-import type { RatesInputValues } from "@/lib/stores";
-import { type CustomRate, isCustomRate } from "@/lib/stores";
+import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
+import type { Perk } from "@/lib/schemas/perk";
+import type { MortgageRate } from "@/lib/schemas/rate";
+import { generateRatesShareUrl } from "@/lib/share/rates";
 import { $compareState, saveCompareState } from "@/lib/stores/compare";
-import { $storedCustomRates } from "@/lib/stores/custom-rates";
-import { cn, formatCurrency, parseCurrency } from "@/lib/utils";
-import { LenderLogo, LenderOption } from "../lenders";
-import { GlossaryTermTooltip } from "../tooltips";
+import {
+	$storedCustomRates,
+	type CustomRate,
+	isCustomRate,
+} from "@/lib/stores/custom-rates";
+import type { RatesInputValues } from "@/lib/stores/rates-form";
+import { cn } from "@/lib/utils/cn";
+import { formatCurrency, parseCurrency } from "@/lib/utils/currency";
+import { LenderLogo } from "../lenders/LenderLogo";
+import { LenderOption } from "../lenders/LenderOption";
+import { GlossaryTermTooltip } from "../tooltips/GlossaryTermTooltip";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import {

@@ -1,23 +1,25 @@
 import { useStore } from "@nanostores/react";
 import { useCallback, useEffect } from "react";
+import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
+import {
+	$storedCustomPerks,
+	addCustomPerk,
+	initializeCustomPerks,
+	removeCustomPerk,
+	updateCustomPerk,
+} from "@/lib/stores/custom-perks";
 import {
 	$customLenders,
-	$formValues,
-	$lenders,
-	$perks,
-	$storedCustomPerks,
 	$storedCustomRates,
-	addCustomPerk,
 	addCustomRate,
-	initializeCustomPerks,
 	initializeCustomRates,
-	removeCustomPerk,
 	removeCustomRate,
 	type StoredCustomRate,
-	updateCustomPerk,
 	updateCustomRate,
-} from "@/lib/stores";
-import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
+} from "@/lib/stores/custom-rates";
+import { $lenders } from "@/lib/stores/lenders";
+import { $perks } from "@/lib/stores/perks";
+import { $formValues } from "@/lib/stores/rates-form";
 import { ManageCustomRatesDialog } from "./ManageCustomRatesDialog";
 
 export function CustomRatesIsland() {

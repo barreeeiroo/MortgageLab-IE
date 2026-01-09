@@ -14,6 +14,7 @@
 		"format": "biome format --write .",
 		"test": "vitest",
 		"test:run": "vitest run --passWithNoTests",
+		"check": "bun run lint && bun run typecheck && bun run test:run",
 		"rates:scrape": "bun run scripts/rate-scraper/index.ts",
 		"rates:scrape-all": "bun run scripts/rate-scraper/index.ts --all",
 		"rates:validate": "bun run scripts/rate-scraper/validator.ts"

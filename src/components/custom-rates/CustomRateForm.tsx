@@ -1,7 +1,7 @@
 import { Pencil } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LenderOption } from "@/components/lenders";
-import { GlossaryTermTooltip } from "@/components/tooltips";
+import { LenderOption } from "@/components/lenders/LenderOption";
+import { GlossaryTermTooltip } from "@/components/tooltips/GlossaryTermTooltip";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,23 +16,26 @@ import {
 import { Slider } from "@/components/ui/slider";
 import {
 	BER_GROUPS,
-	BUYER_TYPE_LABELS,
-	FIRST_MORTGAGE_BUYER_TYPES,
 	GREEN_BER_GROUPS,
 	OTHER_BER_GROUPS,
+} from "@/lib/constants/ber";
+import {
+	BUYER_TYPE_LABELS,
+	FIRST_MORTGAGE_BUYER_TYPES,
 	SWITCHER_BUYER_TYPES,
-} from "@/lib/constants";
-import type { Lender, MortgageRate } from "@/lib/data";
-import { type AprcConfig, calculateAprc } from "@/lib/mortgage";
+} from "@/lib/constants/buyer";
+import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
 import type { BuyerType } from "@/lib/schemas/buyer";
+import type { Lender } from "@/lib/schemas/lender";
 import { DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
+import type { MortgageRate } from "@/lib/schemas/rate";
 
 // Extended perk type that may include isCustom flag
 type ExtendedPerk = Perk & { isCustom?: boolean };
 
 import { RATE_TYPES, type RateType } from "@/lib/schemas/rate";
-import type { StoredCustomRate } from "@/lib/stores";
+import type { StoredCustomRate } from "@/lib/stores/custom-rates";
 
 type AprcMode = "fees" | "direct";
 

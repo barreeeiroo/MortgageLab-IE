@@ -1,10 +1,14 @@
-import type { RatesMode } from "@/lib/constants";
-import { hasRatesShareParam } from "@/lib/share";
+import type { RatesMode } from "@/lib/constants/rates";
+import {
+	clearRatesShareParam,
+	hasRatesShareParam,
+	parseRatesShareState,
+} from "@/lib/share/rates";
 import {
 	loadRatesForm,
 	type RatesFormState,
 	saveRatesForm,
-} from "@/lib/storage";
+} from "@/lib/storage/forms";
 import {
 	$compareState,
 	COMPARE_STORAGE_KEY,
@@ -43,91 +47,84 @@ export function initializeStore(): void {
 	if (typeof window === "undefined" || initialized) return;
 	initialized = true;
 
-	// If there's a share param, handle it async (less common case)
+	// If there's a share param, load shared state
 	if (hasRatesShareParam()) {
-		import("@/lib/share").then(
-			({ parseRatesShareState, clearRatesShareParam }) => {
-				const sharedState = parseRatesShareState();
+		const sharedState = parseRatesShareState();
 
-				if (sharedState) {
-					// URL params take priority - load shared state
-					$formValues.set(sharedState.input);
+		if (sharedState) {
+			// URL params take priority - load shared state
+			$formValues.set(sharedState.input);
 
-					// Update table state atoms and persist to localStorage
-					if (Object.keys(sharedState.table.columnVisibility).length > 0) {
-						$columnVisibility.set(sharedState.table.columnVisibility);
-						localStorage.setItem(
-							TABLE_STORAGE_KEYS.columns,
-							JSON.stringify(sharedState.table.columnVisibility),
-						);
-					}
-					if (sharedState.table.columnFilters.length > 0) {
-						$columnFilters.set(sharedState.table.columnFilters);
-						localStorage.setItem(
-							TABLE_STORAGE_KEYS.filters,
-							JSON.stringify(sharedState.table.columnFilters),
-						);
-					}
-					if (sharedState.table.sorting.length > 0) {
-						$sorting.set(sharedState.table.sorting);
-						localStorage.setItem(
-							TABLE_STORAGE_KEYS.sorting,
-							JSON.stringify(sharedState.table.sorting),
-						);
-					}
+			// Update table state atoms and persist to localStorage
+			if (Object.keys(sharedState.table.columnVisibility).length > 0) {
+				$columnVisibility.set(sharedState.table.columnVisibility);
+				localStorage.setItem(
+					TABLE_STORAGE_KEYS.columns,
+					JSON.stringify(sharedState.table.columnVisibility),
+				);
+			}
+			if (sharedState.table.columnFilters.length > 0) {
+				$columnFilters.set(sharedState.table.columnFilters);
+				localStorage.setItem(
+					TABLE_STORAGE_KEYS.filters,
+					JSON.stringify(sharedState.table.columnFilters),
+				);
+			}
+			if (sharedState.table.sorting.length > 0) {
+				$sorting.set(sharedState.table.sorting);
+				localStorage.setItem(
+					TABLE_STORAGE_KEYS.sorting,
+					JSON.stringify(sharedState.table.sorting),
+				);
+			}
 
-					// Merge shared custom rates with existing ones
-					if (sharedState.customRates && sharedState.customRates.length > 0) {
-						const existingRates = $storedCustomRates.get();
-						const existingIds = new Set(existingRates.map((r) => r.id));
-						const newRates = sharedState.customRates.filter(
-							(r: StoredCustomRate) => !existingIds.has(r.id),
-						);
-						if (newRates.length > 0) {
-							const merged = [...existingRates, ...newRates];
-							$storedCustomRates.set(merged);
-							localStorage.setItem(
-								CUSTOM_RATES_STORAGE_KEY,
-								JSON.stringify(merged),
-							);
-						}
-					}
-
-					// Merge shared custom perks with existing ones
-					if (sharedState.customPerks && sharedState.customPerks.length > 0) {
-						const existingPerks = $storedCustomPerks.get();
-						const existingIds = new Set(existingPerks.map((p) => p.id));
-						const newPerks = sharedState.customPerks.filter(
-							(p: StoredCustomPerk) => !existingIds.has(p.id),
-						);
-						if (newPerks.length > 0) {
-							const merged = [...existingPerks, ...newPerks];
-							$storedCustomPerks.set(merged);
-							localStorage.setItem(
-								CUSTOM_PERKS_STORAGE_KEY,
-								JSON.stringify(merged),
-							);
-						}
-					}
-
-					// Load compare state if present and persist to localStorage
-					if (sharedState.compare && sharedState.compare.rateIds.length > 0) {
-						const compareState = {
-							selectedRateIds: sharedState.compare.rateIds,
-							isOpen: true,
-						};
-						$compareState.set(compareState);
-						localStorage.setItem(
-							COMPARE_STORAGE_KEY,
-							JSON.stringify(compareState),
-						);
-					}
-
-					// Clear URL params after loading
-					clearRatesShareParam();
+			// Merge shared custom rates with existing ones
+			if (sharedState.customRates && sharedState.customRates.length > 0) {
+				const existingRates = $storedCustomRates.get();
+				const existingIds = new Set(existingRates.map((r) => r.id));
+				const newRates = sharedState.customRates.filter(
+					(r: StoredCustomRate) => !existingIds.has(r.id),
+				);
+				if (newRates.length > 0) {
+					const merged = [...existingRates, ...newRates];
+					$storedCustomRates.set(merged);
+					localStorage.setItem(
+						CUSTOM_RATES_STORAGE_KEY,
+						JSON.stringify(merged),
+					);
 				}
-			},
-		);
+			}
+
+			// Merge shared custom perks with existing ones
+			if (sharedState.customPerks && sharedState.customPerks.length > 0) {
+				const existingPerks = $storedCustomPerks.get();
+				const existingIds = new Set(existingPerks.map((p) => p.id));
+				const newPerks = sharedState.customPerks.filter(
+					(p: StoredCustomPerk) => !existingIds.has(p.id),
+				);
+				if (newPerks.length > 0) {
+					const merged = [...existingPerks, ...newPerks];
+					$storedCustomPerks.set(merged);
+					localStorage.setItem(
+						CUSTOM_PERKS_STORAGE_KEY,
+						JSON.stringify(merged),
+					);
+				}
+			}
+
+			// Load compare state if present and persist to localStorage
+			if (sharedState.compare && sharedState.compare.rateIds.length > 0) {
+				const compareState = {
+					selectedRateIds: sharedState.compare.rateIds,
+					isOpen: true,
+				};
+				$compareState.set(compareState);
+				localStorage.setItem(COMPARE_STORAGE_KEY, JSON.stringify(compareState));
+			}
+
+			// Clear URL params after loading
+			clearRatesShareParam();
+		}
 		return;
 	}
 

@@ -1,4 +1,4 @@
-import { AGE_LIMITS } from "@/lib/constants";
+import { AGE_LIMITS } from "@/lib/constants/central-bank";
 import { calculateAge } from "./date";
 
 /**

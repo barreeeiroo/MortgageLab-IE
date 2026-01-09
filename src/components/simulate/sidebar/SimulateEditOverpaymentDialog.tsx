@@ -13,7 +13,7 @@ import type {
 	OverpaymentFrequency,
 	ResolvedRatePeriod,
 } from "@/lib/schemas/simulate";
-import { parseCurrency } from "@/lib/utils";
+import { parseCurrency } from "@/lib/utils/currency";
 import { SimulateOverpaymentForm } from "./SimulateOverpaymentForm";
 import type { TimingMode } from "./SimulateTimingSelector";
 

@@ -15,7 +15,7 @@ import type {
 	RemortgageMonthlyComparison,
 	RemortgageYearlyComparison,
 } from "@/lib/mortgage/breakeven";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils";
+import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
 
 interface SavingsBreakevenChartProps {
 	data: RemortgageYearlyComparison[];

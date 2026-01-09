@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BER_RATINGS } from "@/lib/constants";
+import { BER_RATINGS } from "@/lib/constants/ber";
 import { BuyerTypeSchema } from "./buyer";
 
 export const BerRatingSchema = z.enum(BER_RATINGS);

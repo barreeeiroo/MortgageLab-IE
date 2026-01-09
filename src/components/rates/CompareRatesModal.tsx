@@ -5,16 +5,15 @@ import {
 	TriangleAlert,
 	X,
 } from "lucide-react";
-import {
-	getLender,
-	type Lender,
-	type MortgageRate,
-	type Perk,
-	resolvePerks,
-} from "@/lib/data";
-import { useIsDesktop } from "@/lib/hooks";
-import { cn, formatCurrency, formatTermDisplay } from "@/lib/utils";
-import { LenderLogo } from "../lenders";
+import { getLender, resolvePerks } from "@/lib/data";
+import { useIsDesktop } from "@/lib/hooks/use-is-desktop";
+import type { Lender } from "@/lib/schemas/lender";
+import type { Perk } from "@/lib/schemas/perk";
+import type { MortgageRate } from "@/lib/schemas/rate";
+import { cn } from "@/lib/utils/cn";
+import { formatCurrency } from "@/lib/utils/currency";
+import { formatTermDisplay } from "@/lib/utils/term";
+import { LenderLogo } from "../lenders/LenderLogo";
 import { ShareButton } from "../ShareButton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 

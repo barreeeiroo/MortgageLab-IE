@@ -1,22 +1,22 @@
 import { useStore } from "@nanostores/react";
 import { useEffect, useRef } from "react";
+import { $lenders, fetchLenders } from "@/lib/stores/lenders";
+import { initializeStore, persistFormValues } from "@/lib/stores/persistence";
 import {
 	$deposit,
-	$errorMessage,
 	$formValues,
+	$ltv,
+	handleModeSwitch,
+	type RatesInputValues,
+	setFormValues,
+} from "@/lib/stores/rates-form";
+import {
+	$errorMessage,
 	$hasError,
 	$hasWarning,
 	$isFormValid,
-	$lenders,
-	$ltv,
 	$warningMessage,
-	fetchLenders,
-	handleModeSwitch,
-	initializeStore,
-	persistFormValues,
-	type RatesInputValues,
-	setFormValues,
-} from "@/lib/stores/rates";
+} from "@/lib/stores/validation";
 import { RatesInput } from "./RatesInput";
 
 export function RatesInputIsland() {

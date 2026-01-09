@@ -14,19 +14,20 @@ import {
 	type VisibilityState,
 } from "@tanstack/react-table";
 
+// Re-export types for consumers
 export type {
 	ColumnFiltersState,
 	PaginationState,
 	RowSelectionState,
 	SortingState,
-	TanstackTable,
+	Table as TanstackTable,
 	VisibilityState,
-};
+} from "@tanstack/react-table";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { type ReactNode, useCallback, useRef, useState } from "react";
-import { useIsDesktop } from "@/lib/hooks";
-import { cn } from "@/lib/utils";
+import { useIsDesktop } from "@/lib/hooks/use-is-desktop";
+import { cn } from "@/lib/utils/cn";
 import { Button } from "./button";
 import {
 	Select,

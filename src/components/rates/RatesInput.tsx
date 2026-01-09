@@ -1,19 +1,16 @@
 import { AlertCircle, HelpCircle, Info, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { BerRating, RatesMode } from "@/lib/constants";
-import type { Lender } from "@/lib/schemas";
-import type { RatesInputValues } from "@/lib/stores";
-import {
-	calculateStampDuty,
-	ESTIMATED_LEGAL_FEES,
-	formatCurrency,
-	formatCurrencyInput,
-} from "@/lib/utils";
-import { LenderOption } from "../lenders";
+import type { BerRating } from "@/lib/constants/ber";
+import type { RatesMode } from "@/lib/constants/rates";
+import type { Lender } from "@/lib/schemas/lender";
+import type { RatesInputValues } from "@/lib/stores/rates-form";
+import { formatCurrency, formatCurrencyInput } from "@/lib/utils/currency";
+import { calculateStampDuty, ESTIMATED_LEGAL_FEES } from "@/lib/utils/fees";
+import { LenderOption } from "../lenders/LenderOption";
 import { BerSelector } from "../selectors/BerSelector";
 import { BuyerTypeSelector } from "../selectors/BuyerTypeSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
-import { GlossaryTermTooltip } from "../tooltips";
+import { GlossaryTermTooltip } from "../tooltips/GlossaryTermTooltip";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";

@@ -1,5 +1,5 @@
 import { fetchLendersData } from "@/lib/data/fetch";
-import type { Lender } from "@/lib/schemas";
+import type { Lender } from "@/lib/schemas/lender";
 import { createDataStore } from "./common";
 
 const store = createDataStore<Lender>(fetchLendersData);

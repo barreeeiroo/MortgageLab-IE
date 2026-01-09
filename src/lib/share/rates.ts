@@ -1,5 +1,6 @@
-import type { RatesInputValues, StoredCustomRate } from "@/lib/stores";
 import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
+import type { StoredCustomRate } from "@/lib/stores/custom-rates";
+import type { RatesInputValues } from "@/lib/stores/rates-form";
 import {
 	clearUrlParam,
 	compressToUrl,

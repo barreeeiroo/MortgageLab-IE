@@ -1,7 +1,7 @@
 import { Gift, HandCoins, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { ManageCustomPerksDialog } from "@/components/custom-perks";
-import { LenderLogo } from "@/components/lenders";
+import { ManageCustomPerksDialog } from "@/components/custom-perks/ManageCustomPerksDialog";
+import { LenderLogo } from "@/components/lenders/LenderLogo";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -35,11 +35,11 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Lender } from "@/lib/data";
 import type { BuyerType } from "@/lib/schemas/buyer";
+import type { Lender } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
-import type { StoredCustomRate } from "@/lib/stores";
 import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
+import type { StoredCustomRate } from "@/lib/stores/custom-rates";
 import { formatShortDate } from "@/lib/utils/date";
 import { AddCustomRateDialog } from "./AddCustomRateDialog";
 import type { CustomLenderInfo } from "./CustomRateForm";

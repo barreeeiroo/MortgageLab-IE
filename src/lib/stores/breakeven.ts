@@ -6,7 +6,7 @@ import type {
 import type {
 	RemortgageBreakevenShareState,
 	RentVsBuyShareState,
-} from "@/lib/share";
+} from "@/lib/share/breakeven";
 
 // --- Rent vs Buy Store ---
 

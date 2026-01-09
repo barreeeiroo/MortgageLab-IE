@@ -10,7 +10,7 @@ import {
 	TrendingDown,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { LenderLogo } from "@/components/lenders";
+import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { Button } from "@/components/ui/button";
 import {
 	Popover,
@@ -26,7 +26,7 @@ import type {
 	ResolvedRatePeriod,
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils/currency";
 import { SimulateTrimDialog } from "./SimulateTrimDialog";
 
 // Helper to format month/year

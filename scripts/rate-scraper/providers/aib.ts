@@ -5,7 +5,7 @@ import {
 	type BerRating,
 	GREEN_BER_RATINGS,
 } from "@/lib/constants/ber";
-import type { BuyerType } from "@/lib/schemas";
+import type { BuyerType } from "@/lib/schemas/buyer";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
 	parseLtvFromName,

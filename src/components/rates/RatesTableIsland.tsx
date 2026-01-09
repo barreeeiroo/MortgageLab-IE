@@ -1,37 +1,42 @@
 import { useStore } from "@nanostores/react";
 import { useCallback, useEffect } from "react";
+import { $allPerks, initializeCustomPerks } from "@/lib/stores/custom-perks";
 import {
-	$allPerks,
-	$columnFilters,
-	$columnVisibility,
-	$compactMode,
 	$customRates,
-	$error,
 	$filteredCustomRates,
+	initializeCustomRates,
+} from "@/lib/stores/custom-rates";
+import { $lenders } from "@/lib/stores/lenders";
+import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
+import { initializeStore } from "@/lib/stores/persistence";
+import {
+	$error,
 	$filteredRates,
-	$formValues,
-	$isFormValid,
 	$isLoading,
-	$lenders,
+	$rates,
+	fetchRatesData,
+} from "@/lib/stores/rates";
+import {
+	$formValues,
 	$ltv,
 	$mortgage,
 	$mortgageTerm,
-	$overpaymentPolicies,
+} from "@/lib/stores/rates-form";
+import {
+	$columnFilters,
+	$columnVisibility,
+	$compactMode,
 	$pageIndex,
 	$pageSize,
-	$rates,
 	$sorting,
-	fetchRatesData,
-	initializeCustomPerks,
-	initializeCustomRates,
-	initializeStore,
 	initializeTableState,
 	setColumnFilters,
 	setColumnVisibility,
 	setPageIndex,
 	setPageSize,
 	setSorting,
-} from "@/lib/stores";
+} from "@/lib/stores/rates-table";
+import { $isFormValid } from "@/lib/stores/validation";
 import { RatesTable } from "./RatesTable";
 import { RatesTableSkeleton } from "./RatesTableSkeleton";
 

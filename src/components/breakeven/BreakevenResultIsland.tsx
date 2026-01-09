@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { copyBreakevenShareUrl } from "@/lib/share";
+import { copyBreakevenShareUrl } from "@/lib/share/breakeven";
 import {
 	$remortgageDialogOpen,
 	$remortgageResult,
@@ -7,7 +7,7 @@ import {
 	$rentVsBuyResult,
 	closeRemortgageDialog,
 	closeRentVsBuyDialog,
-} from "@/lib/stores";
+} from "@/lib/stores/breakeven";
 import { ShareButton } from "../ShareButton";
 import {
 	AlertDialog,

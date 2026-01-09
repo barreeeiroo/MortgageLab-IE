@@ -12,13 +12,11 @@ import {
 	type ChartType,
 	type ChartVisibilitySettings,
 } from "@/lib/stores/simulate/simulate-chart";
-import {
-	BalanceEquityChart,
-	CumulativeCostsChart,
-	OverpaymentImpactChart,
-	PaymentBreakdownChart,
-	RateTimelineChart,
-} from "./charts";
+import { BalanceEquityChart } from "./charts/BalanceEquityChart";
+import { CumulativeCostsChart } from "./charts/CumulativeCostsChart";
+import { OverpaymentImpactChart } from "./charts/OverpaymentImpactChart";
+import { PaymentBreakdownChart } from "./charts/PaymentBreakdownChart";
+import { RateTimelineChart } from "./charts/RateTimelineChart";
 import { CHART_COLORS } from "./charts/shared/chartConfig";
 import type { ChartDataPoint } from "./types";
 

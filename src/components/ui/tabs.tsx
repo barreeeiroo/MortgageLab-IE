@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import type * as React from "react";
 import { Children, createContext, isValidElement, useContext } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

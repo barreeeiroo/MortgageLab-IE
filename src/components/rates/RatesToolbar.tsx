@@ -5,14 +5,13 @@ import type {
 } from "@tanstack/react-table";
 import { FoldHorizontal, Settings2, UnfoldHorizontal } from "lucide-react";
 import { useCallback } from "react";
-import type { Lender, RatesMetadata } from "@/lib/schemas";
-import { generateRatesShareUrl } from "@/lib/share";
-import {
-	$storedCustomPerks,
-	$storedCustomRates,
-	type RatesInputValues,
-} from "@/lib/stores";
-import { cn } from "@/lib/utils";
+import type { Lender } from "@/lib/schemas/lender";
+import type { RatesMetadata } from "@/lib/schemas/rate";
+import { generateRatesShareUrl } from "@/lib/share/rates";
+import { $storedCustomPerks } from "@/lib/stores/custom-perks";
+import { $storedCustomRates } from "@/lib/stores/custom-rates";
+import type { RatesInputValues } from "@/lib/stores/rates-form";
+import { cn } from "@/lib/utils/cn";
 import { ShareButton } from "../ShareButton";
 import { Button } from "../ui/button";
 import {

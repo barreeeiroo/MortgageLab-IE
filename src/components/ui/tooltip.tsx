@@ -6,7 +6,7 @@ import {
 	useState,
 } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 
 // Context to share toggle function for mobile click support
 const TooltipToggleContext = createContext<(() => void) | null>(null);

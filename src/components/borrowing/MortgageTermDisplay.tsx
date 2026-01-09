@@ -1,5 +1,5 @@
 import { Info } from "lucide-react";
-import { AGE_LIMITS } from "@/lib/constants";
+import { AGE_LIMITS } from "@/lib/constants/central-bank";
 import { Label } from "../ui/label";
 import {
 	Select,

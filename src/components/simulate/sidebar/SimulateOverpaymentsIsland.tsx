@@ -15,6 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
 import {
+	$resolvedRatePeriods,
+	$simulationWarnings,
+} from "@/lib/stores/simulate/simulate-calculations";
+import {
 	$hasRequiredData,
 	$simulationState,
 	$totalMonths,
@@ -23,11 +27,7 @@ import {
 	removeOverpaymentConfig,
 	toggleOverpaymentEnabled,
 	updateOverpaymentConfig,
-} from "@/lib/stores/simulate";
-import {
-	$resolvedRatePeriods,
-	$simulationWarnings,
-} from "@/lib/stores/simulate/simulate-calculations";
+} from "@/lib/stores/simulate/simulate-state";
 import { formatTransitionDate } from "@/lib/utils/date";
 import { SimulateAddOverpaymentDialog } from "./SimulateAddOverpaymentDialog";
 import { SimulateEditOverpaymentDialog } from "./SimulateEditOverpaymentDialog";

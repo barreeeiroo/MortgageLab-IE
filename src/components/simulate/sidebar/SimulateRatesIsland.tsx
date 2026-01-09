@@ -18,11 +18,17 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { saveRatesForm } from "@/lib/storage";
+import { saveRatesForm } from "@/lib/storage/forms";
 import { $customRates } from "@/lib/stores/custom-rates";
 import { $lenders } from "@/lib/stores/lenders";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
 import { $rates } from "@/lib/stores/rates";
+import {
+	$amortizationSchedule,
+	$bufferSuggestions,
+	$resolvedRatePeriods,
+	$simulationWarnings,
+} from "@/lib/stores/simulate/simulate-calculations";
 import {
 	$coveredMonths,
 	$hasRequiredData,
@@ -32,13 +38,7 @@ import {
 	removeRatePeriod,
 	updateRatePeriod,
 	updateRatePeriodWithOverpaymentAdjustments,
-} from "@/lib/stores/simulate";
-import {
-	$amortizationSchedule,
-	$bufferSuggestions,
-	$resolvedRatePeriods,
-	$simulationWarnings,
-} from "@/lib/stores/simulate/simulate-calculations";
+} from "@/lib/stores/simulate/simulate-state";
 import { formatTransitionDate } from "@/lib/utils/date";
 import { getPath } from "@/lib/utils/path";
 import { SimulateBufferSuggestion } from "./SimulateBufferSuggestion";

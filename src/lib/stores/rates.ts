@@ -1,13 +1,13 @@
 import { atom, computed } from "nanostores";
-import {
-	type BerRating,
-	type BuyerType,
-	filterRates,
-	type MortgageRate,
-} from "@/lib/data";
+import { filterRates } from "@/lib/data";
 import { fetchAllRates } from "@/lib/data/fetch";
-import type { RatesMetadata } from "@/lib/schemas";
+import type { BuyerType } from "@/lib/schemas/buyer";
 import { DEFAULT_MAX_TERM } from "@/lib/schemas/lender";
+import type {
+	BerRating,
+	MortgageRate,
+	RatesMetadata,
+} from "@/lib/schemas/rate";
 import {
 	$lenders,
 	fetchLenders,
@@ -20,50 +20,6 @@ import {
 	markOverpaymentPoliciesFetched,
 } from "./overpayment-policies";
 import { fetchPerks, isPerksFetched, markPerksFetched } from "./perks";
-
-// Re-export from lenders, perks, and overpayment policies stores
-export { $lenders, fetchLenders } from "./lenders";
-export {
-	$overpaymentPolicies,
-	fetchOverpaymentPolicies,
-} from "./overpayment-policies";
-export { $perks, fetchPerks } from "./perks";
-// Re-export from persistence store
-export {
-	initializeStore,
-	persistFormValues,
-	updateUrlHash,
-} from "./persistence";
-// Re-export from form store
-export {
-	$deposit,
-	$formValues,
-	$isPrimaryResidence,
-	$isRemortgage,
-	$ltv,
-	$maxLtv,
-	$monthly,
-	$mortgage,
-	$mortgageTerm,
-	$property,
-	DEFAULT_VALUES,
-	handleModeSwitch,
-	type RatesInputValues,
-	type RatesMode,
-	setFormValues,
-	updateFormValue,
-} from "./rates-form";
-// Re-export from validation store
-export {
-	$errorMessage,
-	$hasError,
-	$hasWarning,
-	$isFormValid,
-	$isLtvAbove80Warning,
-	$isLtvAboveMax,
-	$isMortgageAboveProperty,
-	$warningMessage,
-} from "./validation";
 
 // Import for use in computed values
 import { $formValues, $isRemortgage, $mortgageTerm } from "./rates-form";

@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
+import { formatCurrency } from "@/lib/utils/currency";
 import {
 	calculatePropertyVAT,
 	calculateStampDuty,
 	ESTIMATED_LEGAL_FEES,
-	formatCurrency,
 	type PropertyType,
-} from "@/lib/utils";
-import { GlossaryTermTooltip } from "../tooltips";
+} from "@/lib/utils/fees";
+import { GlossaryTermTooltip } from "../tooltips/GlossaryTermTooltip";
 import { Card, CardContent } from "../ui/card";
 import { TooltipProvider } from "../ui/tooltip";
 

@@ -1,13 +1,13 @@
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
-import { MAX_TERM_YEARS, MIN_TERM_YEARS } from "@/lib/constants";
+import { MAX_TERM_YEARS, MIN_TERM_YEARS } from "@/lib/constants/term";
+import { cn } from "@/lib/utils/cn";
 import {
-	cn,
 	combineTerm,
 	formatTermDisplay,
 	isValidTermYears,
 	splitTerm,
-} from "@/lib/utils";
+} from "@/lib/utils/term";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";

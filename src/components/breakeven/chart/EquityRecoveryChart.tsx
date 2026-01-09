@@ -15,7 +15,7 @@ import type {
 	MonthlyComparison,
 	YearlyComparison,
 } from "@/lib/mortgage/breakeven";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils";
+import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
 
 interface EquityRecoveryChartProps {
 	data: YearlyComparison[];

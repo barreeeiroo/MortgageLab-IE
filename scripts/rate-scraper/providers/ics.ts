@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import type { BuyerType } from "@/lib/schemas";
+import type { BuyerType } from "@/lib/schemas/buyer";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import { parsePercentage } from "../parsing.ts";
 import type { LenderProvider } from "../types";

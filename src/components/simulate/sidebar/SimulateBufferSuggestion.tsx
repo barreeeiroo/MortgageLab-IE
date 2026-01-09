@@ -1,5 +1,5 @@
 import { AlertTriangle, Plus } from "lucide-react";
-import { LenderLogo } from "@/components/lenders";
+import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { Button } from "@/components/ui/button";
 import {
 	Popover,

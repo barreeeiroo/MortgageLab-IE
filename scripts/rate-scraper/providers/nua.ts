@@ -1,5 +1,5 @@
-import { type AprcConfig, calculateAprc } from "@/lib/mortgage";
-import type { BuyerType } from "@/lib/schemas";
+import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
+import type { BuyerType } from "@/lib/schemas/buyer";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type { LenderProvider } from "../types";
 

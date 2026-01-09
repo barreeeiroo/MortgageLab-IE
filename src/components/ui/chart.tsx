@@ -6,7 +6,7 @@ import {
 	Tooltip,
 } from "recharts";
 
-import { cn } from "@/lib/utils/index";
+import { cn } from "@/lib/utils/cn";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;

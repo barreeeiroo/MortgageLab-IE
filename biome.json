@@ -6,7 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!!**/dist", "!!**/*.astro", "!!data"],
+		"includes": ["**", "!!**/dist", "!!**/*.astro", "!!data", "!!.claude"],
 		"ignoreUnknown": true
 	},
 	"formatter": {
@@ -16,7 +16,13 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"style": {
+				"noExportedImports": "error"
+			},
+			"performance": {
+				"noBarrelFile": "error"
+			}
 		}
 	},
 	"javascript": {

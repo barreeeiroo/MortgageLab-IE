@@ -8,9 +8,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { loadRatesForm, saveRatesForm } from "@/lib/storage";
-import { DEFAULT_VALUES } from "@/lib/stores";
-import { $hasRequiredData, $initialized } from "@/lib/stores/simulate";
+import { loadRatesForm, saveRatesForm } from "@/lib/storage/forms";
+import { DEFAULT_VALUES } from "@/lib/stores/rates-form";
+import {
+	$hasRequiredData,
+	$initialized,
+} from "@/lib/stores/simulate/simulate-state";
 import { getPath } from "@/lib/utils/path";
 
 export function SimulateEmptyState() {

@@ -6,12 +6,13 @@ import {
 	hasSimulateShareParam,
 	parseSimulateShareState,
 } from "@/lib/share/simulate";
-import { fetchRatesData } from "@/lib/stores";
 import {
 	$storedCustomRates,
 	addCustomRate,
 	initializeCustomRates,
 } from "@/lib/stores/custom-rates";
+import { fetchRatesData } from "@/lib/stores/rates";
+import { $simulationCompleteness } from "@/lib/stores/simulate/simulate-calculations";
 import {
 	$hasRequiredData,
 	$simulationState,
@@ -19,8 +20,7 @@ import {
 	markInitialized,
 	resetSimulation,
 	setSimulationState,
-} from "@/lib/stores/simulate";
-import { $simulationCompleteness } from "@/lib/stores/simulate/simulate-calculations";
+} from "@/lib/stores/simulate/simulate-state";
 import { SimulateHeader } from "./SimulateHeader";
 
 export function SimulateHeaderIsland() {

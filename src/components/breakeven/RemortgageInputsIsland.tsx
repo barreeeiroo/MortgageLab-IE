@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
-import { type BerRating, DEFAULT_BER } from "@/lib/constants";
+import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
 import { calculateRemortgageBreakeven } from "@/lib/mortgage/breakeven";
-import type { MortgageRate } from "@/lib/schemas";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import {
 	clearBreakevenShareParam,
 	hasBreakevenShareParam,
 	parseBreakevenShareState,
-} from "@/lib/share";
+} from "@/lib/share/breakeven";
 import {
 	loadRemortgageBreakevenForm,
 	saveRemortgageBreakevenForm,
-} from "@/lib/storage";
-import { showRemortgageResult } from "@/lib/stores";
-import { formatCurrencyInput, parseCurrency } from "@/lib/utils";
+} from "@/lib/storage/forms";
+import { showRemortgageResult } from "@/lib/stores/breakeven";
+import { formatCurrencyInput, parseCurrency } from "@/lib/utils/currency";
 import { ESTIMATED_REMORTGAGE_LEGAL_FEES } from "@/lib/utils/fees";
 import { RatePicker } from "../rates/RatePicker";
 import { BerSelector } from "../selectors/BerSelector";

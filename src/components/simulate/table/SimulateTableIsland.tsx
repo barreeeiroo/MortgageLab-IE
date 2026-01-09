@@ -1,5 +1,4 @@
 import { useStore } from "@nanostores/react";
-import { $hasRequiredData, $simulationState } from "@/lib/stores/simulate";
 import {
 	$milestones,
 	$resolvedRatePeriods,
@@ -7,6 +6,10 @@ import {
 	$simulationWarnings,
 	$yearlySchedule,
 } from "@/lib/stores/simulate/simulate-calculations";
+import {
+	$hasRequiredData,
+	$simulationState,
+} from "@/lib/stores/simulate/simulate-state";
 import { SimulateTable } from "./SimulateTable";
 
 export function SimulateTableIsland() {

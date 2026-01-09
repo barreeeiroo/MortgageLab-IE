@@ -1,13 +1,12 @@
 import { atom, computed } from "nanostores";
-import {
-	DEFAULT_BER,
-	DEFAULT_TERM_MONTHS,
-	type RatesMode,
-} from "@/lib/constants";
+import { DEFAULT_BER } from "@/lib/constants/ber";
+import type { RatesMode } from "@/lib/constants/rates";
+import { DEFAULT_TERM_MONTHS } from "@/lib/constants/term";
 
-export type { RatesMode };
+// Re-export for consumers
+export type { RatesMode } from "@/lib/constants/rates";
 
-import { parseCurrency } from "@/lib/utils";
+import { parseCurrency } from "@/lib/utils/currency";
 
 export interface RatesInputValues {
 	mode: RatesMode;

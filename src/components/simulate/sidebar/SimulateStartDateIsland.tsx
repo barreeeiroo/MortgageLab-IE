@@ -13,7 +13,7 @@ import {
 	$hasRequiredData,
 	$simulationState,
 	setInput,
-} from "@/lib/stores/simulate";
+} from "@/lib/stores/simulate/simulate-state";
 import { formatDateLocal, formatMonthYear } from "@/lib/utils/date";
 
 export function SimulateStartDateIsland() {

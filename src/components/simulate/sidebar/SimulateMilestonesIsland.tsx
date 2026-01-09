@@ -1,7 +1,7 @@
 import { useStore } from "@nanostores/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { $hasRequiredData } from "@/lib/stores/simulate";
 import { $milestones } from "@/lib/stores/simulate/simulate-calculations";
+import { $hasRequiredData } from "@/lib/stores/simulate/simulate-state";
 import { SimulateMilestoneEvent } from "./SimulateEventCard";
 
 export function SimulateMilestonesIsland() {

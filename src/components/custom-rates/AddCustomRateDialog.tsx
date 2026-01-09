@@ -1,6 +1,6 @@
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { useCallback, useMemo } from "react";
-import { LenderLogo } from "@/components/lenders";
+import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -10,11 +10,11 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import type { Lender } from "@/lib/data";
 import type { BuyerType } from "@/lib/schemas/buyer";
+import type { Lender } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
-import type { StoredCustomRate } from "@/lib/stores";
 import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
+import type { StoredCustomRate } from "@/lib/stores/custom-rates";
 import { type CustomLenderInfo, CustomRateForm } from "./CustomRateForm";
 
 interface AddCustomRateDialogProps {

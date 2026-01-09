@@ -1,4 +1,4 @@
-import { BER_RATINGS, type BerRating } from "@/lib/constants";
+import { BER_RATINGS, type BerRating } from "@/lib/constants/ber";
 import { Label } from "../ui/label";
 import {
 	Select,

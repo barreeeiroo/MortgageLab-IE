@@ -1,21 +1,19 @@
 import { useStore } from "@nanostores/react";
 import { useEffect } from "react";
+import { $lenders } from "@/lib/stores/lenders";
+import { initializeStore } from "@/lib/stores/persistence";
+import { $isLoading, $ratesMetadata, fetchRatesData } from "@/lib/stores/rates";
+import { $formValues } from "@/lib/stores/rates-form";
 import {
 	$columnFilters,
 	$columnVisibility,
 	$compactMode,
-	$formValues,
-	$isFormValid,
-	$isLoading,
-	$lenders,
-	$ratesMetadata,
 	$sorting,
-	fetchRatesData,
-	initializeStore,
 	initializeTableState,
 	setColumnVisibility,
 	setCompactMode,
-} from "@/lib/stores";
+} from "@/lib/stores/rates-table";
+import { $isFormValid } from "@/lib/stores/validation";
 import { RatesToolbar } from "./RatesToolbar";
 
 export function RatesToolbarIsland() {

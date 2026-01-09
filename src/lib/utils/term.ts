@@ -8,7 +8,7 @@ import {
 	MAX_TERM_YEARS,
 	MIN_TERM_MONTHS,
 	MIN_TERM_YEARS,
-} from "@/lib/constants";
+} from "@/lib/constants/term";
 
 /**
  * Split total months into years and remaining months

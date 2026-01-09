@@ -5,7 +5,8 @@ import type {
 	RentVsBuyResult,
 } from "@/lib/mortgage/breakeven";
 import { formatBreakevenPeriod } from "@/lib/mortgage/breakeven";
-import { formatCurrency, formatTermDisplay } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils/currency";
+import { formatTermDisplay } from "@/lib/utils/term";
 import { Card, CardContent } from "../ui/card";
 import { EquityRecoveryChart } from "./chart/EquityRecoveryChart";
 import { InterestComparisonChart } from "./chart/InterestComparisonChart";

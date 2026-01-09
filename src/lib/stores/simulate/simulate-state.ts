@@ -1,5 +1,6 @@
 import { atom, computed } from "nanostores";
-import { DEFAULT_BER, DEFAULT_TERM_MONTHS } from "@/lib/constants";
+import { DEFAULT_BER } from "@/lib/constants/ber";
+import { DEFAULT_TERM_MONTHS } from "@/lib/constants/term";
 import type {
 	OverpaymentConfig,
 	RatePeriod,

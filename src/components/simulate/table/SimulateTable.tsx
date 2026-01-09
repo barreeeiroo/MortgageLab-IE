@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
 	type GlossaryTermId,
 	GlossaryTermTooltip,
-} from "@/components/tooltips";
+} from "@/components/tooltips/GlossaryTermTooltip";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Table,
@@ -25,7 +25,7 @@ import type {
 	SimulationSummary,
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils/currency";
 import { SimulateYearRow } from "./SimulateYearRow";
 
 interface SimulateTableProps {

@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-	type BerRating,
-	DEFAULT_BER,
-	DEFAULT_TERM_MONTHS,
-} from "@/lib/constants";
+import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
+import { DEFAULT_TERM_MONTHS } from "@/lib/constants/term";
 import {
 	calculateRentVsBuyBreakeven,
 	DEFAULT_HOME_APPRECIATION,
@@ -21,13 +18,13 @@ import {
 	hasBreakevenShareParam,
 	parseBreakevenShareState,
 	type RentVsBuyShareState,
-} from "@/lib/share";
-import { loadRentVsBuyForm, saveRentVsBuyForm } from "@/lib/storage";
+} from "@/lib/share/breakeven";
+import { loadRentVsBuyForm, saveRentVsBuyForm } from "@/lib/storage/forms";
 import {
 	formatCurrency,
 	formatCurrencyInput,
 	parseCurrency,
-} from "@/lib/utils";
+} from "@/lib/utils/currency";
 import {
 	calculatePropertyVAT,
 	calculateStampDuty,

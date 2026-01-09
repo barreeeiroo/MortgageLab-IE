@@ -1,4 +1,4 @@
-import type { BerRating } from "@/lib/constants";
+import type { BerRating } from "@/lib/constants/ber";
 import type { PropertyType } from "@/lib/utils/fees";
 import {
 	clearUrlParam,

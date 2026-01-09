@@ -1,12 +1,8 @@
-import type {
-	BerRating,
-	BuyerType,
-	Lender,
-	MortgageRate,
-	OverpaymentPolicy,
-	Perk,
-	RateType,
-} from "@/lib/schemas";
+import type { BuyerType } from "@/lib/schemas/buyer";
+import type { Lender } from "@/lib/schemas/lender";
+import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
+import type { Perk } from "@/lib/schemas/perk";
+import type { BerRating, MortgageRate, RateType } from "@/lib/schemas/rate";
 
 /**
  * Get a perk by ID from a perks array
@@ -158,10 +154,3 @@ export function getAvailableFixedTerms(rates: MortgageRate[]): number[] {
 	}
 	return [...terms].sort((a, b) => a - b);
 }
-
-// Re-export BER utilities
-export { BER_RATINGS, GREEN_BER_RATINGS, isGreenBer } from "@/lib/constants";
-// Re-export schema types
-export * from "@/lib/schemas";
-// Re-export fetch utilities
-export * from "./fetch";

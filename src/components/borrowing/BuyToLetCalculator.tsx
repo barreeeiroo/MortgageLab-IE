@@ -1,32 +1,33 @@
 import { ExternalLink, Info, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
 import {
 	AGE_LIMITS,
-	type BerRating,
 	CENTRAL_BANK_MORTGAGE_MEASURES_URL,
-	DEFAULT_BER,
 	LENDER_ALLOWANCES,
 	LTI_LIMITS,
 	LTV_LIMITS,
-} from "@/lib/constants";
+} from "@/lib/constants/central-bank";
 import {
 	type BtlShareState,
 	clearBorrowingShareParam,
 	copyBorrowingShareUrl,
 	hasBorrowingShareParam,
 	parseBorrowingShareState,
-} from "@/lib/share";
-import { loadBtlForm, saveBtlForm, saveRatesForm } from "@/lib/storage";
+} from "@/lib/share/borrowing";
+import { loadBtlForm, saveBtlForm, saveRatesForm } from "@/lib/storage/forms";
 import {
 	calculateJointMaxTerm,
 	calculateMonthlyPayment,
+	isApplicantTooOld,
+} from "@/lib/utils/borrowing";
+import {
 	formatCurrency,
 	formatCurrencyInput,
-	getPath,
-	isApplicantTooOld,
 	parseCurrency,
-} from "@/lib/utils";
+} from "@/lib/utils/currency";
 import type { PropertyType } from "@/lib/utils/fees";
+import { getPath } from "@/lib/utils/path";
 import { ShareButton } from "../ShareButton";
 import { BerSelector } from "../selectors/BerSelector";
 import { PropertyTypeSelector } from "../selectors/PropertyTypeSelector";

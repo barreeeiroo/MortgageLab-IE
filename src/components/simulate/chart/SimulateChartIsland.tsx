@@ -1,5 +1,4 @@
 import { useStore } from "@nanostores/react";
-import { $hasRequiredData, $input } from "@/lib/stores/simulate";
 import {
 	$amortizationSchedule,
 	$appliedOverpayments,
@@ -16,6 +15,7 @@ import {
 	setGranularity,
 	toggleChartVisibility,
 } from "@/lib/stores/simulate/simulate-chart";
+import { $hasRequiredData, $input } from "@/lib/stores/simulate/simulate-state";
 import { SimulateChartsContainer } from "./SimulateChartsContainer";
 import type { ChartDataPoint } from "./types";
 

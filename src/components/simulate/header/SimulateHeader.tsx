@@ -12,13 +12,10 @@ import { ShareButton } from "@/components/ShareButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { BerRating } from "@/lib/constants";
+import type { BerRating } from "@/lib/constants/ber";
 import type { SimulationCompleteness } from "@/lib/stores/simulate/simulate-calculations";
-import {
-	formatCurrency,
-	formatCurrencyShort,
-	formatTermDisplay,
-} from "@/lib/utils";
+import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
+import { formatTermDisplay } from "@/lib/utils/term";
 
 interface SimulateHeaderProps {
 	hasRequiredData: boolean;

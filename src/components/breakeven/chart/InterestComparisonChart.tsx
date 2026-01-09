@@ -5,7 +5,7 @@ import {
 	ChartTooltip,
 } from "@/components/ui/chart";
 import type { RemortgageYearlyComparison } from "@/lib/mortgage/breakeven";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils";
+import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
 
 interface InterestComparisonChartProps {
 	data: RemortgageYearlyComparison[];
