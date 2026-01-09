@@ -45,29 +45,20 @@ export default defineConfig({
 					manualChunks: (id) => {
 						// Node modules - group by package
 						if (id.includes("/node_modules/")) {
-							// React ecosystem
-							if (id.includes("react") || id.includes("scheduler")) {
-								return "vendor-react";
+							// Lucide icons - bundle all icons together
+							if (id.includes("lucide-react")) {
+								return "icons";
 							}
-							// Recharts/D3 for charts
-							if (
-								id.includes("recharts") ||
-								id.includes("d3-") ||
-								id.includes("victory")
-							) {
-								return "vendor-charts";
+
+							// Radix UI primitives
+							if (id.includes("@radix-ui")) {
+								return "radix";
 							}
-							// Other vendors (including Radix)
-							return "vendor";
 						}
 
 						// Core library
 						if (id.includes("/lib/")) {
 							return "lib";
-						}
-						// UI components
-						if (id.includes("/components/ui/")) {
-							return "ui";
 						}
 					},
 				},

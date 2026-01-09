@@ -26,7 +26,7 @@ export type {
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { type ReactNode, useCallback, useRef, useState } from "react";
-import { useIsDesktop } from "@/lib/hooks/use-is-desktop";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "./button";
 import {

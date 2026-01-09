@@ -6,7 +6,7 @@ import {
 	X,
 } from "lucide-react";
 import { getLender, resolvePerks } from "@/lib/data";
-import { useIsDesktop } from "@/lib/hooks/use-is-desktop";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
 import type { Lender } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
 import type { MortgageRate } from "@/lib/schemas/rate";
