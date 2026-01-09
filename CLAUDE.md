@@ -1,6 +1,6 @@
 # MortgageLab-IE
 
-Irish mortgage comparison tool. See README.md and CONTRIBUTING.md for setup.
+Irish mortgage comparison tool. See @README.md and @CONTRIBUTING.md for setup.
 
 ## Conventions
 
@@ -32,5 +32,5 @@ React components (src/components/) should be thin presentation layers. Extract p
 
 ## Key Directories
 
-- src/lib/ - Business logic (see src/lib/CLAUDE.md)
-- scripts/rate-scraper/ - Rate scrapers (see scripts/rate-scraper/CLAUDE.md)
+- src/lib/ - Business logic (see @src/lib/CLAUDE.md)
+- scripts/rate-scraper/ - Rate scrapers (see @scripts/rate-scraper/CLAUDE.md)
