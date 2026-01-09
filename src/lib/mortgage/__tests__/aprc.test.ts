@@ -189,7 +189,12 @@ describe("calculateAprc", () => {
 			const aprc = calculateAprc(3.5, 240, 5.0, standardConfig);
 
 			// Follow-on rate should not matter since fixed covers entire term
-			const aprcWithDifferentFollowOn = calculateAprc(3.5, 240, 7.0, standardConfig);
+			const aprcWithDifferentFollowOn = calculateAprc(
+				3.5,
+				240,
+				7.0,
+				standardConfig,
+			);
 
 			expect(aprc).toBe(aprcWithDifferentFollowOn);
 		});
@@ -224,7 +229,7 @@ describe("calculateAprc", () => {
 
 		it("produces consistent results across multiple calls", () => {
 			const results = Array.from({ length: 10 }, () =>
-				calculateAprc(3.5, 36, 4.5, standardConfig)
+				calculateAprc(3.5, 36, 4.5, standardConfig),
 			);
 
 			// All results should be identical
@@ -238,10 +243,20 @@ describe("inferFollowOnRate", () => {
 		it("infers follow-on rate from observed APRC", () => {
 			// First calculate an APRC with known parameters
 			const knownFollowOn = 4.5;
-			const observedAprc = calculateAprc(3.5, 36, knownFollowOn, standardConfig);
+			const observedAprc = calculateAprc(
+				3.5,
+				36,
+				knownFollowOn,
+				standardConfig,
+			);
 
 			// Then try to infer the follow-on rate
-			const inferredRate = inferFollowOnRate(3.5, 36, observedAprc, standardConfig);
+			const inferredRate = inferFollowOnRate(
+				3.5,
+				36,
+				observedAprc,
+				standardConfig,
+			);
 
 			// Should be very close to original follow-on rate
 			expect(inferredRate).toBeCloseTo(knownFollowOn, 1);
@@ -252,7 +267,12 @@ describe("inferFollowOnRate", () => {
 
 			for (const rate of testRates) {
 				const observedAprc = calculateAprc(3.5, 36, rate, standardConfig);
-				const inferredRate = inferFollowOnRate(3.5, 36, observedAprc, standardConfig);
+				const inferredRate = inferFollowOnRate(
+					3.5,
+					36,
+					observedAprc,
+					standardConfig,
+				);
 
 				expect(inferredRate).toBeCloseTo(rate, 1);
 			}
@@ -263,7 +283,12 @@ describe("inferFollowOnRate", () => {
 		it("works with larger loan amounts", () => {
 			const knownFollowOn = 4.8;
 			const observedAprc = calculateAprc(3.25, 60, knownFollowOn, largeConfig);
-			const inferredRate = inferFollowOnRate(3.25, 60, observedAprc, largeConfig);
+			const inferredRate = inferFollowOnRate(
+				3.25,
+				60,
+				observedAprc,
+				largeConfig,
+			);
 
 			expect(inferredRate).toBeCloseTo(knownFollowOn, 1);
 		});
@@ -271,7 +296,12 @@ describe("inferFollowOnRate", () => {
 		it("works with different fixed periods", () => {
 			// 1-year fixed
 			let observedAprc = calculateAprc(3.0, 12, 4.5, standardConfig);
-			let inferredRate = inferFollowOnRate(3.0, 12, observedAprc, standardConfig);
+			let inferredRate = inferFollowOnRate(
+				3.0,
+				12,
+				observedAprc,
+				standardConfig,
+			);
 			expect(inferredRate).toBeCloseTo(4.5, 1);
 
 			// 5-year fixed
@@ -284,14 +314,24 @@ describe("inferFollowOnRate", () => {
 	describe("edge cases", () => {
 		it("handles low APRC values", () => {
 			const observedAprc = calculateAprc(2.0, 36, 2.5, standardConfig);
-			const inferredRate = inferFollowOnRate(2.0, 36, observedAprc, standardConfig);
+			const inferredRate = inferFollowOnRate(
+				2.0,
+				36,
+				observedAprc,
+				standardConfig,
+			);
 
 			expect(inferredRate).toBeCloseTo(2.5, 1);
 		});
 
 		it("handles high APRC values", () => {
 			const observedAprc = calculateAprc(6.0, 36, 8.0, standardConfig);
-			const inferredRate = inferFollowOnRate(6.0, 36, observedAprc, standardConfig);
+			const inferredRate = inferFollowOnRate(
+				6.0,
+				36,
+				observedAprc,
+				standardConfig,
+			);
 
 			expect(inferredRate).toBeCloseTo(8.0, 1);
 		});
@@ -300,9 +340,15 @@ describe("inferFollowOnRate", () => {
 	describe("numerical precision", () => {
 		it("returns rate rounded to 2 decimal places", () => {
 			const observedAprc = calculateAprc(3.5, 36, 4.55, standardConfig);
-			const inferredRate = inferFollowOnRate(3.5, 36, observedAprc, standardConfig);
+			const inferredRate = inferFollowOnRate(
+				3.5,
+				36,
+				observedAprc,
+				standardConfig,
+			);
 
-			const decimalPlaces = (inferredRate.toString().split(".")[1] || "").length;
+			const decimalPlaces = (inferredRate.toString().split(".")[1] || "")
+				.length;
 			expect(decimalPlaces).toBeLessThanOrEqual(2);
 		});
 	});

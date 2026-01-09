@@ -1,4 +1,67 @@
 /**
+ * Add months to a date string (avoids timezone issues)
+ * Returns empty string if no start date provided
+ * @param dateStr - ISO date string "YYYY-MM-DD"
+ * @param months - 1-indexed month number (1 = start date, 2 = one month later)
+ */
+export function addMonthsToDateString(
+	dateStr: string | undefined,
+	months: number,
+): string {
+	if (!dateStr) return "";
+
+	// Parse date components directly to avoid timezone issues
+	const [year, month, day] = dateStr.split("-").map(Number);
+
+	// Calculate new date (months - 1 because month 1 = start date)
+	const totalMonths = year * 12 + (month - 1) + (months - 1);
+	const newYear = Math.floor(totalMonths / 12);
+	const newMonth = (totalMonths % 12) + 1;
+
+	return `${newYear}-${String(newMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+/**
+ * Get the calendar year for a given month offset from start date
+ * Returns undefined if no start date (for relative periods mode)
+ * @param startDate - ISO date string "YYYY-MM-DD"
+ * @param monthNumber - 1-indexed month number (1 = first month)
+ */
+export function getCalendarYearForMonth(
+	startDate: string | undefined,
+	monthNumber: number,
+): number | undefined {
+	if (!startDate) return undefined;
+
+	const [startYear, startMonth] = startDate.split("-").map(Number);
+
+	// Calculate total months from year 0
+	const totalMonths = startYear * 12 + (startMonth - 1) + (monthNumber - 1);
+	return Math.floor(totalMonths / 12);
+}
+
+/**
+ * Check if a given month is the first month of a new calendar year
+ * @param startDate - ISO date string "YYYY-MM-DD"
+ * @param monthNumber - 1-indexed month number (1 = first month)
+ */
+export function isFirstMonthOfCalendarYear(
+	startDate: string | undefined,
+	monthNumber: number,
+): boolean {
+	if (!startDate) return false;
+	if (monthNumber === 1) return true; // First month is always a "new year" for tracking
+
+	const [startYear, startMonth] = startDate.split("-").map(Number);
+
+	// Calculate the calendar month (1-12) for this month number
+	const totalMonths = startYear * 12 + (startMonth - 1) + (monthNumber - 1);
+	const calendarMonth = (totalMonths % 12) + 1;
+
+	return calendarMonth === 1; // January
+}
+
+/**
  * Calculate age from birth date
  */
 export function calculateAge(birthDate: Date | undefined): number | null {

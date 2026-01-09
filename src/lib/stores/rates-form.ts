@@ -3,9 +3,6 @@ import { DEFAULT_BER } from "@/lib/constants/ber";
 import type { RatesMode } from "@/lib/constants/rates";
 import { DEFAULT_TERM_MONTHS } from "@/lib/constants/term";
 
-// Re-export for consumers
-export type { RatesMode } from "@/lib/constants/rates";
-
 import { parseCurrency } from "@/lib/utils/currency";
 
 export interface RatesInputValues {

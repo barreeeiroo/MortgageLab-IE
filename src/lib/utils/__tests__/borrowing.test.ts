@@ -93,7 +93,11 @@ describe("calculateJointMaxTerm", () => {
 		});
 
 		it("returns null when single applicant has no birthDate", () => {
-			const result = calculateJointMaxTerm(undefined, createDateForAge(30), false);
+			const result = calculateJointMaxTerm(
+				undefined,
+				createDateForAge(30),
+				false,
+			);
 			expect(result).toBeNull();
 		});
 	});
@@ -252,12 +256,12 @@ describe("calculateMonthlyPayment", () => {
 
 			const result = calculateMonthlyPayment(principal, annualRate, months);
 
-			expect(result).toBeCloseTo(4257.50, 0);
+			expect(result).toBeCloseTo(4257.5, 0);
 		});
 
 		it("handles high interest rate", () => {
 			const principal = 200000;
-			const annualRate = 0.10; // 10%
+			const annualRate = 0.1; // 10%
 			const months = 240;
 
 			const result = calculateMonthlyPayment(principal, annualRate, months);

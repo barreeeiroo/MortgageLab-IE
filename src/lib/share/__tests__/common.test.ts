@@ -33,7 +33,7 @@ describe("compressToUrl", () => {
 
 	describe("URL safety", () => {
 		it("produces output that can be safely used in URLs", () => {
-			const data = { special: "test!@#$%^&*()+=[]{}|\\:\";<>?,./" };
+			const data = { special: 'test!@#$%^&*()+=[]{}|\\:";<>?,./' };
 			const result = compressToUrl(data);
 			// Should produce a non-empty string
 			expect(result.length).toBeGreaterThan(0);
@@ -179,8 +179,7 @@ describe("roundtrip compression", () => {
 		};
 
 		const compressed = compressToUrl(simulationState);
-		const decompressed =
-			decompressFromUrl<typeof simulationState>(compressed);
+		const decompressed = decompressFromUrl<typeof simulationState>(compressed);
 
 		expect(decompressed).toEqual(simulationState);
 	});

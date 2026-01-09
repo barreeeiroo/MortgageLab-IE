@@ -1,4 +1,11 @@
 import { describe, expect, it } from "vitest";
+import {
+	aggregateByYear,
+	calculateAmortization,
+	calculateBaselineInterest,
+	calculateMilestones,
+	calculateSummary,
+} from "@/lib/mortgage/simulation";
 import type { Lender } from "@/lib/schemas/lender";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { MortgageRate } from "@/lib/schemas/rate";
@@ -6,17 +13,9 @@ import type {
 	AmortizationMonth,
 	OverpaymentConfig,
 	RatePeriod,
+	ResolvedRatePeriod,
 	SimulationState,
 } from "@/lib/schemas/simulate";
-import type { CustomRate } from "@/lib/stores/custom-rates";
-import type { ResolvedRatePeriod } from "@/lib/schemas/simulate";
-import {
-	aggregateByYear,
-	calculateAmortization,
-	calculateBaselineInterest,
-	calculateMilestones,
-	calculateSummary,
-} from "../simulate/simulate-calculations";
 
 // Test fixtures
 function createRate(overrides: Partial<MortgageRate> = {}): MortgageRate {
@@ -26,12 +25,10 @@ function createRate(overrides: Partial<MortgageRate> = {}): MortgageRate {
 		name: "Test Rate",
 		rate: 3.5,
 		type: "variable",
-		isGreen: false,
 		maxLtv: 90,
 		minLtv: 0,
 		buyerTypes: ["ftb", "mover"],
-		propertyTypes: ["house", "apartment"],
-		employmentTypes: ["paye", "self-employed"],
+		perks: [],
 		...overrides,
 	};
 }
@@ -40,12 +37,15 @@ function createLender(overrides: Partial<Lender> = {}): Lender {
 	return {
 		id: "test-lender",
 		name: "Test Bank",
-		logo: "test.png",
+		mortgagesUrl: "https://example.com/mortgages",
+		perks: [],
 		...overrides,
 	};
 }
 
-function createPolicy(overrides: Partial<OverpaymentPolicy> = {}): OverpaymentPolicy {
+function createPolicy(
+	overrides: Partial<OverpaymentPolicy> = {},
+): OverpaymentPolicy {
 	return {
 		id: "test-policy",
 		label: "10% of balance",
@@ -69,7 +69,9 @@ function createRatePeriod(overrides: Partial<RatePeriod> = {}): RatePeriod {
 	};
 }
 
-function createOverpaymentConfig(overrides: Partial<OverpaymentConfig> = {}): OverpaymentConfig {
+function createOverpaymentConfig(
+	overrides: Partial<OverpaymentConfig> = {},
+): OverpaymentConfig {
 	return {
 		id: "overpayment-1",
 		ratePeriodId: "period-1",
@@ -82,7 +84,9 @@ function createOverpaymentConfig(overrides: Partial<OverpaymentConfig> = {}): Ov
 	};
 }
 
-function createSimulationState(overrides: Partial<SimulationState> = {}): SimulationState {
+function createSimulationState(
+	overrides: Partial<SimulationState> = {},
+): SimulationState {
 	return {
 		input: {
 			mortgageAmount: 30000000, // €300,000 in cents
@@ -144,10 +148,14 @@ describe("calculateAmortization", () => {
 
 			const firstMonth = result.months[0];
 			// With longer term and higher principal, first month has more interest
-			expect(firstMonth.interestPortion).toBeGreaterThan(firstMonth.principalPortion);
+			expect(firstMonth.interestPortion).toBeGreaterThan(
+				firstMonth.principalPortion,
+			);
 
 			const lastMonth = result.months[result.months.length - 1];
-			expect(lastMonth.principalPortion).toBeGreaterThan(lastMonth.interestPortion);
+			expect(lastMonth.principalPortion).toBeGreaterThan(
+				lastMonth.interestPortion,
+			);
 		});
 
 		it("tracks cumulative totals correctly", () => {
@@ -172,7 +180,7 @@ describe("calculateAmortization", () => {
 			// Cumulative total should equal cumulative interest + principal
 			expect(lastMonth.cumulativeTotal).toBeCloseTo(
 				lastMonth.cumulativeInterest + lastMonth.cumulativePrincipal,
-				-2
+				-2,
 			);
 		});
 	});
@@ -194,7 +202,12 @@ describe("calculateAmortization", () => {
 				],
 			});
 			const rates = [
-				createRate({ id: "rate-fixed", rate: 3.0, type: "fixed", fixedTerm: 3 }),
+				createRate({
+					id: "rate-fixed",
+					rate: 3.0,
+					type: "fixed",
+					fixedTerm: 3,
+				}),
 				createRate({ id: "rate-variable", rate: 4.5, type: "variable" }),
 			];
 			const lenders = [createLender()];
@@ -229,7 +242,12 @@ describe("calculateAmortization", () => {
 				],
 			});
 			const rates = [
-				createRate({ id: "rate-fixed", rate: 3.0, type: "fixed", fixedTerm: 1 }),
+				createRate({
+					id: "rate-fixed",
+					rate: 3.0,
+					type: "fixed",
+					fixedTerm: 1,
+				}),
 				createRate({ id: "rate-variable", rate: 5.0, type: "variable" }),
 			];
 			const lenders = [createLender()];
@@ -240,7 +258,9 @@ describe("calculateAmortization", () => {
 			const month13 = result.months[12];
 
 			// Payment should change when rate increases
-			expect(month13.scheduledPayment).toBeGreaterThan(month12.scheduledPayment);
+			expect(month13.scheduledPayment).toBeGreaterThan(
+				month12.scheduledPayment,
+			);
 		});
 	});
 
@@ -380,7 +400,13 @@ describe("calculateAmortization", () => {
 			const rates = [createRate({ rate: 4.0 })];
 			const lenders = [createLender()];
 
-			const resultNoOverpay = calculateAmortization(stateNoOverpay, rates, [], lenders, []);
+			const resultNoOverpay = calculateAmortization(
+				stateNoOverpay,
+				rates,
+				[],
+				lenders,
+				[],
+			);
 
 			// With monthly overpayments
 			const stateWithOverpay = createSimulationState({
@@ -401,10 +427,18 @@ describe("calculateAmortization", () => {
 				],
 			});
 
-			const resultWithOverpay = calculateAmortization(stateWithOverpay, rates, [], lenders, []);
+			const resultWithOverpay = calculateAmortization(
+				stateWithOverpay,
+				rates,
+				[],
+				lenders,
+				[],
+			);
 
 			// Term should be shorter with overpayments
-			expect(resultWithOverpay.months.length).toBeLessThan(resultNoOverpay.months.length);
+			expect(resultWithOverpay.months.length).toBeLessThan(
+				resultNoOverpay.months.length,
+			);
 		});
 
 		it("respects disabled overpayments", () => {
@@ -457,7 +491,14 @@ describe("calculateAmortization", () => {
 					}),
 				],
 			});
-			const rates = [createRate({ id: "fixed-rate", rate: 3.5, type: "fixed", fixedTerm: 3 })];
+			const rates = [
+				createRate({
+					id: "fixed-rate",
+					rate: 3.5,
+					type: "fixed",
+					fixedTerm: 3,
+				}),
+			];
 			const lenders = [createLender({ overpaymentPolicy: "test-policy" })];
 			const policies = [createPolicy()];
 
@@ -490,13 +531,22 @@ describe("calculateAmortization", () => {
 					}),
 				],
 			});
-			const rates = [createRate({ id: "fixed-rate", rate: 3.5, type: "fixed", fixedTerm: 3 })];
+			const rates = [
+				createRate({
+					id: "fixed-rate",
+					rate: 3.5,
+					type: "fixed",
+					fixedTerm: 3,
+				}),
+			];
 			const lenders = [createLender({ overpaymentPolicy: "test-policy" })];
 			const policies = [createPolicy()];
 
 			const result = calculateAmortization(state, rates, [], lenders, policies);
 
-			const allowanceWarnings = result.warnings.filter((w) => w.type === "allowance_exceeded");
+			const allowanceWarnings = result.warnings.filter(
+				(w) => w.type === "allowance_exceeded",
+			);
 			expect(allowanceWarnings.length).toBe(0);
 		});
 
@@ -522,7 +572,9 @@ describe("calculateAmortization", () => {
 
 			const result = calculateAmortization(state, rates, [], lenders, policies);
 
-			const allowanceWarnings = result.warnings.filter((w) => w.type === "allowance_exceeded");
+			const allowanceWarnings = result.warnings.filter(
+				(w) => w.type === "allowance_exceeded",
+			);
 			expect(allowanceWarnings.length).toBe(0);
 		});
 	});
@@ -552,13 +604,20 @@ describe("calculateAmortization", () => {
 					}),
 				],
 			});
-			const rates = [createRate({ id: "fixed-rate", rate: 3.0, type: "fixed", fixedTerm: 5 })];
+			const rates = [
+				createRate({
+					id: "fixed-rate",
+					rate: 3.0,
+					type: "fixed",
+					fixedTerm: 5,
+				}),
+			];
 			const lenders = [createLender()];
 
 			const result = calculateAmortization(state, rates, [], lenders, []);
 
 			const earlyRedemptionWarnings = result.warnings.filter(
-				(w) => w.type === "early_redemption"
+				(w) => w.type === "early_redemption",
 			);
 			expect(earlyRedemptionWarnings.length).toBeGreaterThan(0);
 		});
@@ -670,7 +729,9 @@ describe("calculateAmortization", () => {
 });
 
 describe("aggregateByYear", () => {
-	function createMonth(overrides: Partial<AmortizationMonth> = {}): AmortizationMonth {
+	function createMonth(
+		overrides: Partial<AmortizationMonth> = {},
+	): AmortizationMonth {
 		return {
 			month: 1,
 			year: 1,
@@ -702,7 +763,7 @@ describe("aggregateByYear", () => {
 					year: Math.ceil(i / 12),
 					monthOfYear: ((i - 1) % 12) + 1,
 					date: "", // No date
-				})
+				}),
 			);
 		}
 
@@ -729,7 +790,7 @@ describe("aggregateByYear", () => {
 					year: Math.ceil(i / 12),
 					monthOfYear: ((i - 1) % 12) + 1,
 					date: `${calendarYear}-${String(calendarMonth).padStart(2, "0")}-15`,
-				})
+				}),
 			);
 		}
 
@@ -756,7 +817,7 @@ describe("aggregateByYear", () => {
 					principalPortion: 5000, // €50 each
 					overpayment: i === 6 ? 100000 : 0, // €1k in month 6
 					totalPayment: 15000 + (i === 6 ? 100000 : 0),
-				})
+				}),
 			);
 		}
 
@@ -775,7 +836,10 @@ describe("aggregateByYear", () => {
 });
 
 describe("calculateSummary", () => {
-	function createMonthsForSummary(count: number, cumulativeInterest: number): AmortizationMonth[] {
+	function createMonthsForSummary(
+		count: number,
+		cumulativeInterest: number,
+	): AmortizationMonth[] {
 		const months: AmortizationMonth[] = [];
 		for (let i = 1; i <= count; i++) {
 			months.push({
@@ -795,7 +859,8 @@ describe("calculateSummary", () => {
 				cumulativeInterest: i === count ? cumulativeInterest : i * 10000,
 				cumulativePrincipal: i * 50000,
 				cumulativeOverpayments: 0,
-				cumulativeTotal: i === count ? cumulativeInterest + i * 50000 : (i * 10000) + (i * 50000),
+				cumulativeTotal:
+					i === count ? cumulativeInterest + i * 50000 : i * 10000 + i * 50000,
 			});
 		}
 		return months;
@@ -837,7 +902,6 @@ describe("calculateSummary", () => {
 describe("calculateMilestones", () => {
 	function createMonthsForMilestones(
 		mortgageAmount: number,
-		propertyValue: number,
 	): AmortizationMonth[] {
 		const months: AmortizationMonth[] = [];
 		let balance = mortgageAmount;
@@ -870,9 +934,14 @@ describe("calculateMilestones", () => {
 	}
 
 	it("includes mortgage start milestone", () => {
-		const months = createMonthsForMilestones(10000000, 12000000);
+		const months = createMonthsForMilestones(10000000);
 
-		const milestones = calculateMilestones(months, 10000000, 12000000, "2025-01-15");
+		const milestones = calculateMilestones(
+			months,
+			10000000,
+			12000000,
+			"2025-01-15",
+		);
 
 		const startMilestone = milestones.find((m) => m.type === "mortgage_start");
 		expect(startMilestone).toBeDefined();
@@ -880,31 +949,52 @@ describe("calculateMilestones", () => {
 	});
 
 	it("detects 25% paid off milestone", () => {
-		const months = createMonthsForMilestones(10000000, 12000000);
+		const months = createMonthsForMilestones(10000000);
 
-		const milestones = calculateMilestones(months, 10000000, 12000000, "2025-01-15");
+		const milestones = calculateMilestones(
+			months,
+			10000000,
+			12000000,
+			"2025-01-15",
+		);
 
-		const milestone25 = milestones.find((m) => m.type === "principal_25_percent");
+		const milestone25 = milestones.find(
+			(m) => m.type === "principal_25_percent",
+		);
 		expect(milestone25).toBeDefined();
 		// Should occur around month 25 (when balance drops to 75%)
 		expect(milestone25?.month).toBeGreaterThanOrEqual(25);
 	});
 
 	it("detects 50% paid off milestone", () => {
-		const months = createMonthsForMilestones(10000000, 12000000);
+		const months = createMonthsForMilestones(10000000);
 
-		const milestones = calculateMilestones(months, 10000000, 12000000, "2025-01-15");
+		const milestones = calculateMilestones(
+			months,
+			10000000,
+			12000000,
+			"2025-01-15",
+		);
 
-		const milestone50 = milestones.find((m) => m.type === "principal_50_percent");
+		const milestone50 = milestones.find(
+			(m) => m.type === "principal_50_percent",
+		);
 		expect(milestone50).toBeDefined();
 	});
 
 	it("detects mortgage complete milestone", () => {
-		const months = createMonthsForMilestones(10000000, 12000000);
+		const months = createMonthsForMilestones(10000000);
 
-		const milestones = calculateMilestones(months, 10000000, 12000000, "2025-01-15");
+		const milestones = calculateMilestones(
+			months,
+			10000000,
+			12000000,
+			"2025-01-15",
+		);
 
-		const completeMilestone = milestones.find((m) => m.type === "mortgage_complete");
+		const completeMilestone = milestones.find(
+			(m) => m.type === "mortgage_complete",
+		);
 		expect(completeMilestone).toBeDefined();
 		expect(completeMilestone?.value).toBe(0);
 	});
@@ -913,9 +1003,14 @@ describe("calculateMilestones", () => {
 		// Start with 90% LTV (mortgage 90% of property value)
 		const propertyValue = 11111111; // ~€111k
 		const mortgageAmount = 10000000; // €100k = 90% LTV
-		const months = createMonthsForMilestones(mortgageAmount, propertyValue);
+		const months = createMonthsForMilestones(mortgageAmount);
 
-		const milestones = calculateMilestones(months, mortgageAmount, propertyValue, "2025-01-15");
+		const milestones = calculateMilestones(
+			months,
+			mortgageAmount,
+			propertyValue,
+			"2025-01-15",
+		);
 
 		const ltv80Milestone = milestones.find((m) => m.type === "ltv_80_percent");
 		expect(ltv80Milestone).toBeDefined();
@@ -925,16 +1020,26 @@ describe("calculateMilestones", () => {
 		// Start with 70% LTV
 		const propertyValue = 15000000; // €150k
 		const mortgageAmount = 10000000; // €100k = 67% LTV
-		const months = createMonthsForMilestones(mortgageAmount, propertyValue);
+		const months = createMonthsForMilestones(mortgageAmount);
 
-		const milestones = calculateMilestones(months, mortgageAmount, propertyValue, "2025-01-15");
+		const milestones = calculateMilestones(
+			months,
+			mortgageAmount,
+			propertyValue,
+			"2025-01-15",
+		);
 
 		const ltv80Milestone = milestones.find((m) => m.type === "ltv_80_percent");
 		expect(ltv80Milestone).toBeUndefined();
 	});
 
 	it("returns empty array for empty months", () => {
-		const milestones = calculateMilestones([], 10000000, 12000000, "2025-01-15");
+		const milestones = calculateMilestones(
+			[],
+			10000000,
+			12000000,
+			"2025-01-15",
+		);
 		expect(milestones).toHaveLength(0);
 	});
 });
@@ -967,7 +1072,13 @@ describe("calculateBaselineInterest", () => {
 			const mortgageAmount = 30000000; // €300k in cents
 			const termMonths = 360; // 30 years
 			const ratePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
 			];
 			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
 				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
@@ -990,14 +1101,26 @@ describe("calculateBaselineInterest", () => {
 			const termMonths = 360;
 
 			const lowRatePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
 			];
 			const lowResolvedPeriods = new Map<string, ResolvedRatePeriod>([
 				["p1", createResolvedPeriod("p1", 3.0, 1, 0)],
 			]);
 
 			const highRatePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
 			];
 			const highResolvedPeriods = new Map<string, ResolvedRatePeriod>([
 				["p1", createResolvedPeriod("p1", 5.0, 1, 0)],
@@ -1023,8 +1146,20 @@ describe("calculateBaselineInterest", () => {
 			const mortgageAmount = 30000000;
 			const termMonths = 360;
 			const ratePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 36 }, // 3 years fixed
-				{ id: "p2", rateId: "rate-p2", lenderId: "test", durationMonths: 0 }, // Variable until end
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 36,
+					isCustom: false,
+				}, // 3 years fixed
+				{
+					id: "p2",
+					rateId: "rate-p2",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				}, // Variable until end
 			];
 			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
 				["p1", createResolvedPeriod("p1", 3.5, 1, 36)],
@@ -1045,7 +1180,13 @@ describe("calculateBaselineInterest", () => {
 	describe("edge cases", () => {
 		it("returns 0 for zero mortgage amount", () => {
 			const ratePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
 			];
 			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
 				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
@@ -1063,7 +1204,13 @@ describe("calculateBaselineInterest", () => {
 
 		it("returns 0 for zero term months", () => {
 			const ratePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
 			];
 			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
 				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
@@ -1080,19 +1227,20 @@ describe("calculateBaselineInterest", () => {
 		});
 
 		it("returns 0 for empty rate periods", () => {
-			const interest = calculateBaselineInterest(
-				30000000,
-				360,
-				[],
-				new Map(),
-			);
+			const interest = calculateBaselineInterest(30000000, 360, [], new Map());
 
 			expect(interest).toBe(0);
 		});
 
 		it("handles missing resolved period gracefully", () => {
 			const ratePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
 			];
 			// Empty resolved periods map - period not resolved
 			const resolvedPeriods = new Map<string, ResolvedRatePeriod>();
@@ -1110,7 +1258,13 @@ describe("calculateBaselineInterest", () => {
 
 		it("handles negative mortgage amount", () => {
 			const ratePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
 			];
 			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
 				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
@@ -1131,7 +1285,13 @@ describe("calculateBaselineInterest", () => {
 		it("calculates less interest for shorter term", () => {
 			const mortgageAmount = 30000000;
 			const ratePeriods: RatePeriod[] = [
-				{ id: "p1", rateId: "rate-p1", lenderId: "test", durationMonths: 0 },
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
 			];
 			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
 				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],

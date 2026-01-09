@@ -10,7 +10,8 @@ import {
 
 // Helper to create test policies
 function createPolicy(
-	overrides: Partial<OverpaymentPolicy> & Pick<OverpaymentPolicy, "allowanceType" | "allowanceValue">,
+	overrides: Partial<OverpaymentPolicy> &
+		Pick<OverpaymentPolicy, "allowanceType" | "allowanceValue">,
 ): OverpaymentPolicy {
 	return {
 		id: "test-policy",
@@ -22,7 +23,9 @@ function createPolicy(
 }
 
 // Helper to create test rate periods
-function createPeriod(overrides: Partial<ResolvedRatePeriod> = {}): ResolvedRatePeriod {
+function createPeriod(
+	overrides: Partial<ResolvedRatePeriod> = {},
+): ResolvedRatePeriod {
 	return {
 		id: "test-period",
 		rateId: "test-rate",
@@ -51,7 +54,11 @@ describe("calculateMaxMonthlyOverpaymentForYear", () => {
 			const balance = 30000000; // €300,000 in cents
 			const monthlyPayment = 134713; // ~€1,347
 
-			const result = calculateMaxMonthlyOverpaymentForYear(policy, balance, monthlyPayment);
+			const result = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				balance,
+				monthlyPayment,
+			);
 
 			// 10% of €300k = €30k/year = €2,500/month = 250,000 cents
 			expect(result).toBe(250000);
@@ -95,7 +102,11 @@ describe("calculateMaxMonthlyOverpaymentForYear", () => {
 			});
 			const monthlyPayment = 150000; // €1,500 in cents
 
-			const result = calculateMaxMonthlyOverpaymentForYear(policy, 0, monthlyPayment);
+			const result = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				0,
+				monthlyPayment,
+			);
 
 			// 10% of €1,500 = €150 = 15,000 cents
 			expect(result).toBe(15000);
@@ -109,7 +120,11 @@ describe("calculateMaxMonthlyOverpaymentForYear", () => {
 			});
 			const monthlyPayment = 120000; // €1,200 in cents
 
-			const result = calculateMaxMonthlyOverpaymentForYear(policy, 0, monthlyPayment);
+			const result = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				0,
+				monthlyPayment,
+			);
 
 			// 20% of €1,200 = €240 = 24,000 cents
 			expect(result).toBe(24000);
@@ -123,8 +138,16 @@ describe("calculateMaxMonthlyOverpaymentForYear", () => {
 			});
 			const monthlyPayment = 150000;
 
-			const result1 = calculateMaxMonthlyOverpaymentForYear(policy, 10000000, monthlyPayment);
-			const result2 = calculateMaxMonthlyOverpaymentForYear(policy, 50000000, monthlyPayment);
+			const result1 = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				10000000,
+				monthlyPayment,
+			);
+			const result2 = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				50000000,
+				monthlyPayment,
+			);
 
 			expect(result1).toBe(result2);
 			expect(result1).toBe(15000);
@@ -162,8 +185,16 @@ describe("calculateMaxMonthlyOverpaymentForYear", () => {
 				allowanceValue: 5000,
 			});
 
-			const result1 = calculateMaxMonthlyOverpaymentForYear(policy, 10000000, 100000);
-			const result2 = calculateMaxMonthlyOverpaymentForYear(policy, 50000000, 200000);
+			const result1 = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				10000000,
+				100000,
+			);
+			const result2 = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				50000000,
+				200000,
+			);
 
 			expect(result1).toBe(result2);
 		});
@@ -179,7 +210,11 @@ describe("calculateMaxMonthlyOverpaymentForYear", () => {
 			});
 			const monthlyPayment = 50000; // €500 payment
 
-			const result = calculateMaxMonthlyOverpaymentForYear(policy, 0, monthlyPayment);
+			const result = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				0,
+				monthlyPayment,
+			);
 
 			// 10% of €500 = €50, but minimum is €65
 			// €65 = 6,500 cents
@@ -195,7 +230,11 @@ describe("calculateMaxMonthlyOverpaymentForYear", () => {
 			});
 			const monthlyPayment = 150000; // €1,500 payment
 
-			const result = calculateMaxMonthlyOverpaymentForYear(policy, 0, monthlyPayment);
+			const result = calculateMaxMonthlyOverpaymentForYear(
+				policy,
+				0,
+				monthlyPayment,
+			);
 
 			// 10% of €1,500 = €150 > €65 minimum
 			expect(result).toBe(15000);

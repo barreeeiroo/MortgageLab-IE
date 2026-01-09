@@ -8,7 +8,9 @@ describe("cn", () => {
 		});
 
 		it("merges multiple classes", () => {
-			expect(cn("text-red-500", "bg-blue-500")).toBe("text-red-500 bg-blue-500");
+			expect(cn("text-red-500", "bg-blue-500")).toBe(
+				"text-red-500 bg-blue-500",
+			);
 		});
 
 		it("handles empty string", () => {
