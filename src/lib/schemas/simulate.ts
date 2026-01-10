@@ -78,10 +78,7 @@ export interface AppliedOverpayment {
 }
 
 // Simulation Warning
-export type SimulationWarningType =
-	| "allowance_exceeded"
-	| "early_redemption"
-	| "rate_gap";
+export type SimulationWarningType = "allowance_exceeded" | "early_redemption";
 export type SimulationWarningSeverity = "warning" | "error" | "info";
 
 export interface SimulationWarning {

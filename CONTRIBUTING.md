@@ -256,7 +256,7 @@ The calculation also tracks:
 
 * Interest saved from overpayments
 * Months saved from early payoff
-* Warnings (overpayment allowance exceeded, rate gaps, early redemption fees)
+* Warnings (overpayment allowance exceeded, early redemption fees)
 * Milestones (25%/50%/75% paid off, halfway point)
 
 ### State Management
