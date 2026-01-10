@@ -3,7 +3,51 @@
  */
 
 import type { BerRating } from "@/lib/constants/ber";
+import { BTL_BUYER_TYPES } from "@/lib/constants/buyer";
 import type { MortgageRate } from "@/lib/schemas/rate";
+
+/**
+ * Check if a variable rate is a valid follow-on candidate for a fixed rate.
+ * This is the shared matching logic used by both runtime lookups and validation.
+ *
+ * @param fixedRate - The fixed rate to find a follow-on for
+ * @param variableRate - The candidate variable rate to check
+ * @returns true if the variable rate is a valid follow-on candidate
+ */
+export function isValidFollowOnRate(
+	fixedRate: MortgageRate,
+	variableRate: MortgageRate,
+): boolean {
+	// Must be a variable rate from the same lender
+	if (
+		variableRate.type !== "variable" ||
+		variableRate.lenderId !== fixedRate.lenderId
+	) {
+		return false;
+	}
+
+	// BTL status must match - BTL rates only match BTL, residential only matches residential
+	// This prevents matching BTL variable rates with residential fixed rates
+	const fixedIsBtl = fixedRate.buyerTypes.some((bt) =>
+		BTL_BUYER_TYPES.includes(bt),
+	);
+	const variableIsBtl = variableRate.buyerTypes.some((bt) =>
+		BTL_BUYER_TYPES.includes(bt),
+	);
+	if (fixedIsBtl !== variableIsBtl) {
+		return false;
+	}
+
+	// LTV ranges must overlap
+	if (
+		fixedRate.maxLtv <= variableRate.minLtv ||
+		fixedRate.minLtv >= variableRate.maxLtv
+	) {
+		return false;
+	}
+
+	return true;
+}
 
 /**
  * Calculate monthly payment for a loan using the standard amortization formula.
@@ -71,15 +115,8 @@ export function findVariableRate(
 	ber?: BerRating,
 ): MortgageRate | undefined {
 	const matchingVariables = allRates.filter((r) => {
-		if (r.type !== "variable" || r.lenderId !== fixedRate.lenderId) {
-			return false;
-		}
-		// Filter by buyer type - must have at least one overlapping buyer type
-		// This prevents matching BTL variable rates with residential fixed rates
-		const hasOverlappingBuyerType = fixedRate.buyerTypes.some((bt) =>
-			r.buyerTypes.includes(bt),
-		);
-		if (!hasOverlappingBuyerType) {
+		// Use shared validation logic
+		if (!isValidFollowOnRate(fixedRate, r)) {
 			return false;
 		}
 		// Filter by BER eligibility if provided
@@ -88,10 +125,11 @@ export function findVariableRate(
 				return false;
 			}
 		}
+		// When LTV is specified, check exact fit rather than overlap
 		if (ltv !== undefined) {
 			return ltv >= r.minLtv && ltv <= r.maxLtv;
 		}
-		return r.minLtv <= fixedRate.maxLtv && r.maxLtv >= fixedRate.minLtv;
+		return true;
 	});
 
 	if (matchingVariables.length === 0) return undefined;

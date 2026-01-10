@@ -15,3 +15,6 @@ export const SWITCHER_BUYER_TYPES: BuyerType[] = [
 	"switcher-pdh",
 	"switcher-btl",
 ];
+
+// BTL buyer types - used for matching follow-on rates (BTL must match BTL)
+export const BTL_BUYER_TYPES: BuyerType[] = ["btl", "switcher-btl"];

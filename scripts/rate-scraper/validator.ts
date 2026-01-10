@@ -2,6 +2,8 @@
 
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { BTL_BUYER_TYPES } from "../../src/lib/constants/buyer";
+import { isValidFollowOnRate } from "../../src/lib/mortgage/payments";
 import type { MortgageRate, RatesFile } from "../../src/lib/schemas/rate";
 
 const RATES_DIR = join(import.meta.dir, "../../data/rates");
@@ -89,10 +91,13 @@ async function validateLenderRates(
 	}
 
 	// Check for mixed BTL and non-BTL buyer types
-	const btlBuyerTypes = ["btl", "switcher-btl"];
 	for (const rate of rates) {
-		const hasBtl = rate.buyerTypes.some((bt) => btlBuyerTypes.includes(bt));
-		const hasNonBtl = rate.buyerTypes.some((bt) => !btlBuyerTypes.includes(bt));
+		const hasBtl = rate.buyerTypes.some((bt) =>
+			BTL_BUYER_TYPES.includes(bt as (typeof BTL_BUYER_TYPES)[number]),
+		);
+		const hasNonBtl = rate.buyerTypes.some(
+			(bt) => !BTL_BUYER_TYPES.includes(bt as (typeof BTL_BUYER_TYPES)[number]),
+		);
 		if (hasBtl && hasNonBtl) {
 			errors.push({
 				lenderId,
@@ -107,7 +112,9 @@ async function validateLenderRates(
 	// Check BTL rates don't exceed 70% LTV
 	const BTL_MAX_LTV = 70;
 	for (const rate of rates) {
-		const isBtlOnly = rate.buyerTypes.every((bt) => btlBuyerTypes.includes(bt));
+		const isBtlOnly = rate.buyerTypes.every((bt) =>
+			BTL_BUYER_TYPES.includes(bt as (typeof BTL_BUYER_TYPES)[number]),
+		);
 		if (isBtlOnly && rate.maxLtv > BTL_MAX_LTV) {
 			errors.push({
 				lenderId,
@@ -133,24 +140,12 @@ async function validateLenderRates(
 	};
 
 	for (const fixedRate of fixedRates) {
+		// Use shared validation logic, plus additional validator-specific checks
 		const baseFilter = (varRate: MortgageRate) => {
-			// Check buyerTypes overlap (BTL must match BTL, PDH must match PDH)
-			const fixedIsBtl = fixedRate.buyerTypes.some((bt) =>
-				btlBuyerTypes.includes(bt),
-			);
-			const varIsBtl = varRate.buyerTypes.some((bt) =>
-				btlBuyerTypes.includes(bt),
-			);
-			if (fixedIsBtl !== varIsBtl) {
+			if (!isValidFollowOnRate(fixedRate, varRate)) {
 				return false;
 			}
-			// Fixed rate's LTV band must overlap with variable rate's LTV band
-			if (
-				fixedRate.maxLtv <= varRate.minLtv ||
-				fixedRate.minLtv >= varRate.maxLtv
-			) {
-				return false;
-			}
+			// Validator excludes new business rates (customers rolling off fixed get follow-on rates)
 			if (varRate.newBusiness === true) {
 				return false;
 			}
