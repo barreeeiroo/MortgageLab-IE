@@ -74,6 +74,14 @@ export function findVariableRate(
 		if (r.type !== "variable" || r.lenderId !== fixedRate.lenderId) {
 			return false;
 		}
+		// Filter by buyer type - must have at least one overlapping buyer type
+		// This prevents matching BTL variable rates with residential fixed rates
+		const hasOverlappingBuyerType = fixedRate.buyerTypes.some((bt) =>
+			r.buyerTypes.includes(bt),
+		);
+		if (!hasOverlappingBuyerType) {
+			return false;
+		}
 		// Filter by BER eligibility if provided
 		if (ber !== undefined && r.berEligible !== undefined) {
 			if (!r.berEligible.includes(ber)) {
