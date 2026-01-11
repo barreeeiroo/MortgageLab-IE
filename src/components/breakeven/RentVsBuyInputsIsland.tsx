@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
 import { DEFAULT_TERM_MONTHS } from "@/lib/constants/term";
@@ -35,6 +36,11 @@ import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
 import { PropertyTypeSelector } from "../selectors/PropertyTypeSelector";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "../ui/collapsible";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -484,6 +490,190 @@ export function RentVsBuyInputsIsland() {
 						</Tabs>
 					</div>
 
+					{/* Advanced Options - collapsible */}
+					<Collapsible>
+						<CollapsibleTrigger asChild>
+							<Button
+								variant="ghost"
+								size="sm"
+								className="gap-1 px-2 [&[data-state=open]>svg]:rotate-180"
+							>
+								Advanced Options
+								<ChevronDown className="h-4 w-4 transition-transform duration-200" />
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent>
+							<div className="space-y-4 mt-2">
+								{/* If Renting Card */}
+								<div className="p-4 border rounded-lg bg-muted/30">
+									<p className="text-xs font-medium text-muted-foreground mb-3">
+										If Renting
+									</p>
+									<div className="grid gap-4 sm:grid-cols-2">
+										<div className="space-y-2">
+											<Label htmlFor="rentInflation">
+												Annual Rent Increase
+											</Label>
+											<div className="flex items-center gap-2">
+												<Input
+													id="rentInflation"
+													type="text"
+													inputMode="decimal"
+													placeholder="2"
+													value={rentInflation}
+													onChange={(e) => {
+														const val = e.target.value;
+														if (val === "" || /^\d*\.?\d*$/.test(val)) {
+															setRentInflation(val);
+														}
+													}}
+												/>
+												<span className="text-muted-foreground">%</span>
+											</div>
+										</div>
+										<div className="space-y-2">
+											<Label htmlFor="opportunityCost">Investment Return</Label>
+											<div className="flex items-center gap-2">
+												<Input
+													id="opportunityCost"
+													type="text"
+													inputMode="decimal"
+													placeholder="4"
+													value={opportunityCost}
+													onChange={(e) => {
+														const val = e.target.value;
+														if (val === "" || /^\d*\.?\d*$/.test(val)) {
+															setOpportunityCost(val);
+														}
+													}}
+												/>
+												<span className="text-muted-foreground">%</span>
+											</div>
+											<p className="text-xs text-muted-foreground">
+												Post-tax return (account for CGT)
+											</p>
+										</div>
+									</div>
+								</div>
+
+								{/* If Buying Card */}
+								<div className="p-4 border rounded-lg bg-muted/30">
+									<p className="text-xs font-medium text-muted-foreground mb-3">
+										If Buying
+									</p>
+									<div className="space-y-4">
+										<div className="grid gap-4 sm:grid-cols-3">
+											<div className="space-y-2">
+												<Label htmlFor="homeAppreciation">
+													Home Appreciation
+												</Label>
+												<div className="flex items-center gap-2">
+													<Input
+														id="homeAppreciation"
+														type="text"
+														inputMode="decimal"
+														placeholder="2"
+														value={homeAppreciation}
+														onChange={(e) => {
+															const val = e.target.value;
+															if (val === "" || /^\d*\.?\d*$/.test(val)) {
+																setHomeAppreciation(val);
+															}
+														}}
+													/>
+													<span className="text-muted-foreground">%</span>
+												</div>
+												<p className="text-xs text-muted-foreground">
+													Tax-free for primary residence
+												</p>
+											</div>
+											<div className="space-y-2">
+												<Label htmlFor="maintenanceRate">Maintenance</Label>
+												<div className="flex items-center gap-2">
+													<Input
+														id="maintenanceRate"
+														type="text"
+														inputMode="decimal"
+														placeholder="1"
+														value={maintenanceRate}
+														onChange={(e) => {
+															const val = e.target.value;
+															if (val === "" || /^\d*\.?\d*$/.test(val)) {
+																setMaintenanceRate(val);
+															}
+														}}
+													/>
+													<span className="text-muted-foreground">%</span>
+												</div>
+											</div>
+											<div className="space-y-2">
+												<Label htmlFor="saleCost">Sale Costs</Label>
+												<div className="flex items-center gap-2">
+													<Input
+														id="saleCost"
+														type="text"
+														inputMode="decimal"
+														placeholder="3"
+														value={saleCost}
+														onChange={(e) => {
+															const val = e.target.value;
+															if (val === "" || /^\d*\.?\d*$/.test(val)) {
+																setSaleCost(val);
+															}
+														}}
+													/>
+													<span className="text-muted-foreground">%</span>
+												</div>
+											</div>
+										</div>
+										<div className="grid gap-4 sm:grid-cols-2">
+											<div className="space-y-2">
+												<Label htmlFor="serviceCharge">Service Charge</Label>
+												<Input
+													id="serviceCharge"
+													type="text"
+													inputMode="decimal"
+													placeholder="0"
+													value={serviceCharge}
+													onChange={(e) =>
+														setServiceCharge(
+															formatCurrencyInput(e.target.value),
+														)
+													}
+												/>
+											</div>
+											<div className="space-y-2">
+												<Label htmlFor="serviceChargeIncrease">
+													Service Charge Annual Increase
+												</Label>
+												<div className="flex items-center gap-2">
+													<Input
+														id="serviceChargeIncrease"
+														type="text"
+														inputMode="decimal"
+														placeholder="0"
+														value={serviceChargeIncrease}
+														onChange={(e) => {
+															const val = e.target.value;
+															if (val === "" || /^\d*\.?\d*$/.test(val)) {
+																setServiceChargeIncrease(val);
+															}
+														}}
+													/>
+													<span className="text-muted-foreground">%</span>
+												</div>
+											</div>
+										</div>
+										<p className="text-xs text-muted-foreground">
+											Service charges are typically for apartments/managed
+											developments.
+										</p>
+									</div>
+								</div>
+							</div>
+						</CollapsibleContent>
+					</Collapsible>
+
 					{/* Calculate Button */}
 					<Button
 						onClick={calculate}
@@ -493,175 +683,6 @@ export function RentVsBuyInputsIsland() {
 					>
 						Calculate Breakeven
 					</Button>
-
-					{/* Advanced Options - always visible */}
-					<div className="space-y-4">
-						<p className="text-sm font-medium">Advanced Options</p>
-						<div className="space-y-4">
-							{/* If Renting Card */}
-							<div className="p-4 border rounded-lg bg-muted/30">
-								<p className="text-xs font-medium text-muted-foreground mb-3">
-									If Renting
-								</p>
-								<div className="grid gap-4 sm:grid-cols-2">
-									<div className="space-y-2">
-										<Label htmlFor="rentInflation">Annual Rent Increase</Label>
-										<div className="flex items-center gap-2">
-											<Input
-												id="rentInflation"
-												type="text"
-												inputMode="decimal"
-												placeholder="2"
-												value={rentInflation}
-												onChange={(e) => {
-													const val = e.target.value;
-													if (val === "" || /^\d*\.?\d*$/.test(val)) {
-														setRentInflation(val);
-													}
-												}}
-											/>
-											<span className="text-muted-foreground">%</span>
-										</div>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="opportunityCost">Investment Return</Label>
-										<div className="flex items-center gap-2">
-											<Input
-												id="opportunityCost"
-												type="text"
-												inputMode="decimal"
-												placeholder="4"
-												value={opportunityCost}
-												onChange={(e) => {
-													const val = e.target.value;
-													if (val === "" || /^\d*\.?\d*$/.test(val)) {
-														setOpportunityCost(val);
-													}
-												}}
-											/>
-											<span className="text-muted-foreground">%</span>
-										</div>
-										<p className="text-xs text-muted-foreground">
-											Post-tax return (account for CGT)
-										</p>
-									</div>
-								</div>
-							</div>
-
-							{/* If Buying Card */}
-							<div className="p-4 border rounded-lg bg-muted/30">
-								<p className="text-xs font-medium text-muted-foreground mb-3">
-									If Buying
-								</p>
-								<div className="space-y-4">
-									<div className="grid gap-4 sm:grid-cols-3">
-										<div className="space-y-2">
-											<Label htmlFor="homeAppreciation">
-												Home Appreciation
-											</Label>
-											<div className="flex items-center gap-2">
-												<Input
-													id="homeAppreciation"
-													type="text"
-													inputMode="decimal"
-													placeholder="2"
-													value={homeAppreciation}
-													onChange={(e) => {
-														const val = e.target.value;
-														if (val === "" || /^\d*\.?\d*$/.test(val)) {
-															setHomeAppreciation(val);
-														}
-													}}
-												/>
-												<span className="text-muted-foreground">%</span>
-											</div>
-											<p className="text-xs text-muted-foreground">
-												Tax-free for primary residence
-											</p>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="maintenanceRate">Maintenance</Label>
-											<div className="flex items-center gap-2">
-												<Input
-													id="maintenanceRate"
-													type="text"
-													inputMode="decimal"
-													placeholder="1"
-													value={maintenanceRate}
-													onChange={(e) => {
-														const val = e.target.value;
-														if (val === "" || /^\d*\.?\d*$/.test(val)) {
-															setMaintenanceRate(val);
-														}
-													}}
-												/>
-												<span className="text-muted-foreground">%</span>
-											</div>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="saleCost">Sale Costs</Label>
-											<div className="flex items-center gap-2">
-												<Input
-													id="saleCost"
-													type="text"
-													inputMode="decimal"
-													placeholder="3"
-													value={saleCost}
-													onChange={(e) => {
-														const val = e.target.value;
-														if (val === "" || /^\d*\.?\d*$/.test(val)) {
-															setSaleCost(val);
-														}
-													}}
-												/>
-												<span className="text-muted-foreground">%</span>
-											</div>
-										</div>
-									</div>
-									<div className="grid gap-4 sm:grid-cols-2">
-										<div className="space-y-2">
-											<Label htmlFor="serviceCharge">Service Charge</Label>
-											<Input
-												id="serviceCharge"
-												type="text"
-												inputMode="decimal"
-												placeholder="0"
-												value={serviceCharge}
-												onChange={(e) =>
-													setServiceCharge(formatCurrencyInput(e.target.value))
-												}
-											/>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="serviceChargeIncrease">
-												Service Charge Annual Increase
-											</Label>
-											<div className="flex items-center gap-2">
-												<Input
-													id="serviceChargeIncrease"
-													type="text"
-													inputMode="decimal"
-													placeholder="0"
-													value={serviceChargeIncrease}
-													onChange={(e) => {
-														const val = e.target.value;
-														if (val === "" || /^\d*\.?\d*$/.test(val)) {
-															setServiceChargeIncrease(val);
-														}
-													}}
-												/>
-												<span className="text-muted-foreground">%</span>
-											</div>
-										</div>
-									</div>
-									<p className="text-xs text-muted-foreground">
-										Service charges are typically for apartments/managed
-										developments.
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
 			</CardContent>
 		</Card>

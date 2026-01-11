@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
 import { calculateRemortgageBreakeven } from "@/lib/mortgage/breakeven";
@@ -19,6 +20,11 @@ import { BerSelector } from "../selectors/BerSelector";
 import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "../ui/collapsible";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {
@@ -408,6 +414,58 @@ export function RemortgageInputsIsland() {
 						</Tabs>
 					</div>
 
+					{/* Advanced Options - collapsible */}
+					<Collapsible>
+						<CollapsibleTrigger asChild>
+							<Button
+								variant="ghost"
+								size="sm"
+								className="gap-1 px-2 [&[data-state=open]>svg]:rotate-180"
+							>
+								Advanced Options
+								<ChevronDown className="h-4 w-4 transition-transform duration-200" />
+							</Button>
+						</CollapsibleTrigger>
+						<CollapsibleContent>
+							<div className="p-4 border rounded-lg bg-muted/30 mt-2">
+								<div className="grid gap-4 sm:grid-cols-2">
+									<div className="space-y-2">
+										<Label htmlFor="cashback">Cashback from New Lender</Label>
+										<Input
+											id="cashback"
+											type="text"
+											inputMode="numeric"
+											placeholder="€0"
+											value={formatCurrencyInput(cashback)}
+											onChange={(e) =>
+												setCashback(e.target.value.replace(/[^0-9]/g, ""))
+											}
+										/>
+										<p className="text-xs text-muted-foreground">
+											1-3% cashback reduces your net switching cost
+										</p>
+									</div>
+									<div className="space-y-2">
+										<Label htmlFor="erc">Early Repayment Charge (ERC)</Label>
+										<Input
+											id="erc"
+											type="text"
+											inputMode="numeric"
+											placeholder="€0"
+											value={formatCurrencyInput(erc)}
+											onChange={(e) =>
+												setErc(e.target.value.replace(/[^0-9]/g, ""))
+											}
+										/>
+										<p className="text-xs text-muted-foreground">
+											Check your terms for ERC on fixed rates
+										</p>
+									</div>
+								</div>
+							</div>
+						</CollapsibleContent>
+					</Collapsible>
+
 					{/* Calculate Button */}
 					<Button
 						onClick={calculate}
@@ -417,47 +475,6 @@ export function RemortgageInputsIsland() {
 					>
 						Calculate Breakeven
 					</Button>
-
-					{/* Advanced Options - always visible */}
-					<div className="space-y-4">
-						<p className="text-sm font-medium">Advanced Options</p>
-						<div className="p-4 border rounded-lg bg-muted/30">
-							<div className="grid gap-4 sm:grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="cashback">Cashback from New Lender</Label>
-									<Input
-										id="cashback"
-										type="text"
-										inputMode="numeric"
-										placeholder="€0"
-										value={formatCurrencyInput(cashback)}
-										onChange={(e) =>
-											setCashback(e.target.value.replace(/[^0-9]/g, ""))
-										}
-									/>
-									<p className="text-xs text-muted-foreground">
-										1-3% cashback reduces your net switching cost
-									</p>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="erc">Early Repayment Charge (ERC)</Label>
-									<Input
-										id="erc"
-										type="text"
-										inputMode="numeric"
-										placeholder="€0"
-										value={formatCurrencyInput(erc)}
-										onChange={(e) =>
-											setErc(e.target.value.replace(/[^0-9]/g, ""))
-										}
-									/>
-									<p className="text-xs text-muted-foreground">
-										Check your terms for ERC on fixed rates
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
 			</CardContent>
 		</Card>
