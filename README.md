@@ -1,4 +1,4 @@
-# MortgageLab.ie
+# <img src="public/favicon.svg" width="32" height="32" alt="MortgageLab.ie icon"> MortgageLab.ie
 
 Irish Mortgage Comparator and Simulator
 
