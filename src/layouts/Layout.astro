@@ -22,8 +22,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content={description} />
 		<link rel="canonical" href={canonicalURL} />
-		<link rel="icon" type="image/svg+xml" href={getPath("/favicon.svg")} />
-		<link rel="apple-touch-icon" href={getPath("/apple-touch-icon.svg")} />
+		<link rel="icon" href={getPath("/favicon.ico")} sizes="48x48" />
+		<link rel="icon" href={getPath("/favicon.svg")} type="image/svg+xml" />
+		<link rel="icon" href={getPath("/favicon-192x192.png")} type="image/png" sizes="192x192" />
+		<link rel="icon" href={getPath("/favicon-512x512.png")} type="image/png" sizes="512x512" />
+		<link rel="apple-touch-icon" href={getPath("/apple-touch-icon.png")} />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 
 		<!-- Open Graph / Social -->
