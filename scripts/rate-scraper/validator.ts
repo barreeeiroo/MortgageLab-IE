@@ -2,7 +2,10 @@
 
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { BTL_BUYER_TYPES } from "../../src/lib/constants/buyer";
+import {
+	BTL_BUYER_TYPES,
+	SWITCHER_BUYER_TYPES,
+} from "../../src/lib/constants/buyer";
 import { isValidFollowOnRate } from "../../src/lib/mortgage/payments";
 import type { MortgageRate, RatesFile } from "../../src/lib/schemas/rate";
 
@@ -41,6 +44,14 @@ interface FollowOnRateError {
 	matchingVariableRates: string[];
 }
 
+interface ExistingCustomerBuyerTypeError {
+	lenderId: string;
+	type: "existing-customer-buyer-type";
+	message: string;
+	rateId: string;
+	buyerTypes: string[];
+}
+
 interface FollowOnRateWarning {
 	lenderId: string;
 	type: "follow-on-rate-ltv-dependent";
@@ -53,7 +64,8 @@ type ValidationError =
 	| DuplicateIdError
 	| BtlLtvError
 	| MixedBuyerTypesError
-	| FollowOnRateError;
+	| FollowOnRateError
+	| ExistingCustomerBuyerTypeError;
 
 type ValidationWarning = FollowOnRateWarning;
 
@@ -123,6 +135,27 @@ async function validateLenderRates(
 				rateId: rate.id,
 				maxLtv: rate.maxLtv,
 			});
+		}
+	}
+
+	// Check existing customer rates (newBusiness: false) only have switcher buyer types
+	for (const rate of rates) {
+		if (rate.newBusiness === false) {
+			const nonSwitcherTypes = rate.buyerTypes.filter(
+				(bt) =>
+					!SWITCHER_BUYER_TYPES.includes(
+						bt as (typeof SWITCHER_BUYER_TYPES)[number],
+					),
+			);
+			if (nonSwitcherTypes.length > 0) {
+				errors.push({
+					lenderId,
+					type: "existing-customer-buyer-type",
+					message: `Existing customer rate "${rate.id}" has non-switcher buyer types: [${nonSwitcherTypes.join(", ")}]`,
+					rateId: rate.id,
+					buyerTypes: [...rate.buyerTypes],
+				});
+			}
 		}
 	}
 

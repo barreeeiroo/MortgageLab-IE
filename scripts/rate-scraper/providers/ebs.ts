@@ -181,7 +181,14 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 					parsed.isVariable || isLtvOnlyRow || isNewVariableSection;
 
 				const isBtl = parsed.isBtl || isBtlSection;
-				const buyerTypes = isBtl ? BTL_BUYER_TYPES : PDH_BUYER_TYPES;
+				// Existing customer rates only available to switchers
+				const buyerTypes: BuyerType[] = isExistingSection
+					? isBtl
+						? ["switcher-btl"]
+						: ["switcher-pdh"]
+					: isBtl
+						? BTL_BUYER_TYPES
+						: PDH_BUYER_TYPES;
 
 				const idParts = [LENDER_ID];
 				if (isBtl) idParts.push("btl");

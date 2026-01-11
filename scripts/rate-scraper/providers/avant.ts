@@ -109,8 +109,8 @@ function parseFollowOnVariableTable(
 						apr,
 						minLtv,
 						maxLtv,
-						buyerTypes: BUYER_TYPES,
-						newBusiness: false, // Only for existing customers rolling off fixed term
+						buyerTypes: ["switcher-pdh"], // Only for existing customers rolling off fixed term
+						newBusiness: false,
 						perks: [],
 					});
 				} catch {

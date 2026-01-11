@@ -150,7 +150,10 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 							fixedTerm: isVariable ? undefined : parsed.term,
 							minLtv: parsed.minLtv,
 							maxLtv: parsed.maxLtv,
-							buyerTypes: BUYER_TYPES,
+							// Existing customer rates only available to switchers
+							buyerTypes: isExistingBusinessVariable
+								? ["switcher-pdh"]
+								: BUYER_TYPES,
 							berEligible: parsed.isGreen ? GREEN_BER_RATINGS : undefined,
 							newBusiness: isNewBusinessVariable
 								? true

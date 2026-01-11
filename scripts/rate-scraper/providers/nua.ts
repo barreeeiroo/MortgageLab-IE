@@ -159,8 +159,8 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		rate: svrRate,
 		minLtv: 0,
 		maxLtv: 90,
-		buyerTypes: ["ftb", "mover", "switcher-pdh"],
-		newBusiness: false, // SVR is for existing customers after fixed period ends
+		buyerTypes: ["switcher-pdh"], // SVR is for existing customers after fixed period ends
+		newBusiness: false,
 		perks: [],
 		warning:
 			"This rate is not publicly listed on their website, but is used as part of the APRC calculation.",
