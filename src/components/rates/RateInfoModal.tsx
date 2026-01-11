@@ -1,10 +1,10 @@
 import {
 	Check,
-	ChevronDown,
 	Coins,
 	Copy,
 	Infinity as InfinityIcon,
 	type LucideIcon,
+	MoreHorizontal,
 	PiggyBank,
 	Play,
 	PlusCircle,
@@ -78,13 +78,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "../ui/dialog";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
@@ -122,6 +115,15 @@ interface RateCalculations {
 	costOfCreditPct: number;
 	indicativeAprc?: number;
 	followOnTerm?: number;
+}
+
+interface SimulateOption {
+	id: string;
+	label: string;
+	description: string;
+	icon: React.ReactNode;
+	onClick: () => void;
+	group?: "add" | "simulate";
 }
 
 /**
@@ -358,6 +360,7 @@ export function RateInfoModal({
 	const [showSimulateConfirm, setShowSimulateConfirm] = useState(false);
 	const [pendingSimulateWithFollowOn, setPendingSimulateWithFollowOn] =
 		useState(true);
+	const [showOptionsDialog, setShowOptionsDialog] = useState(false);
 
 	// Check for existing simulation when modal opens in remortgage mode
 	useEffect(() => {
@@ -620,6 +623,188 @@ export function RateInfoModal({
 		handleSimulate(pendingSimulateWithFollowOn);
 		setShowSimulateConfirm(false);
 	};
+
+	// Build options for the simulation options dialog
+	const buildSimulateOptions = (): SimulateOption[] => {
+		const options: SimulateOption[] = [];
+
+		if (mode === "first-mortgage") {
+			// Primary: Simulate (with follow-on if available)
+			options.push({
+				id: "simulate",
+				label: "Simulate",
+				description: hasFollowOn
+					? "Start a new simulation with this rate, including the follow-on variable rate"
+					: "Start a new simulation with this rate",
+				icon: <Play className="h-4 w-4" />,
+				onClick: () => handleSimulate(true),
+			});
+
+			if (hasFollowOn) {
+				options.push({
+					id: "simulate-fixed-only",
+					label: "Simulate Fixed Only",
+					description:
+						"Start a new simulation with only the fixed period (no follow-on rate)",
+					icon: <Play className="h-4 w-4" />,
+					onClick: () => handleSimulate(false),
+				});
+			}
+
+			if (canRepeat) {
+				options.push({
+					id: "simulate-repeat",
+					label: "Simulate and Repeat",
+					description:
+						"Start a new simulation, repeating this fixed rate with variable buffers until the end",
+					icon: <Repeat className="h-4 w-4" />,
+					onClick: () => handleSimulate(false, "with-buffers"),
+				});
+				options.push({
+					id: "simulate-repeat-fixed-only",
+					label: "Simulate and Repeat Fixed Only",
+					description:
+						"Start a new simulation, repeating this fixed rate without variable buffers",
+					icon: <Repeat className="h-4 w-4" />,
+					onClick: () => handleSimulate(false, "fixed-only"),
+				});
+			}
+		} else if (mode === "remortgage" && !hasExistingSim) {
+			// Remortgage without existing simulation - same as first-mortgage but with confirm
+			options.push({
+				id: "simulate",
+				label: "Simulate",
+				description: hasFollowOn
+					? "Start a new simulation with this rate, including the follow-on variable rate"
+					: "Start a new simulation with this rate",
+				icon: <Play className="h-4 w-4" />,
+				onClick: () => handleSimulateWithConfirm(true),
+			});
+
+			if (hasFollowOn) {
+				options.push({
+					id: "simulate-fixed-only",
+					label: "Simulate Fixed Only",
+					description:
+						"Start a new simulation with only the fixed period (no follow-on rate)",
+					icon: <Play className="h-4 w-4" />,
+					onClick: () => handleSimulateWithConfirm(false),
+				});
+			}
+
+			if (canRepeat) {
+				options.push({
+					id: "simulate-repeat",
+					label: "Simulate and Repeat",
+					description:
+						"Start a new simulation, repeating this fixed rate with variable buffers until the end",
+					icon: <Repeat className="h-4 w-4" />,
+					onClick: () => handleSimulate(false, "with-buffers"),
+				});
+				options.push({
+					id: "simulate-repeat-fixed-only",
+					label: "Simulate and Repeat Fixed Only",
+					description:
+						"Start a new simulation, repeating this fixed rate without variable buffers",
+					icon: <Repeat className="h-4 w-4" />,
+					onClick: () => handleSimulate(false, "fixed-only"),
+				});
+			}
+		} else if (mode === "remortgage" && hasExistingSim) {
+			// Remortgage with existing simulation - Add options first, then Simulate options
+			options.push({
+				id: "add",
+				label: "Add to Simulation",
+				description: hasFollowOn
+					? "Add this rate to your existing simulation, including the follow-on variable rate"
+					: "Add this rate to your existing simulation",
+				icon: <PlusCircle className="h-4 w-4" />,
+				onClick: () => handleAddToSimulation(true),
+				group: "add",
+			});
+
+			if (isFixed && hasFollowOn) {
+				options.push({
+					id: "add-fixed-only",
+					label: "Add Fixed Only",
+					description:
+						"Add only the fixed period to your existing simulation (no follow-on rate)",
+					icon: <PlusCircle className="h-4 w-4" />,
+					onClick: () => handleAddToSimulation(false),
+					group: "add",
+				});
+			}
+
+			if (canRepeat) {
+				options.push({
+					id: "add-repeat",
+					label: "Add and Repeat",
+					description:
+						"Add this rate and repeat with variable buffers until the end",
+					icon: <Repeat className="h-4 w-4" />,
+					onClick: () => handleAddToSimulation(false, "with-buffers"),
+					group: "add",
+				});
+				options.push({
+					id: "add-repeat-fixed-only",
+					label: "Add and Repeat Fixed Only",
+					description: "Add this rate and repeat without variable buffers",
+					icon: <Repeat className="h-4 w-4" />,
+					onClick: () => handleAddToSimulation(false, "fixed-only"),
+					group: "add",
+				});
+			}
+
+			// Simulate options (start fresh)
+			options.push({
+				id: "simulate",
+				label: "Simulate",
+				description: hasFollowOn
+					? "Start a new simulation with this rate, including the follow-on variable rate"
+					: "Start a new simulation with this rate",
+				icon: <Play className="h-4 w-4" />,
+				onClick: () => handleSimulateWithConfirm(true),
+				group: "simulate",
+			});
+
+			if (hasFollowOn) {
+				options.push({
+					id: "simulate-fixed-only",
+					label: "Simulate Fixed Only",
+					description:
+						"Start a new simulation with only the fixed period (no follow-on rate)",
+					icon: <Play className="h-4 w-4" />,
+					onClick: () => handleSimulateWithConfirm(false),
+					group: "simulate",
+				});
+			}
+
+			if (canRepeat) {
+				options.push({
+					id: "simulate-repeat",
+					label: "Simulate and Repeat",
+					description:
+						"Start a new simulation, repeating this fixed rate with variable buffers until the end",
+					icon: <Repeat className="h-4 w-4" />,
+					onClick: () => handleSimulate(false, "with-buffers"),
+					group: "simulate",
+				});
+				options.push({
+					id: "simulate-repeat-fixed-only",
+					label: "Simulate and Repeat Fixed Only",
+					description:
+						"Start a new simulation, repeating this fixed rate without variable buffers",
+					icon: <Repeat className="h-4 w-4" />,
+					onClick: () => handleSimulate(false, "fixed-only"),
+					group: "simulate",
+				});
+			}
+		}
+
+		return options;
+	};
+
+	const simulateOptions = buildSimulateOptions();
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -1050,9 +1235,9 @@ export function RateInfoModal({
 									Copy as Custom Rate
 								</Button>
 							))}
-						{/* First mortgage mode: Simulate button without confirmation */}
+						{/* First mortgage mode: Simulate button */}
 						{mode === "first-mortgage" &&
-							(isFixed && (hasFollowOn || canRepeat) ? (
+							(simulateOptions.length > 1 ? (
 								<div className="flex items-center">
 									<Button
 										className="gap-1.5 rounded-r-none"
@@ -1061,42 +1246,13 @@ export function RateInfoModal({
 										<Play className="h-4 w-4" />
 										Simulate
 									</Button>
-									<DropdownMenu>
-										<DropdownMenuTrigger asChild>
-											<Button
-												className="rounded-l-none border-l border-primary-foreground/20 px-2"
-												aria-label="More simulation options"
-											>
-												<ChevronDown className="h-4 w-4" />
-											</Button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end">
-											{hasFollowOn && (
-												<DropdownMenuItem onClick={() => handleSimulate(false)}>
-													<Play className="h-4 w-4" />
-													Simulate Fixed Only
-												</DropdownMenuItem>
-											)}
-											{canRepeat && (
-												<>
-													<DropdownMenuItem
-														onClick={() =>
-															handleSimulate(false, "with-buffers")
-														}
-													>
-														<Repeat className="h-4 w-4" />
-														Simulate and Repeat
-													</DropdownMenuItem>
-													<DropdownMenuItem
-														onClick={() => handleSimulate(false, "fixed-only")}
-													>
-														<Repeat className="h-4 w-4" />
-														Simulate and Repeat Fixed Only
-													</DropdownMenuItem>
-												</>
-											)}
-										</DropdownMenuContent>
-									</DropdownMenu>
+									<Button
+										className="rounded-l-none border-l border-primary-foreground/20 px-2"
+										aria-label="More simulation options"
+										onClick={() => setShowOptionsDialog(true)}
+									>
+										<MoreHorizontal className="h-4 w-4" />
+									</Button>
 								</div>
 							) : (
 								<Button
@@ -1111,7 +1267,7 @@ export function RateInfoModal({
 						{/* Remortgage mode without existing simulation: Simulate with confirmation */}
 						{mode === "remortgage" &&
 							!hasExistingSim &&
-							(isFixed && (hasFollowOn || canRepeat) ? (
+							(simulateOptions.length > 1 ? (
 								<div className="flex items-center">
 									<Button
 										className="gap-1.5 rounded-r-none"
@@ -1120,44 +1276,13 @@ export function RateInfoModal({
 										<Play className="h-4 w-4" />
 										Simulate
 									</Button>
-									<DropdownMenu>
-										<DropdownMenuTrigger asChild>
-											<Button
-												className="rounded-l-none border-l border-primary-foreground/20 px-2"
-												aria-label="More simulation options"
-											>
-												<ChevronDown className="h-4 w-4" />
-											</Button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end">
-											{hasFollowOn && (
-												<DropdownMenuItem
-													onClick={() => handleSimulateWithConfirm(false)}
-												>
-													<Play className="h-4 w-4" />
-													Simulate Fixed Only
-												</DropdownMenuItem>
-											)}
-											{canRepeat && (
-												<>
-													<DropdownMenuItem
-														onClick={() =>
-															handleSimulate(false, "with-buffers")
-														}
-													>
-														<Repeat className="h-4 w-4" />
-														Simulate and Repeat
-													</DropdownMenuItem>
-													<DropdownMenuItem
-														onClick={() => handleSimulate(false, "fixed-only")}
-													>
-														<Repeat className="h-4 w-4" />
-														Simulate and Repeat Fixed Only
-													</DropdownMenuItem>
-												</>
-											)}
-										</DropdownMenuContent>
-									</DropdownMenu>
+									<Button
+										className="rounded-l-none border-l border-primary-foreground/20 px-2"
+										aria-label="More simulation options"
+										onClick={() => setShowOptionsDialog(true)}
+									>
+										<MoreHorizontal className="h-4 w-4" />
+									</Button>
 								</div>
 							) : (
 								<Button
@@ -1169,93 +1294,35 @@ export function RateInfoModal({
 								</Button>
 							))}
 
-						{/* Remortgage mode with existing simulation: single split button with all options */}
-						{mode === "remortgage" && hasExistingSim && (
-							<div className="flex items-center">
+						{/* Remortgage mode with existing simulation: Add to Simulation button */}
+						{mode === "remortgage" &&
+							hasExistingSim &&
+							(simulateOptions.length > 1 ? (
+								<div className="flex items-center">
+									<Button
+										className="gap-1.5 rounded-r-none"
+										onClick={() => handleAddToSimulation(true)}
+									>
+										<PlusCircle className="h-4 w-4" />
+										Add to Simulation
+									</Button>
+									<Button
+										className="rounded-l-none border-l border-primary-foreground/20 px-2"
+										aria-label="More options"
+										onClick={() => setShowOptionsDialog(true)}
+									>
+										<MoreHorizontal className="h-4 w-4" />
+									</Button>
+								</div>
+							) : (
 								<Button
-									className="gap-1.5 rounded-r-none"
+									className="gap-1.5"
 									onClick={() => handleAddToSimulation(true)}
 								>
 									<PlusCircle className="h-4 w-4" />
 									Add to Simulation
 								</Button>
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<Button
-											className="rounded-l-none border-l border-primary-foreground/20 px-2"
-											aria-label="More options"
-										>
-											<ChevronDown className="h-4 w-4" />
-										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent align="end">
-										{/* Fixed with follow-on: show Add Fixed Only option */}
-										{isFixed && hasFollowOn && (
-											<DropdownMenuItem
-												onClick={() => handleAddToSimulation(false)}
-											>
-												<PlusCircle className="h-4 w-4" />
-												Add Fixed Only
-											</DropdownMenuItem>
-										)}
-										{/* Repeatable rate: show Add and Repeat options */}
-										{canRepeat && (
-											<>
-												<DropdownMenuItem
-													onClick={() =>
-														handleAddToSimulation(false, "with-buffers")
-													}
-												>
-													<Repeat className="h-4 w-4" />
-													Add and Repeat
-												</DropdownMenuItem>
-												<DropdownMenuItem
-													onClick={() =>
-														handleAddToSimulation(false, "fixed-only")
-													}
-												>
-													<Repeat className="h-4 w-4" />
-													Add and Repeat Fixed Only
-												</DropdownMenuItem>
-											</>
-										)}
-										<DropdownMenuSeparator />
-										<DropdownMenuItem
-											onClick={() => handleSimulateWithConfirm(true)}
-										>
-											<Play className="h-4 w-4" />
-											Simulate
-										</DropdownMenuItem>
-										{/* Fixed with follow-on: show Simulate Fixed Only option */}
-										{isFixed && hasFollowOn && (
-											<DropdownMenuItem
-												onClick={() => handleSimulateWithConfirm(false)}
-											>
-												<Play className="h-4 w-4" />
-												Simulate Fixed Only
-											</DropdownMenuItem>
-										)}
-										{/* Repeatable rate: show Simulate and Repeat options */}
-										{canRepeat && (
-											<>
-												<DropdownMenuItem
-													onClick={() => handleSimulate(false, "with-buffers")}
-												>
-													<Repeat className="h-4 w-4" />
-													Simulate and Repeat
-												</DropdownMenuItem>
-												<DropdownMenuItem
-													onClick={() => handleSimulate(false, "fixed-only")}
-												>
-													<Repeat className="h-4 w-4" />
-													Simulate and Repeat Fixed Only
-												</DropdownMenuItem>
-											</>
-										)}
-									</DropdownMenuContent>
-								</DropdownMenu>
-							</div>
-						)}
+							))}
 					</div>
 				</div>
 			</DialogContent>
@@ -1289,6 +1356,84 @@ export function RateInfoModal({
 						<AlertDialogAction onClick={confirmSimulate}>
 							Start Fresh Instead
 						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Simulation Options dialog */}
+			<AlertDialog open={showOptionsDialog} onOpenChange={setShowOptionsDialog}>
+				<AlertDialogContent className="flex flex-col overflow-hidden max-h-[85vh]">
+					<AlertDialogHeader>
+						<AlertDialogTitle>Simulation Options</AlertDialogTitle>
+						<AlertDialogDescription>
+							Choose how to simulate this rate.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<div className="flex-1 overflow-y-auto space-y-2 py-4 px-6">
+						{simulateOptions.map((option, index) => {
+							const prevOption = simulateOptions[index - 1];
+							const isNewGroup =
+								option.group &&
+								(!prevOption?.group || prevOption.group !== option.group);
+							const isRepeatOption = option.id.includes("repeat");
+							const hasEligibilityCriteria = rate.minLtv > 0 || rate.minLoan;
+							const showRepeatWarning =
+								isRepeatOption && hasEligibilityCriteria;
+
+							return (
+								<div key={option.id}>
+									{isNewGroup && (
+										<h4
+											className={`text-xs font-medium text-muted-foreground uppercase tracking-wide ${index > 0 ? "mt-4" : ""} mb-2`}
+										>
+											{option.group === "add"
+												? "Add to Existing Simulation"
+												: "Start New Simulation"}
+										</h4>
+									)}
+									<Button
+										variant="outline"
+										onClick={() => {
+											setShowOptionsDialog(false);
+											option.onClick();
+										}}
+										className="w-full h-auto text-left justify-start p-3 flex-col items-start whitespace-normal"
+									>
+										<span className="flex items-center gap-2 font-medium">
+											{option.icon}
+											{option.label}
+											{showRepeatWarning && (
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<span className="inline-flex">
+															<TriangleAlert className="h-4 w-4 text-amber-500" />
+														</span>
+													</TooltipTrigger>
+													<TooltipContent className="max-w-xs">
+														<p className="font-medium">Repeat Eligibility</p>
+														<p className="text-xs text-muted-foreground mt-1">
+															This rate will only repeat while eligible:{" "}
+															{rate.minLtv > 0 && rate.minLoan
+																? `LTV above ${rate.minLtv}% and balance above ${formatCurrency(rate.minLoan)}`
+																: rate.minLtv > 0
+																	? `LTV above ${rate.minLtv}%`
+																	: `balance above ${formatCurrency(rate.minLoan ?? 0)}`}
+															. After that, you'll need to add a different rate.
+														</p>
+													</TooltipContent>
+												</Tooltip>
+											)}
+										</span>
+										<span className="text-sm text-muted-foreground mt-1 font-normal text-wrap">
+											{option.description}
+										</span>
+									</Button>
+								</div>
+							);
+						})}
+					</div>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
