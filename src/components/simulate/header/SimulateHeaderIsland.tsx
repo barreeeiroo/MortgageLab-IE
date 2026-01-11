@@ -2,7 +2,7 @@ import { useStore } from "@nanostores/react";
 import { useEffect } from "react";
 import {
 	clearSimulateShareParam,
-	copyShareUrl,
+	generateSimulateShareUrl,
 	hasSimulateShareParam,
 	parseSimulateShareState,
 } from "@/lib/share/simulate";
@@ -59,7 +59,7 @@ export function SimulateHeaderIsland() {
 	}, []);
 
 	const handleShare = async () => {
-		return copyShareUrl(simulationState, customRates);
+		return generateSimulateShareUrl(simulationState, customRates);
 	};
 
 	return (

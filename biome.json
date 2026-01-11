@@ -6,7 +6,16 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!!**/dist", "!!**/*.astro", "!!data", "!!.claude"],
+		"includes": [
+			"**",
+			"!!**/dist",
+			"!!**/*.astro",
+			"!!data",
+			"!!.claude",
+			"!!coverage",
+			"!!playwright-report",
+			"!!test-results"
+		],
 		"ignoreUnknown": true
 	},
 	"formatter": {

@@ -7,9 +7,9 @@ import type {
 import type { StoredCustomRate } from "@/lib/stores/custom-rates";
 import {
 	clearUrlParam,
-	compressToUrl,
-	decompressFromUrl,
-	getUrlParam,
+	generateShareUrl,
+	hasUrlParam,
+	parseShareParam,
 } from "./common";
 import {
 	type CompressedCustomRate,
@@ -211,10 +211,7 @@ export function generateSimulateShareUrl(
 	customRates: StoredCustomRate[] = [],
 ): string {
 	const compressed = compressState(state, customRates);
-	const encoded = compressToUrl(compressed);
-	const url = new URL(window.location.href);
-	url.searchParams.set(SIMULATE_SHARE_PARAM, encoded);
-	return url.toString();
+	return generateShareUrl(SIMULATE_SHARE_PARAM, compressed);
 }
 
 /**
@@ -222,12 +219,9 @@ export function generateSimulateShareUrl(
  * Returns both the simulation state and any embedded custom rates
  */
 export function parseSimulateShareState(): ParsedSimulateShareState | null {
-	const encoded = getUrlParam(SIMULATE_SHARE_PARAM);
-	if (!encoded) return null;
-
-	const compressed = decompressFromUrl<CompressedSimulation>(encoded);
+	const compressed =
+		parseShareParam<CompressedSimulation>(SIMULATE_SHARE_PARAM);
 	if (!compressed) return null;
-
 	return decompressState(compressed);
 }
 
@@ -242,25 +236,5 @@ export function clearSimulateShareParam(): void {
  * Check if URL has share param
  */
 export function hasSimulateShareParam(): boolean {
-	if (typeof window === "undefined") return false;
-	const params = new URLSearchParams(window.location.search);
-	return params.has(SIMULATE_SHARE_PARAM);
-}
-
-/**
- * Copy URL to clipboard and return success status
- * @param state - The simulation state to share
- * @param customRates - All custom rates (only ones used in rate periods will be embedded)
- */
-export async function copyShareUrl(
-	state: SimulationState,
-	customRates: StoredCustomRate[] = [],
-): Promise<boolean> {
-	try {
-		const url = generateSimulateShareUrl(state, customRates);
-		await navigator.clipboard.writeText(url);
-		return true;
-	} catch {
-		return false;
-	}
+	return hasUrlParam(SIMULATE_SHARE_PARAM);
 }

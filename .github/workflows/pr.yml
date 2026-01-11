@@ -23,8 +23,25 @@ jobs:
       - name: Lint
         run: bun run lint
 
-      - name: Test
-        run: bun run test:run
+      - name: Unit Tests
+        run: bun run test:unit
+
+      - name: Integration Tests
+        run: bun run test:integration
+
+      - name: Test Coverage
+        run: bun run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build
         run: bun run build
+
+      - name: Install Playwright Browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: E2E Tests
+        run: bun run test:e2e

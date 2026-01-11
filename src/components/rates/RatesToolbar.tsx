@@ -83,26 +83,20 @@ export function RatesToolbar({
 	onCompactModeChange,
 	disabled = false,
 }: RatesToolbarProps) {
-	const handleShare = useCallback(async (): Promise<boolean> => {
-		try {
-			// Read custom rates and perks on demand (no subscription needed)
-			const customRates = $storedCustomRates.get();
-			const customPerks = $storedCustomPerks.get();
-			const url = generateRatesShareUrl({
-				input: inputValues,
-				table: {
-					columnVisibility,
-					columnFilters,
-					sorting,
-				},
-				customRates: customRates.length > 0 ? customRates : undefined,
-				customPerks: customPerks.length > 0 ? customPerks : undefined,
-			});
-			await navigator.clipboard.writeText(url);
-			return true;
-		} catch {
-			return false;
-		}
+	const handleShare = useCallback(async (): Promise<string> => {
+		// Read custom rates and perks on demand (no subscription needed)
+		const customRates = $storedCustomRates.get();
+		const customPerks = $storedCustomPerks.get();
+		return generateRatesShareUrl({
+			input: inputValues,
+			table: {
+				columnVisibility,
+				columnFilters,
+				sorting,
+			},
+			customRates: customRates.length > 0 ? customRates : undefined,
+			customPerks: customPerks.length > 0 ? customPerks : undefined,
+		});
 	}, [inputValues, columnVisibility, columnFilters, sorting]);
 
 	const toggleColumnVisibility = useCallback(

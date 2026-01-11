@@ -11,7 +11,7 @@ import {
 import {
 	type BtlShareState,
 	clearBorrowingShareParam,
-	copyBorrowingShareUrl,
+	generateBorrowingShareUrl,
 	hasBorrowingShareParam,
 	parseBorrowingShareState,
 } from "@/lib/share/borrowing";
@@ -282,7 +282,7 @@ export function BuyToLetCalculator() {
 			: "text-destructive"
 		: "";
 
-	const handleShare = async (): Promise<boolean> => {
+	const handleShare = async (): Promise<string> => {
 		const state: BtlShareState = {
 			type: "btl",
 			applicationType,
@@ -299,7 +299,7 @@ export function BuyToLetCalculator() {
 				priceIncludesVAT,
 			}),
 		};
-		return copyBorrowingShareUrl(state);
+		return generateBorrowingShareUrl(state);
 	};
 
 	return (

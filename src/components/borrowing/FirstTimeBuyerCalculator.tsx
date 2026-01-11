@@ -10,8 +10,8 @@ import {
 } from "@/lib/constants/central-bank";
 import {
 	clearBorrowingShareParam,
-	copyBorrowingShareUrl,
 	type FtbShareState,
+	generateBorrowingShareUrl,
 	hasBorrowingShareParam,
 	parseBorrowingShareState,
 } from "@/lib/share/borrowing";
@@ -271,7 +271,7 @@ export function FirstTimeBuyerCalculator() {
 		}
 	}, [shouldAutoCalculate, isFormComplete, isAnyAgeTooOld, calculate]);
 
-	const handleShare = async (): Promise<boolean> => {
+	const handleShare = async (): Promise<string> => {
 		const state: FtbShareState = {
 			type: "ftb",
 			applicationType,
@@ -292,7 +292,7 @@ export function FirstTimeBuyerCalculator() {
 				priceIncludesVAT,
 			}),
 		};
-		return copyBorrowingShareUrl(state);
+		return generateBorrowingShareUrl(state);
 	};
 
 	return (

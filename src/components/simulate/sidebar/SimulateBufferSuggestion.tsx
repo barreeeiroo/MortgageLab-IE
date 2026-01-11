@@ -6,7 +6,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import type { BufferSuggestion } from "@/lib/stores/simulate/simulate-calculations";
+import type { BufferSuggestion } from "@/lib/mortgage/simulation";
 import { insertRatePeriodAt } from "@/lib/stores/simulate/simulate-state";
 
 interface SimulateBufferSuggestionProps {

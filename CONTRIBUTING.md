@@ -69,16 +69,65 @@ bun run build
 
 ## Available Scripts
 
-| Command            | Description              |
-|--------------------|--------------------------|
-| `bun run dev`      | Start development server |
-| `bun run build`    | Build for production     |
-| `bun run preview`  | Preview production build |
-| `bun run lint`     | Check code with Biome    |
-| `bun run lint:fix` | Auto-fix linting issues  |
-| `bun run format`   | Format code with Biome   |
-| `bun run test`     | Run tests (watch mode)   |
-| `bun run test:run` | Run tests once           |
+| Command                    | Description                      |
+|----------------------------|----------------------------------|
+| `bun run dev`              | Start development server         |
+| `bun run build`            | Build for production             |
+| `bun run preview`          | Preview production build         |
+| `bun run lint`             | Check code with Biome            |
+| `bun run lint:fix`         | Auto-fix linting issues          |
+| `bun run format`           | Format code with Biome           |
+| `bun run test`             | Run tests (watch mode)           |
+| `bun run test:unit`        | Run unit tests once              |
+| `bun run test:integration` | Run integration tests            |
+| `bun run test:e2e`         | Run Playwright E2E tests         |
+| `bun run test:run`         | Run unit + integration tests     |
+| `bun run test:coverage`    | Run tests with coverage report   |
+| `bun run check`            | Lint + typecheck + tests         |
+
+## Testing
+
+Tests use **Vitest** for unit/integration tests. See `TESTING.md` for the full strategy.
+
+### Test Organization
+
+```
+src/lib/
+├── mortgage/__tests__/     # Payment, APRC, breakeven, overpayment calculations
+├── utils/__tests__/        # Currency, date, term, fees, borrowing utilities
+├── stores/__tests__/       # Simulation calculation engine
+└── share/__tests__/        # URL compression for shareable links
+
+tests/
+├── integration/            # Calculator logic (inputs → outputs)
+└── e2e/                    # Playwright browser tests
+```
+
+### Running Tests
+
+```bash
+bun run test              # Watch mode
+bun run test:unit         # Unit tests once
+bun run test:coverage     # Coverage report
+```
+
+### Writing Tests
+
+* Place unit tests in `__tests__/` next to the source file
+* Test pure functions in `src/lib/` - avoid testing React components directly
+* Use descriptive `describe` blocks for grouping related tests
+* Name test files `<source-file>.test.ts`
+
+### E2E Tests (Playwright)
+
+E2E tests use **Playwright** to test full browser flows.
+
+```bash
+bun run test:e2e         # Run E2E tests (headless)
+bun run test:e2e:ui      # Run with Playwright UI
+```
+
+E2E tests live in `tests/e2e/` and use `.spec.ts` extension. The test server runs `bun run preview` automatically.
 
 ## Code Style
 
@@ -207,7 +256,7 @@ The calculation also tracks:
 
 * Interest saved from overpayments
 * Months saved from early payoff
-* Warnings (overpayment allowance exceeded, rate gaps, early redemption fees)
+* Warnings (overpayment allowance exceeded, early redemption fees)
 * Milestones (25%/50%/75% paid off, halfway point)
 
 ### State Management

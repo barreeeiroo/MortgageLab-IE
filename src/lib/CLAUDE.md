@@ -7,7 +7,7 @@ Business logic layer. Components should be thin - move pure JS functions here.
 | Directory    | What goes here                                                           |
 | ------------ | ------------------------------------------------------------------------ |
 | utils/       | Pure helper functions (currency formatting, date transforms, borrowing calcs) |
-| mortgage/    | Financial math (payments, APRC, overpayments, breakeven analysis)        |
+| mortgage/    | Financial math (payments, APRC, overpayments, breakeven, simulation)     |
 | stores/      | Nanostores state management                                              |
 | schemas/     | Zod validation schemas (source of truth for types)                       |
 | constants/   | Business rules (Central Bank limits, BER ratings)                        |
@@ -48,7 +48,7 @@ Don't overlook these - they contain reusable logic:
 | ------------ | ------------------------------------------------------------------ |
 | borrowing.ts | `calculateMaxTermByAge()`, `calculateMortgageMetrics()` (LTV/LTI)  |
 | currency.ts  | `formatCurrency()`, `parseCurrency()`, `formatCurrencyShort()` (€100k) |
-| date.ts      | `calculateAge()`, `formatMonthYear()`, `formatIncrementalPeriod()` |
+| date.ts      | `calculateAge()`, `formatMonthYear()`, `addMonthsToDateString()`, `getCalendarYearForMonth()` |
 | fees.ts      | `calculateStampDuty()` (tiered Irish rates: 1%/2%/6%)              |
 | path.ts      | `getPath()` - handles base path for dev vs production              |
 
@@ -63,7 +63,7 @@ Don't overlook these - they contain reusable logic:
 | breakeven.ts                      | Rent vs Buy and Remortgage breakeven result state    |
 | persistence.ts                    | Generic localStorage persistence utilities           |
 | simulate/simulate-state.ts        | Simulation inputs and rate periods                   |
-| simulate/simulate-calculations.ts | Amortization schedule derivation                     |
+| simulate/simulate-calculations.ts | Computed stores (uses pure functions from mortgage/simulation.ts) |
 | simulate/simulate-chart.ts        | Chart display state (year range, view options)       |
 
 ## Adding New Logic
@@ -73,3 +73,29 @@ Don't overlook these - they contain reusable logic:
 3. **Reactive state?** → stores/
 4. **Validation schema?** → schemas/
 5. **Fixed config value?** → constants/
+
+## Testing
+
+Unit tests live in `__tests__/` directories alongside source files. Run with `bun run test:unit`.
+
+### Test File Locations
+
+| Directory             | What's tested                                            |
+|-----------------------|----------------------------------------------------------|
+| mortgage/__tests__/   | payments, aprc, breakeven, overpayments, simulation      |
+| utils/__tests__/      | currency, date, term, fees, borrowing, cn, path          |
+| share/__tests__/      | URL compression (common, custom-rates, custom-perks)     |
+
+### Testing Patterns
+
+- **Roundtrip tests**: For compression functions, test compress → decompress preserves data
+- **Boundary tests**: Test edge values (0%, 100% LTV, min/max terms)
+- **Precision tests**: Financial calculations should use `toBeCloseTo()` for floating point
+- **Type preservation**: Verify booleans, nulls, numbers survive serialization
+
+### Gotchas
+
+- `formatCurrencyInput()` strips decimals - "100.50" becomes "€10,050" (treats `.` as thousands separator)
+- `parseCurrency()` with multiple decimals stops at second decimal - "1.234.567" parses as 1.234
+- Computed Nanostores (`computed()`) are harder to unit test without mocking the atom dependencies
+- Browser-dependent functions (using `window.location`) require mocking or skip in unit tests

@@ -29,8 +29,19 @@ jobs:
       - name: Lint
         run: bun run lint
 
-      - name: Test
-        run: bun run test:run
+      - name: Unit Tests
+        run: bun run test:unit
+
+      - name: Integration Tests
+        run: bun run test:integration
+
+      - name: Test Coverage
+        run: bun run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     needs: check
@@ -42,8 +53,41 @@ jobs:
       - name: Install, build, and upload your site
         uses: withastro/action@v3
 
-  deploy:
+  e2e:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install Playwright Browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: dist
+
+      - name: Extract artifact
+        run: |
+          cd dist
+          tar -xf artifact.tar
+          rm artifact.tar
+
+      - name: E2E Tests
+        run: bun run test:e2e
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:4321
+
+  deploy:
+    needs: e2e
     runs-on: ubuntu-latest
     environment:
       name: github-pages

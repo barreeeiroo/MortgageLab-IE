@@ -2,9 +2,9 @@ import type { BerRating } from "@/lib/constants/ber";
 import type { PropertyType } from "@/lib/utils/fees";
 import {
 	clearUrlParam,
-	compressToUrl,
-	decompressFromUrl,
-	getUrlParam,
+	generateShareUrl,
+	hasUrlParam,
+	parseShareParam,
 } from "./common";
 
 /**
@@ -221,22 +221,15 @@ function decompressState(compressed: CompressedState): BreakevenShareState {
  */
 export function generateBreakevenShareUrl(state: BreakevenShareState): string {
 	const compressed = compressState(state);
-	const encoded = compressToUrl(compressed);
-	const url = new URL(window.location.href);
-	url.searchParams.set(BREAKEVEN_SHARE_PARAM, encoded);
-	return url.toString();
+	return generateShareUrl(BREAKEVEN_SHARE_PARAM, compressed);
 }
 
 /**
  * Parse breakeven calculator share state from URL
  */
 export function parseBreakevenShareState(): BreakevenShareState | null {
-	const encoded = getUrlParam(BREAKEVEN_SHARE_PARAM);
-	if (!encoded) return null;
-
-	const compressed = decompressFromUrl<CompressedState>(encoded);
+	const compressed = parseShareParam<CompressedState>(BREAKEVEN_SHARE_PARAM);
 	if (!compressed) return null;
-
 	return decompressState(compressed);
 }
 
@@ -251,21 +244,5 @@ export function clearBreakevenShareParam(): void {
  * Check if URL has breakeven share param
  */
 export function hasBreakevenShareParam(): boolean {
-	if (typeof window === "undefined") return false;
-	return new URLSearchParams(window.location.search).has(BREAKEVEN_SHARE_PARAM);
-}
-
-/**
- * Copy share URL to clipboard
- */
-export async function copyBreakevenShareUrl(
-	state: BreakevenShareState,
-): Promise<boolean> {
-	try {
-		const url = generateBreakevenShareUrl(state);
-		await navigator.clipboard.writeText(url);
-		return true;
-	} catch {
-		return false;
-	}
+	return hasUrlParam(BREAKEVEN_SHARE_PARAM);
 }

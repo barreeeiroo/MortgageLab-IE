@@ -1,7 +1,14 @@
 {
 	"extends": "astro/tsconfigs/strict",
 	"include": [".astro/types.d.ts", "**/*"],
-	"exclude": ["dist"],
+	"exclude": [
+		"dist",
+		"coverage",
+		"playwright-report",
+		"test-results",
+		"data",
+		".claude"
+	],
 	"compilerOptions": {
 		"jsx": "react-jsx",
 		"jsxImportSource": "react",
@@ -9,6 +16,7 @@
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"types": ["vitest/globals", "bun"]
 	}
 }
