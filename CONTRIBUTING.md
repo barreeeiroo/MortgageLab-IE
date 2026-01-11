@@ -137,6 +137,41 @@ E2E tests live in `tests/e2e/` and use `.spec.ts` extension. The test server run
 * React functional components
 * Tailwind CSS for styling
 
+## Image Assets
+
+### Lender Logos
+
+Lender logos are stored in `src/assets/logos/lenders/` as WebP files at 256x256 pixels.
+This size supports up to 2x retina displays for the largest usage (72px on home page).
+
+When adding a new lender logo:
+
+```bash
+# Convert PNG to 256x256 WebP
+convert input.png -resize 256x256 -background none -gravity center -extent 256x256 -quality 85 output.webp
+```
+
+### SVG Minification
+
+SVG files are kept in two versions: original (for editing) and minified (for production).
+The project uses minified versions (`.min.svg`) in imports.
+
+To create or update minified SVGs:
+
+```bash
+# Minify a single SVG
+bunx svgo input.svg -o input.min.svg --multipass
+
+# Minify all project SVGs
+bunx svgo src/assets/logos/*.svg public/*.svg -o '[name].min.svg' --multipass
+```
+
+When adding new SVGs:
+
+1. Add the original SVG file (e.g., `logo.svg`)
+2. Create the minified version: `bunx svgo logo.svg -o logo.min.svg --multipass`
+3. Import the `.min.svg` version in code
+
 ## Rate Scraping
 
 Mortgage rate data is scraped from lender websites and stored in `data/rates/`.
