@@ -82,7 +82,7 @@ jobs:
           rm artifact.tar
 
       - name: E2E Tests
-        run: bun run test:e2e --project=chromium
+        run: bun run test:e2e
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:4321
 
