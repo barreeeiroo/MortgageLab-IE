@@ -5,6 +5,7 @@ import { GlossaryTermTooltip } from "@/components/tooltips/GlossaryTermTooltip";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
 	Select,
 	SelectContent,
@@ -514,40 +515,40 @@ export function CustomRateForm({
 								Rate & APRC
 							</p>
 							{showAprcCalculation && (
-								<div className="flex gap-3 ml-auto">
+								<RadioGroup
+									value={form.aprcMode}
+									onValueChange={(value) =>
+										updateForm("aprcMode", value as "fees" | "direct")
+									}
+									className="flex gap-3 ml-auto"
+								>
 									<div className="flex items-center gap-1.5">
-										<input
-											type="radio"
+										<RadioGroupItem
+											value="fees"
 											id="aprc-mode-fees"
-											name="aprc-mode"
-											checked={form.aprcMode === "fees"}
-											onChange={() => updateForm("aprcMode", "fees")}
-											className="h-3.5 w-3.5 accent-primary"
+											className="h-3.5 w-3.5"
 										/>
-										<label
+										<Label
 											htmlFor="aprc-mode-fees"
-											className="text-xs cursor-pointer text-muted-foreground"
+											className="text-xs cursor-pointer text-muted-foreground font-normal"
 										>
 											Calculate from fees
-										</label>
+										</Label>
 									</div>
 									<div className="flex items-center gap-1.5">
-										<input
-											type="radio"
+										<RadioGroupItem
+											value="direct"
 											id="aprc-mode-direct"
-											name="aprc-mode"
-											checked={form.aprcMode === "direct"}
-											onChange={() => updateForm("aprcMode", "direct")}
-											className="h-3.5 w-3.5 accent-primary"
+											className="h-3.5 w-3.5"
 										/>
-										<label
+										<Label
 											htmlFor="aprc-mode-direct"
-											className="text-xs cursor-pointer text-muted-foreground"
+											className="text-xs cursor-pointer text-muted-foreground font-normal"
 										>
 											Enter APRC
-										</label>
+										</Label>
 									</div>
-								</div>
+								</RadioGroup>
 							)}
 						</div>
 

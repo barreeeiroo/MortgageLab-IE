@@ -62,6 +62,7 @@ import {
 import {
 	AlertDialog,
 	AlertDialogAction,
+	AlertDialogBody,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -128,58 +129,58 @@ interface SimulateOption {
 
 /**
  * Generate available term options based on current term (in months) and lender maxTerm (in years).
- * Always returns 3 options, aiming for ±5 years from current term.
+ * Always returns up to 3 options, aiming for ±5 years from current term.
+ * Preserves month component from input (e.g., 27y 6m → 22y 6m, 27y 6m, 32y 6m).
  * If near boundaries (min 5 years or maxTerm), shifts to show 2 options in one direction.
- * Returns values in months for consistency with the rest of the modal.
  */
 function getTermOptions(
 	currentTermMonths: number,
 	maxTermYears: number,
 ): { value: number; label: string }[] {
-	const MIN_TERM_YEARS = 5;
-	const STEP = 5;
+	const MIN_TERM_MONTHS = 5 * 12; // 5 years minimum
+	const MAX_TERM_MONTHS = maxTermYears * 12;
+	const STEP_MONTHS = 5 * 12; // 5 years = 60 months
 
-	// Convert current term to years for option generation (rounded down)
-	const currentTermYears = Math.floor(currentTermMonths / 12);
+	const lower = currentTermMonths - STEP_MONTHS;
+	const upper = currentTermMonths + STEP_MONTHS;
 
-	const lower = currentTermYears - STEP;
-	const upper = currentTermYears + STEP;
-
-	const canGoDown = lower >= MIN_TERM_YEARS;
-	const canGoUp = upper <= maxTermYears;
+	const canGoDown = lower >= MIN_TERM_MONTHS;
+	const canGoUp = upper <= MAX_TERM_MONTHS;
 
 	let options: number[];
 
 	if (canGoDown && canGoUp) {
-		// Ideal: -5, current, +5
-		options = [lower, currentTermYears, upper];
+		// Ideal: -5y, current, +5y
+		options = [lower, currentTermMonths, upper];
 	} else if (!canGoUp) {
 		// At or near max: go down twice
 		options = [
-			currentTermYears - STEP * 2,
-			currentTermYears - STEP,
-			currentTermYears,
+			currentTermMonths - STEP_MONTHS * 2,
+			currentTermMonths - STEP_MONTHS,
+			currentTermMonths,
 		];
 	} else {
 		// At or near min: go up twice
 		options = [
-			currentTermYears,
-			currentTermYears + STEP,
-			currentTermYears + STEP * 2,
+			currentTermMonths,
+			currentTermMonths + STEP_MONTHS,
+			currentTermMonths + STEP_MONTHS * 2,
 		];
 	}
 
 	// Filter to valid range, dedupe, and sort
 	const validOptions = options.filter(
-		(term) => term >= MIN_TERM_YEARS && term <= maxTermYears,
+		(term) => term >= MIN_TERM_MONTHS && term <= MAX_TERM_MONTHS,
 	);
 	const uniqueOptions = [...new Set(validOptions)].sort((a, b) => a - b);
 
-	// Return values in months (years * 12)
-	return uniqueOptions.map((termYears) => ({
-		value: termYears * 12,
-		label: `${termYears} years`,
-	}));
+	// Format labels - use compact format for months
+	return uniqueOptions.map((totalMonths) => {
+		const years = Math.floor(totalMonths / 12);
+		const months = totalMonths % 12;
+		const label = months === 0 ? `${years} years` : `${years}y ${months}m`;
+		return { value: totalMonths, label };
+	});
 }
 
 /**
@@ -1362,14 +1363,14 @@ export function RateInfoModal({
 
 			{/* Simulation Options dialog */}
 			<AlertDialog open={showOptionsDialog} onOpenChange={setShowOptionsDialog}>
-				<AlertDialogContent className="flex flex-col overflow-hidden max-h-[85vh]">
+				<AlertDialogContent className="max-h-[85vh]">
 					<AlertDialogHeader>
 						<AlertDialogTitle>Simulation Options</AlertDialogTitle>
 						<AlertDialogDescription>
 							Choose how to simulate this rate.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
-					<div className="flex-1 overflow-y-auto space-y-2 py-4 px-6">
+					<AlertDialogBody className="space-y-2">
 						{simulateOptions.map((option, index) => {
 							const prevOption = simulateOptions[index - 1];
 							const isNewGroup =
@@ -1431,7 +1432,7 @@ export function RateInfoModal({
 								</div>
 							);
 						})}
-					</div>
+					</AlertDialogBody>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 					</AlertDialogFooter>
