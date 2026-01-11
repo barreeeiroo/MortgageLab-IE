@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 80"><g transform="translate(4 4)"><rect width="48" height="36" x="8" y="32" fill="#2dd4bf" rx="6"/><path fill="#2dd4bf" d="M4 36c0-2 2-4 4-6l20-16c2-2 6-2 8 0l20 16c2 2 4 4 4 6s-2 4-4 4H8c-2 0-4-2-4-4"/><rect width="8" height="10" x="15" y="52" fill="#0f172a" rx="3"/><rect width="8" height="17" x="28" y="45" fill="#0f172a" rx="3"/><rect width="8" height="25" x="41" y="37" fill="#0f172a" rx="3"/></g><text x="80" y="50" dominant-baseline="middle" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="600">
+    <tspan fill="#f8fafc">Mortgage</tspan><tspan fill="#2dd4bf">Lab</tspan>
+  </text></svg>
