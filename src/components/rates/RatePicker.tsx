@@ -8,6 +8,7 @@ import type { Lender } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import { saveRatesForm } from "@/lib/storage/forms";
 import { cn } from "@/lib/utils/cn";
+import { parseCurrency } from "@/lib/utils/currency";
 import { LenderLogo } from "../lenders/LenderLogo";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -98,6 +99,9 @@ export function RatePicker({
 
 		const filtered = filterRates(rates, {
 			ltv,
+			mortgageAmount: mortgageAmount
+				? parseCurrency(mortgageAmount)
+				: undefined,
 			buyerType,
 			ber: berRating,
 			currentLender: isRemortgage ? currentLender : undefined,
@@ -115,6 +119,7 @@ export function RatePicker({
 		rates,
 		lenders,
 		ltv,
+		mortgageAmount,
 		buyerType,
 		berRating,
 		isRemortgage,

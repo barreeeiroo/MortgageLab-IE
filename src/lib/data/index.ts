@@ -54,6 +54,7 @@ export interface RateFilter {
 	type?: RateType;
 	fixedTerm?: number;
 	currentLender?: string; // User's current mortgage lender (for newBusiness filtering)
+	mortgageAmount?: number; // Mortgage amount in EUR (for minLoan filtering)
 }
 
 /**
@@ -69,6 +70,15 @@ export function filterRates(
 			if (filter.ltv < rate.minLtv || filter.ltv > rate.maxLtv) {
 				return false;
 			}
+		}
+
+		// Filter by minimum loan amount
+		if (
+			filter.mortgageAmount !== undefined &&
+			rate.minLoan !== undefined &&
+			filter.mortgageAmount < rate.minLoan
+		) {
+			return false;
 		}
 
 		// Filter by buyer type

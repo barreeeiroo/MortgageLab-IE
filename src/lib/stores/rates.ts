@@ -22,7 +22,13 @@ import {
 import { fetchPerks, isPerksFetched, markPerksFetched } from "./perks";
 
 // Import for use in computed values
-import { $formValues, $isRemortgage, $mortgageTerm } from "./rates-form";
+import {
+	$formValues,
+	$isRemortgage,
+	$ltv,
+	$mortgage,
+	$mortgageTerm,
+} from "./rates-form";
 import { $isFormValid } from "./validation";
 
 // Atoms for rates data
@@ -35,9 +41,6 @@ export const $error = atom<Error | null>(null);
 let dataFetched = false;
 let fetchPromise: Promise<void> | null = null;
 
-// Computed: LTV for filtering (imported from form)
-import { $ltv } from "./rates-form";
-
 // Filtered rates based on form values
 export const $filteredRates = computed(
 	[
@@ -45,17 +48,28 @@ export const $filteredRates = computed(
 		$rates,
 		$lenders,
 		$ltv,
+		$mortgage,
 		$formValues,
 		$isRemortgage,
 		$mortgageTerm,
 	],
-	(isFormValid, rates, lenders, ltv, values, isRemortgage, mortgageTerm) => {
+	(
+		isFormValid,
+		rates,
+		lenders,
+		ltv,
+		mortgage,
+		values,
+		isRemortgage,
+		mortgageTerm,
+	) => {
 		if (!isFormValid || rates.length === 0) return [];
 
 		const lenderMap = new Map(lenders.map((l) => [l.id, l]));
 
 		return filterRates(rates, {
 			ltv,
+			mortgageAmount: mortgage,
 			buyerType: values.buyerType as BuyerType,
 			ber: values.berRating as BerRating,
 			currentLender: isRemortgage
