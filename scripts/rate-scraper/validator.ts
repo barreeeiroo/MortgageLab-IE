@@ -6,7 +6,7 @@ import {
 	BTL_BUYER_TYPES,
 	SWITCHER_BUYER_TYPES,
 } from "../../src/lib/constants/buyer";
-import { isValidFollowOnRate } from "../../src/lib/mortgage/payments";
+import { isValidFollowOnRate } from "../../src/lib/mortgage/rates";
 import type { MortgageRate, RatesFile } from "../../src/lib/schemas/rate";
 
 const RATES_DIR = join(import.meta.dir, "../../data/rates");

@@ -18,6 +18,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { canRateBeRepeated } from "@/lib/mortgage/rates";
 import { saveRatesForm } from "@/lib/storage/forms";
 import { $customRates } from "@/lib/stores/custom-rates";
 import { $lenders } from "@/lib/stores/lenders";
@@ -34,6 +35,7 @@ import {
 	$hasRequiredData,
 	$simulationState,
 	$totalMonths,
+	generateRepeatingPeriods,
 	getAffectedOverpaymentsByDurationChange,
 	removeRatePeriod,
 	updateRatePeriod,
@@ -68,6 +70,9 @@ export function SimulateRatesIsland() {
 	>(null);
 	const [editingIsLastPeriod, setEditingIsLastPeriod] = useState(false);
 	const [deletingRatePeriod, setDeletingRatePeriod] = useState<string | null>(
+		null,
+	);
+	const [repeatingPeriodId, setRepeatingPeriodId] = useState<string | null>(
 		null,
 	);
 
@@ -204,6 +209,16 @@ export function SimulateRatesIsland() {
 								period.type === "variable" &&
 								period.durationMonths > 0;
 
+							// Check if this rate can be repeated (only for last period)
+							const rateForRepeatCheck = period.isCustom
+								? customRates.find((r) => r.id === period.rateId)
+								: rates.find(
+										(r) =>
+											r.id === period.rateId && r.lenderId === period.lenderId,
+									);
+							const canRepeat =
+								isLastPeriod && canRateBeRepeated(rateForRepeatCheck);
+
 							// Calculate transition month for next period
 							const nextPeriodStartMonth =
 								period.durationMonths === 0
@@ -223,6 +238,8 @@ export function SimulateRatesIsland() {
 										propertyValue={simulationState.input.propertyValue}
 										amortizationSchedule={amortizationSchedule}
 										isFirstRate={index === 0}
+										isLastPeriod={isLastPeriod}
+										canRepeat={canRepeat}
 										onEdit={() => {
 											setEditingRatePeriod(originalPeriod);
 											setEditingIsLastPeriod(isLastPeriod);
@@ -242,6 +259,11 @@ export function SimulateRatesIsland() {
 											canExtend
 												? () =>
 														updateRatePeriod(period.id, { durationMonths: 0 })
+												: undefined
+										}
+										onRepeatUntilEnd={
+											canRepeat
+												? () => setRepeatingPeriodId(period.id)
 												: undefined
 										}
 									/>
@@ -269,30 +291,31 @@ export function SimulateRatesIsland() {
 							);
 						})}
 						{/* Trailing buffer suggestion for uncovered fixed periods */}
-						{(() => {
-							const trailingSuggestion = bufferSuggestions.find(
-								(s) => s.isTrailing,
-							);
-							if (!trailingSuggestion) return null;
+						{!isFullyCovered &&
+							(() => {
+								const trailingSuggestion = bufferSuggestions.find(
+									(s) => s.isTrailing,
+								);
+								if (!trailingSuggestion) return null;
 
-							const lastPeriod =
-								resolvedRatePeriods[resolvedRatePeriods.length - 1];
-							const nextMonth =
-								lastPeriod.startMonth + lastPeriod.durationMonths;
+								const lastPeriod =
+									resolvedRatePeriods[resolvedRatePeriods.length - 1];
+								const nextMonth =
+									lastPeriod.startMonth + lastPeriod.durationMonths;
 
-							return (
-								<div className="flex items-center gap-2 py-1.5 px-2">
-									<ArrowDown className="h-3 w-3 text-muted-foreground" />
-									<span className="text-xs text-muted-foreground">
-										{formatTransitionDate(
-											simulationState.input.startDate,
-											nextMonth,
-										)}
-									</span>
-									<SimulateBufferSuggestion suggestion={trailingSuggestion} />
-								</div>
-							);
-						})()}
+								return (
+									<div className="flex items-center gap-2 py-1.5 px-2">
+										<ArrowDown className="h-3 w-3 text-muted-foreground" />
+										<span className="text-xs text-muted-foreground">
+											{formatTransitionDate(
+												simulationState.input.startDate,
+												nextMonth,
+											)}
+										</span>
+										<SimulateBufferSuggestion suggestion={trailingSuggestion} />
+									</div>
+								);
+							})()}
 					</div>
 				)}
 			</CardContent>
@@ -388,6 +411,59 @@ export function SimulateRatesIsland() {
 							}}
 						>
 							Delete
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Repeat Rate Period Confirmation */}
+			<AlertDialog
+				open={!!repeatingPeriodId}
+				onOpenChange={(open) => !open && setRepeatingPeriodId(null)}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Repeat Fixed Rate Until End</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will generate rate periods to repeat this fixed rate until
+							the end of your mortgage. Do you want to include 1-month variable
+							buffer periods between each fixed term?
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter className="flex-col sm:flex-row gap-2">
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							className="border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+							onClick={() => {
+								if (repeatingPeriodId) {
+									generateRepeatingPeriods(
+										repeatingPeriodId,
+										rates,
+										customRates,
+										lenders,
+										false,
+									);
+									setRepeatingPeriodId(null);
+								}
+							}}
+						>
+							Without Buffers
+						</AlertDialogAction>
+						<AlertDialogAction
+							onClick={() => {
+								if (repeatingPeriodId) {
+									generateRepeatingPeriods(
+										repeatingPeriodId,
+										rates,
+										customRates,
+										lenders,
+										true,
+									);
+									setRepeatingPeriodId(null);
+								}
+							}}
+						>
+							With Variable Buffers
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

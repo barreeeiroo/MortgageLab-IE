@@ -3,10 +3,8 @@
  * Pure functions for calculating amortization schedules, milestones, and summaries.
  */
 
-import {
-	calculateMonthlyPayment,
-	findVariableRate,
-} from "@/lib/mortgage/payments";
+import { calculateMonthlyPayment } from "@/lib/mortgage/calculations";
+import { findVariableRate } from "@/lib/mortgage/rates";
 import type { Lender } from "@/lib/schemas/lender";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { MortgageRate } from "@/lib/schemas/rate";

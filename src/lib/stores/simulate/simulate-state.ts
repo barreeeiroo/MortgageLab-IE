@@ -1,6 +1,9 @@
 import { atom, computed } from "nanostores";
 import { DEFAULT_BER } from "@/lib/constants/ber";
 import { DEFAULT_TERM_MONTHS } from "@/lib/constants/term";
+import { generateRepeatingRatePeriods } from "@/lib/mortgage/rates";
+import type { Lender } from "@/lib/schemas/lender";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import type {
 	OverpaymentConfig,
 	RatePeriod,
@@ -542,4 +545,70 @@ export function initializeFromRate(params: {
 
 	$simulationState.set(newState);
 	persistState(newState);
+}
+
+// Generate repeating rate periods (Fixed → Variable → Fixed → Variable → ...)
+// Replaces a single fixed rate period with actual generated periods
+// When includeBuffers is true, adds 1-month variable buffer periods between fixed periods
+// The variable rate for each buffer is looked up using the LTV at that point in time
+export function generateRepeatingPeriods(
+	periodId: string,
+	allRates: MortgageRate[],
+	customRates: MortgageRate[],
+	lenders: Lender[],
+	includeBuffers = true,
+): void {
+	const current = $simulationState.get();
+	const { ratePeriods, input } = current;
+
+	// Find the period index
+	const periodIndex = ratePeriods.findIndex((p) => p.id === periodId);
+	if (periodIndex === -1) return;
+
+	const period = ratePeriods[periodIndex];
+
+	// Look up the rate from either custom rates or database rates
+	const rate = period.isCustom
+		? customRates.find((r) => r.id === period.rateId)
+		: allRates.find(
+				(r) => r.id === period.rateId && r.lenderId === period.lenderId,
+			);
+
+	if (!rate || rate.type !== "fixed" || !rate.fixedTerm) return;
+
+	// Calculate start month for this period (stack-based)
+	const periodStartMonth = getStartMonth(ratePeriods, periodIndex);
+
+	// Generate new periods using pure function
+	const newPeriods = generateRepeatingRatePeriods({
+		fixedRate: rate,
+		fixedLenderId: period.lenderId,
+		fixedRateId: period.rateId,
+		fixedIsCustom: period.isCustom,
+		allRates,
+		lenders,
+		mortgageAmount: input.mortgageAmount,
+		propertyValue: input.propertyValue,
+		mortgageTermMonths: input.mortgageTermMonths,
+		periodStartMonth,
+		ber: input.ber,
+		includeBuffers,
+	});
+
+	if (newPeriods.length === 0) return;
+
+	// Replace the original period with the generated periods
+	const beforePeriods = ratePeriods.slice(0, periodIndex);
+	const afterPeriods = ratePeriods.slice(periodIndex + 1);
+
+	// Delete overpayments linked to the original period
+	const updatedOverpayments = current.overpaymentConfigs.filter(
+		(c) => c.ratePeriodId !== periodId,
+	);
+
+	$simulationState.set({
+		...current,
+		ratePeriods: [...beforePeriods, ...newPeriods, ...afterPeriods],
+		overpaymentConfigs: updatedOverpayments,
+	});
 }

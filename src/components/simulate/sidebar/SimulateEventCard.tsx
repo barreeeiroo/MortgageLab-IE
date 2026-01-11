@@ -6,6 +6,7 @@ import {
 	Flag,
 	Pencil,
 	Percent,
+	Repeat,
 	Trash2,
 	TrendingDown,
 } from "lucide-react";
@@ -117,11 +118,16 @@ interface RatePeriodEventProps {
 	onDelete?: () => void;
 	onTrim?: (durationMonths: number) => void;
 	onExtend?: () => void;
+	onRepeatUntilEnd?: () => void;
 	// Additional props needed for trim dialog LTV calculations
 	propertyValue?: number;
 	amortizationSchedule?: AmortizationMonth[];
 	/** Whether this is the first rate period in the simulation */
 	isFirstRate?: boolean;
+	/** Whether this is the last rate period in the simulation */
+	isLastPeriod?: boolean;
+	/** Whether this rate can be repeated (fixed rate not new-business-only) */
+	canRepeat?: boolean;
 }
 
 export function SimulateRatePeriodEvent({
@@ -132,13 +138,38 @@ export function SimulateRatePeriodEvent({
 	onDelete,
 	onTrim,
 	onExtend,
+	onRepeatUntilEnd,
 	propertyValue = 0,
 	amortizationSchedule = [],
 	isFirstRate = false,
+	isLastPeriod = false,
+	canRepeat = false,
 }: RatePeriodEventProps) {
 	const [trimDialogOpen, setTrimDialogOpen] = useState(false);
 	const hasWarnings = warnings.length > 0;
 	const hasError = warnings.some((w) => w.severity === "error");
+
+	// Check if this rate period is orphaned (starts after mortgage is complete)
+	// or has excess duration (extends beyond when mortgage ends)
+	const { isOrphaned, hasExcessDuration } = useMemo(() => {
+		const lastActiveMonth = amortizationSchedule.length;
+		if (lastActiveMonth === 0) {
+			return { isOrphaned: false, hasExcessDuration: false };
+		}
+
+		// Period starts after the mortgage is already complete
+		const orphaned = period.startMonth > lastActiveMonth;
+
+		// Period has explicit duration that extends beyond the mortgage
+		const excessDuration =
+			!orphaned &&
+			period.durationMonths > 0 &&
+			period.startMonth + period.durationMonths - 1 > lastActiveMonth;
+
+		return { isOrphaned: orphaned, hasExcessDuration: excessDuration };
+	}, [period, amortizationSchedule]);
+
+	const isInvalid = isOrphaned || hasExcessDuration;
 
 	// Calculate beginning and ending LTV for this rate period
 	const { beginningLtv, endingLtv } = useMemo(() => {
@@ -182,7 +213,7 @@ export function SimulateRatePeriodEvent({
 				<button
 					type="button"
 					className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors cursor-pointer hover:bg-muted/50 ${
-						hasError
+						isInvalid || hasError
 							? "border-destructive/50"
 							: hasWarnings
 								? "border-yellow-500/50"
@@ -295,6 +326,17 @@ export function SimulateRatePeriodEvent({
 						</div>
 					)}
 
+					{/* Invalid period warning */}
+					{isInvalid && (
+						<div className="pt-2 border-t">
+							<p className="text-xs text-destructive">
+								{isOrphaned
+									? "This rate period starts after the mortgage is already paid off."
+									: "This rate period extends beyond when the mortgage ends."}
+							</p>
+						</div>
+					)}
+
 					{/* Warnings */}
 					{hasWarnings && (
 						<div className="pt-2 border-t space-y-1">
@@ -329,6 +371,11 @@ export function SimulateRatePeriodEvent({
 						{onExtend && (
 							<Button variant="outline" size="sm" onClick={onExtend}>
 								<ArrowRightToLine className="h-3.5 w-3.5" />
+							</Button>
+						)}
+						{canRepeat && isLastPeriod && period.type === "fixed" && (
+							<Button variant="outline" size="sm" onClick={onRepeatUntilEnd}>
+								<Repeat className="h-3.5 w-3.5" />
 							</Button>
 						)}
 						<Button

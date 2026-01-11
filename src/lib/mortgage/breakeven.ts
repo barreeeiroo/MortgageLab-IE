@@ -9,7 +9,7 @@ import {
 	ESTIMATED_REMORTGAGE_LEGAL_FEES,
 	type PropertyType,
 } from "@/lib/utils/fees";
-import { calculateMonthlyPayment } from "./payments";
+import { calculateMonthlyPayment } from "./calculations";
 
 // Default values for advanced options
 export const DEFAULT_RENT_INFLATION = 2; // 2% per year

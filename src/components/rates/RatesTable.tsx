@@ -34,14 +34,14 @@ import type { BerRating } from "@/lib/constants/ber";
 import { getMissingVariableRateUrl } from "@/lib/constants/contact";
 import { getAvailableFixedTerms, getLender, resolvePerks } from "@/lib/data";
 import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
+import { calculateMonthlyPayment } from "@/lib/mortgage/calculations";
 import {
 	calculateCostOfCreditPercent,
 	calculateFollowOnLtv,
 	calculateMonthlyFollowOn,
-	calculateMonthlyPayment,
 	calculateTotalRepayable,
-	findVariableRate,
 } from "@/lib/mortgage/payments";
+import { findVariableRate } from "@/lib/mortgage/rates";
 import type { Lender } from "@/lib/schemas/lender";
 import { type AprcFees, DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";

@@ -5,7 +5,10 @@
  * all costs over the term including setup charges and interest rates.
  */
 
-import { calculateMonthlyPayment, calculateRemainingBalance } from "./payments";
+import {
+	calculateMonthlyPayment,
+	calculateRemainingBalance,
+} from "./calculations";
 
 /**
  * Configuration for APRC calculation, varies by lender

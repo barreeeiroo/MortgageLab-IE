@@ -1,6 +1,6 @@
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { ResolvedRatePeriod } from "@/lib/schemas/simulate";
-import { calculateMonthlyPayment } from "./payments";
+import { calculateMonthlyPayment } from "./calculations";
 
 /**
  * Represents a yearly overpayment plan for maximum fee-free overpayments

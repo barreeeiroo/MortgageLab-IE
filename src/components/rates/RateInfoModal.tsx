@@ -8,6 +8,7 @@ import {
 	PiggyBank,
 	Play,
 	PlusCircle,
+	Repeat,
 	TriangleAlert,
 	X,
 } from "lucide-react";
@@ -18,12 +19,14 @@ import type { RatesMode } from "@/lib/constants/rates";
 import { getOverpaymentPolicy, resolvePerks } from "@/lib/data";
 import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
 import {
-	calculateMonthlyFollowOn,
 	calculateMonthlyPayment,
 	calculateRemainingBalance,
+} from "@/lib/mortgage/calculations";
+import {
+	calculateMonthlyFollowOn,
 	calculateTotalRepayable,
-	findVariableRate,
 } from "@/lib/mortgage/payments";
+import { canRateBeRepeated, findVariableRate } from "@/lib/mortgage/rates";
 import type { Lender } from "@/lib/schemas/lender";
 import {
 	type AprcFees,
@@ -34,15 +37,21 @@ import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { Perk } from "@/lib/schemas/perk";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
+	$customRates,
 	addCustomRate,
 	type StoredCustomRate,
 } from "@/lib/stores/custom-rates";
+import { $lenders } from "@/lib/stores/lenders";
+import { $rates } from "@/lib/stores/rates";
 import {
+	$simulationState,
 	addRatePeriod,
+	generateRepeatingPeriods,
 	hasExistingSimulation,
 	initializeFromRate,
 } from "@/lib/stores/simulate/simulate-state";
 import { formatCurrency } from "@/lib/utils/currency";
+import { generateRateLabel } from "@/lib/utils/labels";
 import { getPath } from "@/lib/utils/path";
 import { formatTermDisplay } from "@/lib/utils/term";
 import { LenderLogo } from "../lenders/LenderLogo";
@@ -73,6 +82,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
@@ -443,6 +453,7 @@ export function RateInfoModal({
 	const hasFollowOn = isFixed && calculations.followOnRate;
 	const resolvedPerks = resolvePerks(perks, combinedPerks);
 	const isCustom = (rate as { isCustom?: boolean }).isCustom;
+	const canRepeat = canRateBeRepeated(rate);
 
 	// Handler for copying rate as custom
 	const handleCopyAsCustom = () => {
@@ -469,7 +480,11 @@ export function RateInfoModal({
 	};
 
 	// Handler for navigating to simulation
-	const handleSimulate = (includeFollowOn = true) => {
+	// repeatMode: undefined = no repeat, 'with-buffers' = repeat with variable buffers, 'fixed-only' = repeat without buffers
+	const handleSimulate = (
+		includeFollowOn = true,
+		repeatMode?: "with-buffers" | "fixed-only",
+	) => {
 		if (!rate) return;
 
 		// Convert euros to cents for simulation state
@@ -486,15 +501,16 @@ export function RateInfoModal({
 		const rateLabel = `${lenderName} ${rate.type === "fixed" && rate.fixedTerm ? `${rate.fixedTerm}-Year Fixed` : "Variable"} @ ${rate.rate.toFixed(2)}%`;
 
 		// Prepare follow-on rate if available (for fixed rates) and includeFollowOn is true
+		// Don't include follow-on when repeating (repeat will generate its own follow-on periods)
 		const followOn =
-			includeFollowOn && calculations?.followOnRate
+			includeFollowOn && !repeatMode && calculations?.followOnRate
 				? {
 						lenderId: calculations.followOnRate.lenderId,
 						rateId: calculations.followOnRate.id,
 						isCustom:
 							(calculations.followOnRate as { isCustom?: boolean }).isCustom ??
 							false,
-						label: `${lenderName} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
+						label: generateRateLabel(lenderName, calculations.followOnRate),
 					}
 				: undefined;
 
@@ -511,11 +527,33 @@ export function RateInfoModal({
 			followOn,
 		});
 
+		// If repeat mode is set, generate repeating periods
+		if (repeatMode) {
+			const state = $simulationState.get();
+			const lastPeriod = state.ratePeriods.at(-1);
+			if (lastPeriod) {
+				const rates = $rates.get();
+				const customRates = $customRates.get();
+				const lenders = $lenders.get();
+				generateRepeatingPeriods(
+					lastPeriod.id,
+					rates,
+					customRates,
+					lenders,
+					repeatMode === "with-buffers",
+				);
+			}
+		}
+
 		window.location.href = getPath("/simulate");
 	};
 
 	// Handler for adding a rate to an existing simulation (remortgage mode)
-	const handleAddToSimulation = (includeFollowOn = true) => {
+	// repeatMode: undefined = no repeat, 'with-buffers' = repeat with variable buffers, 'fixed-only' = repeat without buffers
+	const handleAddToSimulation = (
+		includeFollowOn = true,
+		repeatMode?: "with-buffers" | "fixed-only",
+	) => {
 		if (!rate) return;
 
 		// Get lender name for labels
@@ -537,8 +575,9 @@ export function RateInfoModal({
 			label: rateLabel,
 		});
 
-		// If this is a fixed rate with follow-on and we want to include it, add the follow-on as well
-		if (includeFollowOn && calculations?.followOnRate) {
+		// If this is a fixed rate with follow-on - add follow-on
+		// Don't include follow-on when repeating (repeat will generate its own follow-on periods)
+		if (includeFollowOn && !repeatMode && calculations?.followOnRate) {
 			const followOnIsCustom =
 				(calculations.followOnRate as { isCustom?: boolean }).isCustom ?? false;
 			addRatePeriod({
@@ -546,8 +585,26 @@ export function RateInfoModal({
 				rateId: calculations.followOnRate.id,
 				isCustom: followOnIsCustom,
 				durationMonths: 0, // Until end of mortgage
-				label: `${lenderName} Variable @ ${calculations.followOnRate.rate.toFixed(2)}%`,
+				label: generateRateLabel(lenderName, calculations.followOnRate),
 			});
+		}
+
+		// If repeat mode is set, generate repeating periods
+		if (repeatMode) {
+			const state = $simulationState.get();
+			const lastPeriod = state.ratePeriods.at(-1);
+			if (lastPeriod) {
+				const rates = $rates.get();
+				const customRates = $customRates.get();
+				const lenders = $lenders.get();
+				generateRepeatingPeriods(
+					lastPeriod.id,
+					rates,
+					customRates,
+					lenders,
+					repeatMode === "with-buffers",
+				);
+			}
 		}
 
 		window.location.href = getPath("/simulate");
@@ -995,7 +1052,7 @@ export function RateInfoModal({
 							))}
 						{/* First mortgage mode: Simulate button without confirmation */}
 						{mode === "first-mortgage" &&
-							(isFixed && hasFollowOn ? (
+							(isFixed && (hasFollowOn || canRepeat) ? (
 								<div className="flex items-center">
 									<Button
 										className="gap-1.5 rounded-r-none"
@@ -1014,10 +1071,30 @@ export function RateInfoModal({
 											</Button>
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end">
-											<DropdownMenuItem onClick={() => handleSimulate(false)}>
-												<Play className="h-4 w-4" />
-												Simulate Fixed Only
-											</DropdownMenuItem>
+											{hasFollowOn && (
+												<DropdownMenuItem onClick={() => handleSimulate(false)}>
+													<Play className="h-4 w-4" />
+													Simulate Fixed Only
+												</DropdownMenuItem>
+											)}
+											{canRepeat && (
+												<>
+													<DropdownMenuItem
+														onClick={() =>
+															handleSimulate(false, "with-buffers")
+														}
+													>
+														<Repeat className="h-4 w-4" />
+														Simulate and Repeat
+													</DropdownMenuItem>
+													<DropdownMenuItem
+														onClick={() => handleSimulate(false, "fixed-only")}
+													>
+														<Repeat className="h-4 w-4" />
+														Simulate and Repeat Fixed Only
+													</DropdownMenuItem>
+												</>
+											)}
 										</DropdownMenuContent>
 									</DropdownMenu>
 								</div>
@@ -1034,7 +1111,7 @@ export function RateInfoModal({
 						{/* Remortgage mode without existing simulation: Simulate with confirmation */}
 						{mode === "remortgage" &&
 							!hasExistingSim &&
-							(isFixed && hasFollowOn ? (
+							(isFixed && (hasFollowOn || canRepeat) ? (
 								<div className="flex items-center">
 									<Button
 										className="gap-1.5 rounded-r-none"
@@ -1053,12 +1130,32 @@ export function RateInfoModal({
 											</Button>
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end">
-											<DropdownMenuItem
-												onClick={() => handleSimulateWithConfirm(false)}
-											>
-												<Play className="h-4 w-4" />
-												Simulate Fixed Only
-											</DropdownMenuItem>
+											{hasFollowOn && (
+												<DropdownMenuItem
+													onClick={() => handleSimulateWithConfirm(false)}
+												>
+													<Play className="h-4 w-4" />
+													Simulate Fixed Only
+												</DropdownMenuItem>
+											)}
+											{canRepeat && (
+												<>
+													<DropdownMenuItem
+														onClick={() =>
+															handleSimulate(false, "with-buffers")
+														}
+													>
+														<Repeat className="h-4 w-4" />
+														Simulate and Repeat
+													</DropdownMenuItem>
+													<DropdownMenuItem
+														onClick={() => handleSimulate(false, "fixed-only")}
+													>
+														<Repeat className="h-4 w-4" />
+														Simulate and Repeat Fixed Only
+													</DropdownMenuItem>
+												</>
+											)}
 										</DropdownMenuContent>
 									</DropdownMenu>
 								</div>
@@ -1101,6 +1198,28 @@ export function RateInfoModal({
 												Add Fixed Only
 											</DropdownMenuItem>
 										)}
+										{/* Repeatable rate: show Add and Repeat options */}
+										{canRepeat && (
+											<>
+												<DropdownMenuItem
+													onClick={() =>
+														handleAddToSimulation(false, "with-buffers")
+													}
+												>
+													<Repeat className="h-4 w-4" />
+													Add and Repeat
+												</DropdownMenuItem>
+												<DropdownMenuItem
+													onClick={() =>
+														handleAddToSimulation(false, "fixed-only")
+													}
+												>
+													<Repeat className="h-4 w-4" />
+													Add and Repeat Fixed Only
+												</DropdownMenuItem>
+											</>
+										)}
+										<DropdownMenuSeparator />
 										<DropdownMenuItem
 											onClick={() => handleSimulateWithConfirm(true)}
 										>
@@ -1115,6 +1234,23 @@ export function RateInfoModal({
 												<Play className="h-4 w-4" />
 												Simulate Fixed Only
 											</DropdownMenuItem>
+										)}
+										{/* Repeatable rate: show Simulate and Repeat options */}
+										{canRepeat && (
+											<>
+												<DropdownMenuItem
+													onClick={() => handleSimulate(false, "with-buffers")}
+												>
+													<Repeat className="h-4 w-4" />
+													Simulate and Repeat
+												</DropdownMenuItem>
+												<DropdownMenuItem
+													onClick={() => handleSimulate(false, "fixed-only")}
+												>
+													<Repeat className="h-4 w-4" />
+													Simulate and Repeat Fixed Only
+												</DropdownMenuItem>
+											</>
 										)}
 									</DropdownMenuContent>
 								</DropdownMenu>

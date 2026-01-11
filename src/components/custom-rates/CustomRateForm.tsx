@@ -70,6 +70,9 @@ export interface CustomRateFormProps {
 
 const CUSTOM_LENDER_VALUE = "__custom__";
 
+// Customer eligibility options
+type CustomerEligibility = "all" | "new" | "existing";
+
 interface FormState {
 	lenderId: string;
 	customLenderName: string;
@@ -81,6 +84,7 @@ interface FormState {
 	buyerTypes: string[];
 	berEligible: string[];
 	allBerEligible: boolean;
+	customerEligibility: CustomerEligibility;
 	aprcMode: AprcMode;
 	valuationFee: string;
 	securityReleaseFee: string;
@@ -116,12 +120,21 @@ function createInitialFormState(buyerType: BuyerType): FormState {
 		buyerTypes: getDefaultBuyerTypes(buyerType),
 		berEligible: [],
 		allBerEligible: true,
+		customerEligibility: "all",
 		aprcMode: "fees",
 		valuationFee: "",
 		securityReleaseFee: "",
 		aprc: "",
 		perks: [],
 	};
+}
+
+function newBusinessToEligibility(
+	newBusiness: boolean | undefined,
+): CustomerEligibility {
+	if (newBusiness === true) return "new";
+	if (newBusiness === false) return "existing";
+	return "all";
 }
 
 function createFormStateFromRate(
@@ -142,6 +155,7 @@ function createFormStateFromRate(
 		buyerTypes: [...rate.buyerTypes],
 		berEligible: rate.berEligible ? [...rate.berEligible] : [],
 		allBerEligible: !rate.berEligible,
+		customerEligibility: newBusinessToEligibility(rate.newBusiness),
 		aprcMode: "direct", // When editing, default to direct APRC input
 		valuationFee: defaultFees.valuationFee.toString(),
 		securityReleaseFee: defaultFees.securityReleaseFee.toString(),
@@ -281,6 +295,14 @@ export function CustomRateForm({
 			apr = Number(form.aprc);
 		}
 
+		// Convert customer eligibility to newBusiness field
+		const newBusiness =
+			form.customerEligibility === "new"
+				? true
+				: form.customerEligibility === "existing"
+					? false
+					: undefined;
+
 		const customRate: StoredCustomRate = {
 			id:
 				initialRate?.id ||
@@ -297,6 +319,7 @@ export function CustomRateForm({
 			berEligible: form.allBerEligible
 				? undefined
 				: (form.berEligible as MortgageRate["berEligible"]),
+			newBusiness,
 			perks: form.perks,
 			customLenderName: isNewCustomLender
 				? form.customLenderName.trim()
@@ -670,6 +693,28 @@ export function CustomRateForm({
 						</div>
 					</div>
 
+					{/* Customer Eligibility */}
+					<div className="space-y-2">
+						<Label>Customer Eligibility</Label>
+						<Select
+							value={form.customerEligibility}
+							onValueChange={(value: CustomerEligibility) =>
+								updateForm("customerEligibility", value)
+							}
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="all">All customers</SelectItem>
+								<SelectItem value="new">New customers only</SelectItem>
+								<SelectItem value="existing">
+									Existing customers only
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+
 					{/* Buyer Types */}
 					<div className="space-y-4">
 						<p className="text-sm font-semibold text-muted-foreground">
@@ -698,10 +743,15 @@ export function CustomRateForm({
 						</div>
 
 						<div className="space-y-2">
-							<p className="text-xs text-muted-foreground">Switcher</p>
+							<p className="text-xs text-muted-foreground">Mortgage Switch</p>
 							<div className="flex flex-wrap gap-3">
 								{SWITCHER_BUYER_TYPES.map((type) => {
 									const id = `buyer-type-${type}`;
+									// Shorter labels for switcher types (avoid redundant "Switcher")
+									const label =
+										type === "switcher-pdh"
+											? "First Time Buyer / Mover"
+											: "Buy To Let";
 									return (
 										<div key={type} className="flex items-center gap-2">
 											<Checkbox
@@ -710,7 +760,7 @@ export function CustomRateForm({
 												onCheckedChange={() => toggleBuyerType(type)}
 											/>
 											<label htmlFor={id} className="text-sm cursor-pointer">
-												{BUYER_TYPE_LABELS[type]}
+												{label}
 											</label>
 										</div>
 									);

@@ -32,7 +32,10 @@ import type {
 	ResolvedRatePeriod,
 } from "@/lib/schemas/simulate";
 import { formatCurrency, parseCurrency } from "@/lib/utils/currency";
-import { formatTransitionDate } from "@/lib/utils/date";
+import {
+	formatTransitionDate,
+	getCalendarYearForMonth,
+} from "@/lib/utils/date";
 import { SimulateOverpaymentForm } from "./SimulateOverpaymentForm";
 import type { TimingMode } from "./SimulateTimingSelector";
 
@@ -506,7 +509,7 @@ function MaximizeContent({
 								</div>
 								<p className="text-sm text-muted-foreground">
 									{yearlyPlans.length > 1
-										? "Year 1 (decreases yearly as balance drops)"
+										? `${getCalendarYearForMonth(startDate, yearlyPlans[0].startMonth) ?? "Year 1"} (decreases yearly as balance drops)`
 										: "Maximum overpayment without fees"}
 								</p>
 							</div>
@@ -530,16 +533,22 @@ function MaximizeContent({
 									Yearly Breakdown
 								</span>
 								<div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-									{yearlyPlans.map((plan) => (
-										<div key={plan.year} className="flex justify-between">
-											<span className="text-muted-foreground">
-												Year {plan.year}
-											</span>
-											<span className="font-medium">
-												{formatCurrency(plan.monthlyAmount / 100)}/mo
-											</span>
-										</div>
-									))}
+									{yearlyPlans.map((plan) => {
+										const calendarYear = getCalendarYearForMonth(
+											startDate,
+											plan.startMonth,
+										);
+										return (
+											<div key={plan.year} className="flex justify-between">
+												<span className="text-muted-foreground">
+													{calendarYear ?? `Year ${plan.year}`}
+												</span>
+												<span className="font-medium">
+													{formatCurrency(plan.monthlyAmount / 100)}/mo
+												</span>
+											</div>
+										);
+									})}
 								</div>
 							</div>
 						)}
