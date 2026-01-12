@@ -1,4 +1,4 @@
-import { ExternalLink, Scale, TrendingUp } from "lucide-react";
+import { Download, ExternalLink, Scale, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
 import {
@@ -8,6 +8,7 @@ import {
 	LTI_LIMITS,
 	LTV_LIMITS,
 } from "@/lib/constants/central-bank";
+import { exportAffordabilityToPDF } from "@/lib/export/affordability-export";
 import {
 	clearBorrowingShareParam,
 	type FtbShareState,
@@ -80,6 +81,7 @@ export function FirstTimeBuyerCalculator() {
 		useState<CalculationResult | null>(null);
 	const [showResultDialog, setShowResultDialog] = useState(false);
 	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
+	const [isExporting, setIsExporting] = useState(false);
 
 	// Self Build state
 	const [isSelfBuild, setIsSelfBuild] = useState(false);
@@ -294,6 +296,25 @@ export function FirstTimeBuyerCalculator() {
 		};
 		return generateBorrowingShareUrl(state);
 	};
+
+	const handleExport = useCallback(async () => {
+		if (!calculationResult) return;
+		setIsExporting(true);
+		try {
+			await exportAffordabilityToPDF({
+				calculatorType: "ftb",
+				result: calculationResult.result,
+				totalIncome: calculationResult.totalIncome,
+				propertyType,
+				priceIncludesVAT,
+				hasSavingsShortfall: calculationResult.hasSavingsShortfall,
+				maxMortgageByIncome: calculationResult.maxMortgageByIncome,
+				requiredDeposit: calculationResult.requiredDeposit,
+			});
+		} finally {
+			setIsExporting(false);
+		}
+	}, [calculationResult, propertyType, priceIncludesVAT]);
 
 	return (
 		<div className="space-y-6">
@@ -519,7 +540,19 @@ export function FirstTimeBuyerCalculator() {
 						)}
 					</AlertDialogBody>
 					<AlertDialogFooter className="sm:justify-between">
-						<ShareButton size="default" onShare={handleShare} />
+						<div className="flex gap-2">
+							<Button
+								variant="outline"
+								size="default"
+								className="gap-1.5"
+								onClick={handleExport}
+								disabled={isExporting}
+							>
+								<Download className="h-4 w-4" />
+								{isExporting ? "Exporting..." : "Export PDF"}
+							</Button>
+							<ShareButton size="default" onShare={handleShare} />
+						</div>
 						<div className="flex flex-col-reverse gap-2 sm:flex-row">
 							<AlertDialogCancel>Close</AlertDialogCancel>
 							<AlertDialogAction

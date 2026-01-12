@@ -2,18 +2,39 @@ import {
 	AlertTriangle,
 	Banknote,
 	CalendarClock,
+	Download,
 	Home,
 	Leaf,
 	Percent,
 	PiggyBank,
 	RotateCcw,
 } from "lucide-react";
+import { useCallback, useState } from "react";
 import { ShareButton } from "@/components/ShareButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { BerRating } from "@/lib/constants/ber";
+import {
+	type ChartImageData,
+	exportSimulationToExcel,
+	exportSimulationToPDF,
+} from "@/lib/export/simulate-export";
 import type { SimulationCompleteness } from "@/lib/mortgage/simulation";
+import type {
+	AmortizationYear,
+	OverpaymentConfig,
+	ResolvedRatePeriod,
+	SelfBuildConfig,
+	SimulationSummary,
+} from "@/lib/schemas/simulate";
+import { requestChartCapture } from "@/lib/stores/simulate/simulate-chart-capture";
 import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
 import { formatTermDisplay } from "@/lib/utils/term";
 
@@ -26,6 +47,13 @@ interface SimulateHeaderProps {
 	ratePeriodCount: number;
 	overpaymentCount: number;
 	completeness: SimulationCompleteness;
+	// Export data
+	yearlySchedule: AmortizationYear[];
+	summary: SimulationSummary | null;
+	ratePeriods: ResolvedRatePeriod[];
+	overpaymentConfigs: OverpaymentConfig[];
+	selfBuildConfig?: SelfBuildConfig;
+	// Callbacks
 	onReset: () => void;
 	onShare: () => Promise<string>;
 }
@@ -39,11 +67,110 @@ export function SimulateHeader({
 	ratePeriodCount,
 	overpaymentCount,
 	completeness,
+	yearlySchedule,
+	summary,
+	ratePeriods,
+	overpaymentConfigs,
+	selfBuildConfig,
 	onReset,
 	onShare,
 }: SimulateHeaderProps) {
+	const [isExporting, setIsExporting] = useState(false);
+
 	// Calculate LTV
 	const ltv = propertyValue > 0 ? (mortgageAmount / propertyValue) * 100 : 0;
+
+	const canExport =
+		hasRequiredData && summary !== null && yearlySchedule.length > 0;
+
+	const handleExportExcel = useCallback(async () => {
+		if (!summary) return;
+		setIsExporting(true);
+		try {
+			await exportSimulationToExcel({
+				mortgageAmount,
+				mortgageTerm: mortgageTermMonths,
+				propertyValue,
+				yearlySchedule,
+				summary,
+				ratePeriods,
+				overpaymentConfigs,
+				selfBuildConfig,
+			});
+		} finally {
+			setIsExporting(false);
+		}
+	}, [
+		mortgageAmount,
+		mortgageTermMonths,
+		propertyValue,
+		yearlySchedule,
+		summary,
+		ratePeriods,
+		overpaymentConfigs,
+		selfBuildConfig,
+	]);
+
+	const handleExportPDF = useCallback(async () => {
+		if (!summary) return;
+		setIsExporting(true);
+		try {
+			await exportSimulationToPDF({
+				mortgageAmount,
+				mortgageTerm: mortgageTermMonths,
+				propertyValue,
+				yearlySchedule,
+				summary,
+				ratePeriods,
+				overpaymentConfigs,
+				selfBuildConfig,
+			});
+		} finally {
+			setIsExporting(false);
+		}
+	}, [
+		mortgageAmount,
+		mortgageTermMonths,
+		propertyValue,
+		yearlySchedule,
+		summary,
+		ratePeriods,
+		overpaymentConfigs,
+		selfBuildConfig,
+	]);
+
+	const handleExportPDFWithCharts = useCallback(() => {
+		if (!summary) return;
+		setIsExporting(true);
+
+		// Request chart capture - the callback will be called with the images
+		requestChartCapture(async (chartImages: ChartImageData[]) => {
+			try {
+				await exportSimulationToPDF({
+					mortgageAmount,
+					mortgageTerm: mortgageTermMonths,
+					propertyValue,
+					yearlySchedule,
+					summary,
+					ratePeriods,
+					overpaymentConfigs,
+					selfBuildConfig,
+					chartImages,
+				});
+			} finally {
+				setIsExporting(false);
+			}
+		});
+	}, [
+		mortgageAmount,
+		mortgageTermMonths,
+		propertyValue,
+		yearlySchedule,
+		summary,
+		ratePeriods,
+		overpaymentConfigs,
+		selfBuildConfig,
+	]);
 
 	return (
 		<div className="space-y-4">
@@ -60,6 +187,30 @@ export function SimulateHeader({
 				</div>
 				{hasRequiredData && (
 					<div className="flex gap-2">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="outline"
+									size="sm"
+									className="gap-1.5"
+									disabled={!canExport || isExporting}
+								>
+									<Download className="h-4 w-4" />
+									{isExporting ? "Exporting..." : "Export"}
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<DropdownMenuItem onClick={handleExportExcel}>
+									Export as Excel
+								</DropdownMenuItem>
+								<DropdownMenuItem onClick={handleExportPDF}>
+									Export as PDF
+								</DropdownMenuItem>
+								<DropdownMenuItem onClick={handleExportPDFWithCharts}>
+									Export as PDF (with charts)
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
 						<ShareButton onShare={onShare} />
 						<Button
 							variant="outline"

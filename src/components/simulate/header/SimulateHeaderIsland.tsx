@@ -12,7 +12,12 @@ import {
 	initializeCustomRates,
 } from "@/lib/stores/custom-rates";
 import { fetchRatesData } from "@/lib/stores/rates";
-import { $simulationCompleteness } from "@/lib/stores/simulate/simulate-calculations";
+import {
+	$resolvedRatePeriods,
+	$simulationCompleteness,
+	$simulationSummary,
+	$yearlySchedule,
+} from "@/lib/stores/simulate/simulate-calculations";
 import {
 	$hasRequiredData,
 	$simulationState,
@@ -28,6 +33,9 @@ export function SimulateHeaderIsland() {
 	const hasRequiredData = useStore($hasRequiredData);
 	const customRates = useStore($storedCustomRates);
 	const completeness = useStore($simulationCompleteness);
+	const yearlySchedule = useStore($yearlySchedule);
+	const summary = useStore($simulationSummary);
+	const ratePeriods = useStore($resolvedRatePeriods);
 
 	// Initialize stores on mount
 	useEffect(() => {
@@ -72,6 +80,11 @@ export function SimulateHeaderIsland() {
 			ratePeriodCount={simulationState.ratePeriods.length}
 			overpaymentCount={simulationState.overpaymentConfigs.length}
 			completeness={completeness}
+			yearlySchedule={yearlySchedule}
+			summary={summary}
+			ratePeriods={ratePeriods}
+			overpaymentConfigs={simulationState.overpaymentConfigs}
+			selfBuildConfig={simulationState.selfBuildConfig}
 			onReset={resetSimulation}
 			onShare={handleShare}
 		/>
