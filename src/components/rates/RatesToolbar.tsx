@@ -249,14 +249,14 @@ export function RatesToolbar({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuItem onClick={handleExportCSV}>
-							Export as CSV
+						<DropdownMenuItem onClick={handleExportPDF}>
+							Export as PDF
 						</DropdownMenuItem>
 						<DropdownMenuItem onClick={handleExportExcel}>
 							Export as Excel
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={handleExportPDF}>
-							Export as PDF
+						<DropdownMenuItem onClick={handleExportCSV}>
+							Export as CSV
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
