@@ -9,7 +9,8 @@
 			"valuationFee": 215,
 			"securityReleaseFee": 60
 		},
-		"overpaymentPolicy": "fixed-5k-year"
+		"overpaymentPolicy": "fixed-5k-year",
+		"allowsSelfBuild": true
 	},
 	{
 		"id": "avant",
@@ -33,7 +34,9 @@
 			"valuationFee": 150,
 			"securityReleaseFee": 175
 		},
-		"overpaymentPolicy": "fixed-10pct-monthly"
+		"overpaymentPolicy": "fixed-10pct-monthly",
+		"allowsSelfBuild": true,
+		"selfBuildTemplateId": "boi-4-stage"
 	},
 	{
 		"id": "cu",
@@ -47,14 +50,17 @@
 		"name": "EBS",
 		"mortgagesUrl": "https://www.ebs.ie/mortgages",
 		"ratesUrl": "https://www.ebs.ie/mortgages/mortgage-interest-rates",
-		"perks": []
+		"perks": [],
+		"allowsSelfBuild": true,
+		"selfBuildTemplateId": "ebs-6-stage"
 	},
 	{
 		"id": "haven",
 		"name": "Haven Mortgages",
 		"mortgagesUrl": "https://www.havenmortgages.ie",
 		"ratesUrl": "https://www.havenmortgages.ie/mortgage-centre/mortgage-rates",
-		"perks": []
+		"perks": [],
+		"allowsSelfBuild": true
 	},
 	{
 		"id": "ics",
@@ -90,6 +96,8 @@
 		"name": "Permanent TSB",
 		"mortgagesUrl": "https://www.ptsb.ie/mortgages/",
 		"ratesUrl": "https://www.ptsb.ie/mortgages/mortgage-interest-rates/",
-		"perks": []
+		"perks": [],
+		"allowsSelfBuild": true,
+		"selfBuildTemplateId": "ptsb-6-stage"
 	}
 ]

@@ -3,6 +3,7 @@ import {
 	CartesianGrid,
 	ComposedChart,
 	Line,
+	ReferenceDot,
 	XAxis,
 	YAxis,
 } from "recharts";
@@ -138,6 +139,29 @@ export function BalanceEquityChart({
 											</span>
 										</div>
 									)}
+									{/* Self-build drawdown info */}
+									{dataPoint.drawdownThisMonth !== undefined &&
+										dataPoint.drawdownThisMonth > 0 && (
+											<div className="flex items-center justify-between gap-4 pt-1 border-t border-border/50">
+												<div className="flex items-center gap-1.5">
+													<div
+														className="h-2.5 w-2.5 rounded-full shrink-0"
+														style={{ backgroundColor: "#f59e0b" }}
+													/>
+													<span className="text-muted-foreground text-sm">
+														Drawdown
+													</span>
+												</div>
+												<span className="font-mono font-medium text-sm">
+													{formatChartCurrency(dataPoint.drawdownThisMonth)}
+												</span>
+											</div>
+										)}
+									{dataPoint.isInterestOnly && (
+										<div className="text-xs text-amber-600 mt-1">
+											Interest-only payment
+										</div>
+									)}
 								</div>
 							</div>
 						);
@@ -183,6 +207,25 @@ export function BalanceEquityChart({
 						animationDuration={ANIMATION_DURATION}
 					/>
 				)}
+				{/* Drawdown markers for self-build mortgages */}
+				{visibility.balance &&
+					data
+						.filter(
+							(d) =>
+								d.drawdownThisMonth !== undefined && d.drawdownThisMonth > 0,
+						)
+						.map((d) => (
+							<ReferenceDot
+								key={`drawdown-${d.period}`}
+								x={d.period}
+								y={d.principalRemaining}
+								r={6}
+								fill="#f59e0b"
+								stroke="#fff"
+								strokeWidth={2}
+								isFront
+							/>
+						))}
 			</ComposedChart>
 		</ChartContainer>
 	);

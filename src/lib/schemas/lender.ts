@@ -24,6 +24,8 @@ export const LenderSchema = z.object({
 	maxTerm: z.number().int().positive().optional(), // Maximum mortgage term in years, defaults to DEFAULT_MAX_TERM
 	aprcFees: AprcFeesSchema.optional(), // Fees used for APRC calculation
 	overpaymentPolicy: z.string().optional(), // Reference to overpayment policy id, if not set breakage fee applies
+	allowsSelfBuild: z.boolean().optional(), // Whether lender offers self-build mortgages, defaults to false
+	selfBuildTemplateId: z.string().optional(), // Reference to self-build template id for this lender
 });
 export type Lender = z.infer<typeof LenderSchema>;
 

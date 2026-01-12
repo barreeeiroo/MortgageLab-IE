@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { Plus, Trash2 } from "lucide-react";
+import { PiggyBank, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
 	AlertDialog,
@@ -111,7 +111,10 @@ export function SimulateOverpaymentsIsland() {
 		<Card className="py-0 gap-0">
 			<CardHeader className="py-3 px-4">
 				<div className="flex items-center justify-between">
-					<CardTitle className="text-sm font-medium">Overpayments</CardTitle>
+					<div className="flex items-center gap-2">
+						<PiggyBank className="h-4 w-4 text-muted-foreground" />
+						<CardTitle className="text-sm font-medium">Overpayments</CardTitle>
+					</div>
 					<div className="flex gap-1">
 						{overpaymentConfigs.length > 0 && (
 							<Button

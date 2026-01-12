@@ -1,11 +1,13 @@
 import {
 	ArrowRightToLine,
+	Building2,
 	CheckCircle2,
 	Eye,
 	EyeOff,
 	Flag,
 	Pencil,
 	Percent,
+	PlayCircle,
 	Repeat,
 	Trash2,
 	TrendingDown,
@@ -86,6 +88,8 @@ function formatWarningMonths(warnings: SimulationWarning[]): string {
 // Milestone icon mapping
 const MILESTONE_ICONS: Record<MilestoneType, typeof Flag> = {
 	mortgage_start: Flag,
+	construction_complete: Building2,
+	full_payments_start: PlayCircle,
 	principal_25_percent: Percent,
 	principal_50_percent: Percent,
 	principal_75_percent: Percent,
@@ -97,6 +101,10 @@ const MILESTONE_ICONS: Record<MilestoneType, typeof Flag> = {
 const MILESTONE_COLORS: Record<MilestoneType, string> = {
 	mortgage_start:
 		"bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+	construction_complete:
+		"bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+	full_payments_start:
+		"bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
 	principal_25_percent:
 		"bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
 	principal_50_percent:

@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
-import { ArrowDown, Plus } from "lucide-react";
+import { ArrowDown, Info, Percent, Plus } from "lucide-react";
 import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -27,6 +28,8 @@ import { $rates } from "@/lib/stores/rates";
 import {
 	$amortizationSchedule,
 	$bufferSuggestions,
+	$constructionEndMonth,
+	$isSelfBuildActive,
 	$resolvedRatePeriods,
 	$simulationWarnings,
 } from "@/lib/stores/simulate/simulate-calculations";
@@ -60,10 +63,16 @@ export function SimulateRatesIsland() {
 	const customRates = useStore($customRates);
 	const lenders = useStore($lenders);
 	const overpaymentPolicies = useStore($overpaymentPolicies);
+	const isSelfBuildActive = useStore($isSelfBuildActive);
+	const constructionEndMonth = useStore($constructionEndMonth);
 
 	// Check if mortgage duration is fully covered by rate periods
 	// coveredMonths is -1 when last period is "until end", or a number when explicit
 	const isFullyCovered = coveredMonths === -1 || coveredMonths >= totalMonths;
+
+	// Check if construction is still in progress (can't remortgage during construction)
+	const isConstructionActive =
+		isSelfBuildActive && constructionEndMonth > 0 && coveredMonths !== -1;
 
 	const [editingRatePeriod, setEditingRatePeriod] = useState<
 		(typeof simulationState.ratePeriods)[0] | null
@@ -134,8 +143,11 @@ export function SimulateRatesIsland() {
 		<Card className="py-0 gap-0">
 			<CardHeader className="py-3 px-4">
 				<div className="flex items-center justify-between">
-					<CardTitle className="text-sm font-medium">Rate Periods</CardTitle>
-					{isFullyCovered ? (
+					<div className="flex items-center gap-2">
+						<Percent className="h-4 w-4 text-muted-foreground" />
+						<CardTitle className="text-sm font-medium">Rate Periods</CardTitle>
+					</div>
+					{isFullyCovered || isConstructionActive ? (
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<span>
@@ -151,7 +163,11 @@ export function SimulateRatesIsland() {
 								</span>
 							</TooltipTrigger>
 							<TooltipContent>
-								<p>Mortgage duration is fully covered</p>
+								{isConstructionActive ? (
+									<p>Cannot remortgage during construction</p>
+								) : (
+									<p>Mortgage duration is fully covered</p>
+								)}
 							</TooltipContent>
 						</Tooltip>
 					) : (
@@ -168,6 +184,17 @@ export function SimulateRatesIsland() {
 				</div>
 			</CardHeader>
 			<CardContent className="pt-0 px-3 pb-3">
+				{/* Self-build construction warning */}
+				{isConstructionActive && (
+					<Alert className="mb-3 py-2">
+						<Info className="h-4 w-4" />
+						<AlertDescription className="text-xs">
+							Cannot remortgage during construction. You can switch lenders
+							after your final drawdown in month {constructionEndMonth}.
+						</AlertDescription>
+					</Alert>
+				)}
+
 				{resolvedRatePeriods.length === 0 ? (
 					<p className="text-sm text-muted-foreground text-center py-4">
 						No rate periods defined.

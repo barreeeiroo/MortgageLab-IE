@@ -116,6 +116,16 @@ export function SimulateChartIsland() {
 					yearRecurring += recurringByMonth.get(m.month) ?? 0;
 				}
 
+				// Self-build fields: sum drawdowns, get last cumulative/phase
+				let yearDrawdowns = 0;
+				for (const m of row.months) {
+					if (m.drawdownThisMonth) {
+						yearDrawdowns += m.drawdownThisMonth;
+					}
+				}
+				const lastMonthData = row.months[row.months.length - 1];
+				const hasInterestOnlyMonth = row.months.some((m) => m.isInterestOnly);
+
 				return {
 					period: row.year,
 					year: row.year,
@@ -143,6 +153,15 @@ export function SimulateChartIsland() {
 						input.propertyValue > 0
 							? (row.closingBalance / input.propertyValue) * 100
 							: undefined,
+					// Self-build fields
+					drawdownThisMonth:
+						yearDrawdowns > 0 ? yearDrawdowns / 100 : undefined,
+					cumulativeDrawn:
+						lastMonthData?.cumulativeDrawn !== undefined
+							? lastMonthData.cumulativeDrawn / 100
+							: undefined,
+					phase: lastMonthData?.phase,
+					isInterestOnly: hasInterestOnlyMonth || undefined,
 				};
 			});
 		}
@@ -220,6 +239,17 @@ export function SimulateChartIsland() {
 					(p) => p.id === lastMonth.ratePeriodId,
 				);
 
+				// Self-build fields: sum drawdowns, get last cumulative/phase
+				let qtrDrawdowns = 0;
+				for (const m of quarterMonths) {
+					if (m.drawdownThisMonth) {
+						qtrDrawdowns += m.drawdownThisMonth;
+					}
+				}
+				const hasInterestOnlyMonth = quarterMonths.some(
+					(m) => m.isInterestOnly,
+				);
+
 				quarters.push({
 					period: quarterIndex,
 					year: lastMonth.year,
@@ -249,6 +279,14 @@ export function SimulateChartIsland() {
 						input.propertyValue > 0
 							? (lastMonth.closingBalance / input.propertyValue) * 100
 							: undefined,
+					// Self-build fields
+					drawdownThisMonth: qtrDrawdowns > 0 ? qtrDrawdowns / 100 : undefined,
+					cumulativeDrawn:
+						lastMonth.cumulativeDrawn !== undefined
+							? lastMonth.cumulativeDrawn / 100
+							: undefined,
+					phase: lastMonth.phase,
+					isInterestOnly: hasInterestOnlyMonth || undefined,
 				});
 			}
 
@@ -290,6 +328,17 @@ export function SimulateChartIsland() {
 					input.propertyValue > 0
 						? (row.closingBalance / input.propertyValue) * 100
 						: undefined,
+				// Self-build fields
+				drawdownThisMonth:
+					row.drawdownThisMonth !== undefined
+						? row.drawdownThisMonth / 100
+						: undefined,
+				cumulativeDrawn:
+					row.cumulativeDrawn !== undefined
+						? row.cumulativeDrawn / 100
+						: undefined,
+				phase: row.phase,
+				isInterestOnly: row.isInterestOnly,
 			};
 		});
 	})();

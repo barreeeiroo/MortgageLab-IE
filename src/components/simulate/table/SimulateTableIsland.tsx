@@ -38,6 +38,7 @@ export function SimulateTableIsland() {
 			ratePeriodLabels={ratePeriodLabels}
 			milestones={milestones}
 			overpaymentConfigs={simulationState.overpaymentConfigs}
+			mortgageAmount={simulationState.input.mortgageAmount}
 		/>
 	);
 }

@@ -1,5 +1,12 @@
 import { format } from "date-fns";
-import { AlertTriangle, CheckCircle2, Flag, Percent } from "lucide-react";
+import {
+	AlertTriangle,
+	Building2,
+	CheckCircle2,
+	Flag,
+	Percent,
+	PlayCircle,
+} from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import {
 	Tooltip,
@@ -18,6 +25,8 @@ import { formatCurrency } from "@/lib/utils/currency";
 // Milestone icon mapping
 const MILESTONE_ICONS: Record<MilestoneType, typeof Flag> = {
 	mortgage_start: Flag,
+	construction_complete: Building2,
+	full_payments_start: PlayCircle,
 	principal_25_percent: Percent,
 	principal_50_percent: Percent,
 	principal_75_percent: Percent,
@@ -28,6 +37,8 @@ const MILESTONE_ICONS: Record<MilestoneType, typeof Flag> = {
 // Milestone color classes for icons
 const MILESTONE_ICON_COLORS: Record<MilestoneType, string> = {
 	mortgage_start: "text-blue-600 dark:text-blue-400",
+	construction_complete: "text-purple-600 dark:text-purple-400",
+	full_payments_start: "text-indigo-600 dark:text-indigo-400",
 	principal_25_percent: "text-emerald-600 dark:text-emerald-400",
 	principal_50_percent: "text-green-600 dark:text-green-400",
 	principal_75_percent: "text-teal-600 dark:text-teal-400",

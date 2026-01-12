@@ -1,0 +1,41 @@
+[
+	{
+		"id": "boi-4-stage",
+		"name": "Bank of Ireland (4 stages)",
+		"stages": [
+			{ "label": "Floor Level", "percentOfTotal": 25, "defaultMonth": 1 },
+			{ "label": "Roof Level", "percentOfTotal": 35, "defaultMonth": 5 },
+			{ "label": "Finished Property", "percentOfTotal": 30, "defaultMonth": 10 },
+			{ "label": "Post Completion", "percentOfTotal": 10, "defaultMonth": 12 }
+		]
+	},
+	{
+		"id": "ptsb-6-stage",
+		"name": "PTSB (6 stages)",
+		"stages": [
+			{ "label": "Site Purchase", "percentOfTotal": 15, "defaultMonth": 1 },
+			{ "label": "Foundations", "percentOfTotal": 15, "defaultMonth": 3 },
+			{ "label": "Floor Level", "percentOfTotal": 20, "defaultMonth": 5 },
+			{ "label": "Roof Level", "percentOfTotal": 20, "defaultMonth": 8 },
+			{ "label": "Finished Property", "percentOfTotal": 20, "defaultMonth": 12 },
+			{ "label": "Post Completion", "percentOfTotal": 10, "defaultMonth": 15 }
+		]
+	},
+	{
+		"id": "ebs-6-stage",
+		"name": "EBS (6 stages)",
+		"stages": [
+			{ "label": "Site Purchase", "percentOfTotal": 15, "defaultMonth": 1 },
+			{ "label": "Substructure", "percentOfTotal": 15, "defaultMonth": 2 },
+			{ "label": "Floor Level", "percentOfTotal": 20, "defaultMonth": 4 },
+			{ "label": "Roof Level", "percentOfTotal": 20, "defaultMonth": 6 },
+			{ "label": "Finished Property", "percentOfTotal": 20, "defaultMonth": 9 },
+			{ "label": "Post Completion", "percentOfTotal": 10, "defaultMonth": 11 }
+		]
+	},
+	{
+		"id": "custom",
+		"name": "Custom",
+		"stages": []
+	}
+]
