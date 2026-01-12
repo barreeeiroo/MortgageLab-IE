@@ -2,6 +2,7 @@
  * PDF document generation using jsPDF and jspdf-autotable (lazy-loaded).
  */
 
+import { sanitizeForPDF } from "../formatters";
 import {
 	loadLogo,
 	PDF_COLORS,
@@ -242,6 +243,143 @@ export async function addTable(
 	autoTable(doc, tableOptions);
 
 	// Get final Y position from the document's internal state
+	// biome-ignore lint/suspicious/noExplicitAny: jspdf-autotable adds this property
+	return ((doc as any).lastAutoTable?.finalY ?? startY + 50) + 10;
+}
+
+interface TableWithLogosOptions extends Partial<AutoTableOptions> {
+	/** Column index where logos should be rendered (typically 0 for lender column) */
+	logoColumn?: number;
+	/** Size of logos in mm */
+	logoSize?: number;
+	/** Map of display names to lender IDs for logo matching */
+	lenderNameToId?: Map<string, string>;
+}
+
+/**
+ * Adds a table with lender logos to the PDF.
+ * Uses didDrawCell hook to render logos alongside text.
+ */
+export async function addTableWithLogos(
+	doc: Awaited<ReturnType<typeof createPDFDocument>>,
+	data: TableExportData,
+	logos: Map<string, string>,
+	startY: number,
+	options?: TableWithLogosOptions,
+): Promise<number> {
+	const autoTable = await getAutoTable();
+	const logoColumn = options?.logoColumn ?? 0;
+	const logoSize = options?.logoSize ?? 5;
+	const lenderNameToId = options?.lenderNameToId;
+
+	// Convert and sanitize rows for PDF compatibility
+	const body: (string | number)[][] = data.rows.map((row) =>
+		row.map((cell) => {
+			if (cell === null || cell === undefined) return "";
+			if (typeof cell === "string") return sanitizeForPDF(cell);
+			return cell;
+		}),
+	);
+
+	// Sanitize headers as well
+	const headers = data.headers.map((h) =>
+		typeof h === "string" ? sanitizeForPDF(h) : h,
+	);
+
+	// Store original lender names for logo lookup (before sanitization)
+	const originalLenderNames: string[] = data.rows.map((row) =>
+		String(row[logoColumn] ?? ""),
+	);
+
+	// Auto-detect numeric columns for right alignment
+	const detectedColumnStyles = detectNumericColumns(data.rows);
+
+	// Get page dimensions for landscape A4
+	const pageWidth = doc.internal.pageSize.getWidth();
+	const tableWidth = pageWidth - PDF_LAYOUT.marginLeft - PDF_LAYOUT.marginRight;
+
+	// biome-ignore lint/suspicious/noExplicitAny: jspdf-autotable types require casting
+	const tableOptions: any = {
+		head: [headers],
+		body,
+		startY,
+		tableWidth,
+		margin: { left: PDF_LAYOUT.marginLeft, right: PDF_LAYOUT.marginRight },
+		styles: {
+			fontSize: PDF_FONTS.small,
+			cellPadding: 2,
+			overflow: "linebreak",
+			valign: "middle",
+		},
+		headStyles: {
+			fillColor: [...PDF_COLORS.headerBg],
+			textColor: [...PDF_COLORS.headerText],
+			fontStyle: "bold",
+			halign: "center",
+			valign: "middle",
+		},
+		alternateRowStyles: {
+			fillColor: [...PDF_COLORS.altRowBg],
+		},
+		columnStyles: {
+			...detectedColumnStyles,
+			// Add padding for logo column
+			[logoColumn]: {
+				cellPadding: { left: logoSize + 3, top: 2, right: 2, bottom: 2 },
+			},
+			...options?.columnStyles,
+		},
+		// Hook to draw logos in cells
+		didDrawCell: (hookData: {
+			section: string;
+			column: { index: number };
+			row: { index: number };
+			cell: { x: number; y: number; height: number };
+		}) => {
+			if (hookData.section === "body" && hookData.column.index === logoColumn) {
+				const rowIndex = hookData.row.index;
+				// Use original (unsanitized) lender name for lookup
+				const cellText = originalLenderNames[rowIndex] ?? "";
+
+				// Find lender ID - use mapping if provided, otherwise try direct match
+				let lenderId: string | undefined;
+				if (lenderNameToId) {
+					lenderId = lenderNameToId.get(cellText);
+				}
+
+				// Fallback: try to match by checking if cell text contains lender ID
+				if (!lenderId) {
+					for (const id of logos.keys()) {
+						if (
+							cellText.toLowerCase().includes(id.toLowerCase()) ||
+							id.toLowerCase() === cellText.toLowerCase()
+						) {
+							lenderId = id;
+							break;
+						}
+					}
+				}
+
+				// Draw logo if found
+				if (lenderId) {
+					const logoDataUrl = logos.get(lenderId);
+					if (logoDataUrl) {
+						try {
+							const x = hookData.cell.x + 1;
+							const y = hookData.cell.y + (hookData.cell.height - logoSize) / 2;
+							doc.addImage(logoDataUrl, "PNG", x, y, logoSize, logoSize);
+						} catch {
+							// Silently fail if logo can't be added
+						}
+					}
+				}
+			}
+		},
+		...options,
+	};
+
+	autoTable(doc, tableOptions);
+
 	// biome-ignore lint/suspicious/noExplicitAny: jspdf-autotable adds this property
 	return ((doc as any).lastAutoTable?.finalY ?? startY + 50) + 10;
 }

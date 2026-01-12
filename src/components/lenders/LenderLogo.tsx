@@ -1,33 +1,11 @@
 import { Pencil } from "lucide-react";
-import aibLogo from "@/assets/logos/lenders/aib.webp";
-import avantLogo from "@/assets/logos/lenders/avant.webp";
-import boiLogo from "@/assets/logos/lenders/boi.webp";
-import cuLogo from "@/assets/logos/lenders/cu.webp";
-import ebsLogo from "@/assets/logos/lenders/ebs.webp";
-import havenLogo from "@/assets/logos/lenders/haven.webp";
-import icsLogo from "@/assets/logos/lenders/ics.webp";
-import mocoLogo from "@/assets/logos/lenders/moco.webp";
-import nuaLogo from "@/assets/logos/lenders/nua.webp";
-import ptsbLogo from "@/assets/logos/lenders/ptsb.webp";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { LENDER_LOGOS } from "@/lib/constants/lender-logos";
 import { cn } from "@/lib/utils/cn";
-
-const logos: Record<string, ImageMetadata> = {
-	aib: aibLogo,
-	avant: avantLogo,
-	boi: boiLogo,
-	cu: cuLogo,
-	ebs: ebsLogo,
-	haven: havenLogo,
-	ics: icsLogo,
-	moco: mocoLogo,
-	nua: nuaLogo,
-	ptsb: ptsbLogo,
-};
 
 interface LenderLogoProps {
 	lenderId: string;
@@ -42,7 +20,7 @@ export function LenderLogo({
 	className,
 	isCustom = false,
 }: LenderLogoProps) {
-	const logo = logos[lenderId];
+	const logo = LENDER_LOGOS[lenderId];
 	const iconSize = Math.max(12, Math.floor(size * 0.35));
 
 	// Treat as custom if explicitly marked OR if lenderId is not a known lender

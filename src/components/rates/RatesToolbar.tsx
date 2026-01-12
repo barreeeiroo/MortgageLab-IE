@@ -14,6 +14,7 @@ import type { BerRating } from "@/lib/constants/ber";
 import {
 	exportRatesToCSV,
 	exportRatesToExcel,
+	exportRatesToPDF,
 } from "@/lib/export/rates-export";
 import type { Lender } from "@/lib/schemas/lender";
 import type { MortgageRate, RatesMetadata } from "@/lib/schemas/rate";
@@ -145,6 +146,15 @@ export function RatesToolbar({
 		}
 	}, [exportContext]);
 
+	const handleExportPDF = useCallback(async () => {
+		setIsExporting(true);
+		try {
+			await exportRatesToPDF(exportContext);
+		} finally {
+			setIsExporting(false);
+		}
+	}, [exportContext]);
+
 	const handleShare = useCallback(async (): Promise<string> => {
 		// Read custom rates and perks on demand (no subscription needed)
 		const customRates = $storedCustomRates.get();
@@ -230,7 +240,7 @@ export function RatesToolbar({
 							variant="outline"
 							size="sm"
 							className="h-8 gap-1.5"
-							disabled={disabled || isExporting || filteredRates.length === 0}
+							disabled={isExporting || filteredRates.length === 0}
 						>
 							<Download className="h-4 w-4" />
 							<span className="hidden sm:inline">
@@ -244,6 +254,9 @@ export function RatesToolbar({
 						</DropdownMenuItem>
 						<DropdownMenuItem onClick={handleExportExcel}>
 							Export as Excel
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={handleExportPDF}>
+							Export as PDF
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

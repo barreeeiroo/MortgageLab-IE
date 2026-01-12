@@ -89,3 +89,19 @@ export function formatNumberForExport(value: number, decimals = 0): string {
 		maximumFractionDigits: decimals,
 	}).format(value);
 }
+
+/**
+ * Sanitizes text for PDF export by replacing Unicode characters
+ * that jsPDF's default Helvetica font doesn't support.
+ */
+export function sanitizeForPDF(text: string): string {
+	return text
+		.replace(/\u2264/g, "<=") // ≤
+		.replace(/\u2265/g, ">=") // ≥
+		.replace(/\u2013/g, "-") // en-dash –
+		.replace(/\u2014/g, "-") // em-dash —
+		.replace(/\u2018/g, "'") // left single quote '
+		.replace(/\u2019/g, "'") // right single quote '
+		.replace(/\u201C/g, '"') // left double quote "
+		.replace(/\u201D/g, '"'); // right double quote "
+}

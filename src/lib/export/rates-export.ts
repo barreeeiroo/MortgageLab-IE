@@ -20,6 +20,15 @@ import { DEFAULT_APRC_FEES } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import { exportToCSV } from "./format/csv";
 import { createExcelWorkbook, downloadWorkbook } from "./format/excel";
+import {
+	addBrandedHeader,
+	addFooter,
+	addTableWithLogos,
+	createPDFDocument,
+	downloadPDF,
+} from "./format/pdf";
+import { formatCurrencyForExport, formatPercentForExport } from "./formatters";
+import { preloadAllLenderLogos } from "./style/lender-logos";
 import type { TableExportData } from "./types";
 
 interface RatesExportContext {
@@ -34,7 +43,8 @@ interface RatesExportContext {
 	sorting?: SortingState;
 }
 
-interface ExportableRateRow {
+/** @internal Exported for testing */
+export interface ExportableRateRow {
 	lender: string;
 	product: string;
 	type: string;
@@ -203,7 +213,8 @@ function transformRatesToExportRows(
 /**
  * Determines which columns to include based on visibility state.
  */
-function getExportColumns(
+/** @internal Exported for testing */
+export function getExportColumns(
 	columnVisibility?: VisibilityState,
 ): (keyof ExportableRateRow)[] {
 	if (!columnVisibility) {
@@ -249,7 +260,8 @@ const SORT_KEY_MAP: Record<string, keyof ExportableRateRow> = {
 /**
  * Applies sorting to export rows based on table sorting state.
  */
-function applySorting(
+/** @internal Exported for testing */
+export function applySorting(
 	rows: ExportableRateRow[],
 	sorting?: SortingState,
 ): ExportableRateRow[] {
@@ -415,4 +427,98 @@ export async function exportRatesToExcel(
 		columnConfigs,
 	);
 	await downloadWorkbook(workbook, "rates");
+}
+
+/**
+ * PDF column labels (shorter versions for landscape layout).
+ */
+const PDF_COLUMN_LABELS: Record<keyof ExportableRateRow, string> = {
+	lender: "Lender",
+	product: "Product",
+	type: "Type",
+	fixedTerm: "Fixed (Yrs)",
+	rate: "Rate",
+	apr: "APRC",
+	monthlyPayment: "Monthly",
+	followOnProduct: "Follow-On",
+	followOnRate: "Follow-On Rate",
+	followOnMonthly: "Follow-On Monthly",
+	totalRepayable: "Total Repayable",
+	costOfCreditPct: "Cost of Credit",
+};
+
+/**
+ * Converts export rows to table export data format for PDF.
+ * Uses formatted strings with currency/percentage symbols.
+ */
+function toPDFExportData(
+	rows: ExportableRateRow[],
+	columns: (keyof ExportableRateRow)[],
+): TableExportData {
+	const headers = columns.map((col) => PDF_COLUMN_LABELS[col]);
+
+	const dataRows = rows.map((row) =>
+		columns.map((col) => {
+			const value = row[col];
+			if (value === null || value === "") return "";
+
+			switch (col) {
+				case "monthlyPayment":
+				case "followOnMonthly":
+				case "totalRepayable":
+					return formatCurrencyForExport(value as number, true);
+				case "rate":
+				case "apr":
+				case "followOnRate":
+				case "costOfCreditPct":
+					return formatPercentForExport((value as number) / 100, 2);
+				case "fixedTerm":
+					return value === 0 ? "" : String(value);
+				default:
+					return value;
+			}
+		}),
+	);
+
+	return { headers, rows: dataRows };
+}
+
+/**
+ * Exports rates to PDF file in landscape orientation with lender logos.
+ */
+export async function exportRatesToPDF(
+	context: RatesExportContext,
+): Promise<void> {
+	const unsortedRows = transformRatesToExportRows(context);
+	const rows = applySorting(unsortedRows, context.sorting);
+	const columns = getExportColumns(context.columnVisibility);
+	const data = toPDFExportData(rows, columns);
+
+	// Build lender name to ID mapping for logo matching
+	const lenderNameToId = new Map<string, string>();
+	for (const lender of context.lenders) {
+		lenderNameToId.set(lender.name, lender.id);
+	}
+
+	// Create landscape PDF
+	const doc = await createPDFDocument("landscape");
+
+	// Add branded header
+	const y = await addBrandedHeader(doc, "Mortgage Rates Comparison");
+
+	// Preload lender logos
+	const logos = await preloadAllLenderLogos(24);
+
+	// Add table with logos
+	await addTableWithLogos(doc, data, logos, y, {
+		logoColumn: 0,
+		logoSize: 4,
+		lenderNameToId,
+	});
+
+	// Add footer
+	addFooter(doc);
+
+	// Download
+	downloadPDF(doc, "rates");
 }
