@@ -37,6 +37,9 @@ export default defineConfig({
 	integrations: [react(), sitemap()],
 
 	vite: {
+		define: {
+			__BUILD_TIME__: Date.now(),
+		},
 		plugins: [tailwindcss(), serveDataFolder()],
 		build: {
 			rollupOptions: {
