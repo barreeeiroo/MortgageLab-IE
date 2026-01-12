@@ -405,12 +405,19 @@ export function addImage(
 
 /**
  * Adds a footer with page numbers and generation timestamp.
+ * Works with both portrait and landscape orientations.
  */
 export function addFooter(
 	doc: Awaited<ReturnType<typeof createPDFDocument>>,
 ): void {
 	const pageCount = doc.getNumberOfPages();
 	const timestamp = new Date().toLocaleString("en-IE");
+
+	// Get page dimensions (works for both portrait and landscape)
+	const pageHeight = doc.internal.pageSize.getHeight();
+	const pageWidth = doc.internal.pageSize.getWidth();
+	const footerY = pageHeight - 10; // 10mm from bottom
+	const rightX = pageWidth - PDF_LAYOUT.marginRight;
 
 	for (let i = 1; i <= pageCount; i++) {
 		doc.setPage(i);
@@ -423,22 +430,22 @@ export function addFooter(
 		const linkText = "MortgageLab.ie";
 		const suffix = ` on ${timestamp}`;
 
-		doc.text(prefix, 14, 287);
+		doc.text(prefix, PDF_LAYOUT.marginLeft, footerY);
 		const prefixWidth = doc.getTextWidth(prefix);
 
 		// Add link text in blue
 		doc.setTextColor(0, 0, 238);
-		doc.textWithLink(linkText, 14 + prefixWidth, 287, {
+		doc.textWithLink(linkText, PDF_LAYOUT.marginLeft + prefixWidth, footerY, {
 			url: "https://www.mortgagelab.ie",
 		});
 		const linkWidth = doc.getTextWidth(linkText);
 
 		// Continue with suffix in gray
 		doc.setTextColor(128);
-		doc.text(suffix, 14 + prefixWidth + linkWidth, 287);
+		doc.text(suffix, PDF_LAYOUT.marginLeft + prefixWidth + linkWidth, footerY);
 
 		// Page number (right)
-		doc.text(`Page ${i} of ${pageCount}`, 196, 287, { align: "right" });
+		doc.text(`Page ${i} of ${pageCount}`, rightX, footerY, { align: "right" });
 	}
 }
 
@@ -493,23 +500,27 @@ export async function exportTableToPDF(
 
 /**
  * Adds a branded header with logo and title (first page only).
+ * Logo is clickable and links to MortgageLab.ie.
  */
 export async function addBrandedHeader(
 	doc: Awaited<ReturnType<typeof createPDFDocument>>,
 	title: string,
 	y = PDF_LAYOUT.marginTop,
 ): Promise<number> {
+	const logoX = PDF_LAYOUT.marginLeft;
+	const logoY = y - 2;
+	const logoWidth = PDF_LAYOUT.logoWidth;
+	const logoHeight = PDF_LAYOUT.logoHeight;
+
 	// Load logo and add to document
 	try {
 		const logoDataUrl = await loadLogo();
-		doc.addImage(
-			logoDataUrl,
-			"PNG",
-			PDF_LAYOUT.marginLeft,
-			y - 2,
-			PDF_LAYOUT.logoWidth,
-			PDF_LAYOUT.logoHeight,
-		);
+		doc.addImage(logoDataUrl, "PNG", logoX, logoY, logoWidth, logoHeight);
+
+		// Add clickable link over the logo
+		doc.link(logoX, logoY, logoWidth, logoHeight, {
+			url: "https://www.mortgagelab.ie",
+		});
 	} catch {
 		// Fallback if logo fails - just skip the logo
 	}
