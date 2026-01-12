@@ -294,6 +294,18 @@ The calculation also tracks:
 * Warnings (overpayment allowance exceeded, early redemption fees)
 * Milestones (25%/50%/75% paid off, halfway point)
 
+### Self-Build Mortgages
+
+Self-build mode supports staged drawdowns during construction:
+
+* Balance starts at first drawdown amount, increases as funds are released
+* Interest-only payments during construction (on drawn amount only)
+* Optional interest-only period after final drawdown
+* Full amortization begins after construction/interest-only phase
+* "Maximize Overpayment" delays until after full drawdown to avoid allowance issues
+
+Key files: `src/lib/mortgage/self-build.ts`, `src/lib/schemas/simulate.ts` (SelfBuildConfig)
+
 ### State Management
 
 Simulation state uses Nanostores with automatic localStorage persistence:
@@ -318,6 +330,7 @@ previous periods' durations. A `durationMonths: 0` means "until end of mortgage"
 | `src/lib/stores/simulate/simulate-calculations.ts`      | Amortization calculations          |
 | `src/lib/mortgage/payments.ts`                          | Monthly payment formula            |
 | `src/lib/mortgage/overpayments.ts`                      | Overpayment allowance calculations |
+| `src/lib/mortgage/self-build.ts`                        | Self-build drawdown logic          |
 | `src/components/simulate/chart/SimulateChartIsland.tsx` | Amortization chart                 |
 | `src/components/simulate/table/SimulateTableIsland.tsx` | Monthly/yearly schedule table      |
 
