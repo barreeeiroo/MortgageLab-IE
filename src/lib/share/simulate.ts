@@ -1,7 +1,9 @@
 import type { BerRating } from "@/lib/constants/ber";
 import type {
+	DrawdownStage,
 	OverpaymentConfig,
 	RatePeriod,
+	SelfBuildConfig,
 	SimulationState,
 } from "@/lib/schemas/simulate";
 import type { StoredCustomRate } from "@/lib/stores/custom-rates";
@@ -45,6 +47,18 @@ interface CompressedOverpayment {
 	n?: boolean; // enabled=false (only included when disabled, to save space)
 }
 
+interface CompressedDrawdownStage {
+	m: number; // month
+	a: number; // amount (cents)
+	b?: string; // label
+}
+
+interface CompressedSelfBuildConfig {
+	t?: "c"; // constructionRepaymentType: undefined = interest_only (default), "c" = interest_and_capital
+	i: number; // interestOnlyMonths
+	s: CompressedDrawdownStage[];
+}
+
 interface CompressedSimulation {
 	i: {
 		a: number; // mortgageAmount (cents)
@@ -56,6 +70,7 @@ interface CompressedSimulation {
 	r: CompressedRatePeriod[];
 	o?: CompressedOverpayment[];
 	cr?: CompressedCustomRate[]; // embedded custom rates
+	sb?: CompressedSelfBuildConfig; // self-build config
 }
 
 function compressRatePeriod(period: RatePeriod): CompressedRatePeriod {
@@ -134,6 +149,51 @@ function decompressOverpayment(
 	};
 }
 
+function compressDrawdownStage(stage: DrawdownStage): CompressedDrawdownStage {
+	return {
+		m: stage.month,
+		a: stage.amount,
+		b: stage.label,
+	};
+}
+
+function decompressDrawdownStage(
+	compressed: CompressedDrawdownStage,
+): DrawdownStage {
+	return {
+		id: crypto.randomUUID(),
+		month: compressed.m,
+		amount: compressed.a,
+		label: compressed.b,
+	};
+}
+
+function compressSelfBuildConfig(
+	config: SelfBuildConfig,
+): CompressedSelfBuildConfig {
+	return {
+		// Only include when not the default (interest_only)
+		t:
+			config.constructionRepaymentType === "interest_and_capital"
+				? "c"
+				: undefined,
+		i: config.interestOnlyMonths,
+		s: config.drawdownStages.map(compressDrawdownStage),
+	};
+}
+
+function decompressSelfBuildConfig(
+	compressed: CompressedSelfBuildConfig,
+): SelfBuildConfig {
+	return {
+		enabled: true,
+		constructionRepaymentType:
+			compressed.t === "c" ? "interest_and_capital" : "interest_only",
+		interestOnlyMonths: compressed.i,
+		drawdownStages: compressed.s.map(decompressDrawdownStage),
+	};
+}
+
 function compressState(
 	state: SimulationState,
 	customRates: StoredCustomRate[],
@@ -166,6 +226,9 @@ function compressState(
 			usedCustomRates.length > 0
 				? usedCustomRates.map(compressCustomRate)
 				: undefined,
+		sb: state.selfBuildConfig?.enabled
+			? compressSelfBuildConfig(state.selfBuildConfig)
+			: undefined,
 	};
 }
 
@@ -195,6 +258,9 @@ function decompressState(
 			ratePeriods,
 			overpaymentConfigs:
 				compressed.o?.map((o) => decompressOverpayment(o, ratePeriods)) ?? [],
+			selfBuildConfig: compressed.sb
+				? decompressSelfBuildConfig(compressed.sb)
+				: undefined,
 			initialized: true,
 		},
 		embeddedCustomRates: compressed.cr?.map(decompressCustomRate) ?? [],

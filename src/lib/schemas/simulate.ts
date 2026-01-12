@@ -48,6 +48,45 @@ export const OverpaymentConfigSchema = z.object({
 });
 export type OverpaymentConfig = z.infer<typeof OverpaymentConfigSchema>;
 
+// Self-Build Drawdown Stage - funds released during construction
+export const DrawdownStageSchema = z.object({
+	id: z.string(), // UUID for this drawdown
+	month: z.number().int().positive(), // Which month the drawdown occurs (1-indexed)
+	amount: z.number().positive(), // Amount drawn in cents
+	label: z.string().optional(), // e.g., "Floor Level", "Roof Level"
+});
+export type DrawdownStage = z.infer<typeof DrawdownStageSchema>;
+
+// Self-Build Repayment Type - what to pay during construction
+export const CONSTRUCTION_REPAYMENT_TYPES = [
+	"interest_only",
+	"interest_and_capital",
+] as const;
+export const ConstructionRepaymentTypeSchema = z.enum(
+	CONSTRUCTION_REPAYMENT_TYPES,
+);
+export type ConstructionRepaymentType = z.infer<
+	typeof ConstructionRepaymentTypeSchema
+>;
+
+// Self-Build Configuration
+export const SelfBuildConfigSchema = z.object({
+	enabled: z.boolean(), // Whether self-build mode is active
+	constructionRepaymentType:
+		ConstructionRepaymentTypeSchema.default("interest_only"), // What to pay during construction
+	interestOnlyMonths: z.number().int().nonnegative().default(0), // Interest-only period after final drawdown (only applies when constructionRepaymentType is "interest_only")
+	drawdownStages: z.array(DrawdownStageSchema), // Staged drawdowns during construction
+});
+export type SelfBuildConfig = z.infer<typeof SelfBuildConfigSchema>;
+
+// Self-build phase for UI display
+export const SELF_BUILD_PHASES = [
+	"construction",
+	"interest_only",
+	"repayment",
+] as const;
+export type SelfBuildPhase = (typeof SELF_BUILD_PHASES)[number];
+
 // Simulation Input Values
 export const SimulateInputValuesSchema = z.object({
 	mortgageAmount: z.number().positive(), // Principal amount in cents
@@ -63,6 +102,7 @@ export const SimulationStateSchema = z.object({
 	input: SimulateInputValuesSchema,
 	ratePeriods: z.array(RatePeriodSchema),
 	overpaymentConfigs: z.array(OverpaymentConfigSchema),
+	selfBuildConfig: SelfBuildConfigSchema.optional(), // Self-build mortgage configuration
 	initialized: z.boolean(),
 });
 export type SimulationState = z.infer<typeof SimulationStateSchema>;
@@ -119,6 +159,12 @@ export interface AmortizationMonth {
 	cumulativePrincipal: number;
 	cumulativeOverpayments: number;
 	cumulativeTotal: number;
+
+	// Self-build specific (only present when self-build is enabled)
+	drawdownThisMonth?: number; // Amount drawn this month (if any)
+	cumulativeDrawn?: number; // Total drawn so far
+	phase?: SelfBuildPhase; // Current phase (construction, interest_only, repayment)
+	isInterestOnly?: boolean; // Whether this is an interest-only payment
 }
 
 // Amortization Year (aggregated)
@@ -170,6 +216,7 @@ export interface SimulationSummary {
 	actualTermMonths: number;
 	interestSaved: number; // vs no overpayments
 	monthsSaved: number; // vs no overpayments
+	extraInterestFromSelfBuild?: number; // Additional interest compared to standard mortgage (self-build only)
 }
 
 // Chart Config
@@ -197,6 +244,8 @@ export interface ChartDataPoint {
 // Milestone types for timeline visualization
 export const MILESTONE_TYPES = [
 	"mortgage_start",
+	"construction_complete", // Self-build: final drawdown occurs
+	"full_payments_start", // Self-build: interest-only period ends
 	"principal_25_percent",
 	"principal_50_percent",
 	"principal_75_percent",

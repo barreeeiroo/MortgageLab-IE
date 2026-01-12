@@ -5,8 +5,11 @@ import { generateRepeatingRatePeriods } from "@/lib/mortgage/rates";
 import type { Lender } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type {
+	ConstructionRepaymentType,
+	DrawdownStage,
 	OverpaymentConfig,
 	RatePeriod,
+	SelfBuildConfig,
 	SimulateInputValues,
 	SimulationState,
 } from "@/lib/schemas/simulate";
@@ -106,6 +109,10 @@ export const $ratePeriods = computed($simulationState, (s) => s.ratePeriods);
 export const $overpaymentConfigs = computed(
 	$simulationState,
 	(s) => s.overpaymentConfigs,
+);
+export const $selfBuildConfig = computed(
+	$simulationState,
+	(s) => s.selfBuildConfig,
 );
 export const $initialized = computed($simulationState, (s) => s.initialized);
 
@@ -610,5 +617,179 @@ export function generateRepeatingPeriods(
 		...current,
 		ratePeriods: [...beforePeriods, ...newPeriods, ...afterPeriods],
 		overpaymentConfigs: updatedOverpayments,
+	});
+}
+
+// Self-Build Actions
+
+/**
+ * Enable self-build mode with initial configuration.
+ * Drawdowns will be validated against the mortgage amount.
+ */
+export function enableSelfBuild(): void {
+	const current = $simulationState.get();
+	$simulationState.set({
+		...current,
+		selfBuildConfig: {
+			enabled: true,
+			constructionRepaymentType: "interest_only",
+			interestOnlyMonths: 0,
+			drawdownStages: [],
+		},
+	});
+}
+
+/**
+ * Disable self-build mode and clear configuration.
+ */
+export function disableSelfBuild(): void {
+	const current = $simulationState.get();
+	$simulationState.set({
+		...current,
+		selfBuildConfig: undefined,
+	});
+}
+
+/**
+ * Update self-build configuration.
+ */
+export function updateSelfBuildConfig(
+	updates: Partial<Omit<SelfBuildConfig, "drawdownStages">>,
+): void {
+	const current = $simulationState.get();
+	if (!current.selfBuildConfig) return;
+
+	$simulationState.set({
+		...current,
+		selfBuildConfig: {
+			...current.selfBuildConfig,
+			...updates,
+		},
+	});
+}
+
+/**
+ * Set the interest-only period (months after final drawdown).
+ */
+export function setInterestOnlyMonths(months: number): void {
+	const current = $simulationState.get();
+	if (!current.selfBuildConfig) return;
+
+	$simulationState.set({
+		...current,
+		selfBuildConfig: {
+			...current.selfBuildConfig,
+			interestOnlyMonths: months,
+		},
+	});
+}
+
+/**
+ * Set the construction repayment type.
+ * When changed to "interest_and_capital", interest-only months are reset to 0.
+ */
+export function setConstructionRepaymentType(
+	type: ConstructionRepaymentType,
+): void {
+	const current = $simulationState.get();
+	if (!current.selfBuildConfig) return;
+
+	$simulationState.set({
+		...current,
+		selfBuildConfig: {
+			...current.selfBuildConfig,
+			constructionRepaymentType: type,
+			// Reset interest-only months when switching to interest_and_capital
+			interestOnlyMonths:
+				type === "interest_and_capital"
+					? 0
+					: current.selfBuildConfig.interestOnlyMonths,
+		},
+	});
+}
+
+/**
+ * Add a drawdown stage to the self-build configuration.
+ * Stages are automatically sorted by month.
+ */
+export function addDrawdownStage(stage: Omit<DrawdownStage, "id">): void {
+	const current = $simulationState.get();
+	if (!current.selfBuildConfig?.enabled) return;
+
+	const newStage: DrawdownStage = {
+		...stage,
+		id: crypto.randomUUID(),
+	};
+
+	// Insert sorted by month
+	const updatedStages = [
+		...current.selfBuildConfig.drawdownStages,
+		newStage,
+	].sort((a, b) => a.month - b.month);
+
+	$simulationState.set({
+		...current,
+		selfBuildConfig: {
+			...current.selfBuildConfig,
+			drawdownStages: updatedStages,
+		},
+	});
+}
+
+/**
+ * Update a drawdown stage.
+ * Re-sorts stages by month if month was changed.
+ */
+export function updateDrawdownStage(
+	id: string,
+	updates: Partial<Omit<DrawdownStage, "id">>,
+): void {
+	const current = $simulationState.get();
+	if (!current.selfBuildConfig?.enabled) return;
+
+	const updatedStages = current.selfBuildConfig.drawdownStages
+		.map((s) => (s.id === id ? { ...s, ...updates } : s))
+		.sort((a, b) => a.month - b.month);
+
+	$simulationState.set({
+		...current,
+		selfBuildConfig: {
+			...current.selfBuildConfig,
+			drawdownStages: updatedStages,
+		},
+	});
+}
+
+/**
+ * Remove a drawdown stage.
+ */
+export function removeDrawdownStage(id: string): void {
+	const current = $simulationState.get();
+	if (!current.selfBuildConfig?.enabled) return;
+
+	$simulationState.set({
+		...current,
+		selfBuildConfig: {
+			...current.selfBuildConfig,
+			drawdownStages: current.selfBuildConfig.drawdownStages.filter(
+				(s) => s.id !== id,
+			),
+		},
+	});
+}
+
+/**
+ * Set all drawdown stages at once (used for applying templates).
+ */
+export function setDrawdownStages(stages: DrawdownStage[]): void {
+	const current = $simulationState.get();
+	if (!current.selfBuildConfig?.enabled) return;
+
+	$simulationState.set({
+		...current,
+		selfBuildConfig: {
+			...current.selfBuildConfig,
+			drawdownStages: [...stages].sort((a, b) => a.month - b.month),
+		},
 	});
 }

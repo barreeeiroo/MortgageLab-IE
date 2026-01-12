@@ -1,4 +1,4 @@
-import { Info } from "lucide-react";
+import { Info, Table2 } from "lucide-react";
 import { useState } from "react";
 import {
 	type GlossaryTermId,
@@ -35,6 +35,7 @@ interface SimulateTableProps {
 	ratePeriodLabels: Map<string, string>;
 	milestones: Milestone[];
 	overpaymentConfigs: OverpaymentConfig[];
+	mortgageAmount: number;
 }
 
 function formatEuro(cents: number): string {
@@ -68,6 +69,7 @@ export function SimulateTable({
 	ratePeriodLabels,
 	milestones,
 	overpaymentConfigs,
+	mortgageAmount,
 }: SimulateTableProps) {
 	const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
 
@@ -168,21 +170,22 @@ export function SimulateTable({
 		<Card>
 			<CardHeader className="pb-2">
 				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-					<CardTitle>Amortization Schedule</CardTitle>
+					<div className="flex items-center gap-2">
+						<Table2 className="h-4 w-4 text-muted-foreground" />
+						<CardTitle>Amortization Schedule</CardTitle>
+					</div>
 					<div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
 						<div>
 							<span className="text-muted-foreground">Total Interest: </span>
 							<span className="font-medium">
 								{formatEuro(summary.totalInterest)}
-								{yearlySchedule[0]?.openingBalance > 0 && (
+								{mortgageAmount > 0 && (
 									<span className="text-muted-foreground font-normal">
 										{" "}
 										(
-										{(
-											(summary.totalInterest /
-												yearlySchedule[0].openingBalance) *
-											100
-										).toFixed(1)}
+										{((summary.totalInterest / mortgageAmount) * 100).toFixed(
+											1,
+										)}
 										%)
 									</span>
 								)}
@@ -194,6 +197,24 @@ export function SimulateTable({
 								{formatEuro(summary.totalPaid)}
 							</span>
 						</div>
+						{summary.extraInterestFromSelfBuild !== undefined &&
+							summary.extraInterestFromSelfBuild > 0 && (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className="flex items-center gap-1 text-red-600 dark:text-red-500 cursor-help">
+											<span className="font-medium">
+												{formatEuro(summary.extraInterestFromSelfBuild)} extra
+											</span>
+											<Info className="h-3.5 w-3.5" />
+										</div>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>
+											Extra interest vs paying principal during construction
+										</p>
+									</TooltipContent>
+								</Tooltip>
+							)}
 						{summary.monthsSaved > 0 && (
 							<Tooltip>
 								<TooltipTrigger asChild>

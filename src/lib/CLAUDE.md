@@ -7,7 +7,7 @@ Business logic layer. Components should be thin - move pure JS functions here.
 | Directory    | What goes here                                                           |
 | ------------ | ------------------------------------------------------------------------ |
 | utils/       | Pure helper functions (currency formatting, date transforms, borrowing calcs) |
-| mortgage/    | Financial math (payments, APRC, overpayments, breakeven, simulation)     |
+| mortgage/    | Financial math (payments, APRC, overpayments, breakeven, simulation, self-build) |
 | stores/      | Nanostores state management                                              |
 | schemas/     | Zod validation schemas (source of truth for types)                       |
 | constants/   | Business rules (Central Bank limits, BER ratings)                        |
@@ -39,6 +39,15 @@ Rate periods don't store startMonth. Position in array determines start:
 ### Overpayment Policies
 
 Three types: percentage of balance, percentage of monthly payment, flat amount. Balance-based uses year-start balance, not current.
+
+### Self-Build Simulation
+
+Self-build mortgages have staged drawdowns. Key concepts:
+
+- `SelfBuildConfig` in schemas/simulate.ts defines drawdown stages
+- Balance increases during construction as drawdowns occur
+- `constructionRepaymentType`: "interest_only" or "interest_and_capital"
+- "Maximize Overpayment" starts after final drawdown (avoids allowance issues on partial balance)
 
 ## Utils Overview
 

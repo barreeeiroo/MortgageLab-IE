@@ -40,7 +40,10 @@ export function SimulateStartDateIsland() {
 	return (
 		<Card className="py-0 gap-0">
 			<CardHeader className="py-3 px-4">
-				<CardTitle className="text-sm font-medium">Start Date</CardTitle>
+				<div className="flex items-center gap-2">
+					<CalendarIcon className="h-4 w-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Start Date</CardTitle>
+				</div>
 			</CardHeader>
 			<CardContent className="pt-0 px-4 pb-4">
 				<Popover open={calendarOpen} onOpenChange={setCalendarOpen}>

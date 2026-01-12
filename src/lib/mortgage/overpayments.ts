@@ -150,11 +150,24 @@ export function calculateYearlyOverpaymentPlans(
 	mortgageAmount: number,
 	totalMonths: number,
 	startDate?: string,
+	constructionEndMonth?: number,
 ): YearlyOverpaymentPlan[] {
 	const plans: YearlyOverpaymentPlan[] = [];
 	const periodDurationMonths =
 		period.durationMonths || totalMonths - period.startMonth + 1;
 	const periodEndMonth = period.startMonth + periodDurationMonths - 1;
+
+	// For self-build: delay overpayments until after full drawdown
+	// This avoids issues with overpayment policy allowances while not fully drawn down
+	const effectiveStartMonth =
+		constructionEndMonth && period.startMonth <= constructionEndMonth
+			? constructionEndMonth + 1
+			: period.startMonth;
+
+	// If the effective start is after the period ends, no plans can be created
+	if (effectiveStartMonth > periodEndMonth) {
+		return plans;
+	}
 
 	// Calculate monthly payment ONCE at start of period (same as actual amortization)
 	const remainingMonthsAtStart = totalMonths - period.startMonth + 1;
@@ -177,7 +190,7 @@ export function calculateYearlyOverpaymentPlans(
 		if (monthlyAmount > 0) {
 			plans.push({
 				year: 1,
-				startMonth: period.startMonth,
+				startMonth: effectiveStartMonth,
 				endMonth: periodEndMonth,
 				monthlyAmount,
 				estimatedBalance: mortgageAmount,
@@ -190,7 +203,7 @@ export function calculateYearlyOverpaymentPlans(
 	// Use calendar year boundaries when startDate is provided
 	const yearBoundaries = getCalendarYearBoundaries(
 		startDate,
-		period.startMonth,
+		effectiveStartMonth,
 		periodEndMonth,
 	);
 

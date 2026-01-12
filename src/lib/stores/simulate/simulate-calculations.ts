@@ -1,5 +1,11 @@
 import { computed } from "nanostores";
 import {
+	getConstructionEndMonth,
+	getDrawdownStagesWithCumulative,
+	isSelfBuildActive,
+	validateDrawdownTotal,
+} from "@/lib/mortgage/self-build";
+import {
 	aggregateByYear,
 	calculateAmortization,
 	calculateBaselineInterest,
@@ -11,6 +17,7 @@ import {
 	type SimulationCompleteness,
 } from "@/lib/mortgage/simulation";
 import type { ResolvedRatePeriod } from "@/lib/schemas/simulate";
+import { addMonthsToDateString } from "@/lib/utils/date";
 import { $customRates } from "../custom-rates";
 import { $lenders } from "../lenders";
 import { $overpaymentPolicies } from "../overpayment-policies";
@@ -100,17 +107,40 @@ export const $simulationSummary = computed(
 		}
 
 		// Calculate baseline interest (without overpayments)
+		// Uses same repayment type as user's config
 		const baselineInterest = calculateBaselineInterest(
 			state.input.mortgageAmount,
 			state.input.mortgageTermMonths,
 			state.ratePeriods,
 			resolvedPeriods,
+			state.selfBuildConfig,
 		);
+
+		// For self-build, calculate baseline using interest_and_capital mode
+		// This shows the extra interest cost of choosing interest_only during construction
+		let interestCapitalBaselineInterest: number | undefined;
+		if (
+			isSelfBuildActive(state.selfBuildConfig) &&
+			state.selfBuildConfig.constructionRepaymentType === "interest_only"
+		) {
+			// Calculate what interest would be if paying principal during construction
+			interestCapitalBaselineInterest = calculateBaselineInterest(
+				state.input.mortgageAmount,
+				state.input.mortgageTermMonths,
+				state.ratePeriods,
+				resolvedPeriods,
+				{
+					...state.selfBuildConfig,
+					constructionRepaymentType: "interest_and_capital",
+				},
+			);
+		}
 
 		return calculateSummary(
 			months,
 			baselineInterest,
 			state.input.mortgageTermMonths,
+			interestCapitalBaselineInterest,
 		);
 	},
 );
@@ -145,6 +175,7 @@ export const $milestones = computed(
 			state.input.mortgageAmount,
 			state.input.propertyValue,
 			state.input.startDate,
+			state.selfBuildConfig,
 		),
 );
 
@@ -177,3 +208,105 @@ export const $bufferSuggestions = computed(
 			amortizationSchedule,
 		),
 );
+
+// ============================================================================
+// Self-Build Computed Stores
+// ============================================================================
+
+// Self-build config from state
+export const $selfBuildConfig = computed(
+	$simulationState,
+	(state) => state.selfBuildConfig,
+);
+
+// Check if self-build mode is active
+export const $isSelfBuildActive = computed($selfBuildConfig, (config) =>
+	isSelfBuildActive(config),
+);
+
+// Resolved drawdown stages with computed dates and cumulative amounts
+export const $resolvedDrawdownStages = computed(
+	[$selfBuildConfig, $simulationState],
+	(config, state) => {
+		if (!config?.enabled || config.drawdownStages.length === 0) {
+			return [];
+		}
+
+		const stagesWithCumulative = getDrawdownStagesWithCumulative(
+			config.drawdownStages,
+		);
+
+		// Add dates if start date is available
+		return stagesWithCumulative.map((stage) => ({
+			...stage,
+			date: state.input.startDate
+				? addMonthsToDateString(state.input.startDate, stage.month)
+				: undefined,
+		}));
+	},
+);
+
+// Construction end month (when final drawdown occurs)
+export const $constructionEndMonth = computed($selfBuildConfig, (config) => {
+	if (!config?.enabled || config.drawdownStages.length === 0) {
+		return 0;
+	}
+	return getConstructionEndMonth(config);
+});
+
+// Validate that total drawdowns equal mortgage amount
+export const $drawdownValidation = computed(
+	[$selfBuildConfig, $simulationState],
+	(config, state) => {
+		if (!config?.enabled) {
+			return { isValid: true, totalDrawn: 0, difference: 0 };
+		}
+		return validateDrawdownTotal(config, state.input.mortgageAmount);
+	},
+);
+
+// Check if all rate periods use lenders that support self-build
+export const $canEnableSelfBuild = computed(
+	[$simulationState, $lenders],
+	(state, lenders) => {
+		if (state.ratePeriods.length === 0) {
+			return true; // No rate periods yet, can enable
+		}
+
+		// Check each rate period's lender
+		for (const period of state.ratePeriods) {
+			const lender = lenders.find((l) => l.id === period.lenderId);
+			if (lender && !lender.allowsSelfBuild) {
+				return false;
+			}
+		}
+		return true;
+	},
+);
+
+// List of lender names that don't support self-build (for error messages)
+export const $nonSelfBuildLenders = computed(
+	[$simulationState, $lenders],
+	(state, lenders) => {
+		const nonSelfBuildLenderNames: string[] = [];
+
+		for (const period of state.ratePeriods) {
+			const lender = lenders.find((l) => l.id === period.lenderId);
+			if (lender && !lender.allowsSelfBuild) {
+				if (!nonSelfBuildLenderNames.includes(lender.name)) {
+					nonSelfBuildLenderNames.push(lender.name);
+				}
+			}
+		}
+
+		return nonSelfBuildLenderNames;
+	},
+);
+
+// Check if a specific month is during construction (before final drawdown)
+export function isMonthDuringConstruction(
+	month: number,
+	constructionEndMonth: number,
+): boolean {
+	return month <= constructionEndMonth;
+}

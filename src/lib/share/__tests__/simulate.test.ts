@@ -489,4 +489,131 @@ describe("simulate share", () => {
 			expect(parsed?.state.input.startDate).toBeUndefined();
 		});
 	});
+
+	describe("self-build config", () => {
+		const baseState: SimulationState = {
+			input: {
+				mortgageAmount: 20000000,
+				mortgageTermMonths: 360,
+				propertyValue: 25000000,
+				startDate: "2025-01-15",
+				ber: "B2",
+			},
+			ratePeriods: [
+				{
+					id: "period-1",
+					lenderId: "aib",
+					rateId: "aib-fixed-3",
+					isCustom: false,
+					durationMonths: 0,
+				},
+			],
+			overpaymentConfigs: [],
+			initialized: true,
+		};
+
+		it("roundtrips self-build config with interest_only mode (default)", () => {
+			const stateWithSelfBuild: SimulationState = {
+				...baseState,
+				selfBuildConfig: {
+					enabled: true,
+					constructionRepaymentType: "interest_only",
+					interestOnlyMonths: 9,
+					drawdownStages: [
+						{
+							id: "stage-1",
+							month: 1,
+							amount: 5000000,
+							label: "Site Purchase",
+						},
+						{ id: "stage-2", month: 4, amount: 7500000, label: "Floor Level" },
+						{ id: "stage-3", month: 8, amount: 7500000, label: "Roof Level" },
+					],
+				},
+			};
+
+			const url = generateSimulateShareUrl(stateWithSelfBuild);
+			const params = new URL(url).searchParams;
+			const encoded = params.get(SIMULATE_SHARE_PARAM);
+
+			setWindowSearch(`?${SIMULATE_SHARE_PARAM}=${encoded}`);
+			const parsed = parseSimulateShareState();
+
+			expect(parsed?.state.selfBuildConfig).toBeDefined();
+			expect(parsed?.state.selfBuildConfig?.enabled).toBe(true);
+			expect(parsed?.state.selfBuildConfig?.constructionRepaymentType).toBe(
+				"interest_only",
+			);
+			expect(parsed?.state.selfBuildConfig?.interestOnlyMonths).toBe(9);
+			expect(parsed?.state.selfBuildConfig?.drawdownStages).toHaveLength(3);
+		});
+
+		it("roundtrips self-build config with interest_and_capital mode", () => {
+			const stateWithSelfBuild: SimulationState = {
+				...baseState,
+				selfBuildConfig: {
+					enabled: true,
+					constructionRepaymentType: "interest_and_capital",
+					interestOnlyMonths: 0,
+					drawdownStages: [
+						{ id: "stage-1", month: 1, amount: 10000000, label: "Site" },
+						{ id: "stage-2", month: 6, amount: 10000000, label: "Completion" },
+					],
+				},
+			};
+
+			const url = generateSimulateShareUrl(stateWithSelfBuild);
+			const params = new URL(url).searchParams;
+			const encoded = params.get(SIMULATE_SHARE_PARAM);
+
+			setWindowSearch(`?${SIMULATE_SHARE_PARAM}=${encoded}`);
+			const parsed = parseSimulateShareState();
+
+			expect(parsed?.state.selfBuildConfig?.constructionRepaymentType).toBe(
+				"interest_and_capital",
+			);
+			expect(parsed?.state.selfBuildConfig?.interestOnlyMonths).toBe(0);
+		});
+
+		it("preserves drawdown stage labels", () => {
+			const stateWithSelfBuild: SimulationState = {
+				...baseState,
+				selfBuildConfig: {
+					enabled: true,
+					constructionRepaymentType: "interest_only",
+					interestOnlyMonths: 0,
+					drawdownStages: [
+						{
+							id: "stage-1",
+							month: 1,
+							amount: 20000000,
+							label: "Full Drawdown",
+						},
+					],
+				},
+			};
+
+			const url = generateSimulateShareUrl(stateWithSelfBuild);
+			const params = new URL(url).searchParams;
+			const encoded = params.get(SIMULATE_SHARE_PARAM);
+
+			setWindowSearch(`?${SIMULATE_SHARE_PARAM}=${encoded}`);
+			const parsed = parseSimulateShareState();
+
+			expect(parsed?.state.selfBuildConfig?.drawdownStages[0].label).toBe(
+				"Full Drawdown",
+			);
+		});
+
+		it("handles state without self-build config", () => {
+			const url = generateSimulateShareUrl(baseState);
+			const params = new URL(url).searchParams;
+			const encoded = params.get(SIMULATE_SHARE_PARAM);
+
+			setWindowSearch(`?${SIMULATE_SHARE_PARAM}=${encoded}`);
+			const parsed = parseSimulateShareState();
+
+			expect(parsed?.state.selfBuildConfig).toBeUndefined();
+		});
+	});
 });

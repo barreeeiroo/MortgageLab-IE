@@ -1,3 +1,4 @@
+import { LineChart } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -140,7 +141,10 @@ export function SimulateChartsContainer({
 		<Card>
 			<CardHeader className="pb-2">
 				<div className="flex items-center justify-between">
-					<CardTitle>Mortgage Projection</CardTitle>
+					<div className="flex items-center gap-2">
+						<LineChart className="h-4 w-4 text-muted-foreground" />
+						<CardTitle>Mortgage Projection</CardTitle>
+					</div>
 					<Tabs
 						value={granularity}
 						onValueChange={(v) => onGranularityChange(v as ChartGranularity)}

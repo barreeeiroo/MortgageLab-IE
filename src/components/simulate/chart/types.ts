@@ -40,4 +40,10 @@ export interface ChartDataPoint {
 
 	// LTV (Loan-to-Value) percentage
 	ltv?: number;
+
+	// Self-build fields
+	drawdownThisMonth?: number; // Amount drawn this period (in euros)
+	cumulativeDrawn?: number; // Total drawn so far (in euros)
+	phase?: "construction" | "interest_only" | "repayment";
+	isInterestOnly?: boolean;
 }

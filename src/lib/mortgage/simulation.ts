@@ -5,6 +5,17 @@
 
 import { calculateMonthlyPayment } from "@/lib/mortgage/calculations";
 import { findVariableRate } from "@/lib/mortgage/rates";
+import {
+	calculateInterestOnlyPayment,
+	determinePhase,
+	getConstructionEndMonth,
+	getDrawdownForMonth,
+	getInitialSelfBuildBalance,
+	getInterestOnlyEndMonth,
+	isInterestOnlyMonth,
+	isSelfBuildActive,
+	validateDrawdownTotal,
+} from "@/lib/mortgage/self-build";
 import type { Lender } from "@/lib/schemas/lender";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { MortgageRate } from "@/lib/schemas/rate";
@@ -18,6 +29,8 @@ import type {
 	OverpaymentConfig,
 	RatePeriod,
 	ResolvedRatePeriod,
+	SelfBuildConfig,
+	SelfBuildPhase,
 	SimulationState,
 	SimulationSummary,
 	SimulationWarning,
@@ -278,7 +291,7 @@ export function calculateAmortization(
 	lenders: Lender[],
 	policies: OverpaymentPolicy[],
 ): AmortizationResult {
-	const { input, ratePeriods, overpaymentConfigs } = state;
+	const { input, ratePeriods, overpaymentConfigs, selfBuildConfig } = state;
 
 	const months: AmortizationMonth[] = [];
 	const appliedOverpayments: AppliedOverpayment[] = [];
@@ -292,7 +305,25 @@ export function calculateAmortization(
 		return { months, appliedOverpayments, warnings };
 	}
 
-	let balance = input.mortgageAmount;
+	// Self-build mode: check if active and get initial state
+	const isSelfBuild = isSelfBuildActive(selfBuildConfig);
+	let cumulativeDrawn = 0;
+	let previousPhase: SelfBuildPhase | undefined;
+
+	// Initialize balance based on self-build or standard mortgage
+	let balance: number;
+	if (isSelfBuild) {
+		// Self-build: balance starts at first drawdown amount
+		const firstDrawdown = getDrawdownForMonth(
+			1,
+			selfBuildConfig.drawdownStages,
+		);
+		balance = firstDrawdown;
+		cumulativeDrawn = firstDrawdown;
+	} else {
+		balance = input.mortgageAmount;
+	}
+
 	let cumulativeInterest = 0;
 	let cumulativePrincipal = 0;
 	let cumulativeOverpayments = 0;
@@ -329,8 +360,11 @@ export function calculateAmortization(
 	}
 
 	// Stack-based model: no gaps to check, periods are sequential
+	// For self-build: continue even if balance is 0, as drawdowns will add to balance later
+	const shouldContinue = () =>
+		balance > 0.01 || (isSelfBuild && cumulativeDrawn < input.mortgageAmount);
 
-	while (balance > 0.01 && month <= maxMonths) {
+	while (shouldContinue() && month <= maxMonths) {
 		// Find current rate period (stack-based)
 		const found = findRatePeriodForMonth(ratePeriods, month);
 		if (!found) {
@@ -347,6 +381,42 @@ export function calculateAmortization(
 		}
 
 		const monthlyRate = resolved.rate / 100 / 12;
+
+		// Self-build: handle drawdowns and phase tracking
+		let drawdownThisMonth = 0;
+		let currentPhase: SelfBuildPhase | undefined;
+		let isInterestOnly = false;
+
+		if (isSelfBuild) {
+			// Check for drawdown this month (after month 1, first drawdown already in initial balance)
+			if (month > 1) {
+				drawdownThisMonth = getDrawdownForMonth(
+					month,
+					selfBuildConfig.drawdownStages,
+				);
+				if (drawdownThisMonth > 0) {
+					balance += drawdownThisMonth;
+					cumulativeDrawn += drawdownThisMonth;
+				}
+			}
+
+			// Determine current phase and whether this is an interest-only month
+			currentPhase = determinePhase(month, selfBuildConfig);
+			isInterestOnly = isInterestOnlyMonth(month, selfBuildConfig);
+
+			// Check if we're transitioning to repayment phase
+			if (previousPhase !== "repayment" && currentPhase === "repayment") {
+				// Recalculate payment for remaining term from this point
+				const remainingMonths = maxMonths - month + 1;
+				currentMonthlyPayment = calculateMonthlyPayment(
+					balance,
+					resolved.rate,
+					remainingMonths,
+				);
+			}
+
+			previousPhase = currentPhase;
+		}
 
 		// Track yearly overpayments by rate period + year
 		// Use calendar year if startDate is provided, otherwise use mortgage year
@@ -369,9 +439,14 @@ export function calculateAmortization(
 			yearStartBalanceByPeriod.set(periodYear, balance);
 		}
 
-		// Recalculate monthly payment when rate period changes
+		// Recalculate monthly payment when rate period changes (or for first calculation)
+		// Also recalc after drawdowns in interest_and_capital mode (balance changed)
+		// Skip recalc during self-build interest-only phase (we calculate differently)
 		const needsRecalc =
-			lastRatePeriodId !== ratePeriod.id || currentMonthlyPayment === null;
+			!isInterestOnly &&
+			(lastRatePeriodId !== ratePeriod.id ||
+				currentMonthlyPayment === null ||
+				drawdownThisMonth > 0);
 		if (needsRecalc) {
 			const remainingMonths = maxMonths - month + 1;
 			// For reduce_term: calculate payment using balance as if reduce_term
@@ -385,15 +460,23 @@ export function calculateAmortization(
 			lastRatePeriodId = ratePeriod.id;
 		}
 
-		// After needsRecalc block, currentMonthlyPayment is guaranteed to be a number
-		const monthlyPayment = currentMonthlyPayment as number;
-
 		// Calculate interest and principal portions
-		const interestPortion = balance * monthlyRate;
-		const principalPortion = Math.min(
-			monthlyPayment - interestPortion,
-			balance,
-		);
+		let interestPortion: number;
+		let principalPortion: number;
+		let monthlyPayment: number;
+
+		if (isInterestOnly) {
+			// Self-build interest-only phase: only pay interest, no principal reduction
+			interestPortion = calculateInterestOnlyPayment(balance, resolved.rate);
+			principalPortion = 0;
+			monthlyPayment = interestPortion;
+		} else {
+			// Standard amortization
+			// After needsRecalc block, currentMonthlyPayment is guaranteed to be a number
+			monthlyPayment = currentMonthlyPayment as number;
+			interestPortion = balance * monthlyRate;
+			principalPortion = Math.min(monthlyPayment - interestPortion, balance);
+		}
 
 		// Get overpayment for this month
 		const overpaymentResult = getOverpaymentForMonth(
@@ -480,7 +563,8 @@ export function calculateAmortization(
 		cumulativePrincipal += principalPortion + overpayment;
 		cumulativeOverpayments += overpayment;
 
-		months.push({
+		// Build month record with self-build fields if applicable
+		const monthRecord: AmortizationMonth = {
 			month,
 			year: Math.ceil(month / 12),
 			monthOfYear: ((month - 1) % 12) + 1,
@@ -498,7 +582,17 @@ export function calculateAmortization(
 			cumulativePrincipal,
 			cumulativeOverpayments,
 			cumulativeTotal: cumulativeInterest + cumulativePrincipal,
-		});
+		};
+
+		// Add self-build specific fields if applicable
+		if (isSelfBuild) {
+			monthRecord.drawdownThisMonth = drawdownThisMonth;
+			monthRecord.cumulativeDrawn = cumulativeDrawn;
+			monthRecord.phase = currentPhase;
+			monthRecord.isInterestOnly = isInterestOnly;
+		}
+
+		months.push(monthRecord);
 
 		// Handle reduce_payment effect for variable rates
 		// Only recalculate payment based on the "reduce_payment" portion of overpayments
@@ -602,13 +696,18 @@ export function aggregateByYear(
 
 /**
  * Calculate baseline total interest (mortgage without any overpayments)
- * This is a simplified calculation that doesn't track all monthly details
+ * This is a simplified calculation that doesn't track all monthly details.
+ *
+ * For self-build mortgages, the baseline uses interest-only payments during
+ * construction (the default mode), so we can compare against "interest_and_capital"
+ * mode to see the difference.
  */
 export function calculateBaselineInterest(
 	mortgageAmount: number,
 	mortgageTermMonths: number,
 	ratePeriods: RatePeriod[],
 	resolvedPeriods: Map<string, ResolvedRatePeriod>,
+	selfBuildConfig?: SelfBuildConfig,
 ): number {
 	if (
 		mortgageAmount <= 0 ||
@@ -618,15 +717,42 @@ export function calculateBaselineInterest(
 		return 0;
 	}
 
-	let balance = mortgageAmount;
+	// Check if self-build is active
+	const isSelfBuild = isSelfBuildActive(selfBuildConfig);
+
+	// For baseline, use the same construction repayment type as the user's config
+	// The baseline should only differ by not having overpayments
+	const baselineSelfBuildConfig: SelfBuildConfig | undefined =
+		isSelfBuild && selfBuildConfig ? selfBuildConfig : undefined;
+
+	// Initialize balance based on self-build or standard mortgage
+	let balance: number;
+	let cumulativeDrawn = 0;
+
+	if (isSelfBuild && baselineSelfBuildConfig) {
+		const firstDrawdown = getDrawdownForMonth(
+			1,
+			baselineSelfBuildConfig.drawdownStages,
+		);
+		balance = firstDrawdown;
+		cumulativeDrawn = firstDrawdown;
+	} else {
+		balance = mortgageAmount;
+	}
+
 	let totalInterest = 0;
 	let month = 1;
 	const maxMonths = mortgageTermMonths;
 
 	let currentMonthlyPayment: number | null = null;
 	let lastRatePeriodId: string | null = null;
+	let previousPhase: SelfBuildPhase | undefined;
 
-	while (balance > 0.01 && month <= maxMonths) {
+	// For self-build: continue even if balance is 0, as drawdowns will add to balance later
+	const shouldContinue = () =>
+		balance > 0.01 || (isSelfBuild && cumulativeDrawn < mortgageAmount);
+
+	while (shouldContinue() && month <= maxMonths) {
 		// Find current rate period (stack-based)
 		const found = findRatePeriodForMonth(ratePeriods, month);
 		if (!found) {
@@ -643,8 +769,50 @@ export function calculateBaselineInterest(
 
 		const monthlyRate = resolved.rate / 100 / 12;
 
-		// Recalculate monthly payment when rate period changes
-		if (lastRatePeriodId !== ratePeriod.id || currentMonthlyPayment === null) {
+		// Self-build: handle drawdowns and phase tracking
+		let isInterestOnly = false;
+
+		// Track drawdowns for self-build
+		let drawdownThisMonth = 0;
+
+		if (isSelfBuild && baselineSelfBuildConfig) {
+			// Check for drawdown this month
+			if (month > 1) {
+				drawdownThisMonth = getDrawdownForMonth(
+					month,
+					baselineSelfBuildConfig.drawdownStages,
+				);
+				if (drawdownThisMonth > 0) {
+					balance += drawdownThisMonth;
+					cumulativeDrawn += drawdownThisMonth;
+				}
+			}
+
+			// Use isInterestOnlyMonth which respects constructionRepaymentType
+			const currentPhase = determinePhase(month, baselineSelfBuildConfig);
+			isInterestOnly = isInterestOnlyMonth(month, baselineSelfBuildConfig);
+
+			// Recalculate payment when transitioning to repayment phase
+			if (previousPhase !== "repayment" && currentPhase === "repayment") {
+				const remainingMonths = maxMonths - month + 1;
+				currentMonthlyPayment = calculateMonthlyPayment(
+					balance,
+					resolved.rate,
+					remainingMonths,
+				);
+			}
+
+			previousPhase = currentPhase;
+		}
+
+		// Recalculate monthly payment when rate period changes (skip during interest-only)
+		// Also recalc after drawdowns in interest_and_capital mode
+		if (
+			!isInterestOnly &&
+			(lastRatePeriodId !== ratePeriod.id ||
+				currentMonthlyPayment === null ||
+				drawdownThisMonth > 0)
+		) {
 			const remainingMonths = maxMonths - month + 1;
 			currentMonthlyPayment = calculateMonthlyPayment(
 				balance,
@@ -654,15 +822,20 @@ export function calculateBaselineInterest(
 			lastRatePeriodId = ratePeriod.id;
 		}
 
-		// After the recalc block, currentMonthlyPayment is guaranteed to be a number
-		const monthlyPayment = currentMonthlyPayment as number;
+		// Calculate interest and principal portions
+		let interestPortion: number;
+		let principalPortion: number;
 
-		// Calculate interest portion
-		const interestPortion = balance * monthlyRate;
-		const principalPortion = Math.min(
-			monthlyPayment - interestPortion,
-			balance,
-		);
+		if (isInterestOnly) {
+			// Self-build interest-only phase: only pay interest
+			interestPortion = calculateInterestOnlyPayment(balance, resolved.rate);
+			principalPortion = 0;
+		} else {
+			// Standard amortization
+			const monthlyPayment = currentMonthlyPayment as number;
+			interestPortion = balance * monthlyRate;
+			principalPortion = Math.min(monthlyPayment - interestPortion, balance);
+		}
 
 		totalInterest += interestPortion;
 		balance = Math.max(0, balance - principalPortion);
@@ -677,6 +850,7 @@ export function calculateSummary(
 	months: AmortizationMonth[],
 	baselineInterest: number,
 	mortgageTermMonths: number,
+	interestAndCapitalBaseline?: number, // Interest if paying principal during construction (self-build only)
 ): SimulationSummary {
 	if (months.length === 0) {
 		return {
@@ -695,18 +869,35 @@ export function calculateSummary(
 	const actualInterest = lastMonth.cumulativeInterest;
 	const interestSaved = Math.max(0, baselineInterest - actualInterest);
 
+	// Calculate extra interest from choosing interest_only vs interest_and_capital
+	// Compare both WITHOUT overpayments to show the pure mode difference
+	// Positive = extra interest (costs more)
+	let extraInterestFromSelfBuild: number | undefined;
+	if (interestAndCapitalBaseline !== undefined) {
+		// baselineInterest = interest_only without overpayments
+		// interestAndCapitalBaseline = interest_and_capital without overpayments
+		const diff = baselineInterest - interestAndCapitalBaseline;
+		// Only set if there's a meaningful difference (> €1)
+		if (Math.abs(diff) > 100) {
+			extraInterestFromSelfBuild = diff;
+		}
+	}
+
 	return {
 		totalInterest: actualInterest,
 		totalPaid: lastMonth.cumulativeTotal,
 		actualTermMonths,
 		interestSaved,
 		monthsSaved: mortgageTermMonths - actualTermMonths,
+		extraInterestFromSelfBuild,
 	};
 }
 
 // Milestone labels
 const MILESTONE_LABELS: Record<MilestoneType, string> = {
 	mortgage_start: "Mortgage Starts",
+	construction_complete: "Construction Complete",
+	full_payments_start: "Full Payments Start",
 	principal_25_percent: "25% Paid Off",
 	principal_50_percent: "50% Paid Off",
 	principal_75_percent: "75% Paid Off",
@@ -720,11 +911,30 @@ export function calculateMilestones(
 	mortgageAmount: number,
 	propertyValue: number,
 	startDate: string | undefined,
+	selfBuildConfig?: SelfBuildConfig,
 ): Milestone[] {
 	if (months.length === 0) return [];
 
 	const milestones: Milestone[] = [];
 	const reachedMilestones = new Set<MilestoneType>();
+
+	// Check if self-build is active and fully configured
+	const isSelfBuild = isSelfBuildActive(selfBuildConfig);
+	const constructionEndMonth =
+		isSelfBuild && selfBuildConfig
+			? getConstructionEndMonth(selfBuildConfig)
+			: 0;
+	const interestOnlyEndMonth =
+		isSelfBuild && selfBuildConfig
+			? getInterestOnlyEndMonth(selfBuildConfig)
+			: 0;
+
+	// For self-build, check if drawdowns are fully allocated
+	// Hide construction/repayment milestones until drawdowns sum to mortgage amount
+	const isDrawdownComplete =
+		!isSelfBuild ||
+		(selfBuildConfig &&
+			validateDrawdownTotal(selfBuildConfig, mortgageAmount).isValid);
 
 	// Add mortgage start milestone
 	milestones.push({
@@ -732,7 +942,10 @@ export function calculateMilestones(
 		month: 1,
 		date: startDate || "",
 		label: MILESTONE_LABELS.mortgage_start,
-		value: mortgageAmount,
+		value:
+			isSelfBuild && selfBuildConfig
+				? getInitialSelfBuildBalance(selfBuildConfig)
+				: mortgageAmount,
 	});
 	reachedMilestones.add("mortgage_start");
 
@@ -743,8 +956,51 @@ export function calculateMilestones(
 	const ltv80Threshold = propertyValue * 0.8; // Balance for 80% LTV
 
 	for (const month of months) {
+		// Self-build: Add construction complete milestone (only if drawdowns are fully allocated)
+		if (
+			isSelfBuild &&
+			isDrawdownComplete &&
+			!reachedMilestones.has("construction_complete") &&
+			month.month === constructionEndMonth
+		) {
+			milestones.push({
+				type: "construction_complete",
+				month: month.month,
+				date: month.date,
+				label: MILESTONE_LABELS.construction_complete,
+				value: month.closingBalance,
+			});
+			reachedMilestones.add("construction_complete");
+		}
+
+		// Self-build: Add full payments start milestone (only if drawdowns are fully allocated)
+		if (
+			isSelfBuild &&
+			isDrawdownComplete &&
+			!reachedMilestones.has("full_payments_start") &&
+			interestOnlyEndMonth > constructionEndMonth &&
+			month.month === interestOnlyEndMonth + 1
+		) {
+			milestones.push({
+				type: "full_payments_start",
+				month: month.month,
+				date: month.date,
+				label: MILESTONE_LABELS.full_payments_start,
+				value: month.openingBalance,
+			});
+			reachedMilestones.add("full_payments_start");
+		}
+
+		// For self-build, only check principal milestones after:
+		// 1. Drawdowns are fully allocated (sum equals mortgage amount)
+		// 2. Interest-only period ends (full amortization begins)
+		const canCheckPrincipalMilestones =
+			!isSelfBuild ||
+			(isDrawdownComplete && month.month > interestOnlyEndMonth);
+
 		// Check 25% paid off
 		if (
+			canCheckPrincipalMilestones &&
 			!reachedMilestones.has("principal_25_percent") &&
 			month.closingBalance <= threshold25
 		) {
@@ -760,6 +1016,7 @@ export function calculateMilestones(
 
 		// Check 50% paid off
 		if (
+			canCheckPrincipalMilestones &&
 			!reachedMilestones.has("principal_50_percent") &&
 			month.closingBalance <= threshold50
 		) {
@@ -775,6 +1032,7 @@ export function calculateMilestones(
 
 		// Check 75% paid off
 		if (
+			canCheckPrincipalMilestones &&
 			!reachedMilestones.has("principal_75_percent") &&
 			month.closingBalance <= threshold75
 		) {
@@ -790,6 +1048,7 @@ export function calculateMilestones(
 
 		// Check LTV below 80% (useful for removing mortgage insurance)
 		if (
+			canCheckPrincipalMilestones &&
 			!reachedMilestones.has("ltv_80_percent") &&
 			month.closingBalance <= ltv80Threshold &&
 			mortgageAmount > ltv80Threshold // Only show if we started above 80% LTV
@@ -804,8 +1063,9 @@ export function calculateMilestones(
 			reachedMilestones.add("ltv_80_percent");
 		}
 
-		// Check mortgage complete
+		// Check mortgage complete (for self-build, only if drawdowns are fully allocated)
 		if (
+			(!isSelfBuild || isDrawdownComplete) &&
 			!reachedMilestones.has("mortgage_complete") &&
 			month.closingBalance <= 0.01
 		) {

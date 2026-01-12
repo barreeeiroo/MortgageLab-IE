@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { Plus, Trash2 } from "lucide-react";
+import { PiggyBank, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
 	AlertDialog,
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
 import {
+	$constructionEndMonth,
 	$resolvedRatePeriods,
 	$simulationWarnings,
 } from "@/lib/stores/simulate/simulate-calculations";
@@ -40,6 +41,7 @@ export function SimulateOverpaymentsIsland() {
 	const warnings = useStore($simulationWarnings);
 	const resolvedRatePeriods = useStore($resolvedRatePeriods);
 	const overpaymentPolicies = useStore($overpaymentPolicies);
+	const constructionEndMonth = useStore($constructionEndMonth);
 
 	const [showAddOverpayment, setShowAddOverpayment] = useState(false);
 	const [editingOverpayment, setEditingOverpayment] = useState<
@@ -111,7 +113,10 @@ export function SimulateOverpaymentsIsland() {
 		<Card className="py-0 gap-0">
 			<CardHeader className="py-3 px-4">
 				<div className="flex items-center justify-between">
-					<CardTitle className="text-sm font-medium">Overpayments</CardTitle>
+					<div className="flex items-center gap-2">
+						<PiggyBank className="h-4 w-4 text-muted-foreground" />
+						<CardTitle className="text-sm font-medium">Overpayments</CardTitle>
+					</div>
 					<div className="flex gap-1">
 						{overpaymentConfigs.length > 0 && (
 							<Button
@@ -186,6 +191,9 @@ export function SimulateOverpaymentsIsland() {
 				overpaymentPolicies={overpaymentPolicies}
 				existingConfigs={overpaymentConfigs}
 				startDate={simulationState.input.startDate}
+				constructionEndMonth={
+					constructionEndMonth > 0 ? constructionEndMonth : undefined
+				}
 			/>
 
 			{/* Edit Overpayment Dialog */}
