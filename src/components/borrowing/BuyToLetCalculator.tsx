@@ -1,4 +1,4 @@
-import { ExternalLink, Info, TrendingUp } from "lucide-react";
+import { Download, ExternalLink, Info, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
 import {
@@ -8,6 +8,7 @@ import {
 	LTI_LIMITS,
 	LTV_LIMITS,
 } from "@/lib/constants/central-bank";
+import { exportAffordabilityToPDF } from "@/lib/export/affordability-export";
 import {
 	type BtlShareState,
 	clearBorrowingShareParam,
@@ -89,6 +90,7 @@ export function BuyToLetCalculator() {
 		useState<CalculationResult | null>(null);
 	const [showResultDialog, setShowResultDialog] = useState(false);
 	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
+	const [isExporting, setIsExporting] = useState(false);
 
 	// Property type for VAT calculation
 	const [propertyType, setPropertyType] = useState<PropertyType>("existing");
@@ -301,6 +303,30 @@ export function BuyToLetCalculator() {
 		};
 		return generateBorrowingShareUrl(state);
 	};
+
+	const handleExport = useCallback(async () => {
+		if (!calculationResult) return;
+		setIsExporting(true);
+		try {
+			const { result } = calculationResult;
+			const annualRent = result.monthlyRent * 12;
+			const rentalYield = (annualRent / result.propertyValue) * 100;
+			const stressTestPassed =
+				result.rentalCoverage >= RENTAL_COVERAGE_RATIO * 100;
+			await exportAffordabilityToPDF({
+				calculatorType: "btl",
+				result,
+				totalIncome: calculationResult.totalIncome,
+				propertyType,
+				priceIncludesVAT,
+				rentalIncome: result.monthlyRent,
+				rentalYield,
+				stressTestPassed,
+			});
+		} finally {
+			setIsExporting(false);
+		}
+	}, [calculationResult, propertyType, priceIncludesVAT]);
 
 	return (
 		<div className="space-y-6">
@@ -552,7 +578,19 @@ export function BuyToLetCalculator() {
 						)}
 					</AlertDialogBody>
 					<AlertDialogFooter className="sm:justify-between">
-						<ShareButton size="default" onShare={handleShare} />
+						<div className="flex gap-2">
+							<Button
+								variant="outline"
+								size="default"
+								className="gap-1.5"
+								onClick={handleExport}
+								disabled={isExporting}
+							>
+								<Download className="h-4 w-4" />
+								{isExporting ? "Exporting..." : "Export PDF"}
+							</Button>
+							<ShareButton size="default" onShare={handleShare} />
+						</div>
 						<div className="flex flex-col-reverse gap-2 sm:flex-row">
 							<AlertDialogCancel>Close</AlertDialogCancel>
 							<AlertDialogAction

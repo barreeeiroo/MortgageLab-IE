@@ -1,10 +1,16 @@
-import { LineChart } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useStore } from "@nanostores/react";
+import { ImageDown, LineChart } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
+import {
+	downloadChartWithBranding,
+	elementToPngDataUrl,
+} from "@/lib/export/format/chart-image";
 import type { Milestone } from "@/lib/schemas/simulate";
 import {
 	CHART_LABELS,
@@ -13,6 +19,10 @@ import {
 	type ChartType,
 	type ChartVisibilitySettings,
 } from "@/lib/stores/simulate/simulate-chart";
+import {
+	$pendingChartCapture,
+	completeChartCapture,
+} from "@/lib/stores/simulate/simulate-chart-capture";
 import { BalanceEquityChart } from "./charts/BalanceEquityChart";
 import { CumulativeCostsChart } from "./charts/CumulativeCostsChart";
 import { OverpaymentImpactChart } from "./charts/OverpaymentImpactChart";
@@ -116,6 +126,21 @@ export function SimulateChartsContainer({
 }: SimulateChartsContainerProps) {
 	// Track if initial animation has completed
 	const hasAnimated = useRef(false);
+	const chartContentRef = useRef<HTMLDivElement>(null);
+	const [isExporting, setIsExporting] = useState(false);
+
+	// Refs for capturing all charts for PDF export
+	const captureRefs = useRef<Record<ChartType, HTMLDivElement | null>>({
+		balance_equity: null,
+		payment_breakdown: null,
+		cumulative_costs: null,
+		overpayment_impact: null,
+		rate_timeline: null,
+	});
+
+	// Listen for capture requests
+	const pendingCapture = useStore($pendingChartCapture);
+
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			hasAnimated.current = true;
@@ -123,8 +148,64 @@ export function SimulateChartsContainer({
 		return () => clearTimeout(timer);
 	}, []);
 
-	const shouldAnimate = !hasAnimated.current;
+	// Handle chart capture requests for PDF export
+	useEffect(() => {
+		if (!pendingCapture) return;
+
+		const captureAllCharts = async () => {
+			const chartTypes: ChartType[] = [
+				"balance_equity",
+				"payment_breakdown",
+				"cumulative_costs",
+				"overpayment_impact",
+				"rate_timeline",
+			];
+
+			const images: { title: string; imageDataUrl: string }[] = [];
+
+			for (const chartType of chartTypes) {
+				const element = captureRefs.current[chartType];
+				if (element) {
+					try {
+						const imageDataUrl = await elementToPngDataUrl(element, {
+							pixelRatio: 2,
+							backgroundColor: "#ffffff",
+						});
+						images.push({
+							title: CHART_LABELS[chartType],
+							imageDataUrl,
+						});
+					} catch {
+						// Skip if capture fails
+					}
+				}
+			}
+
+			completeChartCapture(images);
+		};
+
+		// Small delay to ensure hidden charts are rendered
+		const timer = setTimeout(captureAllCharts, 100);
+		return () => clearTimeout(timer);
+	}, [pendingCapture]);
+
 	const { activeChart, granularity, visibility } = settings;
+
+	const handleExportChart = useCallback(async () => {
+		if (!chartContentRef.current) return;
+		setIsExporting(true);
+		try {
+			await downloadChartWithBranding(chartContentRef.current, "simulation", {
+				title: CHART_LABELS[activeChart],
+				pixelRatio: 2,
+				backgroundColor: "#ffffff",
+			});
+		} finally {
+			setIsExporting(false);
+		}
+	}, [activeChart]);
+
+	const shouldAnimate = !hasAnimated.current;
 	const currentVisibility = visibility[activeChart];
 	const toggleConfigs = VISIBILITY_CONFIGS[activeChart];
 
@@ -138,182 +219,286 @@ export function SimulateChartsContainer({
 	];
 
 	return (
-		<Card>
-			<CardHeader className="pb-2">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2">
-						<LineChart className="h-4 w-4 text-muted-foreground" />
-						<CardTitle>Mortgage Projection</CardTitle>
+		<>
+			<Card>
+				<CardHeader className="pb-2">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-2">
+							<LineChart className="h-4 w-4 text-muted-foreground" />
+							<CardTitle>Mortgage Projection</CardTitle>
+						</div>
+						<div className="flex items-center gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								className="h-8 gap-1.5"
+								onClick={handleExportChart}
+								disabled={isExporting}
+								title="Download chart as PNG"
+							>
+								<ImageDown className="h-4 w-4" />
+								{isExporting ? "Saving..." : "Save"}
+							</Button>
+							<Tabs
+								value={granularity}
+								onValueChange={(v) =>
+									onGranularityChange(v as ChartGranularity)
+								}
+							>
+								<TabsList className="h-8">
+									<TabsTrigger value="yearly" className="text-xs px-2">
+										Yearly
+									</TabsTrigger>
+									<TabsTrigger value="quarterly" className="text-xs px-2">
+										Quarterly
+									</TabsTrigger>
+									<TabsTrigger value="monthly" className="text-xs px-2">
+										Monthly
+									</TabsTrigger>
+								</TabsList>
+							</Tabs>
+						</div>
 					</div>
-					<Tabs
-						value={granularity}
-						onValueChange={(v) => onGranularityChange(v as ChartGranularity)}
-					>
-						<TabsList className="h-8">
-							<TabsTrigger value="yearly" className="text-xs px-2">
-								Yearly
-							</TabsTrigger>
-							<TabsTrigger value="quarterly" className="text-xs px-2">
-								Quarterly
-							</TabsTrigger>
-							<TabsTrigger value="monthly" className="text-xs px-2">
-								Monthly
-							</TabsTrigger>
-						</TabsList>
-					</Tabs>
-				</div>
 
-				{/* Chart type selector */}
-				<div className="pt-2">
-					<Tabs
-						value={activeChart}
-						onValueChange={(v) => onChartChange(v as ChartType)}
-					>
-						<TabsList
-							className="h-8 w-full justify-start overflow-x-auto"
-							collapseOnMobile
+					{/* Chart type selector */}
+					<div className="pt-2">
+						<Tabs
+							value={activeChart}
+							onValueChange={(v) => onChartChange(v as ChartType)}
 						>
-							{chartTypes.map((type) => (
-								<TabsTrigger
-									key={type}
-									value={type}
-									className="text-xs px-3 whitespace-nowrap"
+							<TabsList
+								className="h-8 w-full justify-start overflow-x-auto"
+								collapseOnMobile
+							>
+								{chartTypes.map((type) => (
+									<TabsTrigger
+										key={type}
+										value={type}
+										className="text-xs px-3 whitespace-nowrap"
+									>
+										{CHART_LABELS[type]}
+									</TabsTrigger>
+								))}
+							</TabsList>
+						</Tabs>
+					</div>
+				</CardHeader>
+				{/* Chart content area - captured for export */}
+				<div ref={chartContentRef}>
+					{/* Visibility toggles (legend) */}
+					<div className="flex flex-wrap items-center gap-2 px-6 pb-2">
+						{toggleConfigs.map((config) => (
+							<Toggle
+								key={config.key}
+								pressed={
+									currentVisibility[
+										config.key as keyof typeof currentVisibility
+									] as boolean
+								}
+								onPressedChange={() =>
+									onToggleVisibility(
+										activeChart,
+										config.key as keyof ChartVisibilitySettings[typeof activeChart],
+									)
+								}
+								size="sm"
+								className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
+							>
+								<div
+									className="h-2.5 w-2.5 rounded-sm shrink-0"
+									style={{ backgroundColor: config.color }}
+								/>
+								{config.label}
+							</Toggle>
+						))}
+						{/* Monthly Average checkbox for payment breakdown */}
+						{activeChart === "payment_breakdown" && (
+							<div className="flex items-center gap-1.5 ml-auto">
+								<Checkbox
+									id="monthly-average-checkbox"
+									checked={visibility.payment_breakdown.monthlyAverage}
+									onCheckedChange={() =>
+										onToggleVisibility("payment_breakdown", "monthlyAverage")
+									}
+								/>
+								<Label
+									htmlFor="monthly-average-checkbox"
+									className="text-xs cursor-pointer"
 								>
-									{CHART_LABELS[type]}
-								</TabsTrigger>
-							))}
-						</TabsList>
-					</Tabs>
+									Monthly Average
+								</Label>
+							</div>
+						)}
+						{/* Stacked checkbox for cumulative costs */}
+						{activeChart === "cumulative_costs" && (
+							<div className="flex items-center gap-1.5 ml-auto">
+								<Checkbox
+									id="stacked-checkbox"
+									checked={visibility.cumulative_costs.stacked}
+									onCheckedChange={() =>
+										onToggleVisibility("cumulative_costs", "stacked")
+									}
+								/>
+								<Label
+									htmlFor="stacked-checkbox"
+									className="text-xs cursor-pointer"
+								>
+									Stacked
+								</Label>
+							</div>
+						)}
+						{/* Rate toggle pushed to right for rate_timeline */}
+						{activeChart === "rate_timeline" && (
+							<Toggle
+								pressed={visibility.rate_timeline.rate}
+								onPressedChange={() =>
+									onToggleVisibility("rate_timeline", "rate")
+								}
+								size="sm"
+								className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent ml-auto"
+							>
+								<div
+									className="h-2.5 w-2.5 rounded-sm shrink-0"
+									style={{ backgroundColor: CHART_COLORS.rate }}
+								/>
+								Rate
+							</Toggle>
+						)}
+					</div>
+					<CardContent className="pt-0">
+						{activeChart === "balance_equity" && (
+							<BalanceEquityChart
+								data={data}
+								visibility={visibility.balance_equity}
+								granularity={granularity}
+								animate={shouldAnimate}
+								deposit={deposit}
+							/>
+						)}
+						{activeChart === "payment_breakdown" && (
+							<PaymentBreakdownChart
+								data={data}
+								visibility={visibility.payment_breakdown}
+								granularity={granularity}
+								animate={shouldAnimate}
+							/>
+						)}
+						{activeChart === "cumulative_costs" && (
+							<CumulativeCostsChart
+								data={data}
+								visibility={visibility.cumulative_costs}
+								granularity={granularity}
+								animate={shouldAnimate}
+							/>
+						)}
+						{activeChart === "overpayment_impact" && (
+							<OverpaymentImpactChart
+								data={overpaymentImpactData}
+								visibility={visibility.overpayment_impact}
+								granularity={granularity}
+								animate={shouldAnimate}
+								hasOverpayments={hasOverpayments}
+							/>
+						)}
+						{activeChart === "rate_timeline" && (
+							<RateTimelineChart
+								data={data}
+								visibility={visibility.rate_timeline}
+								granularity={granularity}
+								animate={shouldAnimate}
+								ratePeriods={ratePeriods}
+								milestones={milestones}
+								startDate={startDate}
+							/>
+						)}
+					</CardContent>
 				</div>
+			</Card>
 
-				{/* Visibility toggles for current chart */}
-				<div className="flex flex-wrap items-center gap-2 pt-2">
-					{toggleConfigs.map((config) => (
-						<Toggle
-							key={config.key}
-							pressed={
-								currentVisibility[
-									config.key as keyof typeof currentVisibility
-								] as boolean
-							}
-							onPressedChange={() =>
-								onToggleVisibility(
-									activeChart,
-									config.key as keyof ChartVisibilitySettings[typeof activeChart],
-								)
-							}
-							size="sm"
-							className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
-						>
-							<div
-								className="h-2.5 w-2.5 rounded-sm shrink-0"
-								style={{ backgroundColor: config.color }}
-							/>
-							{config.label}
-						</Toggle>
-					))}
-					{/* Monthly Average checkbox for payment breakdown */}
-					{activeChart === "payment_breakdown" && (
-						<div className="flex items-center gap-1.5 ml-auto">
-							<Checkbox
-								id="monthly-average-checkbox"
-								checked={visibility.payment_breakdown.monthlyAverage}
-								onCheckedChange={() =>
-									onToggleVisibility("payment_breakdown", "monthlyAverage")
-								}
-							/>
-							<Label
-								htmlFor="monthly-average-checkbox"
-								className="text-xs cursor-pointer"
-							>
-								Monthly Average
-							</Label>
-						</div>
-					)}
-					{/* Stacked checkbox for cumulative costs */}
-					{activeChart === "cumulative_costs" && (
-						<div className="flex items-center gap-1.5 ml-auto">
-							<Checkbox
-								id="stacked-checkbox"
-								checked={visibility.cumulative_costs.stacked}
-								onCheckedChange={() =>
-									onToggleVisibility("cumulative_costs", "stacked")
-								}
-							/>
-							<Label
-								htmlFor="stacked-checkbox"
-								className="text-xs cursor-pointer"
-							>
-								Stacked
-							</Label>
-						</div>
-					)}
-					{/* Rate toggle pushed to right for rate_timeline */}
-					{activeChart === "rate_timeline" && (
-						<Toggle
-							pressed={visibility.rate_timeline.rate}
-							onPressedChange={() =>
-								onToggleVisibility("rate_timeline", "rate")
-							}
-							size="sm"
-							className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent ml-auto"
-						>
-							<div
-								className="h-2.5 w-2.5 rounded-sm shrink-0"
-								style={{ backgroundColor: CHART_COLORS.rate }}
-							/>
-							Rate
-						</Toggle>
-					)}
+			{/* Hidden container for capturing all charts for PDF export */}
+			{pendingCapture && (
+				<div
+					style={{
+						position: "absolute",
+						left: "-9999px",
+						top: 0,
+						width: "800px",
+						background: "#ffffff",
+					}}
+					aria-hidden="true"
+				>
+					<div
+						ref={(el) => {
+							captureRefs.current.balance_equity = el;
+						}}
+						style={{ padding: "16px" }}
+					>
+						<BalanceEquityChart
+							data={data}
+							visibility={visibility.balance_equity}
+							granularity={granularity}
+							animate={false}
+							deposit={deposit}
+						/>
+					</div>
+					<div
+						ref={(el) => {
+							captureRefs.current.payment_breakdown = el;
+						}}
+						style={{ padding: "16px" }}
+					>
+						<PaymentBreakdownChart
+							data={data}
+							visibility={visibility.payment_breakdown}
+							granularity={granularity}
+							animate={false}
+						/>
+					</div>
+					<div
+						ref={(el) => {
+							captureRefs.current.cumulative_costs = el;
+						}}
+						style={{ padding: "16px" }}
+					>
+						<CumulativeCostsChart
+							data={data}
+							visibility={visibility.cumulative_costs}
+							granularity={granularity}
+							animate={false}
+						/>
+					</div>
+					<div
+						ref={(el) => {
+							captureRefs.current.overpayment_impact = el;
+						}}
+						style={{ padding: "16px" }}
+					>
+						<OverpaymentImpactChart
+							data={overpaymentImpactData}
+							visibility={visibility.overpayment_impact}
+							granularity={granularity}
+							animate={false}
+							hasOverpayments={hasOverpayments}
+						/>
+					</div>
+					<div
+						ref={(el) => {
+							captureRefs.current.rate_timeline = el;
+						}}
+						style={{ padding: "16px" }}
+					>
+						<RateTimelineChart
+							data={data}
+							visibility={visibility.rate_timeline}
+							granularity={granularity}
+							animate={false}
+							ratePeriods={ratePeriods}
+							milestones={milestones}
+							startDate={startDate}
+						/>
+					</div>
 				</div>
-			</CardHeader>
-			<CardContent className="pt-0">
-				{activeChart === "balance_equity" && (
-					<BalanceEquityChart
-						data={data}
-						visibility={visibility.balance_equity}
-						granularity={granularity}
-						animate={shouldAnimate}
-						deposit={deposit}
-					/>
-				)}
-				{activeChart === "payment_breakdown" && (
-					<PaymentBreakdownChart
-						data={data}
-						visibility={visibility.payment_breakdown}
-						granularity={granularity}
-						animate={shouldAnimate}
-					/>
-				)}
-				{activeChart === "cumulative_costs" && (
-					<CumulativeCostsChart
-						data={data}
-						visibility={visibility.cumulative_costs}
-						granularity={granularity}
-						animate={shouldAnimate}
-					/>
-				)}
-				{activeChart === "overpayment_impact" && (
-					<OverpaymentImpactChart
-						data={overpaymentImpactData}
-						visibility={visibility.overpayment_impact}
-						granularity={granularity}
-						animate={shouldAnimate}
-						hasOverpayments={hasOverpayments}
-					/>
-				)}
-				{activeChart === "rate_timeline" && (
-					<RateTimelineChart
-						data={data}
-						visibility={visibility.rate_timeline}
-						granularity={granularity}
-						animate={shouldAnimate}
-						ratePeriods={ratePeriods}
-						milestones={milestones}
-						startDate={startDate}
-					/>
-				)}
-			</CardContent>
-		</Card>
+			)}
+		</>
 	);
 }

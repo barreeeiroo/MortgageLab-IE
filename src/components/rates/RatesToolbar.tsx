@@ -3,10 +3,20 @@ import type {
 	SortingState,
 	VisibilityState,
 } from "@tanstack/react-table";
-import { FoldHorizontal, Settings2, UnfoldHorizontal } from "lucide-react";
-import { useCallback } from "react";
+import {
+	Download,
+	FoldHorizontal,
+	Settings2,
+	UnfoldHorizontal,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import type { BerRating } from "@/lib/constants/ber";
+import {
+	exportRatesToCSV,
+	exportRatesToExcel,
+} from "@/lib/export/rates-export";
 import type { Lender } from "@/lib/schemas/lender";
-import type { RatesMetadata } from "@/lib/schemas/rate";
+import type { MortgageRate, RatesMetadata } from "@/lib/schemas/rate";
 import { generateRatesShareUrl } from "@/lib/share/rates";
 import { $storedCustomPerks } from "@/lib/stores/custom-perks";
 import { $storedCustomRates } from "@/lib/stores/custom-rates";
@@ -18,6 +28,7 @@ import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
+	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
@@ -55,10 +66,16 @@ const HIDEABLE_COLUMNS = [
 ] as const;
 
 export interface RatesToolbarProps {
-	// Data for dialogs
+	// Data for dialogs and export
 	lenders: Lender[];
 	ratesMetadata: RatesMetadata[];
 	inputValues: RatesInputValues;
+	// Export data
+	filteredRates: MortgageRate[];
+	allRates: MortgageRate[];
+	mortgageAmount: number;
+	mortgageTerm: number;
+	ltv: number;
 	// Table state
 	columnVisibility: VisibilityState;
 	columnFilters: ColumnFiltersState;
@@ -75,6 +92,11 @@ export function RatesToolbar({
 	lenders,
 	ratesMetadata,
 	inputValues,
+	filteredRates,
+	allRates,
+	mortgageAmount,
+	mortgageTerm,
+	ltv,
 	columnVisibility,
 	columnFilters,
 	sorting,
@@ -83,6 +105,46 @@ export function RatesToolbar({
 	onCompactModeChange,
 	disabled = false,
 }: RatesToolbarProps) {
+	const [isExporting, setIsExporting] = useState(false);
+
+	const exportContext = useMemo(
+		() => ({
+			rates: filteredRates,
+			allRates,
+			lenders,
+			mortgageAmount,
+			mortgageTerm,
+			ltv,
+			berRating: inputValues.berRating as BerRating | undefined,
+			columnVisibility,
+			sorting,
+		}),
+		[
+			filteredRates,
+			allRates,
+			lenders,
+			mortgageAmount,
+			mortgageTerm,
+			ltv,
+			inputValues.berRating,
+			columnVisibility,
+			sorting,
+		],
+	);
+
+	const handleExportCSV = useCallback(() => {
+		exportRatesToCSV(exportContext);
+	}, [exportContext]);
+
+	const handleExportExcel = useCallback(async () => {
+		setIsExporting(true);
+		try {
+			await exportRatesToExcel(exportContext);
+		} finally {
+			setIsExporting(false);
+		}
+	}, [exportContext]);
+
 	const handleShare = useCallback(async (): Promise<string> => {
 		// Read custom rates and perks on demand (no subscription needed)
 		const customRates = $storedCustomRates.get();
@@ -162,6 +224,29 @@ export function RatesToolbar({
 			</div>
 			<div className="flex gap-2">
 				<RateUpdatesDialog lenders={lenders} ratesMetadata={ratesMetadata} />
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button
+							variant="outline"
+							size="sm"
+							className="h-8 gap-1.5"
+							disabled={disabled || isExporting || filteredRates.length === 0}
+						>
+							<Download className="h-4 w-4" />
+							<span className="hidden sm:inline">
+								{isExporting ? "Exporting..." : "Export"}
+							</span>
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuItem onClick={handleExportCSV}>
+							Export as CSV
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={handleExportExcel}>
+							Export as Excel
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 				<ShareButton onShare={handleShare} responsive className="h-8" />
 			</div>
 		</div>

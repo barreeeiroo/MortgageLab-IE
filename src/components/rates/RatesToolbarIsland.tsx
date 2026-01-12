@@ -2,8 +2,19 @@ import { useStore } from "@nanostores/react";
 import { useEffect } from "react";
 import { $lenders } from "@/lib/stores/lenders";
 import { initializeStore } from "@/lib/stores/persistence";
-import { $isLoading, $ratesMetadata, fetchRatesData } from "@/lib/stores/rates";
-import { $formValues } from "@/lib/stores/rates-form";
+import {
+	$filteredRates,
+	$isLoading,
+	$rates,
+	$ratesMetadata,
+	fetchRatesData,
+} from "@/lib/stores/rates";
+import {
+	$formValues,
+	$ltv,
+	$mortgage,
+	$mortgageTerm,
+} from "@/lib/stores/rates-form";
 import {
 	$columnFilters,
 	$columnVisibility,
@@ -22,6 +33,11 @@ export function RatesToolbarIsland() {
 	const lenders = useStore($lenders);
 	const ratesMetadata = useStore($ratesMetadata);
 	const inputValues = useStore($formValues);
+	const filteredRates = useStore($filteredRates);
+	const allRates = useStore($rates);
+	const mortgageAmount = useStore($mortgage);
+	const mortgageTerm = useStore($mortgageTerm);
+	const ltv = useStore($ltv);
 	const columnVisibility = useStore($columnVisibility);
 	const columnFilters = useStore($columnFilters);
 	const sorting = useStore($sorting);
@@ -40,6 +56,11 @@ export function RatesToolbarIsland() {
 			lenders={lenders}
 			ratesMetadata={ratesMetadata}
 			inputValues={inputValues}
+			filteredRates={filteredRates}
+			allRates={allRates}
+			mortgageAmount={mortgageAmount}
+			mortgageTerm={mortgageTerm}
+			ltv={ltv}
 			columnVisibility={columnVisibility}
 			columnFilters={columnFilters}
 			sorting={sorting}
