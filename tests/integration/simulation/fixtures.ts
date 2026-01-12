@@ -97,6 +97,7 @@ export function createSimulationState(
 		},
 		ratePeriods: overrides.ratePeriods ?? [createRatePeriod()],
 		overpaymentConfigs: overrides.overpaymentConfigs ?? [],
+		selfBuildConfig: overrides.selfBuildConfig,
 		initialized: true,
 	};
 }

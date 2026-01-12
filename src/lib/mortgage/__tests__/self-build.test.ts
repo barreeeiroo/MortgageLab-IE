@@ -391,6 +391,7 @@ describe("isSelfBuildActive", () => {
 	it("returns false when not enabled", () => {
 		const config: SelfBuildConfig = {
 			enabled: false,
+			constructionRepaymentType: "interest_only",
 			interestOnlyMonths: 9,
 			drawdownStages: createDrawdownStages([{ month: 1, amount: 20000000 }]),
 		};

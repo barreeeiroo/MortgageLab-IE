@@ -1586,6 +1586,7 @@ describe("calculateMilestones", () => {
 		) {
 			return {
 				enabled: true,
+				constructionRepaymentType: "interest_only" as const,
 				interestOnlyMonths,
 				drawdownStages: stages.map((s, i) => ({
 					id: `stage-${i}`,
