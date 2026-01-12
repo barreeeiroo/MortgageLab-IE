@@ -107,17 +107,40 @@ export const $simulationSummary = computed(
 		}
 
 		// Calculate baseline interest (without overpayments)
+		// Uses same repayment type as user's config
 		const baselineInterest = calculateBaselineInterest(
 			state.input.mortgageAmount,
 			state.input.mortgageTermMonths,
 			state.ratePeriods,
 			resolvedPeriods,
+			state.selfBuildConfig,
 		);
+
+		// For self-build, calculate baseline using interest_and_capital mode
+		// This shows the extra interest cost of choosing interest_only during construction
+		let interestCapitalBaselineInterest: number | undefined;
+		if (
+			isSelfBuildActive(state.selfBuildConfig) &&
+			state.selfBuildConfig.constructionRepaymentType === "interest_only"
+		) {
+			// Calculate what interest would be if paying principal during construction
+			interestCapitalBaselineInterest = calculateBaselineInterest(
+				state.input.mortgageAmount,
+				state.input.mortgageTermMonths,
+				state.ratePeriods,
+				resolvedPeriods,
+				{
+					...state.selfBuildConfig,
+					constructionRepaymentType: "interest_and_capital",
+				},
+			);
+		}
 
 		return calculateSummary(
 			months,
 			baselineInterest,
 			state.input.mortgageTermMonths,
+			interestCapitalBaselineInterest,
 		);
 	},
 );

@@ -35,7 +35,10 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { ResolvedDrawdownStage } from "@/lib/mortgage/self-build";
-import type { DrawdownStage } from "@/lib/schemas/simulate";
+import type {
+	ConstructionRepaymentType,
+	DrawdownStage,
+} from "@/lib/schemas/simulate";
 import {
 	$canEnableSelfBuild,
 	$constructionEndMonth,
@@ -51,6 +54,7 @@ import {
 	disableSelfBuild,
 	enableSelfBuild,
 	removeDrawdownStage,
+	setConstructionRepaymentType,
 	setDrawdownStages,
 	setInterestOnlyMonths,
 	updateDrawdownStage,
@@ -406,58 +410,83 @@ export function SimulateSelfBuildIsland() {
 						)}
 					</div>
 
-					{/* Interest-Only Period */}
+					{/* Repayment Option */}
 					<div className="space-y-1">
 						<Label className="text-xs text-muted-foreground">
-							Interest-Only Period (after final drawdown)
+							Repayment Option (during construction)
 						</Label>
-						<div className="grid grid-cols-2 gap-2">
-							<Select
-								value={String(interestOnlyYears)}
-								onValueChange={handleInterestOnlyYearsChange}
-							>
-								<SelectTrigger className="h-8 text-sm w-full">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									{[0, 1, 2, 3, 4, 5].map((y) => (
-										<SelectItem key={y} value={String(y)}>
-											{y} {y === 1 ? "year" : "years"}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-							<Select
-								value={String(interestOnlyRemainingMonths)}
-								onValueChange={handleInterestOnlyMonthsChange}
-								disabled={interestOnlyYears === 5}
-							>
-								<SelectTrigger className="h-8 text-sm w-full">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((m) => (
-										<SelectItem key={m} value={String(m)}>
-											{m} {m === 1 ? "month" : "months"}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						</div>
-						{/* Full payments start info */}
-						{constructionEndMonth > 0 &&
-							selfBuildConfig.interestOnlyMonths > 0 && (
-								<div className="text-xs text-muted-foreground pt-1">
-									Full payments start:{" "}
-									{formatTransitionDate(
-										simulationState.input.startDate,
-										constructionEndMonth +
-											selfBuildConfig.interestOnlyMonths +
-											1,
-									)}
-								</div>
-							)}
+						<Select
+							value={selfBuildConfig.constructionRepaymentType}
+							onValueChange={(value: ConstructionRepaymentType) =>
+								setConstructionRepaymentType(value)
+							}
+						>
+							<SelectTrigger className="h-8 text-sm w-full">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="interest_only">Interest Only</SelectItem>
+								<SelectItem value="interest_and_capital">
+									Interest + Capital
+								</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
+
+					{/* Interest-Only Period - only show for interest_only mode */}
+					{selfBuildConfig.constructionRepaymentType === "interest_only" && (
+						<div className="space-y-1">
+							<Label className="text-xs text-muted-foreground">
+								Interest-Only Period (after final drawdown)
+							</Label>
+							<div className="grid grid-cols-2 gap-2">
+								<Select
+									value={String(interestOnlyYears)}
+									onValueChange={handleInterestOnlyYearsChange}
+								>
+									<SelectTrigger className="h-8 text-sm w-full">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										{[0, 1, 2, 3, 4, 5].map((y) => (
+											<SelectItem key={y} value={String(y)}>
+												{y} {y === 1 ? "year" : "years"}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								<Select
+									value={String(interestOnlyRemainingMonths)}
+									onValueChange={handleInterestOnlyMonthsChange}
+									disabled={interestOnlyYears === 5}
+								>
+									<SelectTrigger className="h-8 text-sm w-full">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((m) => (
+											<SelectItem key={m} value={String(m)}>
+												{m} {m === 1 ? "month" : "months"}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+							{/* Full payments start info */}
+							{constructionEndMonth > 0 &&
+								selfBuildConfig.interestOnlyMonths > 0 && (
+									<div className="text-xs text-muted-foreground pt-1">
+										Full payments start:{" "}
+										{formatTransitionDate(
+											simulationState.input.startDate,
+											constructionEndMonth +
+												selfBuildConfig.interestOnlyMonths +
+												1,
+										)}
+									</div>
+								)}
+						</div>
+					)}
 				</CardContent>
 			)}
 

@@ -49,6 +49,7 @@ interface SimulateAddOverpaymentDialogProps {
 	overpaymentPolicies: OverpaymentPolicy[];
 	existingConfigs?: OverpaymentConfig[];
 	startDate?: string;
+	constructionEndMonth?: number;
 }
 
 type TabMode = "maximize" | "one_time" | "recurring";
@@ -63,6 +64,7 @@ export function SimulateAddOverpaymentDialog({
 	overpaymentPolicies,
 	existingConfigs = [],
 	startDate,
+	constructionEndMonth,
 }: SimulateAddOverpaymentDialogProps) {
 	// Tab mode - determines overpayment type
 	const [mode, setMode] = useState<TabMode>("maximize");
@@ -147,8 +149,16 @@ export function SimulateAddOverpaymentDialog({
 			mortgageAmount,
 			totalMonths,
 			startDate,
+			constructionEndMonth,
 		);
-	}, [selectedPeriod, selectedPolicy, mortgageAmount, totalMonths, startDate]);
+	}, [
+		selectedPeriod,
+		selectedPolicy,
+		mortgageAmount,
+		totalMonths,
+		startDate,
+		constructionEndMonth,
+	]);
 
 	// Summary for display
 	const maximizeSummary = useMemo(() => {
@@ -343,6 +353,7 @@ export function SimulateAddOverpaymentDialog({
 									yearlyPlans={yearlyPlans}
 									maximizeSummary={maximizeSummary}
 									startDate={startDate}
+									constructionEndMonth={constructionEndMonth}
 								/>
 							</TabsContent>
 						)}
@@ -436,6 +447,7 @@ interface MaximizeContentProps {
 		policyDescription: string;
 	} | null;
 	startDate?: string;
+	constructionEndMonth?: number;
 }
 
 function MaximizeContent({
@@ -447,9 +459,28 @@ function MaximizeContent({
 	yearlyPlans,
 	maximizeSummary,
 	startDate,
+	constructionEndMonth,
 }: MaximizeContentProps) {
+	// Check if overpayments are delayed due to self-build
+	const isDelayedByConstruction =
+		constructionEndMonth &&
+		selectedPeriod &&
+		selectedPeriod.startMonth <= constructionEndMonth;
+
 	return (
 		<>
+			{/* Self-build info message */}
+			{isDelayedByConstruction && (
+				<div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm dark:border-blue-900 dark:bg-blue-950">
+					<Info className="h-4 w-4 mt-0.5 shrink-0 text-blue-600 dark:text-blue-400" />
+					<p className="text-blue-800 dark:text-blue-200">
+						Overpayments will start after your final drawdown (month{" "}
+						{constructionEndMonth}) to avoid issues with overpayment allowance
+						calculations while the mortgage isn't fully drawn down.
+					</p>
+				</div>
+			)}
+
 			{/* Period Selection */}
 			{availableFixedPeriods.length === 0 ? (
 				<div className="rounded-lg border border-muted bg-muted/50 p-4">

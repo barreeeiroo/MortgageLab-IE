@@ -173,7 +173,10 @@ function compressSelfBuildConfig(
 ): CompressedSelfBuildConfig {
 	return {
 		// Only include when not the default (interest_only)
-		t: config.constructionRepaymentType === "interest_and_capital" ? "c" : undefined,
+		t:
+			config.constructionRepaymentType === "interest_and_capital"
+				? "c"
+				: undefined,
 		i: config.interestOnlyMonths,
 		s: config.drawdownStages.map(compressDrawdownStage),
 	};
@@ -184,7 +187,8 @@ function decompressSelfBuildConfig(
 ): SelfBuildConfig {
 	return {
 		enabled: true,
-		constructionRepaymentType: compressed.t === "c" ? "interest_and_capital" : "interest_only",
+		constructionRepaymentType:
+			compressed.t === "c" ? "interest_and_capital" : "interest_only",
 		interestOnlyMonths: compressed.i,
 		drawdownStages: compressed.s.map(decompressDrawdownStage),
 	};

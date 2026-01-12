@@ -72,9 +72,8 @@ export type ConstructionRepaymentType = z.infer<
 // Self-Build Configuration
 export const SelfBuildConfigSchema = z.object({
 	enabled: z.boolean(), // Whether self-build mode is active
-	constructionRepaymentType: ConstructionRepaymentTypeSchema.default(
-		"interest_only",
-	), // What to pay during construction
+	constructionRepaymentType:
+		ConstructionRepaymentTypeSchema.default("interest_only"), // What to pay during construction
 	interestOnlyMonths: z.number().int().nonnegative().default(0), // Interest-only period after final drawdown (only applies when constructionRepaymentType is "interest_only")
 	drawdownStages: z.array(DrawdownStageSchema), // Staged drawdowns during construction
 });
@@ -217,6 +216,7 @@ export interface SimulationSummary {
 	actualTermMonths: number;
 	interestSaved: number; // vs no overpayments
 	monthsSaved: number; // vs no overpayments
+	extraInterestFromSelfBuild?: number; // Additional interest compared to standard mortgage (self-build only)
 }
 
 // Chart Config

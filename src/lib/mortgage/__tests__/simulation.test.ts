@@ -108,9 +108,13 @@ function createSimulationState(
 function createSelfBuildConfig(
 	stages: { month: number; amount: number; label?: string }[],
 	interestOnlyMonths = 0,
+	constructionRepaymentType:
+		| "interest_only"
+		| "interest_and_capital" = "interest_only",
 ): SimulationState["selfBuildConfig"] {
 	return {
 		enabled: true,
+		constructionRepaymentType,
 		interestOnlyMonths,
 		drawdownStages: stages.map((s, i) => ({
 			id: `stage-${i}`,
@@ -1016,6 +1020,246 @@ describe("calculateAmortization", () => {
 			// Overpayment should be applied in month 5
 			expect(result.months[4].overpayment).toBe(100000);
 		});
+
+		it("pays interest + capital during construction with interest_and_capital mode", () => {
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 37000000, // €370k
+					mortgageTermMonths: 420, // 35 years
+					propertyValue: 50000000,
+					ber: "C2",
+				},
+				selfBuildConfig: createSelfBuildConfig(
+					[
+						{ month: 1, amount: 9250000, label: "Floor Level" },
+						{ month: 5, amount: 12950000, label: "Roof Level" },
+						{ month: 10, amount: 11100000, label: "Finished Property" },
+						{ month: 12, amount: 3700000, label: "Post Completion" },
+					],
+					0, // No interest-only period
+					"interest_and_capital", // Pay principal during construction
+				),
+			});
+			const rates = [createRate({ rate: 3.2 })];
+			const lenders = [createLender()];
+
+			const result = calculateAmortization(state, rates, [], lenders, []);
+
+			// During construction, principal should be positive (not negative)
+			for (let i = 0; i < 12; i++) {
+				expect(result.months[i].principalPortion).toBeGreaterThanOrEqual(0);
+				expect(result.months[i].phase).toBe("construction");
+				expect(result.months[i].isInterestOnly).toBe(false);
+			}
+		});
+
+		it("recalculates payment after each drawdown in interest_and_capital mode", () => {
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000, // €200k
+					mortgageTermMonths: 360,
+					propertyValue: 25000000,
+					ber: "B2",
+				},
+				selfBuildConfig: createSelfBuildConfig(
+					[
+						{ month: 1, amount: 5000000 }, // €50k
+						{ month: 4, amount: 7500000 }, // €75k -> total €125k
+						{ month: 8, amount: 7500000 }, // €75k -> total €200k
+					],
+					0,
+					"interest_and_capital",
+				),
+			});
+			const rates = [createRate({ rate: 4.0 })];
+			const lenders = [createLender()];
+
+			const result = calculateAmortization(state, rates, [], lenders, []);
+
+			// Payment should increase after each drawdown
+			const paymentMonth1 = result.months[0].scheduledPayment;
+			const paymentMonth4 = result.months[3].scheduledPayment;
+			const paymentMonth8 = result.months[7].scheduledPayment;
+
+			expect(paymentMonth4).toBeGreaterThan(paymentMonth1);
+			expect(paymentMonth8).toBeGreaterThan(paymentMonth4);
+		});
+
+		it("calculates overpayment allowance based on drawn balance, not full mortgage", () => {
+			// Setup: €200k mortgage with staged drawdowns, 10% of balance allowance
+			// At month 12, only €50k has been drawn, so allowance should be €5k/year (~€417/month)
+			// NOT €20k/year (10% of €200k)
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000, // €200k total
+					mortgageTermMonths: 360,
+					propertyValue: 25000000,
+					ber: "B2",
+					startDate: "2025-01",
+				},
+				ratePeriods: [
+					createRatePeriod({
+						rateId: "fixed-rate",
+						durationMonths: 0,
+					}),
+				],
+				overpaymentConfigs: [
+					createOverpaymentConfig({
+						type: "one_time",
+						amount: 600000, // €6,000 - should exceed €5k allowance based on drawn balance
+						startMonth: 12, // During construction, only €50k drawn
+					}),
+				],
+				selfBuildConfig: createSelfBuildConfig([
+					{ month: 1, amount: 5000000 }, // €50k
+					{ month: 18, amount: 7500000 }, // €75k (drawn later)
+					{ month: 24, amount: 7500000 }, // €75k (drawn later)
+				]),
+			});
+			const rates = [
+				createRate({ id: "fixed-rate", type: "fixed", fixedTerm: 3 }),
+			];
+			const lenders = [createLender({ overpaymentPolicy: "test-policy" })];
+			const policies = [
+				createPolicy({
+					id: "test-policy",
+					allowanceType: "percentage",
+					allowanceValue: 10,
+					allowanceBasis: "balance",
+				}),
+			];
+
+			const result = calculateAmortization(state, rates, [], lenders, policies);
+
+			// €6k overpayment should exceed the ~€5k allowance (10% of €50k drawn)
+			// If incorrectly using full mortgage, €6k would be within €20k allowance
+			expect(result.warnings.length).toBeGreaterThan(0);
+			expect(result.warnings[0].type).toBe("allowance_exceeded");
+		});
+
+		it("overpayment within drawn balance allowance does not trigger warning", () => {
+			// Setup: €200k mortgage, at month 12 only €50k drawn
+			// 10% of €50k = €5k/year allowance, €4k overpayment should be within allowance
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000, // €200k total
+					mortgageTermMonths: 360,
+					propertyValue: 25000000,
+					ber: "B2",
+					startDate: "2025-01",
+				},
+				ratePeriods: [
+					createRatePeriod({
+						rateId: "fixed-rate",
+						durationMonths: 0,
+					}),
+				],
+				overpaymentConfigs: [
+					createOverpaymentConfig({
+						type: "one_time",
+						amount: 400000, // €4,000 - within €5k allowance based on drawn balance
+						startMonth: 12,
+					}),
+				],
+				selfBuildConfig: createSelfBuildConfig([
+					{ month: 1, amount: 5000000 }, // €50k drawn at month 1
+					{ month: 18, amount: 7500000 }, // €75k (drawn later)
+					{ month: 24, amount: 7500000 }, // €75k (drawn later)
+				]),
+			});
+			const rates = [
+				createRate({ id: "fixed-rate", type: "fixed", fixedTerm: 3 }),
+			];
+			const lenders = [createLender({ overpaymentPolicy: "test-policy" })];
+			const policies = [
+				createPolicy({
+					id: "test-policy",
+					allowanceType: "percentage",
+					allowanceValue: 10,
+					allowanceBasis: "balance",
+				}),
+			];
+
+			const result = calculateAmortization(state, rates, [], lenders, policies);
+
+			// No allowance warnings should be triggered
+			const allowanceWarnings = result.warnings.filter(
+				(w) => w.type === "allowance_exceeded",
+			);
+			expect(allowanceWarnings.length).toBe(0);
+		});
+
+		it("allowance is based on year-start balance and increases after drawdowns", () => {
+			// Allowance is calculated at the START of each calendar year
+			// Setup: €200k mortgage with staged drawdowns
+			// - Month 1 (Jan 2025): €50k drawn
+			// - Year 2025 allowance: 10% of €50k = €5k
+			// - Month 6 (Jun 2025): €75k more drawn -> total €125k
+			// - Year 2026 starts at month 13 with balance ~€125k
+			// - Year 2026 allowance: 10% of €125k = €12.5k
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000,
+					mortgageTermMonths: 360,
+					propertyValue: 25000000,
+					ber: "B2",
+					startDate: "2025-01",
+				},
+				ratePeriods: [
+					createRatePeriod({
+						rateId: "fixed-rate",
+						durationMonths: 0,
+					}),
+				],
+				overpaymentConfigs: [
+					createOverpaymentConfig({
+						id: "overpayment-1",
+						type: "one_time",
+						amount: 600000, // €6,000 - exceeds €5k (10% of €50k year-start)
+						startMonth: 12, // Dec 2025, year 2025 allowance based on €50k
+					}),
+					createOverpaymentConfig({
+						id: "overpayment-2",
+						type: "one_time",
+						amount: 1000000, // €10,000 - within €12.5k (10% of €125k year-start)
+						startMonth: 18, // Jun 2026, year 2026 allowance based on ~€125k
+					}),
+				],
+				selfBuildConfig: createSelfBuildConfig([
+					{ month: 1, amount: 5000000 }, // €50k (Jan 2025)
+					{ month: 6, amount: 7500000 }, // €75k -> total €125k (Jun 2025)
+					{ month: 30, amount: 7500000 }, // €75k -> total €200k (later)
+				]),
+			});
+			const rates = [
+				createRate({ id: "fixed-rate", type: "fixed", fixedTerm: 5 }),
+			];
+			const lenders = [createLender({ overpaymentPolicy: "test-policy" })];
+			const policies = [
+				createPolicy({
+					id: "test-policy",
+					allowanceType: "percentage",
+					allowanceValue: 10,
+					allowanceBasis: "balance",
+				}),
+			];
+
+			const result = calculateAmortization(state, rates, [], lenders, policies);
+
+			// First overpayment (month 12, Dec 2025) should exceed allowance
+			// Year 2025 allowance based on month 1 balance = €50k -> €5k allowance
+			const firstWarning = result.warnings.find(
+				(w) => w.type === "allowance_exceeded" && w.month === 12,
+			);
+			expect(firstWarning).toBeDefined();
+
+			// Second overpayment (month 18, Jun 2026) should be within allowance
+			// Year 2026 starts at month 13, balance at that point is ~€125k -> €12.5k allowance
+			const secondWarning = result.warnings.find(
+				(w) => w.type === "allowance_exceeded" && w.month === 18,
+			);
+			expect(secondWarning).toBeUndefined();
+		});
 	});
 });
 
@@ -1393,7 +1637,9 @@ describe("calculateMilestones", () => {
 					cumulativeOverpayments: 0,
 					cumulativeTotal:
 						i * 1000 +
-						(isInterestOnly ? 0 : (i - interestOnlyEndMonth) * principalPerMonth),
+						(isInterestOnly
+							? 0
+							: (i - interestOnlyEndMonth) * principalPerMonth),
 					phase: phase as "construction" | "interest_only" | "repayment",
 					isInterestOnly,
 				});
@@ -1813,6 +2059,220 @@ describe("calculateBaselineInterest", () => {
 
 			// Shorter term means higher monthly payments but less total interest
 			expect(interest20yr).toBeLessThan(interest30yr);
+		});
+	});
+
+	describe("self-build baseline", () => {
+		it("baseline uses same repayment type as user config", () => {
+			const mortgageAmount = 20000000; // €200k
+			const ratePeriods: RatePeriod[] = [
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			// Interest-only config
+			const interestOnlyConfig = createSelfBuildConfig(
+				[
+					{ month: 1, amount: 5000000 },
+					{ month: 4, amount: 7500000 },
+					{ month: 8, amount: 7500000 },
+				],
+				0,
+				"interest_only",
+			);
+
+			// Interest + capital config
+			const interestCapitalConfig = createSelfBuildConfig(
+				[
+					{ month: 1, amount: 5000000 },
+					{ month: 4, amount: 7500000 },
+					{ month: 8, amount: 7500000 },
+				],
+				0,
+				"interest_and_capital",
+			);
+
+			const interestOnlyBaseline = calculateBaselineInterest(
+				mortgageAmount,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+				interestOnlyConfig,
+			);
+
+			const interestCapitalBaseline = calculateBaselineInterest(
+				mortgageAmount,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+				interestCapitalConfig,
+			);
+
+			// Interest-only mode should have more total interest than interest+capital
+			// because no principal is paid during construction
+			expect(interestOnlyBaseline).toBeGreaterThan(interestCapitalBaseline);
+		});
+
+		it("baseline matches actual when no overpayments", () => {
+			const mortgageAmount = 20000000;
+			const ratePeriods: RatePeriod[] = [
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			const selfBuildConfig = createSelfBuildConfig(
+				[
+					{ month: 1, amount: 5000000 },
+					{ month: 4, amount: 7500000 },
+					{ month: 8, amount: 7500000 },
+				],
+				0,
+				"interest_and_capital",
+			);
+
+			// Baseline for interest_and_capital mode
+			const baselineInterest = calculateBaselineInterest(
+				mortgageAmount,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+				selfBuildConfig,
+			);
+
+			// Actual simulation with same config and NO overpayments
+			const state = createSimulationState({
+				input: {
+					mortgageAmount,
+					mortgageTermMonths: 360,
+					propertyValue: 25000000,
+					ber: "B2",
+				},
+				selfBuildConfig,
+				overpaymentConfigs: [], // No overpayments
+			});
+			const rates = [createRate({ rate: 4.0 })];
+			const lenders = [createLender()];
+
+			const result = calculateAmortization(state, rates, [], lenders, []);
+			const actualInterest =
+				result.months[result.months.length - 1].cumulativeInterest;
+
+			// Without overpayments, baseline and actual should be the same
+			expect(actualInterest).toBeCloseTo(baselineInterest, 0);
+		});
+
+		it("self-build with staged drawdowns saves interest vs standard mortgage", () => {
+			const mortgageAmount = 20000000; // €200k
+			const ratePeriods: RatePeriod[] = [
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			// Interest-only self-build config
+			const selfBuildConfig = createSelfBuildConfig(
+				[
+					{ month: 1, amount: 5000000 },
+					{ month: 4, amount: 7500000 },
+					{ month: 8, amount: 7500000 },
+				],
+				0,
+				"interest_only",
+			);
+
+			// Self-build interest (actual)
+			const selfBuildInterest = calculateBaselineInterest(
+				mortgageAmount,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+				selfBuildConfig,
+			);
+
+			// Standard mortgage interest (no self-build)
+			const standardInterest = calculateBaselineInterest(
+				mortgageAmount,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+				undefined, // No self-build = standard mortgage
+			);
+
+			// Self-build with staged drawdowns actually SAVES interest
+			// because you pay interest on smaller amounts during construction
+			expect(selfBuildInterest).toBeLessThan(standardInterest);
+		});
+
+		it("long interest-only period after construction pays more interest", () => {
+			const mortgageAmount = 20000000; // €200k
+			const ratePeriods: RatePeriod[] = [
+				{
+					id: "p1",
+					rateId: "rate-p1",
+					lenderId: "test",
+					durationMonths: 0,
+					isCustom: false,
+				},
+			];
+			const resolvedPeriods = new Map<string, ResolvedRatePeriod>([
+				["p1", createResolvedPeriod("p1", 4.0, 1, 0)],
+			]);
+
+			// Self-build with 12 months interest-only AFTER construction
+			const selfBuildConfig = createSelfBuildConfig(
+				[
+					{ month: 1, amount: 5000000 },
+					{ month: 4, amount: 7500000 },
+					{ month: 8, amount: 7500000 },
+				],
+				12, // 12 months interest-only after construction
+				"interest_only",
+			);
+
+			// Self-build interest (with extended interest-only)
+			const selfBuildInterest = calculateBaselineInterest(
+				mortgageAmount,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+				selfBuildConfig,
+			);
+
+			// Standard mortgage interest (no self-build)
+			const standardInterest = calculateBaselineInterest(
+				mortgageAmount,
+				360,
+				ratePeriods,
+				resolvedPeriods,
+				undefined,
+			);
+
+			// With extended interest-only period, self-build pays MORE interest
+			// (full balance with no principal reduction for longer)
+			expect(selfBuildInterest).toBeGreaterThan(standardInterest);
 		});
 	});
 });

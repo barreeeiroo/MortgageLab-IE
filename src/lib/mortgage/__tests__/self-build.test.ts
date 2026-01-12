@@ -32,9 +32,13 @@ function createDrawdownStages(
 function createSelfBuildConfig(
 	interestOnlyMonths: number,
 	stages: DrawdownStage[],
+	constructionRepaymentType:
+		| "interest_only"
+		| "interest_and_capital" = "interest_only",
 ): SelfBuildConfig {
 	return {
 		enabled: true,
+		constructionRepaymentType,
 		interestOnlyMonths,
 		drawdownStages: stages,
 	};
@@ -201,29 +205,81 @@ describe("determinePhase", () => {
 });
 
 describe("isInterestOnlyMonth", () => {
-	const config = createSelfBuildConfig(
-		9,
-		createDrawdownStages([
-			{ month: 1, amount: 5000000 },
-			{ month: 8, amount: 15000000 },
-		]),
-	);
+	describe("interest_only mode (default)", () => {
+		const config = createSelfBuildConfig(
+			9,
+			createDrawdownStages([
+				{ month: 1, amount: 5000000 },
+				{ month: 8, amount: 15000000 },
+			]),
+		);
 
-	it("returns true during construction phase", () => {
-		expect(isInterestOnlyMonth(1, config)).toBe(true);
-		expect(isInterestOnlyMonth(5, config)).toBe(true);
-		expect(isInterestOnlyMonth(8, config)).toBe(true);
+		it("returns true during construction phase", () => {
+			expect(isInterestOnlyMonth(1, config)).toBe(true);
+			expect(isInterestOnlyMonth(5, config)).toBe(true);
+			expect(isInterestOnlyMonth(8, config)).toBe(true);
+		});
+
+		it("returns true during interest-only phase", () => {
+			expect(isInterestOnlyMonth(9, config)).toBe(true);
+			expect(isInterestOnlyMonth(12, config)).toBe(true);
+			expect(isInterestOnlyMonth(17, config)).toBe(true);
+		});
+
+		it("returns false during repayment phase", () => {
+			expect(isInterestOnlyMonth(18, config)).toBe(false);
+			expect(isInterestOnlyMonth(24, config)).toBe(false);
+		});
 	});
 
-	it("returns true during interest-only phase", () => {
-		expect(isInterestOnlyMonth(9, config)).toBe(true);
-		expect(isInterestOnlyMonth(12, config)).toBe(true);
-		expect(isInterestOnlyMonth(17, config)).toBe(true);
+	describe("interest_and_capital mode", () => {
+		const config = createSelfBuildConfig(
+			0, // No interest-only period after construction
+			createDrawdownStages([
+				{ month: 1, amount: 5000000 },
+				{ month: 8, amount: 15000000 },
+			]),
+			"interest_and_capital",
+		);
+
+		it("returns false during construction phase (principal is paid)", () => {
+			expect(isInterestOnlyMonth(1, config)).toBe(false);
+			expect(isInterestOnlyMonth(5, config)).toBe(false);
+			expect(isInterestOnlyMonth(8, config)).toBe(false);
+		});
+
+		it("returns false during repayment phase", () => {
+			expect(isInterestOnlyMonth(9, config)).toBe(false);
+			expect(isInterestOnlyMonth(24, config)).toBe(false);
+		});
 	});
 
-	it("returns false during repayment phase", () => {
-		expect(isInterestOnlyMonth(18, config)).toBe(false);
-		expect(isInterestOnlyMonth(24, config)).toBe(false);
+	describe("interest_and_capital mode with post-construction interest-only period", () => {
+		const config = createSelfBuildConfig(
+			6, // 6 months interest-only after construction
+			createDrawdownStages([
+				{ month: 1, amount: 5000000 },
+				{ month: 8, amount: 15000000 },
+			]),
+			"interest_and_capital",
+		);
+
+		it("returns false during construction phase (principal is paid)", () => {
+			expect(isInterestOnlyMonth(1, config)).toBe(false);
+			expect(isInterestOnlyMonth(5, config)).toBe(false);
+			expect(isInterestOnlyMonth(8, config)).toBe(false);
+		});
+
+		it("returns true during explicit interest-only phase after construction", () => {
+			expect(isInterestOnlyMonth(9, config)).toBe(true);
+			expect(isInterestOnlyMonth(12, config)).toBe(true);
+			expect(isInterestOnlyMonth(14, config)).toBe(true); // Month 8 + 6 = 14
+		});
+
+		it("returns false during repayment phase", () => {
+			expect(isInterestOnlyMonth(15, config)).toBe(false);
+			expect(isInterestOnlyMonth(24, config)).toBe(false);
+		});
 	});
 });
 

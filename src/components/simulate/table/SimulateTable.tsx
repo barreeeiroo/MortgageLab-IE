@@ -197,6 +197,24 @@ export function SimulateTable({
 								{formatEuro(summary.totalPaid)}
 							</span>
 						</div>
+						{summary.extraInterestFromSelfBuild !== undefined &&
+							summary.extraInterestFromSelfBuild > 0 && (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className="flex items-center gap-1 text-red-600 dark:text-red-500 cursor-help">
+											<span className="font-medium">
+												{formatEuro(summary.extraInterestFromSelfBuild)} extra
+											</span>
+											<Info className="h-3.5 w-3.5" />
+										</div>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>
+											Extra interest vs paying principal during construction
+										</p>
+									</TooltipContent>
+								</Tooltip>
+							)}
 						{summary.monthsSaved > 0 && (
 							<Tooltip>
 								<TooltipTrigger asChild>

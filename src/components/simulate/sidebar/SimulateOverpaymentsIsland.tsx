@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
 import {
+	$constructionEndMonth,
 	$resolvedRatePeriods,
 	$simulationWarnings,
 } from "@/lib/stores/simulate/simulate-calculations";
@@ -40,6 +41,7 @@ export function SimulateOverpaymentsIsland() {
 	const warnings = useStore($simulationWarnings);
 	const resolvedRatePeriods = useStore($resolvedRatePeriods);
 	const overpaymentPolicies = useStore($overpaymentPolicies);
+	const constructionEndMonth = useStore($constructionEndMonth);
 
 	const [showAddOverpayment, setShowAddOverpayment] = useState(false);
 	const [editingOverpayment, setEditingOverpayment] = useState<
@@ -189,6 +191,9 @@ export function SimulateOverpaymentsIsland() {
 				overpaymentPolicies={overpaymentPolicies}
 				existingConfigs={overpaymentConfigs}
 				startDate={simulationState.input.startDate}
+				constructionEndMonth={
+					constructionEndMonth > 0 ? constructionEndMonth : undefined
+				}
 			/>
 
 			{/* Edit Overpayment Dialog */}
