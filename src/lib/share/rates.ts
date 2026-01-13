@@ -166,3 +166,73 @@ export function clearRatesShareParam(): void {
 export function hasRatesShareParam(): boolean {
 	return hasUrlParam(RATES_SHARE_PARAM);
 }
+
+/**
+ * Custom rates/perks share state encoding/decoding
+ * Uses a separate URL param to share only custom data without full rates state
+ */
+
+export const CUSTOM_SHARE_PARAM = "c";
+
+export interface CustomShareState {
+	customRates?: StoredCustomRate[];
+	customPerks?: StoredCustomPerk[];
+}
+
+interface CompressedCustomState {
+	r?: CompressedCustomRate[]; // rates
+	p?: CompressedCustomPerk[]; // perks
+}
+
+function compressCustomState(state: CustomShareState): CompressedCustomState {
+	return {
+		r:
+			state.customRates && state.customRates.length > 0
+				? state.customRates.map(compressCustomRate)
+				: undefined,
+		p:
+			state.customPerks && state.customPerks.length > 0
+				? state.customPerks.map(compressCustomPerk)
+				: undefined,
+	};
+}
+
+function decompressCustomState(
+	compressed: CompressedCustomState,
+): CustomShareState {
+	return {
+		customRates: compressed.r?.map(decompressCustomRate),
+		customPerks: compressed.p?.map(decompressCustomPerk),
+	};
+}
+
+/**
+ * Generate a shareable URL with only custom rates and perks
+ */
+export function generateCustomShareUrl(state: CustomShareState): string {
+	const compressed = compressCustomState(state);
+	return generateShareUrl(CUSTOM_SHARE_PARAM, compressed);
+}
+
+/**
+ * Parse custom share state from URL if present
+ */
+export function parseCustomShareState(): CustomShareState | null {
+	const compressed = parseShareParam<CompressedCustomState>(CUSTOM_SHARE_PARAM);
+	if (!compressed) return null;
+	return decompressCustomState(compressed);
+}
+
+/**
+ * Clear the custom share parameter from the URL
+ */
+export function clearCustomShareParam(): void {
+	clearUrlParam(CUSTOM_SHARE_PARAM);
+}
+
+/**
+ * Check if URL has custom share param
+ */
+export function hasCustomShareParam(): boolean {
+	return hasUrlParam(CUSTOM_SHARE_PARAM);
+}

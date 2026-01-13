@@ -2,6 +2,7 @@ import { Gift, HandCoins, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { ManageCustomPerksDialog } from "@/components/custom-perks/ManageCustomPerksDialog";
 import { LenderLogo } from "@/components/lenders/LenderLogo";
+import { ShareButton } from "@/components/ShareButton";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -38,6 +39,7 @@ import {
 import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Lender } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
+import { generateCustomShareUrl } from "@/lib/share/rates";
 import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 import type { StoredCustomRate } from "@/lib/stores/custom-rates";
 import { formatShortDate } from "@/lib/utils/date";
@@ -166,6 +168,13 @@ export function ManageCustomRatesDialog({
 		}
 		return "—";
 	}, []);
+
+	const handleShare = useCallback(async (): Promise<string> => {
+		return generateCustomShareUrl({
+			customRates: customRates.length > 0 ? customRates : undefined,
+			customPerks: customPerks.length > 0 ? customPerks : undefined,
+		});
+	}, [customRates, customPerks]);
 
 	return (
 		<>
@@ -308,11 +317,10 @@ export function ManageCustomRatesDialog({
 
 					{/* Sticky Footer */}
 					<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex items-center justify-between">
-						<p className="text-xs text-muted-foreground">
-							{customRates.length === 0
-								? "Custom rates are stored locally in your browser."
-								: `${customRates.length} custom rate${customRates.length === 1 ? "" : "s"}`}
-						</p>
+						<ShareButton
+							onShare={handleShare}
+							disabled={customRates.length === 0 && customPerks.length === 0}
+						/>
 						<div className="flex items-center gap-2">
 							<Button
 								variant="outline"

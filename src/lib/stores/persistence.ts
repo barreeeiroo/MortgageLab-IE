@@ -1,8 +1,11 @@
 import { toast } from "sonner";
 import type { RatesMode } from "@/lib/constants/rates";
 import {
+	clearCustomShareParam,
 	clearRatesShareParam,
+	hasCustomShareParam,
 	hasRatesShareParam,
+	parseCustomShareState,
 	parseRatesShareState,
 } from "@/lib/share/rates";
 import {
@@ -160,6 +163,82 @@ export function initializeStore(): void {
 			clearRatesShareParam();
 		}
 		return;
+	}
+
+	// Check for custom-only share param (?c=)
+	if (hasCustomShareParam()) {
+		const customState = parseCustomShareState();
+
+		if (customState) {
+			// Merge custom rates
+			if (customState.customRates && customState.customRates.length > 0) {
+				let existingRates: StoredCustomRate[] = [];
+				try {
+					const stored = localStorage.getItem(CUSTOM_RATES_STORAGE_KEY);
+					if (stored) {
+						existingRates = JSON.parse(stored);
+					}
+				} catch {
+					// Ignore parse errors
+				}
+
+				const existingIds = new Set(existingRates.map((r) => r.id));
+				const newRates = customState.customRates.filter(
+					(r: StoredCustomRate) => !existingIds.has(r.id),
+				);
+				const importedCount = newRates.length;
+				const skippedCount = customState.customRates.length - importedCount;
+
+				const merged = [...existingRates, ...newRates];
+				$storedCustomRates.set(merged);
+				localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(merged));
+
+				// Show toast notification for custom rates import
+				if (importedCount > 0 && skippedCount > 0) {
+					toast.success(
+						`Imported ${importedCount} custom rate${importedCount !== 1 ? "s" : ""}, ${skippedCount} skipped (already exist${skippedCount === 1 ? "s" : ""})`,
+					);
+				} else if (importedCount > 0) {
+					toast.success(
+						`Imported ${importedCount} custom rate${importedCount !== 1 ? "s" : ""}`,
+					);
+				} else if (skippedCount > 0) {
+					toast.info(
+						`${skippedCount} custom rate${skippedCount !== 1 ? "s" : ""} skipped (already exist${skippedCount === 1 ? "s" : ""})`,
+					);
+				}
+			}
+
+			// Merge custom perks
+			if (customState.customPerks && customState.customPerks.length > 0) {
+				let existingPerks: StoredCustomPerk[] = [];
+				try {
+					const stored = localStorage.getItem(CUSTOM_PERKS_STORAGE_KEY);
+					if (stored) {
+						existingPerks = JSON.parse(stored);
+					}
+				} catch {
+					// Ignore parse errors
+				}
+
+				const existingIds = new Set(existingPerks.map((p) => p.id));
+				const newPerks = customState.customPerks.filter(
+					(p: StoredCustomPerk) => !existingIds.has(p.id),
+				);
+				if (newPerks.length > 0) {
+					const merged = [...existingPerks, ...newPerks];
+					$storedCustomPerks.set(merged);
+					localStorage.setItem(
+						CUSTOM_PERKS_STORAGE_KEY,
+						JSON.stringify(merged),
+					);
+				}
+			}
+
+			// Clear URL param after loading
+			clearCustomShareParam();
+		}
+		// Don't return - continue to load form values from localStorage
 	}
 
 	// Synchronous path for normal page loads (most common case)

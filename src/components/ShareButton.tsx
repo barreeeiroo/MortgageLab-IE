@@ -21,6 +21,8 @@ interface ShareButtonProps {
 	className?: string;
 	/** Button size. Defaults to "sm". */
 	size?: ButtonProps["size"];
+	/** If true, disables the button. */
+	disabled?: boolean;
 }
 
 /**
@@ -33,6 +35,7 @@ export function ShareButton({
 	responsive = false,
 	className,
 	size = "sm",
+	disabled = false,
 }: ShareButtonProps) {
 	const [copied, setCopied] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -79,6 +82,7 @@ export function ShareButton({
 				size={size}
 				className={`gap-1.5 ${className ?? ""}`}
 				onClick={handleShare}
+				disabled={disabled}
 			>
 				{copied ? (
 					<>
