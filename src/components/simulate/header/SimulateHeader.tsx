@@ -115,6 +115,7 @@ export function SimulateHeader({
 		if (!summary) return;
 		setIsExporting(true);
 		try {
+			const shareUrl = await onShare();
 			await exportSimulationToPDF({
 				mortgageAmount,
 				mortgageTerm: mortgageTermMonths,
@@ -124,6 +125,7 @@ export function SimulateHeader({
 				ratePeriods,
 				overpaymentConfigs,
 				selfBuildConfig,
+				shareUrl,
 			});
 		} finally {
 			setIsExporting(false);
@@ -137,11 +139,15 @@ export function SimulateHeader({
 		ratePeriods,
 		overpaymentConfigs,
 		selfBuildConfig,
+		onShare,
 	]);
 
-	const handleExportPDFWithCharts = useCallback(() => {
+	const handleExportPDFWithCharts = useCallback(async () => {
 		if (!summary) return;
 		setIsExporting(true);
+
+		// Generate share URL before requesting chart capture
+		const shareUrl = await onShare();
 
 		// Request chart capture - the callback will be called with the images
 		requestChartCapture(async (chartImages: ChartImageData[]) => {
@@ -156,6 +162,7 @@ export function SimulateHeader({
 					overpaymentConfigs,
 					selfBuildConfig,
 					chartImages,
+					shareUrl,
 				});
 			} finally {
 				setIsExporting(false);
@@ -170,6 +177,7 @@ export function SimulateHeader({
 		ratePeriods,
 		overpaymentConfigs,
 		selfBuildConfig,
+		onShare,
 	]);
 
 	return (

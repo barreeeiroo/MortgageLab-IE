@@ -24,6 +24,7 @@ import {
 	addSectionHeader,
 	addStyledSectionHeader,
 	addTable,
+	addViewOnlineLink,
 	createPDFDocument,
 	downloadPDF,
 	type MetricVariant,
@@ -55,6 +56,8 @@ interface SimulateExportContext {
 	selfBuildConfig?: SelfBuildConfig;
 	// Chart images for PDF export (multiple charts with titles)
 	chartImages?: ChartImageData[];
+	/** Share URL to include in PDF export as "View Online" link */
+	shareUrl?: string;
 }
 
 // Excel column configurations
@@ -558,6 +561,11 @@ export async function exportSimulationToPDF(
 	});
 	const scheduleData = prepareScheduleDataForPDF(context.yearlySchedule);
 	await addTable(doc, scheduleData, y);
+
+	// Add "View Online" link if share URL provided
+	if (context.shareUrl) {
+		addViewOnlineLink(doc, context.shareUrl);
+	}
 
 	addFooter(doc);
 	downloadPDF(doc, "simulation");

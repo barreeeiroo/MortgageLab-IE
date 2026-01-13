@@ -15,6 +15,7 @@ Business logic layer. Components should be thin - move pure JS functions here.
 | share/       | URL compression and shareable link generation (rates, borrowing, breakeven) |
 | storage/     | localStorage persistence                                                 |
 | hooks/       | React custom hooks (e.g., `useIsDesktop`)                                |
+| export/      | PDF/Excel/CSV export (lazy-loaded jsPDF, ExcelJS). Includes share URL in PDFs. |
 
 ## Key Patterns
 

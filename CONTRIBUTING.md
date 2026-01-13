@@ -55,6 +55,7 @@ bun run build
 | `data/`      | Data fetching and filtering (load rates, filter by LTV/BER/buyer type)             |
 | `share/`     | URL compression for shareable links (rates, borrowing, breakeven)                  |
 | `storage/`   | LocalStorage persistence for form state                                            |
+| `export/`    | PDF/Excel/CSV export with lazy-loaded jsPDF and ExcelJS                            |
 
 ## Technology Stack
 

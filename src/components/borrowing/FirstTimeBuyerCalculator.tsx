@@ -273,7 +273,7 @@ export function FirstTimeBuyerCalculator() {
 		}
 	}, [shouldAutoCalculate, isFormComplete, isAnyAgeTooOld, calculate]);
 
-	const handleShare = async (): Promise<string> => {
+	const handleShare = useCallback(async (): Promise<string> => {
 		const state: FtbShareState = {
 			type: "ftb",
 			applicationType,
@@ -295,12 +295,25 @@ export function FirstTimeBuyerCalculator() {
 			}),
 		};
 		return generateBorrowingShareUrl(state);
-	};
+	}, [
+		applicationType,
+		income1,
+		income2,
+		birthDate1,
+		birthDate2,
+		savings,
+		berRating,
+		isSelfBuild,
+		siteValue,
+		propertyType,
+		priceIncludesVAT,
+	]);
 
 	const handleExport = useCallback(async () => {
 		if (!calculationResult) return;
 		setIsExporting(true);
 		try {
+			const shareUrl = await handleShare();
 			await exportAffordabilityToPDF({
 				calculatorType: "ftb",
 				result: calculationResult.result,
@@ -310,11 +323,12 @@ export function FirstTimeBuyerCalculator() {
 				hasSavingsShortfall: calculationResult.hasSavingsShortfall,
 				maxMortgageByIncome: calculationResult.maxMortgageByIncome,
 				requiredDeposit: calculationResult.requiredDeposit,
+				shareUrl,
 			});
 		} finally {
 			setIsExporting(false);
 		}
-	}, [calculationResult, propertyType, priceIncludesVAT]);
+	}, [calculationResult, propertyType, priceIncludesVAT, handleShare]);
 
 	return (
 		<div className="space-y-6">

@@ -33,6 +33,11 @@ drawdowns and interest-only construction periods.
 * **Rent vs Buy** - Compare the long-term costs of renting versus buying
 * **Remortgage Breakeven** - Calculate when switching to a new rate pays off
 
+### Export & Share
+
+Export calculations to PDF, Excel, or CSV. Share results via URL with all data
+encoded in the link, no server storage required.
+
 ## Privacy
 
 * All calculations run locally in your browser

@@ -16,6 +16,7 @@ import {
 	addKeyValue,
 	addMetricRow,
 	addStyledSectionHeader,
+	addViewOnlineLink,
 	createPDFDocument,
 	downloadPDF,
 } from "./format/pdf";
@@ -43,6 +44,8 @@ interface AffordabilityExportContext {
 	rentalIncome?: number;
 	rentalYield?: number;
 	stressTestPassed?: boolean;
+	/** Share URL to include in PDF export as "View Online" link */
+	shareUrl?: string;
 }
 
 const CALCULATOR_TITLES: Record<string, string> = {
@@ -271,6 +274,11 @@ export async function exportAffordabilityToPDF(
 				y,
 			);
 		}
+	}
+
+	// Add "View Online" link if share URL provided
+	if (context.shareUrl) {
+		addViewOnlineLink(doc, context.shareUrl);
 	}
 
 	addFooter(doc);

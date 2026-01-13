@@ -15,6 +15,7 @@ import {
 	addMetricRow,
 	addStyledSectionHeader,
 	addTable,
+	addViewOnlineLink,
 	createPDFDocument,
 	downloadPDF,
 } from "./format/pdf";
@@ -36,6 +37,8 @@ interface RentVsBuyExportContext {
 	deposit?: number;
 	mortgageTerm?: number;
 	interestRate?: number;
+	/** Share URL to include in PDF export as "View Online" link */
+	shareUrl?: string;
 }
 
 /**
@@ -163,6 +166,11 @@ export async function exportRentVsBuyToPDF(
 		);
 	}
 
+	// Add "View Online" link if share URL provided
+	if (context.shareUrl) {
+		addViewOnlineLink(doc, context.shareUrl);
+	}
+
 	addFooter(doc);
 	downloadPDF(doc, "breakeven-rentvsbuy");
 }
@@ -196,6 +204,8 @@ interface RemortgageExportContext {
 	outstandingBalance?: number;
 	currentRate?: number;
 	newRate?: number;
+	/** Share URL to include in PDF export as "View Online" link */
+	shareUrl?: string;
 }
 
 /**
@@ -362,6 +372,11 @@ export async function exportRemortgageToPDF(
 			formatPercentForExport(context.newRate / 100, 2),
 			y,
 		);
+	}
+
+	// Add "View Online" link if share URL provided
+	if (context.shareUrl) {
+		addViewOnlineLink(doc, context.shareUrl);
 	}
 
 	addFooter(doc);

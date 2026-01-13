@@ -673,3 +673,41 @@ export function addStyledSectionHeader(
 
 	return y + 8;
 }
+
+/**
+ * Adds a "View Online" link section at the end of the document.
+ * Should be called before addFooter().
+ */
+export function addViewOnlineLink(
+	doc: Awaited<ReturnType<typeof createPDFDocument>>,
+	shareUrl: string,
+): void {
+	const pageCount = doc.getNumberOfPages();
+	doc.setPage(pageCount);
+
+	// Get page dimensions
+	const pageHeight = doc.internal.pageSize.getHeight();
+	const footerY = pageHeight - 10; // Footer position
+	const linkY = footerY - 8; // Position above footer
+
+	// Draw a subtle divider above the link
+	doc.setDrawColor(...PDF_COLORS.borderColor);
+	doc.setLineWidth(PDF_LAYOUT.dividerWidth);
+	doc.line(
+		PDF_LAYOUT.marginLeft,
+		linkY - 4,
+		doc.internal.pageSize.getWidth() - PDF_LAYOUT.marginRight,
+		linkY - 4,
+	);
+
+	// Add clickable link with friendly text
+	doc.setFontSize(9);
+	doc.setFont("helvetica", "normal");
+	doc.setTextColor(0, 0, 238);
+	doc.textWithLink("View this report online", PDF_LAYOUT.marginLeft, linkY, {
+		url: shareUrl,
+	});
+
+	// Reset colors
+	doc.setTextColor(0);
+}

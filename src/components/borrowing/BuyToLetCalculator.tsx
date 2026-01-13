@@ -284,7 +284,7 @@ export function BuyToLetCalculator() {
 			: "text-destructive"
 		: "";
 
-	const handleShare = async (): Promise<string> => {
+	const handleShare = useCallback(async (): Promise<string> => {
 		const state: BtlShareState = {
 			type: "btl",
 			applicationType,
@@ -302,7 +302,18 @@ export function BuyToLetCalculator() {
 			}),
 		};
 		return generateBorrowingShareUrl(state);
-	};
+	}, [
+		applicationType,
+		income1,
+		income2,
+		birthDate1,
+		birthDate2,
+		deposit,
+		expectedRent,
+		berRating,
+		propertyType,
+		priceIncludesVAT,
+	]);
 
 	const handleExport = useCallback(async () => {
 		if (!calculationResult) return;
@@ -313,6 +324,7 @@ export function BuyToLetCalculator() {
 			const rentalYield = (annualRent / result.propertyValue) * 100;
 			const stressTestPassed =
 				result.rentalCoverage >= RENTAL_COVERAGE_RATIO * 100;
+			const shareUrl = await handleShare();
 			await exportAffordabilityToPDF({
 				calculatorType: "btl",
 				result,
@@ -322,11 +334,12 @@ export function BuyToLetCalculator() {
 				rentalIncome: result.monthlyRent,
 				rentalYield,
 				stressTestPassed,
+				shareUrl,
 			});
 		} finally {
 			setIsExporting(false);
 		}
-	}, [calculationResult, propertyType, priceIncludesVAT]);
+	}, [calculationResult, propertyType, priceIncludesVAT, handleShare]);
 
 	return (
 		<div className="space-y-6">

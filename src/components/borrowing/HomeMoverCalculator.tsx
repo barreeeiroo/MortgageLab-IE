@@ -283,7 +283,7 @@ export function HomeMoverCalculator() {
 		}
 	}, [shouldAutoCalculate, isFormComplete, isAnyAgeTooOld, calculate]);
 
-	const handleShare = async (): Promise<string> => {
+	const handleShare = useCallback(async (): Promise<string> => {
 		const state: MoverShareState = {
 			type: "mover",
 			applicationType,
@@ -307,7 +307,21 @@ export function HomeMoverCalculator() {
 			}),
 		};
 		return generateBorrowingShareUrl(state);
-	};
+	}, [
+		applicationType,
+		income1,
+		income2,
+		birthDate1,
+		birthDate2,
+		currentPropertyValue,
+		outstandingMortgage,
+		additionalSavings,
+		berRating,
+		isSelfBuild,
+		siteValue,
+		propertyType,
+		priceIncludesVAT,
+	]);
 
 	const handleExport = useCallback(async () => {
 		if (!calculationResult) return;
@@ -316,6 +330,7 @@ export function HomeMoverCalculator() {
 			const equity =
 				parseCurrency(currentPropertyValue) -
 				parseCurrency(outstandingMortgage);
+			const shareUrl = await handleShare();
 			await exportAffordabilityToPDF({
 				calculatorType: "mover",
 				result: calculationResult.result,
@@ -328,6 +343,7 @@ export function HomeMoverCalculator() {
 				currentPropertyValue: parseCurrency(currentPropertyValue),
 				mortgageBalance: parseCurrency(outstandingMortgage),
 				equity,
+				shareUrl,
 			});
 		} finally {
 			setIsExporting(false);
@@ -338,6 +354,7 @@ export function HomeMoverCalculator() {
 		priceIncludesVAT,
 		currentPropertyValue,
 		outstandingMortgage,
+		handleShare,
 	]);
 
 	return (

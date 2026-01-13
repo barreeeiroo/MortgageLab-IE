@@ -45,6 +45,7 @@ export function BreakevenResultIsland() {
 		if (!rentVsBuyResult) return;
 		setIsExporting(true);
 		try {
+			const shareUrl = generateBreakevenShareUrl(rentVsBuyResult.shareState);
 			await exportRentVsBuyToPDF({
 				result: rentVsBuyResult.result,
 				monthlyRent: rentVsBuyResult.monthlyRent,
@@ -55,6 +56,7 @@ export function BreakevenResultIsland() {
 				interestRate: Number.parseFloat(
 					rentVsBuyResult.shareState.interestRate,
 				),
+				shareUrl,
 			});
 		} finally {
 			setIsExporting(false);
@@ -65,6 +67,7 @@ export function BreakevenResultIsland() {
 		if (!remortgageResult) return;
 		setIsExporting(true);
 		try {
+			const shareUrl = generateBreakevenShareUrl(remortgageResult.shareState);
 			await exportRemortgageToPDF({
 				result: remortgageResult.result,
 				remainingTermMonths: remortgageResult.remainingTermMonths,
@@ -74,6 +77,7 @@ export function BreakevenResultIsland() {
 				),
 				currentRate: Number.parseFloat(remortgageResult.shareState.currentRate),
 				newRate: Number.parseFloat(remortgageResult.shareState.newRate),
+				shareUrl,
 			});
 		} finally {
 			setIsExporting(false);

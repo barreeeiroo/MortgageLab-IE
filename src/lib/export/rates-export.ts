@@ -24,6 +24,7 @@ import {
 	addBrandedHeader,
 	addFooter,
 	addTableWithLogos,
+	addViewOnlineLink,
 	createPDFDocument,
 	downloadPDF,
 } from "./format/pdf";
@@ -41,6 +42,8 @@ interface RatesExportContext {
 	berRating?: BerRating;
 	columnVisibility?: VisibilityState;
 	sorting?: SortingState;
+	/** Share URL to include in PDF export as "View Online" link */
+	shareUrl?: string;
 }
 
 /** @internal Exported for testing */
@@ -515,6 +518,11 @@ export async function exportRatesToPDF(
 		logoSize: 4,
 		lenderNameToId,
 	});
+
+	// Add "View Online" link if share URL provided
+	if (context.shareUrl) {
+		addViewOnlineLink(doc, context.shareUrl);
+	}
 
 	// Add footer
 	addFooter(doc);

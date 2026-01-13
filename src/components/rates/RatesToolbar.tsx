@@ -149,11 +149,24 @@ export function RatesToolbar({
 	const handleExportPDF = useCallback(async () => {
 		setIsExporting(true);
 		try {
-			await exportRatesToPDF(exportContext);
+			// Generate share URL for the PDF
+			const customRates = $storedCustomRates.get();
+			const customPerks = $storedCustomPerks.get();
+			const shareUrl = generateRatesShareUrl({
+				input: inputValues,
+				table: {
+					columnVisibility,
+					columnFilters,
+					sorting,
+				},
+				customRates: customRates.length > 0 ? customRates : undefined,
+				customPerks: customPerks.length > 0 ? customPerks : undefined,
+			});
+			await exportRatesToPDF({ ...exportContext, shareUrl });
 		} finally {
 			setIsExporting(false);
 		}
-	}, [exportContext]);
+	}, [exportContext, inputValues, columnVisibility, columnFilters, sorting]);
 
 	const handleShare = useCallback(async (): Promise<string> => {
 		// Read custom rates and perks on demand (no subscription needed)
