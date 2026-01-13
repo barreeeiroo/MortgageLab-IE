@@ -1,6 +1,14 @@
-import { Check, Share2 } from "lucide-react";
+import { Check, Clipboard, Share2 } from "lucide-react";
 import { useCallback, useState } from "react";
+import { generateQRCodeWithLogo } from "@/lib/share/qrcode";
 import { Button, type ButtonProps } from "./ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "./ui/dialog";
 
 interface ShareButtonProps {
 	/** Function that returns the URL to copy. ShareButton handles clipboard copy. */
@@ -16,8 +24,8 @@ interface ShareButtonProps {
 }
 
 /**
- * A reusable share button component with "Copied!" feedback.
- * onShare returns a URL string, and ShareButton handles clipboard copy.
+ * A reusable share button that shows a QR code dialog.
+ * Falls back to clipboard copy if QR generation fails.
  */
 export function ShareButton({
 	onShare,
@@ -27,44 +35,119 @@ export function ShareButton({
 	size = "sm",
 }: ShareButtonProps) {
 	const [copied, setCopied] = useState(false);
+	const [dialogOpen, setDialogOpen] = useState(false);
+	const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+	const [shareUrl, setShareUrl] = useState<string | null>(null);
+	const [dialogCopied, setDialogCopied] = useState(false);
 
-	const handleClick = useCallback(async () => {
+	const handleShare = useCallback(async () => {
 		try {
 			const url = await onShare();
-			await navigator.clipboard.writeText(url);
-			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
+			setShareUrl(url);
+
+			// Try to generate QR code
+			try {
+				const dataUrl = await generateQRCodeWithLogo(url, 256);
+				setQrDataUrl(dataUrl);
+				setDialogOpen(true);
+			} catch {
+				// QR generation failed, fall back to clipboard copy
+				await navigator.clipboard.writeText(url);
+				setCopied(true);
+				setTimeout(() => setCopied(false), 2000);
+			}
 		} catch {
-			// Share or clipboard copy failed
+			// Share failed
 		}
 	}, [onShare]);
 
+	const handleDialogCopy = useCallback(async () => {
+		if (!shareUrl) return;
+		try {
+			await navigator.clipboard.writeText(shareUrl);
+			setDialogCopied(true);
+			setTimeout(() => setDialogCopied(false), 2000);
+		} catch {
+			// Clipboard copy failed
+		}
+	}, [shareUrl]);
+
 	return (
-		<Button
-			variant="outline"
-			size={size}
-			className={`gap-1.5 ${className ?? ""}`}
-			onClick={handleClick}
-		>
-			{copied ? (
-				<>
-					<Check className="h-4 w-4" />
-					{responsive ? (
-						<span className="hidden sm:inline">Copied!</span>
-					) : (
-						"Copied!"
-					)}
-				</>
-			) : (
-				<>
-					<Share2 className="h-4 w-4" />
-					{responsive ? (
-						<span className="hidden sm:inline">{label}</span>
-					) : (
-						label
-					)}
-				</>
-			)}
-		</Button>
+		<>
+			<Button
+				variant="outline"
+				size={size}
+				className={`gap-1.5 ${className ?? ""}`}
+				onClick={handleShare}
+			>
+				{copied ? (
+					<>
+						<Check className="h-4 w-4" />
+						{responsive ? (
+							<span className="hidden sm:inline">Copied!</span>
+						) : (
+							"Copied!"
+						)}
+					</>
+				) : (
+					<>
+						<Share2 className="h-4 w-4" />
+						{responsive ? (
+							<span className="hidden sm:inline">{label}</span>
+						) : (
+							label
+						)}
+					</>
+				)}
+			</Button>
+
+			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+				<DialogContent className="sm:max-w-[320px]">
+					<DialogHeader>
+						<DialogTitle>Share URL</DialogTitle>
+						<DialogDescription>
+							Scan this QR code to open the link on another device.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="flex flex-col items-center gap-4">
+						{qrDataUrl && (
+							<img
+								src={qrDataUrl}
+								alt="QR Code"
+								className="rounded-lg border"
+								width={256}
+								height={256}
+							/>
+						)}
+						<div className="flex w-full items-center gap-3">
+							<div className="h-px flex-1 bg-border" />
+							<span className="text-muted-foreground text-xs">or</span>
+							<div className="h-px flex-1 bg-border" />
+						</div>
+						<DialogDescription>
+							Copy the URL to share via message or email.
+						</DialogDescription>
+						<Button
+							variant="outline"
+							size="sm"
+							className="gap-1.5"
+							onClick={handleDialogCopy}
+						>
+							{dialogCopied ? (
+								<>
+									<Check className="h-4 w-4" />
+									Copied!
+								</>
+							) : (
+								<>
+									<Clipboard className="h-4 w-4" />
+									Copy URL to Clipboard
+								</>
+							)}
+						</Button>
+					</div>
+				</DialogContent>
+			</Dialog>
+		</>
 	);
 }
