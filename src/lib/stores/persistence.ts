@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import type { RatesMode } from "@/lib/constants/rates";
 import {
 	clearRatesShareParam,
@@ -79,25 +80,58 @@ export function initializeStore(): void {
 			}
 
 			// Merge shared custom rates with existing ones
+			// Read directly from localStorage since the store may not be initialized yet
 			if (sharedState.customRates && sharedState.customRates.length > 0) {
-				const existingRates = $storedCustomRates.get();
+				let existingRates: StoredCustomRate[] = [];
+				try {
+					const stored = localStorage.getItem(CUSTOM_RATES_STORAGE_KEY);
+					if (stored) {
+						existingRates = JSON.parse(stored);
+					}
+				} catch {
+					// Ignore parse errors
+				}
+
 				const existingIds = new Set(existingRates.map((r) => r.id));
 				const newRates = sharedState.customRates.filter(
 					(r: StoredCustomRate) => !existingIds.has(r.id),
 				);
-				if (newRates.length > 0) {
-					const merged = [...existingRates, ...newRates];
-					$storedCustomRates.set(merged);
-					localStorage.setItem(
-						CUSTOM_RATES_STORAGE_KEY,
-						JSON.stringify(merged),
+				const importedCount = newRates.length;
+				const skippedCount = sharedState.customRates.length - importedCount;
+
+				const merged = [...existingRates, ...newRates];
+				$storedCustomRates.set(merged);
+				localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(merged));
+
+				// Show toast notification for custom rates import
+				if (importedCount > 0 && skippedCount > 0) {
+					toast.success(
+						`Imported ${importedCount} custom rate${importedCount !== 1 ? "s" : ""}, ${skippedCount} skipped (already exist${skippedCount === 1 ? "s" : ""})`,
+					);
+				} else if (importedCount > 0) {
+					toast.success(
+						`Imported ${importedCount} custom rate${importedCount !== 1 ? "s" : ""}`,
+					);
+				} else if (skippedCount > 0) {
+					toast.info(
+						`${skippedCount} custom rate${skippedCount !== 1 ? "s" : ""} skipped (already exist${skippedCount === 1 ? "s" : ""})`,
 					);
 				}
 			}
 
 			// Merge shared custom perks with existing ones
+			// Read directly from localStorage since the store may not be initialized yet
 			if (sharedState.customPerks && sharedState.customPerks.length > 0) {
-				const existingPerks = $storedCustomPerks.get();
+				let existingPerks: StoredCustomPerk[] = [];
+				try {
+					const stored = localStorage.getItem(CUSTOM_PERKS_STORAGE_KEY);
+					if (stored) {
+						existingPerks = JSON.parse(stored);
+					}
+				} catch {
+					// Ignore parse errors
+				}
+
 				const existingIds = new Set(existingPerks.map((p) => p.id));
 				const newPerks = sharedState.customPerks.filter(
 					(p: StoredCustomPerk) => !existingIds.has(p.id),

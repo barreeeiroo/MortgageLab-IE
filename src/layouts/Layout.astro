@@ -1,6 +1,7 @@
 ---
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import { Toaster } from "../components/ui/sonner";
 import { SITE } from "@/lib/constants/site";
 import { getPath } from "../lib/utils/path";
 import "../styles/global.css";
@@ -55,5 +56,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 			<slot />
 		</main>
 		<Footer />
+		<Toaster client:load />
 	</body>
 </html>
