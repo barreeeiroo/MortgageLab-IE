@@ -1,5 +1,6 @@
 import { useStore } from "@nanostores/react";
 import { useCallback, useEffect } from "react";
+import { toast } from "sonner";
 import { $allPerks, initializeCustomPerks } from "@/lib/stores/custom-perks";
 import {
 	$customRates,
@@ -66,7 +67,23 @@ export function RatesTableIsland() {
 
 	// Initialize stores on mount
 	useEffect(() => {
-		initializeStore();
+		const importResult = initializeStore();
+		if (importResult) {
+			const { imported, skipped } = importResult;
+			if (imported > 0 && skipped > 0) {
+				toast.success(
+					`Imported ${imported} custom rate${imported !== 1 ? "s" : ""}, ${skipped} skipped (already exist${skipped === 1 ? "s" : ""})`,
+				);
+			} else if (imported > 0) {
+				toast.success(
+					`Imported ${imported} custom rate${imported !== 1 ? "s" : ""}`,
+				);
+			} else if (skipped > 0) {
+				toast.info(
+					`${skipped} custom rate${skipped !== 1 ? "s" : ""} skipped (already exist${skipped === 1 ? "s" : ""})`,
+				);
+			}
+		}
 		initializeTableState();
 		initializeCustomRates();
 		initializeCustomPerks();

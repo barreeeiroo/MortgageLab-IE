@@ -4,19 +4,7 @@
  */
 
 import logoSvg from "@/assets/logos/mortgagelab-logo.min.svg";
-
-let qrcodeModule: typeof import("qrcode") | null = null;
-
-/**
- * Lazily loads qrcode library (~12KB).
- * Cached after first load.
- */
-async function getQRCode() {
-	if (!qrcodeModule) {
-		qrcodeModule = await import("qrcode");
-	}
-	return qrcodeModule;
-}
+import { getQRCode } from "./loaders";
 
 // Cache for logo image
 let logoImage: HTMLImageElement | null = null;

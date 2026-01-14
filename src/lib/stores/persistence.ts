@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import type { RatesMode } from "@/lib/constants/rates";
 import {
 	clearCustomShareParam,
@@ -36,6 +35,12 @@ import {
 // Track initialization state
 let initialized = false;
 
+/** Result of importing shared custom rates */
+export interface ImportResult {
+	imported: number;
+	skipped: number;
+}
+
 // Get mode from URL hash
 function getModeFromHash(): RatesMode | null {
 	if (typeof window === "undefined") return null;
@@ -47,9 +52,12 @@ function getModeFromHash(): RatesMode | null {
 }
 
 // Initialize store from localStorage or URL params
-export function initializeStore(): void {
-	if (typeof window === "undefined" || initialized) return;
+// Returns import result if custom rates were shared via URL
+export function initializeStore(): ImportResult | null {
+	if (typeof window === "undefined" || initialized) return null;
 	initialized = true;
+
+	let importResult: ImportResult | null = null;
 
 	// If there's a share param, load shared state
 	if (hasRatesShareParam()) {
@@ -106,20 +114,8 @@ export function initializeStore(): void {
 				$storedCustomRates.set(merged);
 				localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(merged));
 
-				// Show toast notification for custom rates import
-				if (importedCount > 0 && skippedCount > 0) {
-					toast.success(
-						`Imported ${importedCount} custom rate${importedCount !== 1 ? "s" : ""}, ${skippedCount} skipped (already exist${skippedCount === 1 ? "s" : ""})`,
-					);
-				} else if (importedCount > 0) {
-					toast.success(
-						`Imported ${importedCount} custom rate${importedCount !== 1 ? "s" : ""}`,
-					);
-				} else if (skippedCount > 0) {
-					toast.info(
-						`${skippedCount} custom rate${skippedCount !== 1 ? "s" : ""} skipped (already exist${skippedCount === 1 ? "s" : ""})`,
-					);
-				}
+				// Track import result for toast notification
+				importResult = { imported: importedCount, skipped: skippedCount };
 			}
 
 			// Merge shared custom perks with existing ones
@@ -162,7 +158,7 @@ export function initializeStore(): void {
 			// Clear URL params after loading
 			clearRatesShareParam();
 		}
-		return;
+		return importResult;
 	}
 
 	// Check for custom-only share param (?c=)
@@ -193,20 +189,8 @@ export function initializeStore(): void {
 				$storedCustomRates.set(merged);
 				localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(merged));
 
-				// Show toast notification for custom rates import
-				if (importedCount > 0 && skippedCount > 0) {
-					toast.success(
-						`Imported ${importedCount} custom rate${importedCount !== 1 ? "s" : ""}, ${skippedCount} skipped (already exist${skippedCount === 1 ? "s" : ""})`,
-					);
-				} else if (importedCount > 0) {
-					toast.success(
-						`Imported ${importedCount} custom rate${importedCount !== 1 ? "s" : ""}`,
-					);
-				} else if (skippedCount > 0) {
-					toast.info(
-						`${skippedCount} custom rate${skippedCount !== 1 ? "s" : ""} skipped (already exist${skippedCount === 1 ? "s" : ""})`,
-					);
-				}
+				// Track import result for toast notification
+				importResult = { imported: importedCount, skipped: skippedCount };
 			}
 
 			// Merge custom perks
@@ -266,6 +250,8 @@ export function initializeStore(): void {
 	) {
 		$compareState.set(savedCompareState);
 	}
+
+	return importResult;
 }
 
 // Save form values to localStorage
