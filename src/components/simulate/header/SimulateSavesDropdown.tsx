@@ -126,19 +126,6 @@ export function SimulateSavesDropdown() {
 
 	return (
 		<>
-			{/* Save button */}
-			{hasData && (
-				<Button
-					variant="outline"
-					size="sm"
-					className="gap-1.5"
-					onClick={handleSaveNew}
-				>
-					<Save className="h-4 w-4" />
-					Save
-				</Button>
-			)}
-
 			{/* Load dropdown */}
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
@@ -196,6 +183,19 @@ export function SimulateSavesDropdown() {
 					)}
 				</DropdownMenuContent>
 			</DropdownMenu>
+
+			{/* Save button */}
+			{hasData && (
+				<Button
+					variant="outline"
+					size="sm"
+					className="gap-1.5"
+					onClick={handleSaveNew}
+				>
+					<Save className="h-4 w-4" />
+					Save
+				</Button>
+			)}
 
 			{/* Save Dialog */}
 			<Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>

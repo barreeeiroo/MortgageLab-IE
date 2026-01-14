@@ -220,12 +220,12 @@ export function SimulateChartsContainer({
 
 	return (
 		<>
-			<Card>
+			<Card className="overflow-hidden">
 				<CardHeader className="pb-2">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<LineChart className="h-4 w-4 text-muted-foreground" />
-							<CardTitle>Mortgage Projection</CardTitle>
+					<div className="flex flex-wrap items-center justify-between gap-2">
+						<div className="flex items-center gap-2 min-w-0">
+							<LineChart className="h-4 w-4 shrink-0 text-muted-foreground" />
+							<CardTitle className="truncate">Mortgage Projection</CardTitle>
 						</div>
 						<div className="flex items-center gap-2">
 							<Button
@@ -237,7 +237,9 @@ export function SimulateChartsContainer({
 								title="Download chart as PNG"
 							>
 								<ImageDown className="h-4 w-4" />
-								{isExporting ? "Saving..." : "Save"}
+								<span className="hidden sm:inline">
+									{isExporting ? "Saving..." : "Save"}
+								</span>
 							</Button>
 							<Tabs
 								value={granularity}
@@ -247,13 +249,16 @@ export function SimulateChartsContainer({
 							>
 								<TabsList className="h-8">
 									<TabsTrigger value="yearly" className="text-xs px-2">
-										Yearly
+										<span className="sm:hidden">Y</span>
+										<span className="hidden sm:inline">Yearly</span>
 									</TabsTrigger>
 									<TabsTrigger value="quarterly" className="text-xs px-2">
-										Quarterly
+										<span className="sm:hidden">Q</span>
+										<span className="hidden sm:inline">Quarterly</span>
 									</TabsTrigger>
 									<TabsTrigger value="monthly" className="text-xs px-2">
-										Monthly
+										<span className="sm:hidden">M</span>
+										<span className="hidden sm:inline">Monthly</span>
 									</TabsTrigger>
 								</TabsList>
 							</Tabs>

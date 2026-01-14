@@ -1,8 +1,10 @@
+import { useStore } from "@nanostores/react";
 import {
 	AlertTriangle,
 	Banknote,
 	CalendarClock,
 	Download,
+	GitCompare,
 	Home,
 	Leaf,
 	Percent,
@@ -15,11 +17,24 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { BerRating } from "@/lib/constants/ber";
 import {
 	type ChartImageData,
@@ -35,6 +50,7 @@ import type {
 	SimulationSummary,
 } from "@/lib/schemas/simulate";
 import { requestChartCapture } from "@/lib/stores/simulate/simulate-chart-capture";
+import { $hasSavedSimulations } from "@/lib/stores/simulate/simulate-saves";
 import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
 import { formatTermDisplay } from "@/lib/utils/term";
 import { SimulateSavesDropdown } from "./SimulateSavesDropdown";
@@ -77,6 +93,8 @@ export function SimulateHeader({
 	onShare,
 }: SimulateHeaderProps) {
 	const [isExporting, setIsExporting] = useState(false);
+	const [compareDialogOpen, setCompareDialogOpen] = useState(false);
+	const hasSavedSimulations = useStore($hasSavedSimulations);
 
 	// Calculate LTV
 	const ltv = propertyValue > 0 ? (mortgageAmount / propertyValue) * 100 : 0;
@@ -184,19 +202,37 @@ export function SimulateHeader({
 	return (
 		<div className="space-y-4">
 			{/* Page Header */}
-			<div className="flex items-center justify-between">
-				<div>
-					<h1 className="text-2xl font-bold tracking-tight mb-1">
-						Mortgage Simulator
-					</h1>
-					<p className="text-muted-foreground text-sm">
-						Simulate your mortgage with different rates, overpayments, and
-						scenarios.
-					</p>
-				</div>
-				{hasRequiredData && (
-					<div className="flex gap-2">
+			{/* Page title - always visible */}
+			<div>
+				<h1 className="text-2xl font-bold tracking-tight mb-1">
+					Mortgage Simulator
+				</h1>
+				<p className="text-muted-foreground text-sm">
+					Simulate your mortgage with different rates, overpayments, and
+					scenarios.
+				</p>
+			</div>
+
+			{/* Action buttons - only when simulation is active */}
+			{hasRequiredData && (
+				<div className="flex flex-wrap items-center justify-between gap-2">
+					{/* Left: State actions */}
+					<div className="flex items-center gap-2">
 						<SimulateSavesDropdown />
+						<div className="border-l h-6" />
+						<Button
+							variant="ghost"
+							size="sm"
+							className="gap-1.5"
+							onClick={onReset}
+						>
+							<RotateCcw className="h-4 w-4" />
+							<span className="hidden sm:inline">Reset</span>
+						</Button>
+					</div>
+
+					{/* Right: Output + Compare */}
+					<div className="flex items-center gap-2">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button
@@ -206,7 +242,9 @@ export function SimulateHeader({
 									disabled={!canExport || isExporting}
 								>
 									<Download className="h-4 w-4" />
-									{isExporting ? "Exporting..." : "Export"}
+									<span className="hidden sm:inline">
+										{isExporting ? "Exporting..." : "Export"}
+									</span>
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end">
@@ -221,19 +259,41 @@ export function SimulateHeader({
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
-						<ShareButton onShare={onShare} />
-						<Button
-							variant="outline"
-							size="sm"
-							className="gap-1.5"
-							onClick={onReset}
-						>
-							<RotateCcw className="h-4 w-4" />
-							Reset
-						</Button>
+						<ShareButton onShare={onShare} responsive />
+						<div className="border-l h-6" />
+						{hasSavedSimulations ? (
+							<Button
+								variant="outline"
+								size="sm"
+								className="gap-1.5"
+								onClick={() => setCompareDialogOpen(true)}
+							>
+								<GitCompare className="h-4 w-4" />
+								Compare
+							</Button>
+						) : (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span>
+										<Button
+											variant="outline"
+											size="sm"
+											className="gap-1.5"
+											disabled
+										>
+											<GitCompare className="h-4 w-4" />
+											Compare
+										</Button>
+									</span>
+								</TooltipTrigger>
+								<TooltipContent>
+									Save at least one simulation to compare
+								</TooltipContent>
+							</Tooltip>
+						)}
 					</div>
-				)}
-			</div>
+				</div>
+			)}
 
 			{/* Summary when data is present */}
 			{hasRequiredData && (
@@ -328,6 +388,27 @@ export function SimulateHeader({
 						</AlertDescription>
 					</Alert>
 				)}
+
+			{/* Compare Dialog */}
+			<Dialog open={compareDialogOpen} onOpenChange={setCompareDialogOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Compare Simulations</DialogTitle>
+						<DialogDescription>
+							This feature is coming soon. You'll be able to compare multiple
+							saved simulations side by side.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							onClick={() => setCompareDialogOpen(false)}
+						>
+							Close
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
