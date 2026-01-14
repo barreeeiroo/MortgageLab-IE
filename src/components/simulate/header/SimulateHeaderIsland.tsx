@@ -18,6 +18,7 @@ import {
 	$simulationSummary,
 	$yearlySchedule,
 } from "@/lib/stores/simulate/simulate-calculations";
+import { initializeSavedSimulations } from "@/lib/stores/simulate/simulate-saves";
 import {
 	$hasRequiredData,
 	$simulationState,
@@ -40,6 +41,7 @@ export function SimulateHeaderIsland() {
 	// Initialize stores on mount
 	useEffect(() => {
 		initializeCustomRates();
+		initializeSavedSimulations();
 		fetchRatesData();
 
 		// Check for share URL first
@@ -53,6 +55,7 @@ export function SimulateHeaderIsland() {
 						addCustomRate(rate);
 					}
 				}
+
 				// Set the simulation state
 				setSimulationState(parsed.state);
 				markInitialized();

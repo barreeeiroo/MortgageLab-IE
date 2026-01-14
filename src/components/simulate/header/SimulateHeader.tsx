@@ -37,6 +37,7 @@ import type {
 import { requestChartCapture } from "@/lib/stores/simulate/simulate-chart-capture";
 import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
 import { formatTermDisplay } from "@/lib/utils/term";
+import { SimulateSavesDropdown } from "./SimulateSavesDropdown";
 
 interface SimulateHeaderProps {
 	hasRequiredData: boolean;
@@ -195,6 +196,7 @@ export function SimulateHeader({
 				</div>
 				{hasRequiredData && (
 					<div className="flex gap-2">
+						<SimulateSavesDropdown />
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button

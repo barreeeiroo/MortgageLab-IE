@@ -107,6 +107,24 @@ export const SimulationStateSchema = z.object({
 });
 export type SimulationState = z.infer<typeof SimulationStateSchema>;
 
+// Saveable state (without initialized flag)
+export const SaveableSimulationStateSchema = SimulationStateSchema.omit({
+	initialized: true,
+});
+export type SaveableSimulationState = z.infer<
+	typeof SaveableSimulationStateSchema
+>;
+
+// Saved Simulation - stored in simulate-saves localStorage
+export const SavedSimulationSchema = z.object({
+	id: z.string(), // Auto-generated: `sim-${Date.now()}-${random7chars}`
+	name: z.string().min(1), // Required user-visible name
+	state: SaveableSimulationStateSchema,
+	createdAt: z.string(), // ISO date
+	lastUpdatedAt: z.string(), // ISO date
+});
+export type SavedSimulation = z.infer<typeof SavedSimulationSchema>;
+
 // Applied Overpayment (computed, not stored)
 export interface AppliedOverpayment {
 	month: number; // Which month this applies to
