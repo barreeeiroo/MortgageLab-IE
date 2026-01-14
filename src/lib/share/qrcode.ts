@@ -1,81 +1,93 @@
 /**
  * QR code generation with logo overlay for shareable links.
- * Uses lazy loading to avoid impacting initial page load.
+ * Uses uqr for ESM-compatible SVG output with lazy loading.
  */
 
-import logoSvg from "@/assets/logos/mortgagelab-logo.min.svg";
-import { getQRCode } from "./loaders";
+import logoSvgRaw from "@/assets/logos/mortgagelab-logo.min.svg?raw";
 
-// Cache for logo image
-let logoImage: HTMLImageElement | null = null;
+// The logo SVG has viewBox="0 0 128 128"
+const LOGO_VIEWBOX_SIZE = 128;
 
 /**
- * Loads the logo SVG as an Image element for canvas drawing.
+ * Extracts the inner content of an SVG string and converts CSS classes to inline fills.
+ * Returns content ready to be embedded in another SVG.
  */
-async function loadLogoForQR(): Promise<HTMLImageElement> {
-	if (logoImage) return logoImage;
+function extractLogoContent(svgString: string): string {
+	// Remove outer <svg> tag and extract inner content
+	const innerMatch = svgString.match(/<svg[^>]*>([\s\S]*)<\/svg>/);
+	if (!innerMatch) return "";
 
-	return new Promise((resolve, reject) => {
-		const img = new Image();
-		img.onload = () => {
-			logoImage = img;
-			resolve(img);
-		};
-		img.onerror = () => {
-			reject(new Error("Failed to load logo"));
-		};
-		img.src = logoSvg.src;
-	});
+	let content = innerMatch[1];
+
+	// Remove the <style> tag entirely
+	content = content.replace(/<style>[\s\S]*?<\/style>/, "");
+
+	// Replace CSS classes with inline fills (use light mode colors for QR code)
+	content = content.replace(/class="house"/g, 'fill="#0d9488"');
+	content = content.replace(/class="bar"/g, 'fill="#fff"');
+
+	return content;
 }
 
+// Pre-process logo content at module load time
+const logoContent = extractLogoContent(logoSvgRaw);
+
 /**
- * Generates a QR code with the MortgageLab logo in the center.
+ * Generates a QR code SVG with the MortgageLab logo in the center.
  * Uses high error correction (H = 30%) to allow for logo overlay.
+ * Returns a data URL for use in <img> src.
  */
 export async function generateQRCodeWithLogo(
 	url: string,
 	size = 256,
 ): Promise<string> {
-	const qrcode = await getQRCode();
+	// Lazy load uqr to keep it in a separate chunk
+	const { renderSVG } = await import("uqr");
 
-	// Create canvas with QR code
-	const canvas = document.createElement("canvas");
-	canvas.width = size;
-	canvas.height = size;
-
-	// Generate QR to canvas with high error correction for logo tolerance
-	await qrcode.toCanvas(canvas, url, {
-		width: size,
-		margin: 2,
-		errorCorrectionLevel: "H", // 30% error correction allows for center logo
-		color: {
-			dark: "#000000",
-			light: "#ffffff",
-		},
+	// Generate QR code SVG with high error correction for logo tolerance
+	const qrSvg = renderSVG(url, {
+		ecc: "H", // 30% error correction allows for center logo
+		border: 2,
+		pixelSize: 8,
+		whiteColor: "#ffffff",
+		blackColor: "#000000",
 	});
 
-	// Draw logo in center
-	const ctx = canvas.getContext("2d");
-	if (ctx) {
-		try {
-			const logo = await loadLogoForQR();
-			// Logo size is ~20% of QR code for good readability
-			const logoSize = size * 0.22;
-			const logoX = (size - logoSize) / 2;
-			const logoY = (size - logoSize) / 2;
-
-			// Draw white background circle for logo
-			ctx.fillStyle = "#ffffff";
-			ctx.beginPath();
-			ctx.arc(size / 2, size / 2, logoSize / 2 + 4, 0, Math.PI * 2);
-			ctx.fill();
-
-			// Draw logo
-			ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
-		} catch {
-			// If logo fails to load, return QR without logo
-		}
+	// Parse the viewBox to get the QR code's actual size
+	const viewBoxMatch = qrSvg.match(/viewBox="0 0 (\d+) (\d+)"/);
+	if (!viewBoxMatch) {
+		// Fallback: return QR without logo
+		return `data:image/svg+xml,${encodeURIComponent(qrSvg)}`;
 	}
 
-	return canvas.toDataURL("image/png");
+	const qrSize = Number.parseInt(viewBoxMatch[1], 10);
+	const center = qrSize / 2;
+
+	// Logo size is ~22% of QR code for good readability
+	const logoSize = qrSize * 0.22;
+	const logoOffset = center - logoSize / 2;
+
+	// White circle background radius (slightly larger than logo)
+	const circleRadius = logoSize / 2 + 4;
+
+	// Scale factor to fit logo's 128x128 viewBox into our logoSize
+	const logoScale = logoSize / LOGO_VIEWBOX_SIZE;
+
+	// Create composite SVG with QR code and logo overlay
+	const logoOverlay = `
+<circle cx="${center}" cy="${center}" r="${circleRadius}" fill="#ffffff"/>
+<g transform="translate(${logoOffset}, ${logoOffset}) scale(${logoScale})">
+${logoContent}
+</g>`;
+
+	// Insert logo before closing </svg> tag
+	const compositeSvg = qrSvg.replace("</svg>", `${logoOverlay}</svg>`);
+
+	// Return as data URL with explicit size for consistent rendering
+	const finalSvg = compositeSvg.replace(
+		/^<svg /,
+		`<svg width="${size}" height="${size}" `,
+	);
+
+	return `data:image/svg+xml,${encodeURIComponent(finalSvg)}`;
 }

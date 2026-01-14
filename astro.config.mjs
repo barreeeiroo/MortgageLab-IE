@@ -57,11 +57,6 @@ export default defineConfig({
 							if (id.includes("@radix-ui")) {
 								return "radix";
 							}
-
-							// QR code library - keep separate for lazy loading
-							if (id.includes("/qrcode/")) {
-								return "qrcode";
-							}
 						}
 
 						// Core library
