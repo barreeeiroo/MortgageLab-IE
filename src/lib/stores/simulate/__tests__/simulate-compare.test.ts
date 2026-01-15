@@ -45,6 +45,7 @@ describe("simulate-compare", () => {
 		id: string,
 		name: string,
 		amount = 30000000,
+		propertyValue = 40000000,
 	): SavedSimulation => ({
 		id,
 		name,
@@ -52,7 +53,7 @@ describe("simulate-compare", () => {
 			input: {
 				mortgageAmount: amount,
 				mortgageTermMonths: 300,
-				propertyValue: 40000000,
+				propertyValue,
 				ber: "C1",
 			},
 			ratePeriods: [
@@ -235,10 +236,10 @@ describe("simulate-compare", () => {
 			expect(validation.errors).toHaveLength(0);
 		});
 
-		it("warns about different mortgage amounts", () => {
+		it("warns about different property values", () => {
 			const saves = [
-				createMockSave("sim-1", "Mortgage A", 30000000),
-				createMockSave("sim-2", "Mortgage B", 35000000),
+				createMockSave("sim-1", "Mortgage A", 30000000, 40000000),
+				createMockSave("sim-2", "Mortgage B", 30000000, 50000000),
 			];
 			$savedSimulations.set(saves);
 			setCompareState({
@@ -249,7 +250,7 @@ describe("simulate-compare", () => {
 			const validation = $compareValidation.get();
 			expect(validation.isValid).toBe(true);
 			expect(validation.warnings).toContainEqual(
-				expect.objectContaining({ type: "different_amounts" }),
+				expect.objectContaining({ type: "different_property_values" }),
 			);
 		});
 

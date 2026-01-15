@@ -178,6 +178,13 @@ function prepareCombinedScheduleForPDF(
 	// Find max years across all simulations
 	const maxYears = Math.max(...simulations.map((s) => s.yearlySchedule.length));
 
+	// Find the longest simulation to use for reference year values
+	const longestSim = simulations.reduce(
+		(longest, sim) =>
+			sim.yearlySchedule.length > longest.yearlySchedule.length ? sim : longest,
+		simulations[0],
+	);
+
 	// Build headers: Year, then Balance for each simulation
 	const headers = [
 		"Year",
@@ -186,7 +193,10 @@ function prepareCombinedScheduleForPDF(
 
 	const rows: (string | number)[][] = [];
 	for (let yearIndex = 0; yearIndex < maxYears; yearIndex++) {
-		const row: (string | number)[] = [yearIndex + 1];
+		// Use calendar year from longest simulation if available, otherwise relative year
+		const yearValue =
+			longestSim.yearlySchedule[yearIndex]?.year ?? yearIndex + 1;
+		const row: (string | number)[] = [yearValue];
 
 		for (const sim of simulations) {
 			const yearData = sim.yearlySchedule[yearIndex];
@@ -216,6 +226,13 @@ function prepareCombinedScheduleForExcel(
 } {
 	const maxYears = Math.max(...simulations.map((s) => s.yearlySchedule.length));
 
+	// Find the longest simulation to use for reference year values
+	const longestSim = simulations.reduce(
+		(longest, sim) =>
+			sim.yearlySchedule.length > longest.yearlySchedule.length ? sim : longest,
+		simulations[0],
+	);
+
 	const headers = [
 		"Year",
 		...simulations.flatMap((s) => [
@@ -227,7 +244,10 @@ function prepareCombinedScheduleForExcel(
 
 	const rows: (string | number | null)[][] = [];
 	for (let yearIndex = 0; yearIndex < maxYears; yearIndex++) {
-		const row: (string | number | null)[] = [yearIndex + 1];
+		// Use calendar year from longest simulation if available, otherwise relative year
+		const yearValue =
+			longestSim.yearlySchedule[yearIndex]?.year ?? yearIndex + 1;
+		const row: (string | number | null)[] = [yearValue];
 
 		for (const sim of simulations) {
 			const yearData = sim.yearlySchedule[yearIndex];

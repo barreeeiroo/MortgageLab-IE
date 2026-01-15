@@ -59,7 +59,30 @@ export function CompareYearRow({
 
 	if (simulationsWithData.length === 0) return null;
 
-	const yearNum = yearIndex + 1;
+	// Find the longest simulation to use as reference for year data
+	const longestSim = simulations.reduce(
+		(longest, sim) =>
+			sim.yearlySchedule.length > longest.yearlySchedule.length ? sim : longest,
+		simulations[0],
+	);
+
+	// Get year data from longest simulation (or any sim that has this year)
+	const referenceYearData =
+		longestSim?.yearlySchedule[yearIndex] ??
+		simulations.find((s) => s.yearlySchedule[yearIndex])?.yearlySchedule[
+			yearIndex
+		];
+
+	// Get the actual year from the data - could be calendar year (2026) or relative year (1)
+	const actualYear = referenceYearData?.year ?? yearIndex + 1;
+	// Check if we have calendar dates by looking at the first month of the first year
+	const hasCalendarDates =
+		longestSim?.yearlySchedule[0]?.months[0]?.date !== undefined &&
+		longestSim?.yearlySchedule[0]?.months[0]?.date !== "";
+	// Format year label: "2026" for calendar dates, "Year 1" for relative
+	const yearLabel = hasCalendarDates
+		? String(actualYear)
+		: `Year ${actualYear}`;
 
 	// Collect rate period labels per simulation for this year
 	const ratePeriodsBySimulation = simulationsWithData
@@ -94,7 +117,7 @@ export function CompareYearRow({
 					</Button>
 				</TableCell>
 				<TableCell className="font-medium sticky left-10 bg-background">
-					Year {yearNum}
+					{yearLabel}
 				</TableCell>
 
 				{/* Opening Balance columns for all simulations */}
@@ -255,8 +278,8 @@ export function CompareYearRow({
 						</TableRow>
 					)}
 
-					{/* Monthly breakdown */}
-					{baseYearData?.months.map((month, monthIndex) => (
+					{/* Monthly breakdown - use referenceYearData from longest simulation */}
+					{referenceYearData?.months.map((month, monthIndex) => (
 						<CompareMonthRow
 							key={`month-${month.month}`}
 							yearIndex={yearIndex}
@@ -270,7 +293,7 @@ export function CompareYearRow({
 					<TableRow className="bg-muted/40 text-sm font-medium border-t">
 						<TableCell className="sticky left-0 bg-muted/40" />
 						<TableCell className="pl-8 sticky left-10 bg-muted/40">
-							Year {yearNum} Total
+							{yearLabel} Total
 						</TableCell>
 
 						{visibleColumns.opening &&

@@ -64,6 +64,7 @@ export interface CompareValidation {
 const DEFAULT_COMPARE_STATE: CompareState = {
 	savedIds: [],
 	includeCurrentView: false,
+	displayStartDate: undefined,
 };
 
 // Main compare state atom - persisted to localStorage
@@ -95,7 +96,11 @@ function loadCompareState(): CompareState {
 				Array.isArray(parsed.savedIds) &&
 				typeof parsed.includeCurrentView === "boolean"
 			) {
-				return parsed;
+				return {
+					savedIds: parsed.savedIds,
+					includeCurrentView: parsed.includeCurrentView,
+					displayStartDate: parsed.displayStartDate,
+				};
 			}
 		}
 	} catch {
@@ -228,6 +233,7 @@ export function initializeCompareState(): void {
 	const cleanedState: CompareState = {
 		savedIds: validIds,
 		includeCurrentView,
+		displayStartDate: stored.displayStartDate,
 	};
 
 	$compareState.set(cleanedState);
@@ -493,6 +499,17 @@ export function setCurrentInCompare(include: boolean): void {
  */
 export function clearCompare(): void {
 	$compareState.set(DEFAULT_COMPARE_STATE);
+}
+
+/**
+ * Set the display start date for all simulations in comparison
+ */
+export function setCompareDisplayStartDate(date: string | undefined): void {
+	const current = $compareState.get();
+	$compareState.set({
+		...current,
+		displayStartDate: date,
+	});
 }
 
 /**

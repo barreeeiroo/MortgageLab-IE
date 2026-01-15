@@ -1,4 +1,49 @@
 /**
+ * Locale used for all date formatting in the app
+ */
+export const DATE_LOCALE = "en-IE";
+
+/**
+ * Format a date to short month/year format (e.g., "Feb '26")
+ */
+export function formatShortMonthYear(date: Date): string {
+	return date.toLocaleDateString(DATE_LOCALE, {
+		month: "short",
+		year: "2-digit",
+	});
+}
+
+/**
+ * Format an ISO date string to short month/year format (e.g., "Feb '26")
+ */
+export function formatShortMonthYearFromString(
+	isoString: string | undefined,
+): string {
+	if (!isoString) return "";
+	return formatShortMonthYear(new Date(isoString));
+}
+
+/**
+ * Format a date to month/year format with full year (e.g., "Feb 2026")
+ */
+export function formatMonthYearShort(date: Date): string {
+	return date.toLocaleDateString(DATE_LOCALE, {
+		month: "short",
+		year: "numeric",
+	});
+}
+
+/**
+ * Format an ISO date string to month/year format with full year (e.g., "Feb 2026")
+ */
+export function formatMonthYearShortFromString(
+	isoString: string | undefined,
+): string {
+	if (!isoString) return "";
+	return formatMonthYearShort(new Date(isoString));
+}
+
+/**
  * Add months to a date string (avoids timezone issues)
  * Returns empty string if no start date provided
  * @param dateStr - ISO date string "YYYY-MM-DD"
@@ -84,7 +129,7 @@ export function calculateAge(birthDate: Date | undefined): number | null {
 export function formatShortDate(isoString: string | undefined): string {
 	if (!isoString) return "—";
 	const date = new Date(isoString);
-	return date.toLocaleDateString("en-IE", {
+	return date.toLocaleDateString(DATE_LOCALE, {
 		day: "numeric",
 		month: "short",
 		year: "numeric",
@@ -97,7 +142,7 @@ export function formatShortDate(isoString: string | undefined): string {
 export function formatMonthYear(isoString: string | undefined): string {
 	if (!isoString) return "Not set";
 	const date = new Date(isoString);
-	return date.toLocaleDateString("en-IE", {
+	return date.toLocaleDateString(DATE_LOCALE, {
 		month: "long",
 		year: "numeric",
 	});
@@ -154,10 +199,7 @@ export function formatTransitionDate(
 
 	if (startDate) {
 		const calendarDate = getCalendarDate(startDate, month - 1);
-		const formatted = calendarDate.toLocaleDateString("en-IE", {
-			month: "short",
-			year: "numeric",
-		});
+		const formatted = formatMonthYearShort(calendarDate);
 		if (options?.short) {
 			return formatted;
 		}

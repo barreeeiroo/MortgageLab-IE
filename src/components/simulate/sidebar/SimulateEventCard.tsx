@@ -30,6 +30,7 @@ import type {
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
 import { formatCurrency } from "@/lib/utils/currency";
+import { formatMonthYearShort } from "@/lib/utils/date";
 import { SimulateTrimDialog } from "./SimulateTrimDialog";
 
 // Helper to format month/year
@@ -619,10 +620,7 @@ export function SimulateMilestoneEvent({ milestone }: MilestoneEventProps) {
 	const colorClass = MILESTONE_COLORS[milestone.type];
 
 	const formattedDate = milestone.date
-		? new Date(milestone.date).toLocaleDateString("en-IE", {
-				month: "short",
-				year: "numeric",
-			})
+		? formatMonthYearShort(new Date(milestone.date))
 		: formatPeriod(milestone.month);
 
 	return (

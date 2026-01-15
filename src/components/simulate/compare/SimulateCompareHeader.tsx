@@ -1,4 +1,11 @@
-import { ArrowLeft, Download, GitCompareArrows } from "lucide-react";
+import {
+	ArrowLeft,
+	CalendarIcon,
+	Download,
+	GitCompareArrows,
+	X,
+} from "lucide-react";
+import { useState } from "react";
 import { ShareButton } from "@/components/ShareButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,6 +14,13 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import { formatDateLocal, formatMonthYear } from "@/lib/utils/date";
 
 interface SimulateCompareHeaderProps {
 	simulationCount: number;
@@ -17,6 +31,8 @@ interface SimulateCompareHeaderProps {
 	onExportPDFWithCharts: () => Promise<void>;
 	isExporting: boolean;
 	canExport: boolean;
+	displayStartDate?: string;
+	onStartDateChange: (date: string | undefined) => void;
 }
 
 /**
@@ -31,7 +47,23 @@ export function SimulateCompareHeader({
 	onExportPDFWithCharts,
 	isExporting,
 	canExport,
+	displayStartDate,
+	onStartDateChange,
 }: SimulateCompareHeaderProps) {
+	const [calendarOpen, setCalendarOpen] = useState(false);
+	const currentDate = displayStartDate
+		? new Date(displayStartDate)
+		: new Date();
+
+	const handleDateSelect = (date: Date) => {
+		onStartDateChange(formatDateLocal(date));
+		setCalendarOpen(false);
+	};
+
+	const handleClearDate = () => {
+		onStartDateChange(undefined);
+	};
+
 	return (
 		<div className="flex items-center justify-between gap-4 mb-6">
 			<div className="flex items-center gap-3">
@@ -57,6 +89,46 @@ export function SimulateCompareHeader({
 			</div>
 
 			<div className="flex items-center gap-2">
+				{/* Start Date Selector */}
+				<div className="flex items-center gap-2">
+					<CalendarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+					<span className="text-sm text-muted-foreground hidden sm:inline">
+						Start
+					</span>
+					<Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+						<div className="flex items-center gap-1">
+							<PopoverTrigger asChild>
+								<Button
+									variant="outline"
+									size="sm"
+									className="h-8 gap-2 text-sm font-normal"
+								>
+									{formatMonthYear(displayStartDate)}
+								</Button>
+							</PopoverTrigger>
+							{displayStartDate && (
+								<Button
+									variant="ghost"
+									size="icon"
+									className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+									onClick={handleClearDate}
+								>
+									<X className="h-4 w-4" />
+								</Button>
+							)}
+						</div>
+						<PopoverContent className="w-full p-0" align="end">
+							<MonthYearPicker
+								selected={displayStartDate ? currentDate : undefined}
+								onSelect={handleDateSelect}
+							/>
+						</PopoverContent>
+					</Popover>
+				</div>
+
+				<div className="h-6 w-px bg-border" />
+
+				{/* Export Dropdown */}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button

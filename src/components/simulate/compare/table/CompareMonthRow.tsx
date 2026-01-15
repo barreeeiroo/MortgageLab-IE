@@ -2,6 +2,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import type { CompareSimulationData } from "@/lib/stores/simulate/simulate-compare-calculations";
 import type { CompareTableColumnVisibility } from "@/lib/stores/simulate/simulate-compare-table";
 import { formatCurrency } from "@/lib/utils/currency";
+import { formatMonthYear } from "@/lib/utils/date";
 
 interface CompareMonthRowProps {
 	yearIndex: number;
@@ -42,19 +43,32 @@ export function CompareMonthRow({
 }: CompareMonthRowProps) {
 	if (simulations.length === 0) return null;
 
+	// Find the longest simulation to use as reference for month data
+	const longestSim = simulations.reduce(
+		(longest, sim) =>
+			sim.yearlySchedule.length > longest.yearlySchedule.length ? sim : longest,
+		simulations[0],
+	);
+
+	// Get month data from longest simulation (or any sim that has this year/month)
+	const referenceYearData =
+		longestSim?.yearlySchedule[yearIndex] ??
+		simulations.find((s) => s.yearlySchedule[yearIndex])?.yearlySchedule[
+			yearIndex
+		];
+	const referenceMonthData = referenceYearData?.months[monthIndex];
+
+	if (!referenceMonthData) return null;
+
+	// Use first simulation as base for diff calculations (if it has data)
 	const baseSimulation = simulations[0];
 	const baseYearData = baseSimulation.yearlySchedule[yearIndex];
 	const baseMonthData = baseYearData?.months[monthIndex];
 
-	if (!baseMonthData) return null;
-
-	// Format month label
-	const monthLabel = baseMonthData.date
-		? new Date(baseMonthData.date).toLocaleDateString("en-IE", {
-				month: "short",
-				year: "2-digit",
-			})
-		: `M${baseMonthData.month}`;
+	// Format month label - full month name when date available
+	const monthLabel = referenceMonthData.date
+		? formatMonthYear(referenceMonthData.date)
+		: `Month ${referenceMonthData.month}`;
 
 	return (
 		<TableRow className="bg-muted/20 text-sm">
@@ -69,7 +83,7 @@ export function CompareMonthRow({
 					const yearData = sim.yearlySchedule[yearIndex];
 					const monthData = yearData?.months[monthIndex];
 					const value = monthData?.openingBalance ?? 0;
-					const baseValue = baseMonthData.openingBalance;
+					const baseValue = baseMonthData?.openingBalance ?? 0;
 					const diff = simIndex > 0 ? formatDiff(value, baseValue, true) : null;
 
 					return (
@@ -90,7 +104,7 @@ export function CompareMonthRow({
 					const yearData = sim.yearlySchedule[yearIndex];
 					const monthData = yearData?.months[monthIndex];
 					const value = monthData?.interestPortion ?? 0;
-					const baseValue = baseMonthData.interestPortion;
+					const baseValue = baseMonthData?.interestPortion ?? 0;
 					const diff = simIndex > 0 ? formatDiff(value, baseValue, true) : null;
 
 					return (
@@ -114,7 +128,7 @@ export function CompareMonthRow({
 					const yearData = sim.yearlySchedule[yearIndex];
 					const monthData = yearData?.months[monthIndex];
 					const value = monthData?.principalPortion ?? 0;
-					const baseValue = baseMonthData.principalPortion;
+					const baseValue = baseMonthData?.principalPortion ?? 0;
 					const diff =
 						simIndex > 0 ? formatDiff(value, baseValue, false) : null;
 
@@ -153,7 +167,7 @@ export function CompareMonthRow({
 					const yearData = sim.yearlySchedule[yearIndex];
 					const monthData = yearData?.months[monthIndex];
 					const value = monthData?.totalPayment ?? 0;
-					const baseValue = baseMonthData.totalPayment;
+					const baseValue = baseMonthData?.totalPayment ?? 0;
 					const diff = simIndex > 0 ? formatDiff(value, baseValue, true) : null;
 
 					return (
@@ -174,7 +188,7 @@ export function CompareMonthRow({
 					const yearData = sim.yearlySchedule[yearIndex];
 					const monthData = yearData?.months[monthIndex];
 					const value = monthData?.closingBalance ?? 0;
-					const baseValue = baseMonthData.closingBalance;
+					const baseValue = baseMonthData?.closingBalance ?? 0;
 					const diff = simIndex > 0 ? formatDiff(value, baseValue, true) : null;
 
 					return (

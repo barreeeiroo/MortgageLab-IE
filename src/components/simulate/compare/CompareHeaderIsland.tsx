@@ -13,9 +13,11 @@ import {
 import { fetchRatesData } from "@/lib/stores/rates";
 import {
 	$compareSimulations,
+	$compareState,
 	$compareValidation,
 	initializeCompareState,
 	navigateToSimulate,
+	setCompareDisplayStartDate,
 } from "@/lib/stores/simulate/simulate-compare";
 import {
 	$compareSimulationData,
@@ -32,6 +34,7 @@ import { SimulateCompareHeader } from "./SimulateCompareHeader";
 export function CompareHeaderIsland() {
 	const compareSimulations = useStore($compareSimulations);
 	const compareValidation = useStore($compareValidation);
+	const compareState = useStore($compareState);
 	const compareData = useStore($compareSimulationData);
 	const summaryMetrics = useStore($compareSummaryMetrics);
 	const customRates = useStore($storedCustomRates);
@@ -136,6 +139,8 @@ export function CompareHeaderIsland() {
 			onExportPDFWithCharts={handleExportPDFWithCharts}
 			isExporting={isExporting}
 			canExport={canExport}
+			displayStartDate={compareState.displayStartDate}
+			onStartDateChange={setCompareDisplayStartDate}
 		/>
 	);
 }

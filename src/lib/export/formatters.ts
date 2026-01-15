@@ -3,6 +3,8 @@
  * These are tailored for CSV/Excel/PDF output rather than UI display.
  */
 
+import { DATE_LOCALE, formatMonthYearShort } from "@/lib/utils/date";
+
 /**
  * Formats currency for export with Euro symbol.
  * @param value Value in euros
@@ -12,7 +14,7 @@ export function formatCurrencyForExport(
 	value: number,
 	showDecimals = false,
 ): string {
-	return new Intl.NumberFormat("en-IE", {
+	return new Intl.NumberFormat(DATE_LOCALE, {
 		style: "currency",
 		currency: "EUR",
 		minimumFractionDigits: showDecimals ? 2 : 0,
@@ -63,7 +65,7 @@ export function formatDateForExport(date: Date | string): string {
  */
 export function formatMonthYearForExport(date: Date | string): string {
 	const d = typeof date === "string" ? new Date(date) : date;
-	return d.toLocaleDateString("en-IE", { month: "short", year: "numeric" });
+	return formatMonthYearShort(d);
 }
 
 /**

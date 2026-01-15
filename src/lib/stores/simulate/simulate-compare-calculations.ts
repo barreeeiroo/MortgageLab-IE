@@ -14,6 +14,7 @@ import type {
 	SimulateInputValues,
 	SimulationSummary,
 } from "@/lib/schemas/simulate";
+import { formatShortMonthYear } from "@/lib/utils/date";
 import { $customRates } from "../custom-rates";
 import { $lenders } from "../lenders";
 import { $overpaymentPolicies } from "../overpayment-policies";
@@ -22,7 +23,11 @@ import {
 	computeResolvedRatePeriods,
 	computeSummary,
 } from "./simulate-calculations";
-import { $compareSimulations, $compareValidation } from "./simulate-compare";
+import {
+	$compareSimulations,
+	$compareState,
+	$compareValidation,
+} from "./simulate-compare";
 
 // Color palette for up to 5 simulations
 export const COMPARE_COLORS = [
@@ -71,6 +76,7 @@ export const $compareSimulationData = computed(
 	[
 		$compareSimulations,
 		$compareValidation,
+		$compareState,
 		$rates,
 		$customRates,
 		$lenders,
@@ -79,6 +85,7 @@ export const $compareSimulationData = computed(
 	(
 		sims,
 		validation,
+		compareState,
 		allRates,
 		customRates,
 		lenders,
@@ -87,10 +94,19 @@ export const $compareSimulationData = computed(
 		// Don't compute if validation fails
 		if (!validation.isValid) return [];
 
+		// Get the display start date if set
+		// When undefined, clear individual start dates so all simulations use relative years
+		const displayStartDate = compareState.displayStartDate;
+
 		return sims.map((sim, index) => {
 			// Create a simulation state object for the calculation
+			// Use display start date for all simulations (or undefined for relative years)
 			const simulationState = {
 				...sim.state,
+				input: {
+					...sim.state.input,
+					startDate: displayStartDate,
+				},
 				initialized: true,
 			};
 
@@ -124,10 +140,10 @@ export const $compareSimulationData = computed(
 				lenders,
 			);
 
-			// Compute summary
+			// Compute summary (use overridden input for consistency)
 			const summary = computeSummary(
 				result.months,
-				sim.state.input,
+				simulationState.input,
 				sim.state.ratePeriods,
 				resolvedRatePeriods,
 				sim.state.selfBuildConfig,
@@ -138,7 +154,7 @@ export const $compareSimulationData = computed(
 				name: sim.name,
 				color: COMPARE_COLORS[index] ?? COMPARE_COLORS[0],
 				isCurrentView: sim.isCurrentView,
-				input: sim.state.input,
+				input: simulationState.input, // Use overridden input with display start date
 				ratePeriods: sim.state.ratePeriods,
 				resolvedRatePeriods,
 				overpaymentConfigs: sim.state.overpaymentConfigs,
@@ -216,6 +232,20 @@ export const $compareYearlyChartData = computed(
 			...simulations.map((s) => Math.ceil(s.baselineSchedule.length / 12)),
 		);
 
+		// Find the longest simulation (most years) to use as reference for dates
+		const longestSim = simulations.reduce(
+			(longest, sim) =>
+				sim.yearlySchedule.length > longest.yearlySchedule.length
+					? sim
+					: longest,
+			simulations[0],
+		);
+
+		// Check if we have calendar dates by looking at the longest simulation's first month
+		const firstMonth = longestSim?.yearlySchedule[0]?.months[0];
+		const hasCalendarDates =
+			firstMonth?.date !== undefined && firstMonth?.date !== "";
+
 		// Create overpayment maps for each simulation
 		const overpaymentMaps = new Map(
 			simulations.map((sim) => [
@@ -227,8 +257,20 @@ export const $compareYearlyChartData = computed(
 		const data: CompareChartDataPoint[] = [];
 
 		for (let yearIndex = 0; yearIndex < maxYears; yearIndex++) {
+			// Get actual year from longest simulation's yearly schedule (or any sim that has this year)
+			const yearData =
+				longestSim?.yearlySchedule[yearIndex] ??
+				simulations.find((s) => s.yearlySchedule[yearIndex])?.yearlySchedule[
+					yearIndex
+				];
+			const actualYear = yearData?.year ?? yearIndex + 1;
+			// Format period label: "2026" for calendar dates, "Year 1" for relative
+			const periodLabel = hasCalendarDates
+				? String(actualYear)
+				: `Year ${actualYear}`;
+
 			const point: CompareChartDataPoint = {
-				period: `Year ${yearIndex + 1}`,
+				period: periodLabel,
 				month: (yearIndex + 1) * 12,
 			};
 
@@ -324,6 +366,20 @@ export const $compareMonthlyChartData = computed(
 			...simulations.map((s) => s.baselineSchedule.length),
 		);
 
+		// Find the longest simulation (most months) to use as reference for dates
+		const longestSim = simulations.reduce(
+			(longest, sim) =>
+				sim.amortizationSchedule.length > longest.amortizationSchedule.length
+					? sim
+					: longest,
+			simulations[0],
+		);
+
+		// Check if we have calendar dates by looking at the longest simulation's first month
+		const firstMonthData = longestSim?.amortizationSchedule[0];
+		const hasCalendarDates =
+			firstMonthData?.date !== undefined && firstMonthData?.date !== "";
+
 		// Create overpayment maps for each simulation
 		const overpaymentMaps = new Map(
 			simulations.map((sim) => [
@@ -336,8 +392,19 @@ export const $compareMonthlyChartData = computed(
 
 		for (let monthIndex = 0; monthIndex < maxMonths; monthIndex++) {
 			const monthNum = monthIndex + 1;
+			// Get date from longest simulation (or any sim that has this month)
+			const monthData =
+				longestSim?.amortizationSchedule[monthIndex] ??
+				simulations.find((s) => s.amortizationSchedule[monthIndex])
+					?.amortizationSchedule[monthIndex];
+			// Format period label: "Feb '26" for calendar dates, "Month 1" for relative
+			const periodLabel =
+				hasCalendarDates && monthData?.date
+					? formatShortMonthYear(new Date(monthData.date))
+					: `Month ${monthNum}`;
+
 			const point: CompareChartDataPoint = {
-				period: `Month ${monthNum}`,
+				period: periodLabel,
 				month: monthNum,
 			};
 
@@ -417,6 +484,20 @@ export const $compareQuarterlyChartData = computed(
 		);
 		const maxQuarters = Math.ceil(maxMonths / 3);
 
+		// Find the longest simulation (most months) to use as reference for dates
+		const longestSim = simulations.reduce(
+			(longest, sim) =>
+				sim.amortizationSchedule.length > longest.amortizationSchedule.length
+					? sim
+					: longest,
+			simulations[0],
+		);
+
+		// Check if we have calendar dates by looking at the longest simulation's first month
+		const firstMonthData = longestSim?.amortizationSchedule[0];
+		const hasCalendarDates =
+			firstMonthData?.date !== undefined && firstMonthData?.date !== "";
+
 		// Create overpayment maps for each simulation
 		const overpaymentMaps = new Map(
 			simulations.map((sim) => [
@@ -430,8 +511,24 @@ export const $compareQuarterlyChartData = computed(
 		for (let quarterIndex = 0; quarterIndex < maxQuarters; quarterIndex++) {
 			const quarterNum = quarterIndex + 1;
 			const endMonth = (quarterIndex + 1) * 3; // End of quarter (month 3, 6, 9, etc.)
+
+			// Get date from longest simulation's quarter-end month (or any sim that has it)
+			const quarterEndIndex = endMonth - 1;
+			const quarterEndData =
+				longestSim?.amortizationSchedule[quarterEndIndex] ??
+				simulations.find((s) => s.amortizationSchedule[quarterEndIndex])
+					?.amortizationSchedule[quarterEndIndex];
+			// Format period label: "Q1 '26" for calendar dates, "Q1" for relative
+			let periodLabel = `Q${quarterNum}`;
+			if (hasCalendarDates && quarterEndData?.date) {
+				const date = new Date(quarterEndData.date);
+				const calendarQuarter = Math.ceil((date.getMonth() + 1) / 3);
+				const year = date.getFullYear().toString().slice(-2);
+				periodLabel = `Q${calendarQuarter} '${year}`;
+			}
+
 			const point: CompareChartDataPoint = {
-				period: `Q${quarterNum}`,
+				period: periodLabel,
 				month: endMonth,
 			};
 
