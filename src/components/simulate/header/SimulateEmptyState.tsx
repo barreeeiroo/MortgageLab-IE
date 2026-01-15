@@ -4,8 +4,10 @@ import {
 	Calculator,
 	ChevronDown,
 	FolderOpen,
+	GitCompareArrows,
 	Loader2,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,12 +35,14 @@ import {
 	$initialized,
 } from "@/lib/stores/simulate/simulate-state";
 import { getPath } from "@/lib/utils/path";
+import { SimulateCompareSelectDialog } from "../compare/SimulateCompareSelectDialog";
 
 export function SimulateEmptyState() {
 	const hasRequiredData = useStore($hasRequiredData);
 	const initialized = useStore($initialized);
 	const hasSavedSimulations = useStore($hasSavedSimulations);
 	const savedSimulations = useStore($savedSimulations);
+	const [compareDialogOpen, setCompareDialogOpen] = useState(false);
 
 	// SSG: renders empty state (initialized=false by default)
 	// Client: hide when user has set up a simulation
@@ -58,6 +62,14 @@ export function SimulateEmptyState() {
 			day: "numeric",
 			year: "numeric",
 		});
+	};
+
+	// Can compare if at least 2 saved simulations
+	const canCompare = savedSimulations.length >= 2;
+
+	const handleCompare = () => {
+		// Open dialog for selection
+		setCompareDialogOpen(true);
 	};
 
 	// Wrap in div to ensure React controls the DOM properly during hydration
@@ -120,6 +132,16 @@ export function SimulateEmptyState() {
 										</DropdownMenuContent>
 									</DropdownMenu>
 								)}
+								{canCompare && (
+									<Button
+										variant="outline"
+										className="gap-1.5"
+										onClick={handleCompare}
+									>
+										<GitCompareArrows className="h-4 w-4" />
+										Compare Saved
+									</Button>
+								)}
 							</>
 						) : (
 							<Button className="gap-1.5" disabled>
@@ -130,6 +152,13 @@ export function SimulateEmptyState() {
 					</CardContent>
 				</Card>
 			)}
+
+			{/* Compare Selection Dialog */}
+			<SimulateCompareSelectDialog
+				open={compareDialogOpen}
+				onOpenChange={setCompareDialogOpen}
+				showCurrentSimulation={false}
+			/>
 		</div>
 	);
 }
