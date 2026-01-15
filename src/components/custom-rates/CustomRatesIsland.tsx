@@ -19,7 +19,7 @@ import {
 } from "@/lib/stores/custom-rates";
 import { $lenders } from "@/lib/stores/lenders";
 import { $perks } from "@/lib/stores/perks";
-import { $formValues } from "@/lib/stores/rates-form";
+import { $formValues } from "@/lib/stores/rates/rates-form";
 import { ManageCustomRatesDialog } from "./ManageCustomRatesDialog";
 
 export function CustomRatesIsland() {
