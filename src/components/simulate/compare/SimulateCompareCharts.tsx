@@ -1,12 +1,16 @@
 import { useStore } from "@nanostores/react";
-import { LineChart } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ImageDown, LineChart } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
-import { elementToPngDataUrl } from "@/lib/export/format/chart-image";
+import {
+	downloadChartWithBranding,
+	elementToPngDataUrl,
+} from "@/lib/export/format/chart-image";
 import type {
 	CompareChartDataPoint,
 	CompareSimulationData,
@@ -62,6 +66,10 @@ export function SimulateCompareCharts({
 		rates: null,
 		impact: null,
 	});
+
+	// Ref for capturing current chart for PNG export
+	const chartContentRef = useRef<HTMLDivElement>(null);
+	const [isExporting, setIsExporting] = useState(false);
 
 	// Listen for capture requests
 	const pendingCapture = useStore($pendingCompareChartCapture);
@@ -168,6 +176,24 @@ export function SimulateCompareCharts({
 		"rates",
 	];
 
+	const handleExportChart = useCallback(async () => {
+		if (!chartContentRef.current) return;
+		setIsExporting(true);
+		try {
+			await downloadChartWithBranding(
+				chartContentRef.current,
+				"simulation-compare",
+				{
+					title: COMPARE_CHART_LABELS[activeChart],
+					pixelRatio: 2,
+					backgroundColor: "#ffffff",
+				},
+			);
+		} finally {
+			setIsExporting(false);
+		}
+	}, [activeChart]);
+
 	// Get toggles for current chart type (fallback to balance if invalid)
 	const validActiveChart = COMPARE_CHART_TOGGLES[activeChart]
 		? activeChart
@@ -184,29 +210,44 @@ export function SimulateCompareCharts({
 							<LineChart className="h-4 w-4 shrink-0 text-muted-foreground" />
 							<CardTitle className="truncate">Comparison Charts</CardTitle>
 						</div>
-						<Tabs
-							value={granularity}
-							onValueChange={(v) =>
-								setCompareChartGranularity(
-									v as "yearly" | "quarterly" | "monthly",
-								)
-							}
-						>
-							<TabsList className="h-8">
-								<TabsTrigger value="yearly" className="text-xs px-2">
-									<span className="sm:hidden">Y</span>
-									<span className="hidden sm:inline">Yearly</span>
-								</TabsTrigger>
-								<TabsTrigger value="quarterly" className="text-xs px-2">
-									<span className="sm:hidden">Q</span>
-									<span className="hidden sm:inline">Quarterly</span>
-								</TabsTrigger>
-								<TabsTrigger value="monthly" className="text-xs px-2">
-									<span className="sm:hidden">M</span>
-									<span className="hidden sm:inline">Monthly</span>
-								</TabsTrigger>
-							</TabsList>
-						</Tabs>
+						<div className="flex items-center gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								className="h-8 gap-1.5"
+								onClick={handleExportChart}
+								disabled={isExporting}
+								title="Download chart as PNG"
+							>
+								<ImageDown className="h-4 w-4" />
+								<span className="hidden sm:inline">
+									{isExporting ? "Saving..." : "Save"}
+								</span>
+							</Button>
+							<Tabs
+								value={granularity}
+								onValueChange={(v) =>
+									setCompareChartGranularity(
+										v as "yearly" | "quarterly" | "monthly",
+									)
+								}
+							>
+								<TabsList className="h-8">
+									<TabsTrigger value="yearly" className="text-xs px-2">
+										<span className="sm:hidden">Y</span>
+										<span className="hidden sm:inline">Yearly</span>
+									</TabsTrigger>
+									<TabsTrigger value="quarterly" className="text-xs px-2">
+										<span className="sm:hidden">Q</span>
+										<span className="hidden sm:inline">Quarterly</span>
+									</TabsTrigger>
+									<TabsTrigger value="monthly" className="text-xs px-2">
+										<span className="sm:hidden">M</span>
+										<span className="hidden sm:inline">Monthly</span>
+									</TabsTrigger>
+								</TabsList>
+							</Tabs>
+						</div>
 					</div>
 
 					{/* Chart type selector */}
@@ -235,173 +276,176 @@ export function SimulateCompareCharts({
 					</div>
 				</CardHeader>
 
-				{/* Toggle controls row */}
-				<div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-2">
-					{/* Left side: Data series toggles */}
-					<div className="flex flex-wrap items-center gap-2">
-						{currentToggles.map((toggle) => (
-							<Toggle
-								key={toggle.key}
-								pressed={
-									currentVisibility[
-										toggle.key as keyof typeof currentVisibility
-									] as boolean
-								}
-								onPressedChange={() =>
-									toggleCompareChartVisibility(
-										activeChart,
-										toggle.key as keyof CompareChartVisibilitySettings[typeof activeChart],
-									)
-								}
-								size="sm"
-								className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
-							>
-								{toggle.color && toggle.lineStyle ? (
-									<svg
-										className="w-4 h-2.5 shrink-0"
-										viewBox="0 0 16 10"
-										aria-hidden="true"
-									>
-										<line
-											x1="0"
-											y1="5"
-											x2="16"
-											y2="5"
-											strokeWidth="2"
+				{/* Chart content area - captured for export */}
+				<div ref={chartContentRef}>
+					{/* Toggle controls row */}
+					<div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-2">
+						{/* Left side: Data series toggles */}
+						<div className="flex flex-wrap items-center gap-2">
+							{currentToggles.map((toggle) => (
+								<Toggle
+									key={toggle.key}
+									pressed={
+										currentVisibility[
+											toggle.key as keyof typeof currentVisibility
+										] as boolean
+									}
+									onPressedChange={() =>
+										toggleCompareChartVisibility(
+											activeChart,
+											toggle.key as keyof CompareChartVisibilitySettings[typeof activeChart],
+										)
+									}
+									size="sm"
+									className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
+								>
+									{toggle.color && toggle.lineStyle ? (
+										<svg
+											className="w-4 h-2.5 shrink-0"
+											viewBox="0 0 16 10"
+											aria-hidden="true"
+										>
+											<line
+												x1="0"
+												y1="5"
+												x2="16"
+												y2="5"
+												strokeWidth="2"
+												style={{
+													stroke: toggle.color,
+													strokeDasharray:
+														toggle.lineStyle === "dashed" ? "4 2" : undefined,
+												}}
+											/>
+										</svg>
+									) : toggle.color ? (
+										<div
+											className="h-2.5 w-2.5 rounded-sm shrink-0"
 											style={{
-												stroke: toggle.color,
-												strokeDasharray:
-													toggle.lineStyle === "dashed" ? "4 2" : undefined,
+												backgroundColor: toggle.color,
+												opacity: toggle.opacity ?? 1,
 											}}
 										/>
-									</svg>
-								) : toggle.color ? (
-									<div
-										className="h-2.5 w-2.5 rounded-sm shrink-0"
-										style={{
-											backgroundColor: toggle.color,
-											opacity: toggle.opacity ?? 1,
-										}}
+									) : null}
+									{toggle.label}
+								</Toggle>
+							))}
+							{/* Monthly Average checkbox for payments */}
+							{activeChart === "payments" && (
+								<div className="flex items-center gap-1.5 ml-2">
+									<Checkbox
+										id="compare-monthly-average-checkbox"
+										checked={visibility.payments.monthlyAverage}
+										onCheckedChange={() =>
+											toggleCompareChartVisibility("payments", "monthlyAverage")
+										}
 									/>
-								) : null}
-								{toggle.label}
-							</Toggle>
-						))}
-						{/* Monthly Average checkbox for payments */}
+									<Label
+										htmlFor="compare-monthly-average-checkbox"
+										className="text-xs cursor-pointer"
+									>
+										Monthly Average
+									</Label>
+								</div>
+							)}
+							{/* Stacked checkbox for cumulative costs */}
+							{activeChart === "cumulative" && (
+								<div className="flex items-center gap-1.5 ml-2">
+									<Checkbox
+										id="compare-stacked-checkbox"
+										checked={visibility.cumulative.stacked}
+										onCheckedChange={() =>
+											toggleCompareChartVisibility("cumulative", "stacked")
+										}
+									/>
+									<Label
+										htmlFor="compare-stacked-checkbox"
+										className="text-xs cursor-pointer"
+									>
+										Stacked
+									</Label>
+								</div>
+							)}
+						</div>
+
+						{/* Right side: Simulation visibility toggles */}
+						<div className="flex flex-wrap items-center gap-2">
+							{(activeChart === "impact"
+								? simulations.filter(
+										(sim) =>
+											sim.summary.interestSaved > 0 ||
+											sim.summary.monthsSaved > 0,
+									)
+								: simulations
+							).map((sim) => (
+								<Toggle
+									key={sim.id}
+									pressed={visibleSimulations.has(sim.id)}
+									onPressedChange={() => toggleSimulationVisibility(sim.id)}
+									size="sm"
+									className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
+								>
+									<div
+										className="h-2.5 w-2.5 rounded-full shrink-0"
+										style={{ backgroundColor: sim.color }}
+									/>
+									<span className="truncate max-w-[100px]">{sim.name}</span>
+								</Toggle>
+							))}
+						</div>
+					</div>
+
+					<CardContent className="pt-0">
+						{activeChart === "balance" && (
+							<CompareBalanceChart
+								data={data}
+								simulations={visibleSims}
+								showBalance={visibility.balance.balance}
+								showEquity={visibility.balance.equity}
+								animate={shouldAnimate}
+							/>
+						)}
 						{activeChart === "payments" && (
-							<div className="flex items-center gap-1.5 ml-2">
-								<Checkbox
-									id="compare-monthly-average-checkbox"
-									checked={visibility.payments.monthlyAverage}
-									onCheckedChange={() =>
-										toggleCompareChartVisibility("payments", "monthlyAverage")
-									}
-								/>
-								<Label
-									htmlFor="compare-monthly-average-checkbox"
-									className="text-xs cursor-pointer"
-								>
-									Monthly Average
-								</Label>
-							</div>
+							<ComparePaymentChart
+								data={data}
+								simulations={visibleSims}
+								showPrincipal={visibility.payments.principal}
+								showInterest={visibility.payments.interest}
+								monthlyAverage={visibility.payments.monthlyAverage}
+								granularity={granularity}
+								animate={shouldAnimate}
+							/>
 						)}
-						{/* Stacked checkbox for cumulative costs */}
 						{activeChart === "cumulative" && (
-							<div className="flex items-center gap-1.5 ml-2">
-								<Checkbox
-									id="compare-stacked-checkbox"
-									checked={visibility.cumulative.stacked}
-									onCheckedChange={() =>
-										toggleCompareChartVisibility("cumulative", "stacked")
-									}
-								/>
-								<Label
-									htmlFor="compare-stacked-checkbox"
-									className="text-xs cursor-pointer"
-								>
-									Stacked
-								</Label>
-							</div>
+							<CompareCumulativeChart
+								data={data}
+								simulations={visibleSims}
+								showPrincipal={visibility.cumulative.principal}
+								showInterest={visibility.cumulative.interest}
+								stacked={visibility.cumulative.stacked}
+								animate={shouldAnimate}
+							/>
 						)}
-					</div>
-
-					{/* Right side: Simulation visibility toggles */}
-					<div className="flex flex-wrap items-center gap-2">
-						{(activeChart === "impact"
-							? simulations.filter(
-									(sim) =>
-										sim.summary.interestSaved > 0 ||
-										sim.summary.monthsSaved > 0,
-								)
-							: simulations
-						).map((sim) => (
-							<Toggle
-								key={sim.id}
-								pressed={visibleSimulations.has(sim.id)}
-								onPressedChange={() => toggleSimulationVisibility(sim.id)}
-								size="sm"
-								className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
-							>
-								<div
-									className="h-2.5 w-2.5 rounded-full shrink-0"
-									style={{ backgroundColor: sim.color }}
-								/>
-								<span className="truncate max-w-[100px]">{sim.name}</span>
-							</Toggle>
-						))}
-					</div>
+						{activeChart === "rates" && (
+							<CompareRateChart
+								data={data}
+								simulations={visibleSims}
+								showRate={visibility.rates.rate}
+								showLtv={visibility.rates.ltv}
+								animate={shouldAnimate}
+							/>
+						)}
+						{activeChart === "impact" && (
+							<CompareImpactChart
+								data={data}
+								simulations={visibleSims}
+								showBaseline={visibility.impact.baseline}
+								showActual={visibility.impact.actual}
+								animate={shouldAnimate}
+							/>
+						)}
+					</CardContent>
 				</div>
-
-				<CardContent className="pt-0">
-					{activeChart === "balance" && (
-						<CompareBalanceChart
-							data={data}
-							simulations={visibleSims}
-							showBalance={visibility.balance.balance}
-							showEquity={visibility.balance.equity}
-							animate={shouldAnimate}
-						/>
-					)}
-					{activeChart === "payments" && (
-						<ComparePaymentChart
-							data={data}
-							simulations={visibleSims}
-							showPrincipal={visibility.payments.principal}
-							showInterest={visibility.payments.interest}
-							monthlyAverage={visibility.payments.monthlyAverage}
-							granularity={granularity}
-							animate={shouldAnimate}
-						/>
-					)}
-					{activeChart === "cumulative" && (
-						<CompareCumulativeChart
-							data={data}
-							simulations={visibleSims}
-							showPrincipal={visibility.cumulative.principal}
-							showInterest={visibility.cumulative.interest}
-							stacked={visibility.cumulative.stacked}
-							animate={shouldAnimate}
-						/>
-					)}
-					{activeChart === "rates" && (
-						<CompareRateChart
-							data={data}
-							simulations={visibleSims}
-							showRate={visibility.rates.rate}
-							showLtv={visibility.rates.ltv}
-							animate={shouldAnimate}
-						/>
-					)}
-					{activeChart === "impact" && (
-						<CompareImpactChart
-							data={data}
-							simulations={visibleSims}
-							showBaseline={visibility.impact.baseline}
-							showActual={visibility.impact.actual}
-							animate={shouldAnimate}
-						/>
-					)}
-				</CardContent>
 			</Card>
 
 			{/* Hidden container for capturing charts for PDF export */}
