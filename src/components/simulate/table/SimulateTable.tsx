@@ -25,7 +25,7 @@ import type {
 	SimulationSummary,
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
-import { formatCurrency } from "@/lib/utils/currency";
+import { formatCurrencyFromCents } from "@/lib/utils/currency";
 import { SimulateYearRow } from "./SimulateYearRow";
 
 interface SimulateTableProps {
@@ -39,7 +39,7 @@ interface SimulateTableProps {
 }
 
 function formatEuro(cents: number): string {
-	return formatCurrency(cents / 100, { showCents: true });
+	return formatCurrencyFromCents(cents, { showCents: true });
 }
 
 // Helper component for header with glossary tooltip

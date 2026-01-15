@@ -7,6 +7,7 @@ import {
 	GitCompare,
 	Home,
 	Leaf,
+	LineChart,
 	Percent,
 	PiggyBank,
 	RotateCcw,
@@ -16,14 +17,6 @@ import { ShareButton } from "@/components/ShareButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -50,9 +43,14 @@ import type {
 	SimulationSummary,
 } from "@/lib/schemas/simulate";
 import { requestChartCapture } from "@/lib/stores/simulate/simulate-chart-capture";
-import { $hasSavedSimulations } from "@/lib/stores/simulate/simulate-saves";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
+import {
+	$hasValidComparison,
+	navigateToCompare,
+} from "@/lib/stores/simulate/simulate-compare";
+import { $savedSimulations } from "@/lib/stores/simulate/simulate-saves";
+import { formatCurrency } from "@/lib/utils/currency";
 import { formatTermDisplay } from "@/lib/utils/term";
+import { SimulateCompareSelectDialog } from "../compare/SimulateCompareSelectDialog";
 import { SimulateSavesDropdown } from "./SimulateSavesDropdown";
 
 interface SimulateHeaderProps {
@@ -94,7 +92,21 @@ export function SimulateHeader({
 }: SimulateHeaderProps) {
 	const [isExporting, setIsExporting] = useState(false);
 	const [compareDialogOpen, setCompareDialogOpen] = useState(false);
-	const hasSavedSimulations = useStore($hasSavedSimulations);
+	const savedSimulations = useStore($savedSimulations);
+	const hasValidComparison = useStore($hasValidComparison);
+
+	// Can compare if there's at least 1 saved simulation (current counts as the other one)
+	const canCompare = savedSimulations.length >= 1;
+
+	const handleCompare = () => {
+		if (hasValidComparison) {
+			// Already have selections, navigate directly
+			navigateToCompare();
+		} else {
+			// Open dialog for selection
+			setCompareDialogOpen(true);
+		}
+	};
 
 	// Calculate LTV
 	const ltv = propertyValue > 0 ? (mortgageAmount / propertyValue) * 100 : 0;
@@ -203,14 +215,17 @@ export function SimulateHeader({
 		<div className="space-y-4">
 			{/* Page Header */}
 			{/* Page title - always visible */}
-			<div>
-				<h1 className="text-2xl font-bold tracking-tight mb-1">
-					Mortgage Simulator
-				</h1>
-				<p className="text-muted-foreground text-sm">
-					Simulate your mortgage with different rates, overpayments, and
-					scenarios.
-				</p>
+			<div className="flex items-start gap-3">
+				<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+					<LineChart className="h-5 w-5 text-primary" />
+				</div>
+				<div>
+					<h1 className="text-xl font-semibold">Mortgage Simulator</h1>
+					<p className="text-muted-foreground text-sm">
+						Simulate your mortgage with different rates, overpayments, and
+						scenarios.
+					</p>
+				</div>
 			</div>
 
 			{/* Action buttons - only when simulation is active */}
@@ -261,12 +276,12 @@ export function SimulateHeader({
 						</DropdownMenu>
 						<ShareButton onShare={onShare} responsive />
 						<div className="border-l h-6" />
-						{hasSavedSimulations ? (
+						{canCompare ? (
 							<Button
 								variant="outline"
 								size="sm"
 								className="gap-1.5"
-								onClick={() => setCompareDialogOpen(true)}
+								onClick={handleCompare}
 							>
 								<GitCompare className="h-4 w-4" />
 								Compare
@@ -287,7 +302,7 @@ export function SimulateHeader({
 									</span>
 								</TooltipTrigger>
 								<TooltipContent>
-									Save at least one simulation to compare
+									Save at least 1 simulation to compare
 								</TooltipContent>
 							</Tooltip>
 						)}
@@ -309,7 +324,7 @@ export function SimulateHeader({
 										Property Value
 									</p>
 									<p className="font-semibold truncate">
-										{formatCurrencyShort(propertyValue / 100)}
+										{formatCurrency(propertyValue / 100)}
 									</p>
 								</div>
 							</div>
@@ -320,7 +335,7 @@ export function SimulateHeader({
 								<div className="min-w-0">
 									<p className="text-xs text-muted-foreground">Mortgage</p>
 									<p className="font-semibold truncate">
-										{formatCurrencyShort(mortgageAmount / 100)}
+										{formatCurrency(mortgageAmount / 100)}
 										<span className="text-xs text-muted-foreground font-normal ml-1">
 											({ltv.toFixed(0)}%)
 										</span>
@@ -389,26 +404,12 @@ export function SimulateHeader({
 					</Alert>
 				)}
 
-			{/* Compare Dialog */}
-			<Dialog open={compareDialogOpen} onOpenChange={setCompareDialogOpen}>
-				<DialogContent>
-					<DialogHeader>
-						<DialogTitle>Compare Simulations</DialogTitle>
-						<DialogDescription>
-							This feature is coming soon. You'll be able to compare multiple
-							saved simulations side by side.
-						</DialogDescription>
-					</DialogHeader>
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={() => setCompareDialogOpen(false)}
-						>
-							Close
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+			{/* Compare Selection Dialog */}
+			<SimulateCompareSelectDialog
+				open={compareDialogOpen}
+				onOpenChange={setCompareDialogOpen}
+				showCurrentSimulation={hasRequiredData}
+			/>
 		</div>
 	);
 }

@@ -1,5 +1,8 @@
 /**
  * Shared types for chart components
+ *
+ * All currency values are stored in cents (×100) to match the internal
+ * storage convention used throughout the codebase.
  */
 
 export interface ChartDataPoint {
@@ -14,20 +17,20 @@ export interface ChartDataPoint {
 	calendarMonth?: number;
 	calendarQuarter?: number; // 1-4 based on calendar
 
-	// Balance and cumulative values
+	// Balance and cumulative values (in cents)
 	principalRemaining: number;
 	cumulativeInterest: number;
 	cumulativePrincipal: number;
 	totalPaid: number;
 
-	// Monthly payment breakdown (for stacked bars)
+	// Monthly payment breakdown (in cents, for stacked bars)
 	monthlyPrincipal: number;
 	monthlyInterest: number;
-	// Overpayments split by type
+	// Overpayments split by type (in cents)
 	oneTimeOverpayment: number;
 	recurringOverpayment: number;
 
-	// Baseline values (for overpayment impact chart)
+	// Baseline values (in cents, for overpayment impact chart)
 	baselineBalance?: number;
 	baselineCumulativeInterest?: number;
 
@@ -41,9 +44,9 @@ export interface ChartDataPoint {
 	// LTV (Loan-to-Value) percentage
 	ltv?: number;
 
-	// Self-build fields
-	drawdownThisMonth?: number; // Amount drawn this period (in euros)
-	cumulativeDrawn?: number; // Total drawn so far (in euros)
+	// Self-build fields (in cents)
+	drawdownThisMonth?: number; // Amount drawn this period
+	cumulativeDrawn?: number; // Total drawn so far
 	phase?: "construction" | "interest_only" | "repayment";
 	isInterestOnly?: boolean;
 }

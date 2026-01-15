@@ -1,0 +1,19 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { CompareHeaderIsland } from "@/components/simulate/compare/CompareHeaderIsland";
+import { CompareSummaryIsland } from "@/components/simulate/compare/CompareSummaryIsland";
+import { CompareChartsIsland } from "@/components/simulate/compare/chart/CompareChartsIsland";
+import { CompareTableIsland } from "@/components/simulate/compare/CompareTableIsland";
+---
+
+<Layout
+	title="Compare Simulations"
+	description="Compare multiple mortgage simulations side by side. Analyze differences in interest, payments, and term length."
+>
+	<div class="container mx-auto px-4 py-8">
+		<CompareHeaderIsland client:load />
+		<CompareSummaryIsland client:load />
+		<CompareChartsIsland client:load />
+		<CompareTableIsland client:idle />
+	</div>
+</Layout>

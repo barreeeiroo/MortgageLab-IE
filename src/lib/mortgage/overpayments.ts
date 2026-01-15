@@ -272,3 +272,40 @@ export function formatPolicyDescription(
 
 	return "No allowance";
 }
+
+/**
+ * Create maps of overpayments by month, split by type (one-time vs recurring).
+ * Used by chart components to display overpayment breakdown.
+ *
+ * @param appliedOverpayments - Array of applied overpayments from amortization calculation
+ * @returns Object with two maps: oneTimeByMonth and recurringByMonth (amounts in cents)
+ */
+export function createOverpaymentMaps(
+	appliedOverpayments: Array<{
+		month: number;
+		amount: number;
+		isRecurring: boolean;
+	}>,
+): {
+	oneTimeByMonth: Map<number, number>;
+	recurringByMonth: Map<number, number>;
+} {
+	const oneTimeByMonth = new Map<number, number>();
+	const recurringByMonth = new Map<number, number>();
+
+	for (const op of appliedOverpayments) {
+		if (op.isRecurring) {
+			recurringByMonth.set(
+				op.month,
+				(recurringByMonth.get(op.month) ?? 0) + op.amount,
+			);
+		} else {
+			oneTimeByMonth.set(
+				op.month,
+				(oneTimeByMonth.get(op.month) ?? 0) + op.amount,
+			);
+		}
+	}
+
+	return { oneTimeByMonth, recurringByMonth };
+}

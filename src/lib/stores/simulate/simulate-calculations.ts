@@ -16,7 +16,13 @@ import {
 	resolveRatePeriod,
 	type SimulationCompleteness,
 } from "@/lib/mortgage/simulation";
-import type { ResolvedRatePeriod } from "@/lib/schemas/simulate";
+import type {
+	AmortizationMonth,
+	RatePeriod,
+	ResolvedRatePeriod,
+	SelfBuildConfig,
+	SimulateInputValues,
+} from "@/lib/schemas/simulate";
 import { addMonthsToDateString } from "@/lib/utils/date";
 import { $customRates } from "../custom-rates";
 import { $lenders } from "../lenders";
@@ -78,92 +84,102 @@ export const $yearlySchedule = computed($amortizationSchedule, (months) =>
 	aggregateByYear(months),
 );
 
-// Summary stats (includes baseline calculation for interest saved)
-export const $simulationSummary = computed(
-	[
-		$amortizationSchedule,
-		$simulationState,
-		$rates,
-		$customRates,
-		$lenders,
-		$overpaymentPolicies,
-	],
-	(months, state, rates, customRates, lenders, _policies) => {
-		// Build resolved periods map for baseline calculation (stack-based)
-		const resolvedPeriods = new Map<string, ResolvedRatePeriod>();
-		let currentStart = 1;
-		for (const period of state.ratePeriods) {
-			const resolved = resolveRatePeriod(
-				period,
-				currentStart,
-				rates,
-				customRates,
-				lenders,
-			);
-			if (resolved) {
-				resolvedPeriods.set(period.id, resolved);
-			}
-			currentStart += period.durationMonths;
-		}
-
-		// Calculate baseline interest (without overpayments)
-		// Uses same repayment type as user's config
-		const baselineInterest = calculateBaselineInterest(
-			state.input.mortgageAmount,
-			state.input.mortgageTermMonths,
-			state.ratePeriods,
-			resolvedPeriods,
-			state.selfBuildConfig,
+/**
+ * Compute resolved rate periods from raw rate periods (stack-based)
+ * Exported for reuse in simulate-compare-calculations
+ */
+export function computeResolvedRatePeriods(
+	ratePeriods: RatePeriod[],
+	allRates: typeof $rates extends { get(): infer T } ? T : never,
+	customRates: typeof $customRates extends { get(): infer T } ? T : never,
+	lenders: typeof $lenders extends { get(): infer T } ? T : never,
+): ResolvedRatePeriod[] {
+	const resolved: ResolvedRatePeriod[] = [];
+	let currentStart = 1;
+	for (const period of ratePeriods) {
+		const r = resolveRatePeriod(
+			period,
+			currentStart,
+			allRates,
+			customRates,
+			lenders,
 		);
+		if (r) resolved.push(r);
+		currentStart += period.durationMonths;
+	}
+	return resolved;
+}
 
-		// For self-build, calculate baseline using interest_and_capital mode
-		// This shows the extra interest cost of choosing interest_only during construction
-		let interestCapitalBaselineInterest: number | undefined;
-		if (
-			isSelfBuildActive(state.selfBuildConfig) &&
-			state.selfBuildConfig.constructionRepaymentType === "interest_only"
-		) {
-			// Calculate what interest would be if paying principal during construction
-			interestCapitalBaselineInterest = calculateBaselineInterest(
-				state.input.mortgageAmount,
-				state.input.mortgageTermMonths,
-				state.ratePeriods,
-				resolvedPeriods,
-				{
-					...state.selfBuildConfig,
-					constructionRepaymentType: "interest_and_capital",
-				},
-			);
-		}
+/**
+ * Compute simulation summary with baseline interest calculation
+ * Exported for reuse in simulate-compare-calculations
+ */
+export function computeSummary(
+	months: AmortizationMonth[],
+	input: SimulateInputValues,
+	ratePeriods: RatePeriod[],
+	resolvedPeriods: ResolvedRatePeriod[],
+	selfBuildConfig?: SelfBuildConfig,
+) {
+	// Build resolved periods map for baseline calculation
+	const resolvedPeriodsMap = new Map<string, ResolvedRatePeriod>();
+	for (const resolved of resolvedPeriods) {
+		resolvedPeriodsMap.set(resolved.id, resolved);
+	}
 
-		return calculateSummary(
-			months,
-			baselineInterest,
-			state.input.mortgageTermMonths,
-			interestCapitalBaselineInterest,
+	// Calculate baseline interest (without overpayments)
+	const baselineInterest = calculateBaselineInterest(
+		input.mortgageAmount,
+		input.mortgageTermMonths,
+		ratePeriods,
+		resolvedPeriodsMap,
+		selfBuildConfig,
+	);
+
+	// For self-build, calculate baseline using interest_and_capital mode
+	let interestCapitalBaselineInterest: number | undefined;
+	if (
+		isSelfBuildActive(selfBuildConfig) &&
+		selfBuildConfig?.constructionRepaymentType === "interest_only"
+	) {
+		interestCapitalBaselineInterest = calculateBaselineInterest(
+			input.mortgageAmount,
+			input.mortgageTermMonths,
+			ratePeriods,
+			resolvedPeriodsMap,
+			{
+				...selfBuildConfig,
+				constructionRepaymentType: "interest_and_capital",
+			},
 		);
-	},
-);
+	}
+
+	return calculateSummary(
+		months,
+		baselineInterest,
+		input.mortgageTermMonths,
+		interestCapitalBaselineInterest,
+	);
+}
 
 // Resolved rate periods for display (stack-based: compute startMonth from position)
 export const $resolvedRatePeriods = computed(
-	[$simulationState, $rates, $customRates, $lenders, $overpaymentPolicies],
-	(state, rates, customRates, lenders, _policies) => {
-		const resolved: ResolvedRatePeriod[] = [];
-		let currentStart = 1;
-		for (const period of state.ratePeriods) {
-			const r = resolveRatePeriod(
-				period,
-				currentStart,
-				rates,
-				customRates,
-				lenders,
-			);
-			if (r) resolved.push(r);
-			currentStart += period.durationMonths;
-		}
-		return resolved;
-	},
+	[$simulationState, $rates, $customRates, $lenders],
+	(state, rates, customRates, lenders) =>
+		computeResolvedRatePeriods(state.ratePeriods, rates, customRates, lenders),
+);
+
+// Summary stats (includes baseline calculation for interest saved)
+export const $simulationSummary = computed(
+	[$amortizationSchedule, $resolvedRatePeriods, $simulationState],
+	(months, resolvedPeriods, state) =>
+		computeSummary(
+			months,
+			state.input,
+			state.ratePeriods,
+			resolvedPeriods,
+			state.selfBuildConfig,
+		),
 );
 
 // Computed milestones store

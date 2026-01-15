@@ -12,7 +12,7 @@ Business logic layer. Components should be thin - move pure JS functions here.
 | schemas/     | Zod validation schemas (source of truth for types)                       |
 | constants/   | Business rules (Central Bank limits, BER ratings)                        |
 | data/        | Data fetching from JSON files                                            |
-| share/       | URL compression and shareable link generation (rates, borrowing, breakeven) |
+| share/       | URL compression and shareable link generation (rates, borrowing, breakeven, simulate-compare) |
 | storage/     | localStorage persistence                                                 |
 | hooks/       | React custom hooks (e.g., `useIsDesktop`)                                |
 | export/      | PDF/Excel/CSV export (lazy-loaded jsPDF, ExcelJS). Includes share URL in PDFs. |
@@ -27,7 +27,7 @@ Business logic layer. Components should be thin - move pure JS functions here.
 
 ### Currency Precision
 
-Currency stored in **cents** internally (×100) to avoid floating-point errors. Use `parseCurrency()` and `formatCurrency()` for conversion.
+Currency stored in **cents** internally (×100) to avoid floating-point errors. Use `parseCurrency()` for parsing and `formatCurrency()` or `formatCurrencyFromCents()` for display. Chart components use cents-based formatters from `utils/chart.ts`.
 
 ### Stack-Based Rate Periods (Simulate)
 
@@ -39,7 +39,7 @@ Rate periods don't store startMonth. Position in array determines start:
 
 ### Overpayment Policies
 
-Three types: percentage of balance, percentage of monthly payment, flat amount. Balance-based uses year-start balance, not current.
+Three types: percentage of balance, percentage of monthly payment, flat amount. Balance-based uses year-start balance, not current. Use `createOverpaymentMaps()` from `mortgage/overpayments.ts` to split applied overpayments by type (one-time vs recurring).
 
 ### Self-Build Simulation
 
@@ -57,8 +57,9 @@ Don't overlook these - they contain reusable logic:
 | File         | Key exports                                                        |
 | ------------ | ------------------------------------------------------------------ |
 | borrowing.ts | `calculateMaxTermByAge()`, `calculateMortgageMetrics()` (LTV/LTI)  |
-| currency.ts  | `formatCurrency()`, `parseCurrency()`, `formatCurrencyShort()` (€100k) |
-| date.ts      | `calculateAge()`, `formatMonthYear()`, `addMonthsToDateString()`, `getCalendarYearForMonth()` |
+| chart.ts     | `formatChartCurrency()`, `formatChartCurrencyShort()`, `formatChartPercentage()`, `formatChartTerm()` (cents-based formatters for charts) |
+| currency.ts  | `formatCurrency()`, `parseCurrency()`, `formatCurrencyShort()`, `formatCurrencyFromCents()` |
+| date.ts      | `DATE_LOCALE`, `SHORT_MONTH_NAMES`, `formatShortMonthYear()`, `formatMonthYearShort()`, `formatMonthYear()`, `addMonthsToDateString()` |
 | fees.ts      | `calculateStampDuty()` (tiered Irish rates: 1%/2%/6%)              |
 | path.ts      | `getPath()` - handles base path for dev vs production              |
 
@@ -75,6 +76,8 @@ Don't overlook these - they contain reusable logic:
 | simulate/simulate-state.ts        | Simulation inputs and rate periods                   |
 | simulate/simulate-calculations.ts | Computed stores (uses pure functions from mortgage/simulation.ts) |
 | simulate/simulate-chart.ts        | Chart display state (year range, view options)       |
+| simulate/simulate-compare.ts      | Compare state (selected IDs, display start date)     |
+| simulate/simulate-compare-calculations.ts | Computed comparison data and metrics        |
 
 ## Adding New Logic
 
@@ -95,6 +98,7 @@ Unit tests live in `__tests__/` directories alongside source files. Run with `bu
 | mortgage/__tests__/   | payments, aprc, breakeven, overpayments, simulation      |
 | utils/__tests__/      | currency, date, term, fees, borrowing, cn, path          |
 | share/__tests__/      | URL compression (common, custom-rates, custom-perks)     |
+| stores/simulate/__tests__/ | simulate-compare validation and state                |
 
 ### Testing Patterns
 

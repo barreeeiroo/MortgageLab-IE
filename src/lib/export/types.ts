@@ -7,6 +7,7 @@ export type ExportFormat = "csv" | "xlsx" | "pdf" | "png";
 export type ExportPage =
 	| "rates"
 	| "simulation"
+	| "simulation-compare"
 	| "breakeven-rentvsbuy"
 	| "breakeven-remortgage"
 	| "affordability-ftb"

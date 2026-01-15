@@ -332,8 +332,8 @@ previous periods' durations. A `durationMonths: 0` means "until end of mortgage"
 | `src/lib/mortgage/payments.ts`                          | Monthly payment formula            |
 | `src/lib/mortgage/overpayments.ts`                      | Overpayment allowance calculations |
 | `src/lib/mortgage/self-build.ts`                        | Self-build drawdown logic          |
-| `src/components/simulate/chart/SimulateChartIsland.tsx` | Amortization chart                 |
-| `src/components/simulate/table/SimulateTableIsland.tsx` | Monthly/yearly schedule table      |
+| `src/components/simulate/chart/`                        | Chart components and shared utils  |
+| `src/components/simulate/table/`                        | Monthly/yearly schedule table      |
 
 ### Rates Page Integration
 
@@ -353,6 +353,38 @@ The Rates and Simulate pages share data through two patterns:
 3. `SimulateRedirectAlert` detects the parameter and shows "Add to Simulation" button
 4. When clicked, calls `addRatePeriod()` to append the rate
 5. Navigates back to `/simulate`
+
+## Compare Simulations
+
+The Compare page (`/simulate/compare`) allows side-by-side comparison of saved simulations.
+
+### Features
+
+* Compare up to 5 simulations simultaneously
+* Unified display start date overrides individual simulation dates
+* Summary metrics with diff highlighting (green = better, red = worse)
+* 5 chart types: Balance, Payments, Cumulative, Rates, Impact
+* Expandable yearly/monthly schedule table
+* Export to PDF (with/without charts) and Excel
+* Shareable comparison URLs
+
+### State Management
+
+* `$compareState` - Selected simulation IDs, display start date
+* `$compareSimulationData` - Computed amortization data for each simulation
+* `$compareSummaryMetrics` - Key metrics (total interest, term, etc.) with diffs
+* `$compareChartSettings` - Active chart type, granularity, visibility toggles
+
+### Key Files
+
+| File                                           | Purpose                              |
+|------------------------------------------------|--------------------------------------|
+| `src/lib/stores/simulate/simulate-compare.ts`  | Compare state and actions            |
+| `src/lib/stores/simulate/simulate-compare-calculations.ts` | Computed comparison data |
+| `src/lib/export/compare-export.ts`             | PDF/Excel export for comparisons     |
+| `src/lib/share/simulate-compare.ts`            | URL compression for sharing          |
+| `src/components/simulate/compare/chart/`       | Chart components (mirrors single sim structure) |
+| `src/components/simulate/compare/table/`       | Table components (year/month rows)   |
 
 ## Breakeven Calculators
 

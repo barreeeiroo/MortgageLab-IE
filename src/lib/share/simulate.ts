@@ -27,7 +27,7 @@ export const SIMULATE_SHARE_PARAM = "s";
 
 // Compressed format for URL (abbreviated keys)
 // Stack-based model: startMonth is computed from position, not stored
-interface CompressedRatePeriod {
+export interface CompressedRatePeriod {
 	l: string; // lenderId
 	r: string; // rateId
 	c: boolean; // isCustom
@@ -35,7 +35,7 @@ interface CompressedRatePeriod {
 	b?: string; // label
 }
 
-interface CompressedOverpayment {
+export interface CompressedOverpayment {
 	p: number; // ratePeriodIndex (index into rate periods array, mapped to ID on decompress)
 	y: "o" | "r"; // type (one_time/recurring)
 	q?: "m" | "q" | "y"; // frequency (monthly/quarterly/yearly) - only for recurring
@@ -47,13 +47,13 @@ interface CompressedOverpayment {
 	n?: boolean; // enabled=false (only included when disabled, to save space)
 }
 
-interface CompressedDrawdownStage {
+export interface CompressedDrawdownStage {
 	m: number; // month
 	a: number; // amount (cents)
 	b?: string; // label
 }
 
-interface CompressedSelfBuildConfig {
+export interface CompressedSelfBuildConfig {
 	t?: "c"; // constructionRepaymentType: undefined = interest_only (default), "c" = interest_and_capital
 	i: number; // interestOnlyMonths
 	s: CompressedDrawdownStage[];
@@ -73,7 +73,7 @@ interface CompressedSimulation {
 	sb?: CompressedSelfBuildConfig; // self-build config
 }
 
-function compressRatePeriod(period: RatePeriod): CompressedRatePeriod {
+export function compressRatePeriod(period: RatePeriod): CompressedRatePeriod {
 	return {
 		l: period.lenderId,
 		r: period.rateId,
@@ -83,7 +83,9 @@ function compressRatePeriod(period: RatePeriod): CompressedRatePeriod {
 	};
 }
 
-function decompressRatePeriod(compressed: CompressedRatePeriod): RatePeriod {
+export function decompressRatePeriod(
+	compressed: CompressedRatePeriod,
+): RatePeriod {
 	return {
 		id: crypto.randomUUID(),
 		lenderId: compressed.l,
@@ -94,7 +96,7 @@ function decompressRatePeriod(compressed: CompressedRatePeriod): RatePeriod {
 	};
 }
 
-function compressOverpayment(
+export function compressOverpayment(
 	config: OverpaymentConfig,
 	ratePeriods: RatePeriod[],
 ): CompressedOverpayment {
@@ -122,7 +124,7 @@ function compressOverpayment(
 	};
 }
 
-function decompressOverpayment(
+export function decompressOverpayment(
 	compressed: CompressedOverpayment,
 	ratePeriods: RatePeriod[],
 ): OverpaymentConfig {
@@ -149,7 +151,9 @@ function decompressOverpayment(
 	};
 }
 
-function compressDrawdownStage(stage: DrawdownStage): CompressedDrawdownStage {
+export function compressDrawdownStage(
+	stage: DrawdownStage,
+): CompressedDrawdownStage {
 	return {
 		m: stage.month,
 		a: stage.amount,
@@ -157,7 +161,7 @@ function compressDrawdownStage(stage: DrawdownStage): CompressedDrawdownStage {
 	};
 }
 
-function decompressDrawdownStage(
+export function decompressDrawdownStage(
 	compressed: CompressedDrawdownStage,
 ): DrawdownStage {
 	return {
@@ -168,7 +172,7 @@ function decompressDrawdownStage(
 	};
 }
 
-function compressSelfBuildConfig(
+export function compressSelfBuildConfig(
 	config: SelfBuildConfig,
 ): CompressedSelfBuildConfig {
 	return {
@@ -182,7 +186,7 @@ function compressSelfBuildConfig(
 	};
 }
 
-function decompressSelfBuildConfig(
+export function decompressSelfBuildConfig(
 	compressed: CompressedSelfBuildConfig,
 ): SelfBuildConfig {
 	return {

@@ -26,7 +26,8 @@ LTV, fixed period, buyer type, and BER rating.
 
 Model your mortgage with interactive amortization charts. Simulate rate changes,
 overpayments, and different scenarios. Supports self-build mortgages with staged
-drawdowns and interest-only construction periods.
+drawdowns and interest-only construction periods. Compare multiple saved
+simulations side-by-side with exportable reports.
 
 ### Breakeven Calculators
 

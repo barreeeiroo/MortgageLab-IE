@@ -149,6 +149,23 @@ export function clearCustomRates(): void {
 	persistCustomRates([]);
 }
 
+/**
+ * Merge custom rates from an import, overwriting existing rates by ID
+ */
+export function mergeCustomRates(rates: StoredCustomRate[]): void {
+	const existing = $storedCustomRates.get();
+	const existingById = new Map(existing.map((r) => [r.id, r]));
+
+	// Add or overwrite each rate
+	for (const rate of rates) {
+		existingById.set(rate.id, rate);
+	}
+
+	const merged = Array.from(existingById.values());
+	$storedCustomRates.set(merged);
+	persistCustomRates(merged);
+}
+
 function persistCustomRates(rates: StoredCustomRate[]): void {
 	if (typeof window !== "undefined") {
 		localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(rates));

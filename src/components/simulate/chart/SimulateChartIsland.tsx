@@ -1,4 +1,5 @@
 import { useStore } from "@nanostores/react";
+import { createOverpaymentMaps } from "@/lib/mortgage/overpayments";
 import {
 	$amortizationSchedule,
 	$appliedOverpayments,
@@ -43,21 +44,8 @@ export function SimulateChartIsland() {
 	const baselineByMonth = new Map(baselineSchedule.map((m) => [m.month, m]));
 
 	// Create maps for overpayments by month (split by type)
-	const oneTimeByMonth = new Map<number, number>();
-	const recurringByMonth = new Map<number, number>();
-	for (const op of appliedOverpayments) {
-		if (op.isRecurring) {
-			recurringByMonth.set(
-				op.month,
-				(recurringByMonth.get(op.month) ?? 0) + op.amount,
-			);
-		} else {
-			oneTimeByMonth.set(
-				op.month,
-				(oneTimeByMonth.get(op.month) ?? 0) + op.amount,
-			);
-		}
-	}
+	const { oneTimeByMonth, recurringByMonth } =
+		createOverpaymentMaps(appliedOverpayments);
 
 	// Transform schedule data for charts
 	const chartData: ChartDataPoint[] = (() => {
@@ -130,20 +118,20 @@ export function SimulateChartIsland() {
 					period: row.year,
 					year: row.year,
 					calendarYear,
-					principalRemaining: row.closingBalance / 100,
-					cumulativeInterest: row.cumulativeInterest / 100,
-					cumulativePrincipal: row.cumulativePrincipal / 100,
-					totalPaid: row.cumulativeTotal / 100,
+					principalRemaining: row.closingBalance,
+					cumulativeInterest: row.cumulativeInterest,
+					cumulativePrincipal: row.cumulativePrincipal,
+					totalPaid: row.cumulativeTotal,
 					// Totals for the period (not averages)
-					monthlyPrincipal: row.totalPrincipal / 100,
-					monthlyInterest: row.totalInterest / 100,
-					oneTimeOverpayment: yearOneTime / 100,
-					recurringOverpayment: yearRecurring / 100,
+					monthlyPrincipal: row.totalPrincipal,
+					monthlyInterest: row.totalInterest,
+					oneTimeOverpayment: yearOneTime,
+					recurringOverpayment: yearRecurring,
 					baselineBalance: baselineMonth
-						? baselineMonth.closingBalance / 100
+						? baselineMonth.closingBalance
 						: undefined,
 					baselineCumulativeInterest: baselineMonth
-						? baselineMonth.cumulativeInterest / 100
+						? baselineMonth.cumulativeInterest
 						: undefined,
 					rate: avgRate,
 					ratePeriodId: ratePeriod?.id,
@@ -154,11 +142,10 @@ export function SimulateChartIsland() {
 							? (row.closingBalance / input.propertyValue) * 100
 							: undefined,
 					// Self-build fields
-					drawdownThisMonth:
-						yearDrawdowns > 0 ? yearDrawdowns / 100 : undefined,
+					drawdownThisMonth: yearDrawdowns > 0 ? yearDrawdowns : undefined,
 					cumulativeDrawn:
 						lastMonthData?.cumulativeDrawn !== undefined
-							? lastMonthData.cumulativeDrawn / 100
+							? lastMonthData.cumulativeDrawn
 							: undefined,
 					phase: lastMonthData?.phase,
 					isInterestOnly: hasInterestOnlyMonth || undefined,
@@ -256,20 +243,20 @@ export function SimulateChartIsland() {
 					quarter: ((quarterIndex - 1) % 4) + 1,
 					calendarYear: lastDate?.getFullYear(),
 					calendarQuarter,
-					principalRemaining: lastMonth.closingBalance / 100,
-					cumulativeInterest: lastMonth.cumulativeInterest / 100,
-					cumulativePrincipal: lastMonth.cumulativePrincipal / 100,
-					totalPaid: lastMonth.cumulativeTotal / 100,
+					principalRemaining: lastMonth.closingBalance,
+					cumulativeInterest: lastMonth.cumulativeInterest,
+					cumulativePrincipal: lastMonth.cumulativePrincipal,
+					totalPaid: lastMonth.cumulativeTotal,
 					// Totals for the period (not averages)
-					monthlyPrincipal: totalPrincipal / 100,
-					monthlyInterest: totalInterest / 100,
-					oneTimeOverpayment: qtrOneTime / 100,
-					recurringOverpayment: qtrRecurring / 100,
+					monthlyPrincipal: totalPrincipal,
+					monthlyInterest: totalInterest,
+					oneTimeOverpayment: qtrOneTime,
+					recurringOverpayment: qtrRecurring,
 					baselineBalance: baselineMonth
-						? baselineMonth.closingBalance / 100
+						? baselineMonth.closingBalance
 						: undefined,
 					baselineCumulativeInterest: baselineMonth
-						? baselineMonth.cumulativeInterest / 100
+						? baselineMonth.cumulativeInterest
 						: undefined,
 					rate: avgRate,
 					ratePeriodId: ratePeriod?.id,
@@ -280,10 +267,10 @@ export function SimulateChartIsland() {
 							? (lastMonth.closingBalance / input.propertyValue) * 100
 							: undefined,
 					// Self-build fields
-					drawdownThisMonth: qtrDrawdowns > 0 ? qtrDrawdowns / 100 : undefined,
+					drawdownThisMonth: qtrDrawdowns > 0 ? qtrDrawdowns : undefined,
 					cumulativeDrawn:
 						lastMonth.cumulativeDrawn !== undefined
-							? lastMonth.cumulativeDrawn / 100
+							? lastMonth.cumulativeDrawn
 							: undefined,
 					phase: lastMonth.phase,
 					isInterestOnly: hasInterestOnlyMonth || undefined,
@@ -307,19 +294,19 @@ export function SimulateChartIsland() {
 				month: row.monthOfYear,
 				calendarYear: date?.getFullYear(),
 				calendarMonth: date ? date.getMonth() + 1 : undefined,
-				principalRemaining: row.closingBalance / 100,
-				cumulativeInterest: row.cumulativeInterest / 100,
-				cumulativePrincipal: row.cumulativePrincipal / 100,
-				totalPaid: row.cumulativeTotal / 100,
-				monthlyPrincipal: row.principalPortion / 100,
-				monthlyInterest: row.interestPortion / 100,
-				oneTimeOverpayment: (oneTimeByMonth.get(row.month) ?? 0) / 100,
-				recurringOverpayment: (recurringByMonth.get(row.month) ?? 0) / 100,
+				principalRemaining: row.closingBalance,
+				cumulativeInterest: row.cumulativeInterest,
+				cumulativePrincipal: row.cumulativePrincipal,
+				totalPaid: row.cumulativeTotal,
+				monthlyPrincipal: row.principalPortion,
+				monthlyInterest: row.interestPortion,
+				oneTimeOverpayment: oneTimeByMonth.get(row.month) ?? 0,
+				recurringOverpayment: recurringByMonth.get(row.month) ?? 0,
 				baselineBalance: baselineMonth
-					? baselineMonth.closingBalance / 100
+					? baselineMonth.closingBalance
 					: undefined,
 				baselineCumulativeInterest: baselineMonth
-					? baselineMonth.cumulativeInterest / 100
+					? baselineMonth.cumulativeInterest
 					: undefined,
 				rate: ratePeriod?.rate,
 				ratePeriodId: ratePeriod?.id,
@@ -331,23 +318,18 @@ export function SimulateChartIsland() {
 				// Self-build fields
 				drawdownThisMonth:
 					row.drawdownThisMonth !== undefined
-						? row.drawdownThisMonth / 100
+						? row.drawdownThisMonth
 						: undefined,
 				cumulativeDrawn:
-					row.cumulativeDrawn !== undefined
-						? row.cumulativeDrawn / 100
-						: undefined,
+					row.cumulativeDrawn !== undefined ? row.cumulativeDrawn : undefined,
 				phase: row.phase,
 				isInterestOnly: row.isInterestOnly,
 			};
 		});
 	})();
 
-	// Calculate deposit (property value - mortgage amount)
-	const deposit = Math.max(
-		0,
-		(input.propertyValue - input.mortgageAmount) / 100,
-	);
+	// Calculate deposit (property value - mortgage amount) - keep in cents
+	const deposit = Math.max(0, input.propertyValue - input.mortgageAmount);
 
 	// Create extended chart data for Overpayment Impact that covers the full baseline term
 	// This is needed because overpayments can reduce the term, but we want to show the full baseline range
@@ -398,15 +380,15 @@ export function SimulateChartIsland() {
 					year,
 					calendarYear,
 					principalRemaining: 0, // Mortgage is paid off
-					cumulativeInterest: lastActualInterest / 100,
-					cumulativePrincipal: input.mortgageAmount / 100,
-					totalPaid: (lastActualInterest + input.mortgageAmount) / 100,
+					cumulativeInterest: lastActualInterest,
+					cumulativePrincipal: input.mortgageAmount,
+					totalPaid: lastActualInterest + input.mortgageAmount,
 					monthlyPrincipal: 0,
 					monthlyInterest: 0,
 					oneTimeOverpayment: 0,
 					recurringOverpayment: 0,
-					baselineBalance: lastMonthData.closingBalance / 100,
-					baselineCumulativeInterest: lastMonthData.cumulativeInterest / 100,
+					baselineBalance: lastMonthData.closingBalance,
+					baselineCumulativeInterest: lastMonthData.cumulativeInterest,
 				});
 			}
 		} else if (granularity === "quarterly") {
@@ -436,15 +418,15 @@ export function SimulateChartIsland() {
 					calendarYear: lastDate?.getFullYear(),
 					calendarQuarter,
 					principalRemaining: 0,
-					cumulativeInterest: lastActualInterest / 100,
-					cumulativePrincipal: input.mortgageAmount / 100,
-					totalPaid: (lastActualInterest + input.mortgageAmount) / 100,
+					cumulativeInterest: lastActualInterest,
+					cumulativePrincipal: input.mortgageAmount,
+					totalPaid: lastActualInterest + input.mortgageAmount,
 					monthlyPrincipal: 0,
 					monthlyInterest: 0,
 					oneTimeOverpayment: 0,
 					recurringOverpayment: 0,
-					baselineBalance: lastMonthData.closingBalance / 100,
-					baselineCumulativeInterest: lastMonthData.cumulativeInterest / 100,
+					baselineBalance: lastMonthData.closingBalance,
+					baselineCumulativeInterest: lastMonthData.cumulativeInterest,
 				});
 			}
 		} else {
@@ -461,15 +443,15 @@ export function SimulateChartIsland() {
 					calendarYear: date?.getFullYear(),
 					calendarMonth: date ? date.getMonth() + 1 : undefined,
 					principalRemaining: 0,
-					cumulativeInterest: lastActualInterest / 100,
-					cumulativePrincipal: input.mortgageAmount / 100,
-					totalPaid: (lastActualInterest + input.mortgageAmount) / 100,
+					cumulativeInterest: lastActualInterest,
+					cumulativePrincipal: input.mortgageAmount,
+					totalPaid: lastActualInterest + input.mortgageAmount,
 					monthlyPrincipal: 0,
 					monthlyInterest: 0,
 					oneTimeOverpayment: 0,
 					recurringOverpayment: 0,
-					baselineBalance: baselineMonth.closingBalance / 100,
-					baselineCumulativeInterest: baselineMonth.cumulativeInterest / 100,
+					baselineBalance: baselineMonth.closingBalance,
+					baselineCumulativeInterest: baselineMonth.cumulativeInterest,
 				});
 			}
 		}
