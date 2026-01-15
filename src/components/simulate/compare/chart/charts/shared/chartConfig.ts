@@ -1,6 +1,21 @@
 import type { ChartConfig } from "@/components/ui/chart";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
+import {
+	formatChartCurrency as _formatChartCurrency,
+	formatChartCurrencyShort as _formatChartCurrencyShort,
+	CHART_ANIMATION_DURATION,
+	formatChartPercentage,
+	formatChartTerm,
+} from "@/lib/utils/chart";
 import type { CompareSimulationData } from "../../types";
+
+// Re-export shared constants and formatters
+export const ANIMATION_DURATION = CHART_ANIMATION_DURATION;
+
+// Chart formatters - these use the shared cents-based formatters from @/lib/utils/chart
+export const formatChartCurrency = _formatChartCurrency;
+export const formatChartCurrencyShort = _formatChartCurrencyShort;
+export const formatPercentage = formatChartPercentage;
+export const formatTerm = formatChartTerm;
 
 /**
  * Create a dynamic chart config based on the simulations being compared
@@ -34,29 +49,4 @@ export function createCompareChartConfig(
 	}
 
 	return config;
-}
-
-// Shared animation duration
-export const ANIMATION_DURATION = 400;
-
-// Currency formatters (values are in cents, divide by 100)
-export function formatChartCurrency(value: number): string {
-	return formatCurrency(value / 100, { showCents: false });
-}
-
-export function formatChartCurrencyShort(value: number): string {
-	return formatCurrencyShort(value / 100);
-}
-
-// Format percentage (for rate timeline)
-export function formatPercentage(value: number): string {
-	return `${value.toFixed(2)}%`;
-}
-
-// Format term (months to years/months)
-export function formatTerm(months: number): string {
-	const years = Math.floor(months / 12);
-	const remainingMonths = months % 12;
-	if (remainingMonths === 0) return `${years}y`;
-	return `${years}y ${remainingMonths}m`;
 }

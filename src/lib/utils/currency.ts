@@ -37,3 +37,18 @@ export function formatCurrencyShort(value: number): string {
 	}
 	return `€${value.toFixed(0)}`;
 }
+
+/**
+ * Format currency from cents.
+ * Convenience wrapper for values stored in cents (×100).
+ *
+ * @param cents - Amount in cents (×100)
+ * @param options - Formatting options
+ * @returns Formatted currency string
+ */
+export function formatCurrencyFromCents(
+	cents: number,
+	options?: { showCents?: boolean },
+): string {
+	return formatCurrency(cents / 100, options);
+}

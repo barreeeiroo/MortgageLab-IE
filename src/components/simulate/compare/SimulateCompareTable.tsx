@@ -21,7 +21,7 @@ import {
 	toggleCompareTableSimulation,
 	toggleCompareTableYear,
 } from "@/lib/stores/simulate/simulate-compare-table";
-import { formatCurrency } from "@/lib/utils/currency";
+import { formatCurrencyFromCents } from "@/lib/utils/currency";
 import { CompareYearRow } from "./table/CompareYearRow";
 
 interface SimulateCompareTableProps {
@@ -29,7 +29,7 @@ interface SimulateCompareTableProps {
 }
 
 function formatEuro(cents: number): string {
-	return formatCurrency(cents / 100, { showCents: false });
+	return formatCurrencyFromCents(cents);
 }
 
 function formatDiff(

@@ -4,21 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
-
-const MONTHS = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
-];
+import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 
 interface MonthYearPickerProps {
 	selected?: Date;
@@ -75,7 +61,7 @@ export function MonthYearPicker({
 
 			{/* Month grid */}
 			<div className="grid grid-cols-3 gap-2">
-				{MONTHS.map((month, index) => {
+				{SHORT_MONTH_NAMES.map((month, index) => {
 					const isSelected =
 						selectedYear === viewYear && selectedMonth === index;
 					return (

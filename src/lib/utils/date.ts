@@ -4,6 +4,24 @@
 export const DATE_LOCALE = "en-IE";
 
 /**
+ * Short month names for display (Jan, Feb, Mar, etc.)
+ */
+export const SHORT_MONTH_NAMES = [
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec",
+] as const;
+
+/**
  * Format a date to short month/year format (e.g., "Feb '26")
  */
 export function formatShortMonthYear(date: Date): string {

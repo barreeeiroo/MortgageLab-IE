@@ -1,5 +1,19 @@
 import type { ChartConfig } from "@/components/ui/chart";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
+import {
+	formatChartCurrency as _formatChartCurrency,
+	formatChartCurrencyShort as _formatChartCurrencyShort,
+	CHART_ANIMATION_DURATION,
+	formatChartPercentage,
+} from "@/lib/utils/chart";
+import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
+
+// Re-export shared constants and formatters
+export const ANIMATION_DURATION = CHART_ANIMATION_DURATION;
+
+// Chart formatters - these use the shared cents-based formatters from @/lib/utils/chart
+export const formatChartCurrency = _formatChartCurrency;
+export const formatChartCurrencyShort = _formatChartCurrencyShort;
+export const formatPercentage = formatChartPercentage;
 
 // Shared colors for charts
 export const CHART_COLORS = {
@@ -96,35 +110,5 @@ export const rateTimelineConfig: ChartConfig = {
 	},
 };
 
-// Shared animation duration
-export const ANIMATION_DURATION = 400;
-
-// Month names for formatting
-export const MONTH_NAMES = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
-];
-
-// Currency formatters
-export function formatChartCurrency(value: number): string {
-	return formatCurrency(value, { showCents: true });
-}
-
-export function formatChartCurrencyShort(value: number): string {
-	return formatCurrencyShort(value);
-}
-
-// Format percentage (for rate timeline)
-export function formatPercentage(value: number): string {
-	return `${value.toFixed(2)}%`;
-}
+// Re-export month names for formatting (used by chartUtils.tsx)
+export const MONTH_NAMES = SHORT_MONTH_NAMES;

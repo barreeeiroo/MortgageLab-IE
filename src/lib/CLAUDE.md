@@ -27,7 +27,7 @@ Business logic layer. Components should be thin - move pure JS functions here.
 
 ### Currency Precision
 
-Currency stored in **cents** internally (×100) to avoid floating-point errors. Use `parseCurrency()` and `formatCurrency()` for conversion.
+Currency stored in **cents** internally (×100) to avoid floating-point errors. Use `parseCurrency()` for parsing and `formatCurrency()` or `formatCurrencyFromCents()` for display. Chart components use cents-based formatters from `utils/chart.ts`.
 
 ### Stack-Based Rate Periods (Simulate)
 
@@ -39,7 +39,7 @@ Rate periods don't store startMonth. Position in array determines start:
 
 ### Overpayment Policies
 
-Three types: percentage of balance, percentage of monthly payment, flat amount. Balance-based uses year-start balance, not current.
+Three types: percentage of balance, percentage of monthly payment, flat amount. Balance-based uses year-start balance, not current. Use `createOverpaymentMaps()` from `mortgage/overpayments.ts` to split applied overpayments by type (one-time vs recurring).
 
 ### Self-Build Simulation
 
@@ -57,8 +57,9 @@ Don't overlook these - they contain reusable logic:
 | File         | Key exports                                                        |
 | ------------ | ------------------------------------------------------------------ |
 | borrowing.ts | `calculateMaxTermByAge()`, `calculateMortgageMetrics()` (LTV/LTI)  |
-| currency.ts  | `formatCurrency()`, `parseCurrency()`, `formatCurrencyShort()` (€100k) |
-| date.ts      | `DATE_LOCALE`, `formatShortMonthYear()`, `formatMonthYearShort()`, `formatMonthYear()`, `addMonthsToDateString()` |
+| chart.ts     | `formatChartCurrency()`, `formatChartCurrencyShort()`, `formatChartPercentage()`, `formatChartTerm()` (cents-based formatters for charts) |
+| currency.ts  | `formatCurrency()`, `parseCurrency()`, `formatCurrencyShort()`, `formatCurrencyFromCents()` |
+| date.ts      | `DATE_LOCALE`, `SHORT_MONTH_NAMES`, `formatShortMonthYear()`, `formatMonthYearShort()`, `formatMonthYear()`, `addMonthsToDateString()` |
 | fees.ts      | `calculateStampDuty()` (tiered Irish rates: 1%/2%/6%)              |
 | path.ts      | `getPath()` - handles base path for dev vs production              |
 

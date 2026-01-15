@@ -48,7 +48,7 @@ import {
 	navigateToCompare,
 } from "@/lib/stores/simulate/simulate-compare";
 import { $savedSimulations } from "@/lib/stores/simulate/simulate-saves";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
+import { formatCurrency } from "@/lib/utils/currency";
 import { formatTermDisplay } from "@/lib/utils/term";
 import { SimulateCompareSelectDialog } from "../compare/SimulateCompareSelectDialog";
 import { SimulateSavesDropdown } from "./SimulateSavesDropdown";
@@ -324,7 +324,7 @@ export function SimulateHeader({
 										Property Value
 									</p>
 									<p className="font-semibold truncate">
-										{formatCurrencyShort(propertyValue / 100)}
+										{formatCurrency(propertyValue / 100)}
 									</p>
 								</div>
 							</div>
@@ -335,7 +335,7 @@ export function SimulateHeader({
 								<div className="min-w-0">
 									<p className="text-xs text-muted-foreground">Mortgage</p>
 									<p className="font-semibold truncate">
-										{formatCurrencyShort(mortgageAmount / 100)}
+										{formatCurrency(mortgageAmount / 100)}
 										<span className="text-xs text-muted-foreground font-normal ml-1">
 											({ltv.toFixed(0)}%)
 										</span>

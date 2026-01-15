@@ -1,4 +1,5 @@
 import { computed } from "nanostores";
+import { createOverpaymentMaps } from "@/lib/mortgage/overpayments";
 import {
 	aggregateByYear,
 	calculateAmortization,
@@ -194,33 +195,6 @@ export const $compareMaxActualTermMonths = computed(
 /**
  * Generate yearly comparison chart data
  */
-/**
- * Helper to create overpayment maps by month for a simulation
- */
-function createOverpaymentMaps(appliedOverpayments: AppliedOverpayment[]): {
-	oneTimeByMonth: Map<number, number>;
-	recurringByMonth: Map<number, number>;
-} {
-	const oneTimeByMonth = new Map<number, number>();
-	const recurringByMonth = new Map<number, number>();
-
-	for (const op of appliedOverpayments) {
-		if (op.isRecurring) {
-			recurringByMonth.set(
-				op.month,
-				(recurringByMonth.get(op.month) ?? 0) + op.amount,
-			);
-		} else {
-			oneTimeByMonth.set(
-				op.month,
-				(oneTimeByMonth.get(op.month) ?? 0) + op.amount,
-			);
-		}
-	}
-
-	return { oneTimeByMonth, recurringByMonth };
-}
-
 export const $compareYearlyChartData = computed(
 	$compareSimulationData,
 	(simulations): CompareChartDataPoint[] => {
