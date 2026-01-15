@@ -101,7 +101,7 @@ export function SimulateCompareCharts({
 				for (const chartType of chartTypesToCapture) {
 					const element = captureRefs.current[chartType];
 					// Check if element exists and has rendered content (SVG)
-					if (element && element.querySelector("svg")) {
+					if (element?.querySelector("svg")) {
 						try {
 							const imageDataUrl = await elementToPngDataUrl(element, {
 								pixelRatio: 2,
@@ -118,7 +118,10 @@ export function SimulateCompareCharts({
 				}
 
 				// If we captured all charts or exceeded max attempts, complete
-				if (images.length === chartTypesToCapture.length || attempts >= maxAttempts) {
+				if (
+					images.length === chartTypesToCapture.length ||
+					attempts >= maxAttempts
+				) {
 					completeCompareChartCapture(images);
 				} else {
 					// Retry after a short delay
