@@ -285,10 +285,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments.state.overpaymentConfigs = [
 				{
 					id: "overpayment-1",
-					type: "flat_amount",
-					value: 10000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 10000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 
@@ -317,10 +319,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments1.state.overpaymentConfigs = [
 				{
 					id: "overpayment-1",
-					type: "flat_amount",
-					value: 10000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 10000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 
@@ -328,10 +332,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments2.state.overpaymentConfigs = [
 				{
 					id: "overpayment-2",
-					type: "flat_amount",
-					value: 20000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 20000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 
@@ -372,10 +378,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments.state.overpaymentConfigs = [
 				{
 					id: "overpayment-1",
-					type: "flat_amount",
-					value: 10000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 10000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 
@@ -404,10 +412,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments.state.overpaymentConfigs = [
 				{
 					id: "overpayment-1",
-					type: "flat_amount",
-					value: 10000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 10000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 
@@ -438,10 +448,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments.state.overpaymentConfigs = [
 				{
 					id: "overpayment-1",
-					type: "flat_amount",
-					value: 10000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 10000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 			saveWithOverpayments.state.input.mortgageTermMonths = 300;
@@ -474,10 +486,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments.state.overpaymentConfigs = [
 				{
 					id: "overpayment-1",
-					type: "flat_amount",
-					value: 10000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 10000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 			saveWithOverpayments.state.input.ber = "A1";
@@ -510,10 +524,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments.state.overpaymentConfigs = [
 				{
 					id: "overpayment-1",
-					type: "flat_amount",
-					value: 10000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 10000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 			saveWithOverpayments.state.ratePeriods = [
@@ -569,10 +585,12 @@ describe("simulate-compare", () => {
 			saveWithOverpayments.state.overpaymentConfigs = [
 				{
 					id: "overpayment-1",
-					type: "flat_amount",
-					value: 10000,
+					ratePeriodId: "period-1",
+					type: "one_time",
+					amount: 10000,
 					startMonth: 1,
-					endMonth: 0,
+					effect: "reduce_term",
+					enabled: true,
 				},
 			];
 			saveWithOverpayments.state.selfBuildConfig = {

@@ -2,6 +2,8 @@ import { useStore } from "@nanostores/react";
 import { LineChart } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 import { elementToPngDataUrl } from "@/lib/export/format/chart-image";
@@ -10,29 +12,24 @@ import type {
 	CompareSimulationData,
 } from "@/lib/stores/simulate/simulate-compare-calculations";
 import {
+	$compareChartSettings,
+	COMPARE_CHART_LABELS,
+	COMPARE_CHART_TOGGLES,
+	type CompareChartType,
+	type CompareChartVisibilitySettings,
+	setCompareActiveChart,
+	setCompareChartGranularity,
+	toggleCompareChartVisibility,
+} from "@/lib/stores/simulate/simulate-compare-chart";
+import {
 	$pendingCompareChartCapture,
 	completeCompareChartCapture,
 } from "@/lib/stores/simulate/simulate-compare-chart-capture";
 import { CompareBalanceChart } from "./charts/CompareBalanceChart";
 import { CompareCumulativeChart } from "./charts/CompareCumulativeChart";
-import { CompareOverpaymentChart } from "./charts/CompareOverpaymentChart";
+import { CompareImpactChart } from "./charts/CompareImpactChart";
 import { ComparePaymentChart } from "./charts/ComparePaymentChart";
 import { CompareRateChart } from "./charts/CompareRateChart";
-
-type CompareChartType =
-	| "balance"
-	| "payments"
-	| "cumulative"
-	| "overpayments"
-	| "rates";
-
-const CHART_LABELS: Record<CompareChartType, string> = {
-	balance: "Balance",
-	payments: "Payments",
-	cumulative: "Cumulative Costs",
-	overpayments: "Overpayments",
-	rates: "Interest Rates",
-};
 
 interface SimulateCompareChartsProps {
 	simulations: CompareSimulationData[];
@@ -49,10 +46,7 @@ export function SimulateCompareCharts({
 	quarterlyData,
 	monthlyData,
 }: SimulateCompareChartsProps) {
-	const [activeChart, setActiveChart] = useState<CompareChartType>("balance");
-	const [granularity, setGranularity] = useState<
-		"yearly" | "quarterly" | "monthly"
-	>("yearly");
+	const settings = useStore($compareChartSettings);
 	const [visibleSimulations, setVisibleSimulations] = useState<Set<string>>(
 		() => new Set(simulations.map((s) => s.id)),
 	);
@@ -65,8 +59,8 @@ export function SimulateCompareCharts({
 		balance: null,
 		payments: null,
 		cumulative: null,
-		overpayments: null,
 		rates: null,
+		impact: null,
 	});
 
 	// Listen for capture requests
@@ -108,7 +102,7 @@ export function SimulateCompareCharts({
 								backgroundColor: "#ffffff",
 							});
 							images.push({
-								title: CHART_LABELS[chartType],
+								title: COMPARE_CHART_LABELS[chartType],
 								imageDataUrl,
 							});
 						} catch {
@@ -157,6 +151,7 @@ export function SimulateCompareCharts({
 	};
 
 	const visibleSims = simulations.filter((s) => visibleSimulations.has(s.id));
+	const { activeChart, granularity, visibility } = settings;
 	const data =
 		granularity === "yearly"
 			? yearlyData
@@ -169,9 +164,16 @@ export function SimulateCompareCharts({
 		"balance",
 		"payments",
 		"cumulative",
-		"overpayments",
+		"impact",
 		"rates",
 	];
+
+	// Get toggles for current chart type (fallback to balance if invalid)
+	const validActiveChart = COMPARE_CHART_TOGGLES[activeChart]
+		? activeChart
+		: "balance";
+	const currentToggles = COMPARE_CHART_TOGGLES[validActiveChart];
+	const currentVisibility = visibility[validActiveChart];
 
 	return (
 		<>
@@ -185,7 +187,9 @@ export function SimulateCompareCharts({
 						<Tabs
 							value={granularity}
 							onValueChange={(v) =>
-								setGranularity(v as "yearly" | "quarterly" | "monthly")
+								setCompareChartGranularity(
+									v as "yearly" | "quarterly" | "monthly",
+								)
 							}
 						>
 							<TabsList className="h-8">
@@ -209,7 +213,9 @@ export function SimulateCompareCharts({
 					<div className="pt-2">
 						<Tabs
 							value={activeChart}
-							onValueChange={(v) => setActiveChart(v as CompareChartType)}
+							onValueChange={(v) =>
+								setCompareActiveChart(v as CompareChartType)
+							}
 						>
 							<TabsList
 								className="h-8 w-full justify-start overflow-x-auto"
@@ -221,7 +227,7 @@ export function SimulateCompareCharts({
 										value={type}
 										className="text-xs px-3 whitespace-nowrap"
 									>
-										{CHART_LABELS[type]}
+										{COMPARE_CHART_LABELS[type]}
 									</TabsTrigger>
 								))}
 							</TabsList>
@@ -229,23 +235,121 @@ export function SimulateCompareCharts({
 					</div>
 				</CardHeader>
 
-				{/* Simulation visibility toggles (legend) */}
-				<div className="flex flex-wrap items-center gap-2 px-6 pb-2">
-					{simulations.map((sim) => (
-						<Toggle
-							key={sim.id}
-							pressed={visibleSimulations.has(sim.id)}
-							onPressedChange={() => toggleSimulationVisibility(sim.id)}
-							size="sm"
-							className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
-						>
-							<div
-								className="h-2.5 w-2.5 rounded-full shrink-0"
-								style={{ backgroundColor: sim.color }}
-							/>
-							<span className="truncate max-w-[100px]">{sim.name}</span>
-						</Toggle>
-					))}
+				{/* Toggle controls row */}
+				<div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-2">
+					{/* Left side: Data series toggles */}
+					<div className="flex flex-wrap items-center gap-2">
+						{currentToggles.map((toggle) => (
+							<Toggle
+								key={toggle.key}
+								pressed={
+									currentVisibility[
+										toggle.key as keyof typeof currentVisibility
+									] as boolean
+								}
+								onPressedChange={() =>
+									toggleCompareChartVisibility(
+										activeChart,
+										toggle.key as keyof CompareChartVisibilitySettings[typeof activeChart],
+									)
+								}
+								size="sm"
+								className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
+							>
+								{toggle.color && toggle.lineStyle ? (
+									<svg
+										className="w-4 h-2.5 shrink-0"
+										viewBox="0 0 16 10"
+										aria-hidden="true"
+									>
+										<line
+											x1="0"
+											y1="5"
+											x2="16"
+											y2="5"
+											strokeWidth="2"
+											style={{
+												stroke: toggle.color,
+												strokeDasharray:
+													toggle.lineStyle === "dashed" ? "4 2" : undefined,
+											}}
+										/>
+									</svg>
+								) : toggle.color ? (
+									<div
+										className="h-2.5 w-2.5 rounded-sm shrink-0"
+										style={{
+											backgroundColor: toggle.color,
+											opacity: toggle.opacity ?? 1,
+										}}
+									/>
+								) : null}
+								{toggle.label}
+							</Toggle>
+						))}
+						{/* Monthly Average checkbox for payments */}
+						{activeChart === "payments" && (
+							<div className="flex items-center gap-1.5 ml-2">
+								<Checkbox
+									id="compare-monthly-average-checkbox"
+									checked={visibility.payments.monthlyAverage}
+									onCheckedChange={() =>
+										toggleCompareChartVisibility("payments", "monthlyAverage")
+									}
+								/>
+								<Label
+									htmlFor="compare-monthly-average-checkbox"
+									className="text-xs cursor-pointer"
+								>
+									Monthly Average
+								</Label>
+							</div>
+						)}
+						{/* Stacked checkbox for cumulative costs */}
+						{activeChart === "cumulative" && (
+							<div className="flex items-center gap-1.5 ml-2">
+								<Checkbox
+									id="compare-stacked-checkbox"
+									checked={visibility.cumulative.stacked}
+									onCheckedChange={() =>
+										toggleCompareChartVisibility("cumulative", "stacked")
+									}
+								/>
+								<Label
+									htmlFor="compare-stacked-checkbox"
+									className="text-xs cursor-pointer"
+								>
+									Stacked
+								</Label>
+							</div>
+						)}
+					</div>
+
+					{/* Right side: Simulation visibility toggles */}
+					<div className="flex flex-wrap items-center gap-2">
+						{(activeChart === "impact"
+							? simulations.filter(
+									(sim) =>
+										sim.summary.interestSaved > 0 ||
+										sim.summary.monthsSaved > 0,
+								)
+							: simulations
+						).map((sim) => (
+							<Toggle
+								key={sim.id}
+								pressed={visibleSimulations.has(sim.id)}
+								onPressedChange={() => toggleSimulationVisibility(sim.id)}
+								size="sm"
+								className="h-7 gap-1.5 text-xs cursor-pointer hover:bg-muted data-[state=on]:bg-accent"
+							>
+								<div
+									className="h-2.5 w-2.5 rounded-full shrink-0"
+									style={{ backgroundColor: sim.color }}
+								/>
+								<span className="truncate max-w-[100px]">{sim.name}</span>
+							</Toggle>
+						))}
+					</div>
 				</div>
 
 				<CardContent className="pt-0">
@@ -253,6 +357,8 @@ export function SimulateCompareCharts({
 						<CompareBalanceChart
 							data={data}
 							simulations={visibleSims}
+							showBalance={visibility.balance.balance}
+							showEquity={visibility.balance.equity}
 							animate={shouldAnimate}
 						/>
 					)}
@@ -260,6 +366,10 @@ export function SimulateCompareCharts({
 						<ComparePaymentChart
 							data={data}
 							simulations={visibleSims}
+							showPrincipal={visibility.payments.principal}
+							showInterest={visibility.payments.interest}
+							monthlyAverage={visibility.payments.monthlyAverage}
+							granularity={granularity}
 							animate={shouldAnimate}
 						/>
 					)}
@@ -267,15 +377,9 @@ export function SimulateCompareCharts({
 						<CompareCumulativeChart
 							data={data}
 							simulations={visibleSims}
-							showInterest
-							showTotal
-							animate={shouldAnimate}
-						/>
-					)}
-					{activeChart === "overpayments" && (
-						<CompareOverpaymentChart
-							data={data}
-							simulations={visibleSims}
+							showPrincipal={visibility.cumulative.principal}
+							showInterest={visibility.cumulative.interest}
+							stacked={visibility.cumulative.stacked}
 							animate={shouldAnimate}
 						/>
 					)}
@@ -283,6 +387,17 @@ export function SimulateCompareCharts({
 						<CompareRateChart
 							data={data}
 							simulations={visibleSims}
+							showRate={visibility.rates.rate}
+							showLtv={visibility.rates.ltv}
+							animate={shouldAnimate}
+						/>
+					)}
+					{activeChart === "impact" && (
+						<CompareImpactChart
+							data={data}
+							simulations={visibleSims}
+							showBaseline={visibility.impact.baseline}
+							showActual={visibility.impact.actual}
 							animate={shouldAnimate}
 						/>
 					)}
@@ -323,7 +438,7 @@ export function SimulateCompareCharts({
 							data={yearlyData}
 							simulations={simulations}
 							showInterest
-							showTotal
+							showPrincipal
 							animate={false}
 						/>
 					</div>

@@ -343,7 +343,7 @@ export async function exportCompareToExcel(
 		pivotSchedule.columnConfigs,
 	);
 
-	await downloadWorkbook(workbook, "compare");
+	await downloadWorkbook(workbook, "simulation-compare");
 }
 
 /**
@@ -406,5 +406,5 @@ export async function exportCompareToPDF(
 	}
 
 	addFooter(doc);
-	downloadPDF(doc, "compare");
+	downloadPDF(doc, "simulation-compare");
 }

@@ -46,6 +46,7 @@ export interface CompareSimulationData {
 	overpaymentConfigs: OverpaymentConfig[];
 	selfBuildConfig?: SelfBuildConfig;
 	amortizationSchedule: AmortizationMonth[];
+	baselineSchedule: AmortizationMonth[]; // Schedule without overpayments
 	yearlySchedule: AmortizationYear[];
 	summary: SimulationSummary;
 }
@@ -100,6 +101,19 @@ export const $compareSimulationData = computed(
 				policies,
 			);
 
+			// Calculate baseline (without overpayments) for impact comparison
+			const stateWithoutOverpayments = {
+				...simulationState,
+				overpaymentConfigs: [],
+			};
+			const baselineResult = calculateAmortization(
+				stateWithoutOverpayments,
+				allRates,
+				customRates,
+				lenders,
+				policies,
+			);
+
 			// Compute resolved rate periods
 			const resolvedRatePeriods = computeResolvedRatePeriods(
 				sim.state.ratePeriods,
@@ -128,6 +142,7 @@ export const $compareSimulationData = computed(
 				overpaymentConfigs: sim.state.overpaymentConfigs,
 				selfBuildConfig: sim.state.selfBuildConfig,
 				amortizationSchedule: result.months,
+				baselineSchedule: baselineResult.months,
 				yearlySchedule: aggregateByYear(result.months),
 				summary,
 			};
@@ -165,9 +180,10 @@ export const $compareYearlyChartData = computed(
 	(simulations): CompareChartDataPoint[] => {
 		if (simulations.length === 0) return [];
 
-		// Find max years
+		// Find max years (including baseline for impact chart)
 		const maxYears = Math.max(
 			...simulations.map((s) => s.yearlySchedule.length),
+			...simulations.map((s) => Math.ceil(s.baselineSchedule.length / 12)),
 		);
 
 		const data: CompareChartDataPoint[] = [];
@@ -189,9 +205,48 @@ export const $compareYearlyChartData = computed(
 					point[`${prefix}_total`] = yearData.cumulativeTotal;
 					point[`${prefix}_payment`] = yearData.totalPayments;
 					point[`${prefix}_overpayment`] = yearData.totalOverpayments;
+					point[`${prefix}_interestPortion`] = yearData.totalInterest;
+					point[`${prefix}_principalPortion`] = yearData.totalPrincipal;
+
+					// Calculate LTV and Equity
+					const propertyValue = sim.input.propertyValue;
+					if (propertyValue > 0) {
+						point[`${prefix}_ltv`] =
+							(yearData.closingBalance / propertyValue) * 100;
+						point[`${prefix}_equity`] = propertyValue - yearData.closingBalance;
+					}
+
+					// Get the rate at year end from the last month of the year
+					const yearEndMonth = (yearIndex + 1) * 12;
+					const lastMonthOfYear =
+						sim.amortizationSchedule[
+							Math.min(yearEndMonth - 1, sim.amortizationSchedule.length - 1)
+						];
+					if (lastMonthOfYear) {
+						point[`${prefix}_rate`] = lastMonthOfYear.rate;
+					}
+
+					// Add baseline balance (without overpayments) for impact chart
+					const baselineMonth = sim.baselineSchedule[yearEndMonth - 1];
+					if (baselineMonth) {
+						point[`${prefix}_baseline`] = baselineMonth.closingBalance;
+					}
 				} else {
 					// Simulation ended before this year
 					point[`${prefix}_balance`] = 0;
+
+					// Equity is full property value when mortgage is paid off
+					const propertyValue = sim.input.propertyValue;
+					if (propertyValue > 0) {
+						point[`${prefix}_equity`] = propertyValue;
+					}
+
+					// Still add baseline if it exists (for impact chart)
+					const yearEndMonth = (yearIndex + 1) * 12;
+					const baselineMonth = sim.baselineSchedule[yearEndMonth - 1];
+					if (baselineMonth) {
+						point[`${prefix}_baseline`] = baselineMonth.closingBalance;
+					}
 				}
 			}
 
@@ -210,9 +265,10 @@ export const $compareMonthlyChartData = computed(
 	(simulations): CompareChartDataPoint[] => {
 		if (simulations.length === 0) return [];
 
-		// Find max months
+		// Find max months (including baseline for impact chart)
 		const maxMonths = Math.max(
 			...simulations.map((s) => s.amortizationSchedule.length),
+			...simulations.map((s) => s.baselineSchedule.length),
 		);
 
 		const data: CompareChartDataPoint[] = [];
@@ -238,9 +294,36 @@ export const $compareMonthlyChartData = computed(
 					point[`${prefix}_principalPortion`] = monthData.principalPortion;
 					point[`${prefix}_overpayment`] = monthData.overpayment;
 					point[`${prefix}_rate`] = monthData.rate;
+
+					// Calculate LTV and Equity
+					const propertyValue = sim.input.propertyValue;
+					if (propertyValue > 0) {
+						point[`${prefix}_ltv`] =
+							(monthData.closingBalance / propertyValue) * 100;
+						point[`${prefix}_equity`] =
+							propertyValue - monthData.closingBalance;
+					}
+
+					// Add baseline balance (without overpayments) for impact chart
+					const baselineMonth = sim.baselineSchedule[monthIndex];
+					if (baselineMonth) {
+						point[`${prefix}_baseline`] = baselineMonth.closingBalance;
+					}
 				} else {
 					// Simulation ended before this month
 					point[`${prefix}_balance`] = 0;
+
+					// Equity is full property value when mortgage is paid off
+					const propertyValue = sim.input.propertyValue;
+					if (propertyValue > 0) {
+						point[`${prefix}_equity`] = propertyValue;
+					}
+
+					// Still add baseline if it exists (for impact chart)
+					const baselineMonth = sim.baselineSchedule[monthIndex];
+					if (baselineMonth) {
+						point[`${prefix}_baseline`] = baselineMonth.closingBalance;
+					}
 				}
 			}
 
@@ -259,9 +342,10 @@ export const $compareQuarterlyChartData = computed(
 	(simulations): CompareChartDataPoint[] => {
 		if (simulations.length === 0) return [];
 
-		// Find max months, then calculate max quarters
+		// Find max months (including baseline), then calculate max quarters
 		const maxMonths = Math.max(
 			...simulations.map((s) => s.amortizationSchedule.length),
+			...simulations.map((s) => s.baselineSchedule.length),
 		);
 		const maxQuarters = Math.ceil(maxMonths / 3);
 
@@ -295,6 +379,15 @@ export const $compareQuarterlyChartData = computed(
 					point[`${prefix}_total`] = monthData.cumulativeTotal;
 					point[`${prefix}_rate`] = monthData.rate;
 
+					// Calculate LTV and Equity
+					const propertyValue = sim.input.propertyValue;
+					if (propertyValue > 0) {
+						point[`${prefix}_ltv`] =
+							(monthData.closingBalance / propertyValue) * 100;
+						point[`${prefix}_equity`] =
+							propertyValue - monthData.closingBalance;
+					}
+
 					// Sum payments and overpayments for the quarter
 					let quarterPayment = 0;
 					let quarterOverpayment = 0;
@@ -316,9 +409,41 @@ export const $compareQuarterlyChartData = computed(
 					point[`${prefix}_overpayment`] = quarterOverpayment;
 					point[`${prefix}_interestPortion`] = quarterInterestPortion;
 					point[`${prefix}_principalPortion`] = quarterPrincipalPortion;
+
+					// Add baseline balance (without overpayments) for impact chart
+					const baselineEndIndex = Math.min(
+						endMonth - 1,
+						sim.baselineSchedule.length - 1,
+					);
+					const baselineMonth =
+						baselineEndIndex >= 0
+							? sim.baselineSchedule[baselineEndIndex]
+							: null;
+					if (baselineMonth) {
+						point[`${prefix}_baseline`] = baselineMonth.closingBalance;
+					}
 				} else {
 					// Simulation ended before this quarter
 					point[`${prefix}_balance`] = 0;
+
+					// Equity is full property value when mortgage is paid off
+					const propertyValue = sim.input.propertyValue;
+					if (propertyValue > 0) {
+						point[`${prefix}_equity`] = propertyValue;
+					}
+
+					// Still add baseline if it exists (for impact chart)
+					const baselineEndIndex = Math.min(
+						endMonth - 1,
+						sim.baselineSchedule.length - 1,
+					);
+					const baselineMonth =
+						baselineEndIndex >= 0
+							? sim.baselineSchedule[baselineEndIndex]
+							: null;
+					if (baselineMonth) {
+						point[`${prefix}_baseline`] = baselineMonth.closingBalance;
+					}
 				}
 			}
 
