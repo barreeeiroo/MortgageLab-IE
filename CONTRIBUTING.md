@@ -354,6 +354,37 @@ The Rates and Simulate pages share data through two patterns:
 4. When clicked, calls `addRatePeriod()` to append the rate
 5. Navigates back to `/simulate`
 
+## Compare Simulations
+
+The Compare page (`/simulate/compare`) allows side-by-side comparison of saved simulations.
+
+### Features
+
+* Compare up to 5 simulations simultaneously
+* Unified display start date overrides individual simulation dates
+* Summary metrics with diff highlighting (green = better, red = worse)
+* 5 chart types: Balance, Payments, Cumulative, Rates, Impact
+* Expandable yearly/monthly schedule table
+* Export to PDF (with/without charts) and Excel
+* Shareable comparison URLs
+
+### State Management
+
+* `$compareState` - Selected simulation IDs, display start date
+* `$compareSimulationData` - Computed amortization data for each simulation
+* `$compareSummaryMetrics` - Key metrics (total interest, term, etc.) with diffs
+* `$compareChartSettings` - Active chart type, granularity, visibility toggles
+
+### Key Files
+
+| File                                           | Purpose                              |
+|------------------------------------------------|--------------------------------------|
+| `src/lib/stores/simulate/simulate-compare.ts`  | Compare state and actions            |
+| `src/lib/stores/simulate/simulate-compare-calculations.ts` | Computed comparison data |
+| `src/lib/export/compare-export.ts`             | PDF/Excel export for comparisons     |
+| `src/lib/share/simulate-compare.ts`            | URL compression for sharing          |
+| `src/components/simulate/compare/`             | All comparison UI components         |
+
 ## Breakeven Calculators
 
 The Breakeven pages (`/breakeven`) help users analyze financial decisions.

@@ -12,7 +12,7 @@ Business logic layer. Components should be thin - move pure JS functions here.
 | schemas/     | Zod validation schemas (source of truth for types)                       |
 | constants/   | Business rules (Central Bank limits, BER ratings)                        |
 | data/        | Data fetching from JSON files                                            |
-| share/       | URL compression and shareable link generation (rates, borrowing, breakeven) |
+| share/       | URL compression and shareable link generation (rates, borrowing, breakeven, simulate-compare) |
 | storage/     | localStorage persistence                                                 |
 | hooks/       | React custom hooks (e.g., `useIsDesktop`)                                |
 | export/      | PDF/Excel/CSV export (lazy-loaded jsPDF, ExcelJS). Includes share URL in PDFs. |
@@ -58,7 +58,7 @@ Don't overlook these - they contain reusable logic:
 | ------------ | ------------------------------------------------------------------ |
 | borrowing.ts | `calculateMaxTermByAge()`, `calculateMortgageMetrics()` (LTV/LTI)  |
 | currency.ts  | `formatCurrency()`, `parseCurrency()`, `formatCurrencyShort()` (€100k) |
-| date.ts      | `calculateAge()`, `formatMonthYear()`, `addMonthsToDateString()`, `getCalendarYearForMonth()` |
+| date.ts      | `DATE_LOCALE`, `formatShortMonthYear()`, `formatMonthYearShort()`, `formatMonthYear()`, `addMonthsToDateString()` |
 | fees.ts      | `calculateStampDuty()` (tiered Irish rates: 1%/2%/6%)              |
 | path.ts      | `getPath()` - handles base path for dev vs production              |
 
@@ -75,6 +75,8 @@ Don't overlook these - they contain reusable logic:
 | simulate/simulate-state.ts        | Simulation inputs and rate periods                   |
 | simulate/simulate-calculations.ts | Computed stores (uses pure functions from mortgage/simulation.ts) |
 | simulate/simulate-chart.ts        | Chart display state (year range, view options)       |
+| simulate/simulate-compare.ts      | Compare state (selected IDs, display start date)     |
+| simulate/simulate-compare-calculations.ts | Computed comparison data and metrics        |
 
 ## Adding New Logic
 
@@ -95,6 +97,7 @@ Unit tests live in `__tests__/` directories alongside source files. Run with `bu
 | mortgage/__tests__/   | payments, aprc, breakeven, overpayments, simulation      |
 | utils/__tests__/      | currency, date, term, fees, borrowing, cn, path          |
 | share/__tests__/      | URL compression (common, custom-rates, custom-perks)     |
+| stores/simulate/__tests__/ | simulate-compare validation and state                |
 
 ### Testing Patterns
 
