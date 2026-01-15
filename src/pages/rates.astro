@@ -1,4 +1,5 @@
 ---
+import { TrendingUp } from "lucide-react";
 import Layout from "@/layouts/Layout.astro";
 import { RatesInputIsland } from "@/components/rates/RatesInputIsland";
 import { CustomRatesIsland } from "@/components/custom-rates/CustomRatesIsland";
@@ -13,11 +14,16 @@ import { SimulateRedirectAlert } from "@/components/rates/SimulateRedirectAlert"
 >
 	<div class="container mx-auto px-4 py-8">
 		<SimulateRedirectAlert client:load />
-		<div class="mb-6">
-			<h1 class="text-2xl font-bold tracking-tight mb-1">Mortgage Rates</h1>
-			<p class="text-muted-foreground text-sm">
-				Compare mortgage rates from Irish lenders based on your property details.
-			</p>
+		<div class="mb-6 flex items-start gap-3">
+			<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+				<TrendingUp className="h-5 w-5 text-primary" />
+			</div>
+			<div>
+				<h1 class="text-xl font-semibold">Mortgage Rates</h1>
+				<p class="text-muted-foreground text-sm">
+					Compare mortgage rates from Irish lenders based on your property details.
+				</p>
+			</div>
 		</div>
 
 		<RatesInputIsland client:load />

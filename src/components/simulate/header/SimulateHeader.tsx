@@ -7,6 +7,7 @@ import {
 	GitCompare,
 	Home,
 	Leaf,
+	LineChart,
 	Percent,
 	PiggyBank,
 	RotateCcw,
@@ -214,14 +215,17 @@ export function SimulateHeader({
 		<div className="space-y-4">
 			{/* Page Header */}
 			{/* Page title - always visible */}
-			<div>
-				<h1 className="text-2xl font-bold tracking-tight mb-1">
-					Mortgage Simulator
-				</h1>
-				<p className="text-muted-foreground text-sm">
-					Simulate your mortgage with different rates, overpayments, and
-					scenarios.
-				</p>
+			<div className="flex items-start gap-3">
+				<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+					<LineChart className="h-5 w-5 text-primary" />
+				</div>
+				<div>
+					<h1 className="text-xl font-semibold">Mortgage Simulator</h1>
+					<p className="text-muted-foreground text-sm">
+						Simulate your mortgage with different rates, overpayments, and
+						scenarios.
+					</p>
+				</div>
 			</div>
 
 			{/* Action buttons - only when simulation is active */}
