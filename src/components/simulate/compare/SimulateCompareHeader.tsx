@@ -1,11 +1,22 @@
-import { ArrowLeft, GitCompareArrows } from "lucide-react";
+import { ArrowLeft, Download, GitCompareArrows } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SimulateCompareHeaderProps {
 	simulationCount: number;
 	onShare: () => Promise<string>;
 	onClose: () => void;
+	onExportExcel: () => Promise<void>;
+	onExportPDF: () => Promise<void>;
+	onExportPDFWithCharts: () => Promise<void>;
+	isExporting: boolean;
+	canExport: boolean;
 }
 
 /**
@@ -15,6 +26,11 @@ export function SimulateCompareHeader({
 	simulationCount,
 	onShare,
 	onClose,
+	onExportExcel,
+	onExportPDF,
+	onExportPDFWithCharts,
+	isExporting,
+	canExport,
 }: SimulateCompareHeaderProps) {
 	return (
 		<div className="flex items-center justify-between gap-4 mb-6">
@@ -40,7 +56,35 @@ export function SimulateCompareHeader({
 				</div>
 			</div>
 
-			<ShareButton onShare={onShare} label="Share Comparison" />
+			<div className="flex items-center gap-2">
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button
+							variant="outline"
+							size="sm"
+							className="gap-1.5"
+							disabled={!canExport || isExporting}
+						>
+							<Download className="h-4 w-4" />
+							<span className="hidden sm:inline">
+								{isExporting ? "Exporting..." : "Export"}
+							</span>
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuItem onClick={onExportExcel}>
+							Export as Excel
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={onExportPDF}>
+							Export as PDF
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={onExportPDFWithCharts}>
+							Export as PDF (with charts)
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+				<ShareButton onShare={onShare} label="Share" />
+			</div>
 		</div>
 	);
 }
