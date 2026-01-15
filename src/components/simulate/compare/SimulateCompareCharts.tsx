@@ -86,10 +86,13 @@ export function SimulateCompareCharts({
 		if (!pendingCapture) return;
 
 		const waitForChartsAndCapture = async () => {
+			// All charts in logical order for PDF report
 			const chartTypesToCapture: CompareChartType[] = [
 				"balance",
-				"cumulative",
 				"payments",
+				"cumulative",
+				"rates",
+				"impact",
 			];
 
 			// Wait for refs to be populated and charts to render
@@ -453,6 +456,7 @@ export function SimulateCompareCharts({
 			</Card>
 
 			{/* Hidden container for capturing charts for PDF export */}
+			{/* Order matches chartTypesToCapture: balance, payments, cumulative, rates, impact */}
 			{pendingCapture && (
 				<div
 					style={{
@@ -478,6 +482,18 @@ export function SimulateCompareCharts({
 					</div>
 					<div
 						ref={(el) => {
+							captureRefs.current.payments = el;
+						}}
+						style={{ padding: "16px" }}
+					>
+						<ComparePaymentChart
+							data={yearlyData}
+							simulations={simulations}
+							animate={false}
+						/>
+					</div>
+					<div
+						ref={(el) => {
 							captureRefs.current.cumulative = el;
 						}}
 						style={{ padding: "16px" }}
@@ -492,11 +508,23 @@ export function SimulateCompareCharts({
 					</div>
 					<div
 						ref={(el) => {
-							captureRefs.current.payments = el;
+							captureRefs.current.rates = el;
 						}}
 						style={{ padding: "16px" }}
 					>
-						<ComparePaymentChart
+						<CompareRateChart
+							data={yearlyData}
+							simulations={simulations}
+							animate={false}
+						/>
+					</div>
+					<div
+						ref={(el) => {
+							captureRefs.current.impact = el;
+						}}
+						style={{ padding: "16px" }}
+					>
+						<CompareImpactChart
 							data={yearlyData}
 							simulations={simulations}
 							animate={false}
