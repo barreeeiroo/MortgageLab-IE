@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
 	formatCurrency,
+	formatCurrencyFromCents,
 	formatCurrencyInput,
 	formatCurrencyShort,
 	parseCurrency,
@@ -296,6 +297,60 @@ describe("formatCurrencyShort", () => {
 
 		it("formats deposit €35k", () => {
 			expect(formatCurrencyShort(35000)).toBe("€35k");
+		});
+	});
+});
+
+describe("formatCurrencyFromCents", () => {
+	describe("basic conversion", () => {
+		it("converts cents to euros and formats", () => {
+			expect(formatCurrencyFromCents(10000)).toBe("€100");
+		});
+
+		it("handles large amounts", () => {
+			expect(formatCurrencyFromCents(30000000)).toBe("€300,000");
+		});
+
+		it("handles zero", () => {
+			expect(formatCurrencyFromCents(0)).toBe("€0");
+		});
+
+		it("rounds partial cents", () => {
+			expect(formatCurrencyFromCents(12345)).toBe("€123");
+		});
+	});
+
+	describe("with showCents option", () => {
+		it("shows decimal places when showCents is true", () => {
+			expect(formatCurrencyFromCents(12345, { showCents: true })).toBe(
+				"€123.45",
+			);
+		});
+
+		it("shows .00 for whole euro amounts", () => {
+			expect(formatCurrencyFromCents(10000, { showCents: true })).toBe(
+				"€100.00",
+			);
+		});
+
+		it("formats small cent values", () => {
+			expect(formatCurrencyFromCents(99, { showCents: true })).toBe("€0.99");
+		});
+	});
+
+	describe("typical mortgage amounts (stored in cents)", () => {
+		it("formats €300,000 mortgage (30000000 cents)", () => {
+			expect(formatCurrencyFromCents(30000000)).toBe("€300,000");
+		});
+
+		it("formats €450,000 property (45000000 cents)", () => {
+			expect(formatCurrencyFromCents(45000000)).toBe("€450,000");
+		});
+
+		it("formats monthly payment €1,234.56 (123456 cents)", () => {
+			expect(formatCurrencyFromCents(123456, { showCents: true })).toBe(
+				"€1,234.56",
+			);
 		});
 	});
 });

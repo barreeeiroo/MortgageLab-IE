@@ -4,6 +4,7 @@ import type { ResolvedRatePeriod } from "@/lib/schemas/simulate";
 import {
 	calculateMaxMonthlyOverpaymentForYear,
 	calculateYearlyOverpaymentPlans,
+	createOverpaymentMaps,
 	formatPolicyDescription,
 	isConstantAllowancePolicy,
 } from "../overpayments";
@@ -630,5 +631,76 @@ describe("formatPolicyDescription", () => {
 		});
 
 		expect(formatPolicyDescription(policy)).toBe("No allowance");
+	});
+});
+
+describe("createOverpaymentMaps", () => {
+	it("separates one-time and recurring overpayments by month", () => {
+		const overpayments = [
+			{ month: 1, amount: 100000, isRecurring: false },
+			{ month: 1, amount: 50000, isRecurring: true },
+			{ month: 12, amount: 200000, isRecurring: false },
+			{ month: 24, amount: 75000, isRecurring: true },
+		];
+
+		const { oneTimeByMonth, recurringByMonth } =
+			createOverpaymentMaps(overpayments);
+
+		expect(oneTimeByMonth.get(1)).toBe(100000);
+		expect(oneTimeByMonth.get(12)).toBe(200000);
+		expect(recurringByMonth.get(1)).toBe(50000);
+		expect(recurringByMonth.get(24)).toBe(75000);
+	});
+
+	it("aggregates multiple overpayments for the same month", () => {
+		const overpayments = [
+			{ month: 1, amount: 100000, isRecurring: false },
+			{ month: 1, amount: 50000, isRecurring: false },
+			{ month: 1, amount: 25000, isRecurring: true },
+			{ month: 1, amount: 15000, isRecurring: true },
+		];
+
+		const { oneTimeByMonth, recurringByMonth } =
+			createOverpaymentMaps(overpayments);
+
+		expect(oneTimeByMonth.get(1)).toBe(150000); // 100k + 50k
+		expect(recurringByMonth.get(1)).toBe(40000); // 25k + 15k
+	});
+
+	it("returns empty maps for empty input", () => {
+		const { oneTimeByMonth, recurringByMonth } = createOverpaymentMaps([]);
+
+		expect(oneTimeByMonth.size).toBe(0);
+		expect(recurringByMonth.size).toBe(0);
+	});
+
+	it("handles only one-time overpayments", () => {
+		const overpayments = [
+			{ month: 5, amount: 100000, isRecurring: false },
+			{ month: 10, amount: 200000, isRecurring: false },
+		];
+
+		const { oneTimeByMonth, recurringByMonth } =
+			createOverpaymentMaps(overpayments);
+
+		expect(oneTimeByMonth.size).toBe(2);
+		expect(recurringByMonth.size).toBe(0);
+		expect(oneTimeByMonth.get(5)).toBe(100000);
+		expect(oneTimeByMonth.get(10)).toBe(200000);
+	});
+
+	it("handles only recurring overpayments", () => {
+		const overpayments = [
+			{ month: 1, amount: 50000, isRecurring: true },
+			{ month: 6, amount: 75000, isRecurring: true },
+		];
+
+		const { oneTimeByMonth, recurringByMonth } =
+			createOverpaymentMaps(overpayments);
+
+		expect(oneTimeByMonth.size).toBe(0);
+		expect(recurringByMonth.size).toBe(2);
+		expect(recurringByMonth.get(1)).toBe(50000);
+		expect(recurringByMonth.get(6)).toBe(75000);
 	});
 });
