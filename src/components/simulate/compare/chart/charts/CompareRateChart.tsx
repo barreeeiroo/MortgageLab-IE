@@ -1,43 +1,44 @@
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import type {
-	CompareChartDataPoint,
-	CompareSimulationData,
-} from "@/lib/stores/simulate/simulate-compare-calculations";
+import type { CompareChartDataPoint, CompareSimulationData } from "../types";
 import {
 	ANIMATION_DURATION,
 	createCompareChartConfig,
-	formatChartCurrency,
-	formatChartCurrencyShort,
-} from "./CompareChartConfig";
+	formatPercentage,
+} from "./shared/chartConfig";
 
-interface CompareCumulativeChartProps {
+interface CompareRateChartProps {
 	data: CompareChartDataPoint[];
 	simulations: CompareSimulationData[];
-	showPrincipal?: boolean;
-	showInterest?: boolean;
-	stacked?: boolean;
+	showRate?: boolean;
+	showLtv?: boolean;
 	animate?: boolean;
 }
 
 /**
- * Cumulative costs comparison chart showing interest and principal paid over time
- * Uses solid lines for principal and dashed lines for interest
+ * Rate & LTV comparison chart showing interest rates and LTV over time
  */
-export function CompareCumulativeChart({
+export function CompareRateChart({
 	data,
 	simulations,
-	showPrincipal = true,
-	showInterest = true,
-	stacked = false,
+	showRate = true,
+	showLtv = true,
 	animate = false,
-}: CompareCumulativeChartProps) {
+}: CompareRateChartProps) {
 	const chartConfig = createCompareChartConfig(simulations);
 
-	// When stacked, interest line shows total (principal + interest)
-	// When not stacked, interest line shows just interest
-	const getInterestDataKey = (simId: string) =>
-		stacked ? `${simId}_total` : `${simId}_interest`;
+	// Calculate domain for Y axis with some padding (for rate)
+	const allRates = simulations.flatMap((sim) =>
+		sim.resolvedRatePeriods.map((rp) => rp.rate),
+	);
+	const minRate = Math.min(...allRates);
+	const maxRate = Math.max(...allRates);
+	const padding = (maxRate - minRate) * 0.2 || 0.5;
+
+	// When showing both, we need to use percentage scale for both
+	// Rate is typically 0-10%, LTV is 0-100%
+	// We'll use two Y axes
+	const showBothAxes = showRate && showLtv;
 
 	return (
 		<ChartContainer
@@ -46,7 +47,7 @@ export function CompareCumulativeChart({
 		>
 			<LineChart
 				data={data}
-				margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+				margin={{ top: 10, right: showBothAxes ? 50 : 10, left: 0, bottom: 0 }}
 			>
 				<CartesianGrid strokeDasharray="3 3" vertical={false} />
 				<XAxis
@@ -55,14 +56,34 @@ export function CompareCumulativeChart({
 					axisLine={false}
 					tickMargin={8}
 				/>
-				<YAxis
-					tickLine={false}
-					axisLine={false}
-					tickMargin={8}
-					width={60}
-					tickFormatter={formatChartCurrencyShort}
-					domain={[0, "auto"]}
-				/>
+				{/* Left Y-axis for Rate */}
+				{showRate && (
+					<YAxis
+						yAxisId="rate"
+						tickLine={false}
+						axisLine={false}
+						tickMargin={8}
+						width={50}
+						tickFormatter={(value) => `${value}%`}
+						domain={[
+							Math.max(0, Math.floor(minRate - padding)),
+							Math.ceil(maxRate + padding),
+						]}
+					/>
+				)}
+				{/* Right Y-axis for LTV */}
+				{showLtv && (
+					<YAxis
+						yAxisId="ltv"
+						orientation={showRate ? "right" : "left"}
+						tickLine={false}
+						axisLine={false}
+						tickMargin={8}
+						width={50}
+						tickFormatter={(value) => `${value}%`}
+						domain={[0, 100]}
+					/>
+				)}
 				<ChartTooltip
 					content={({ active, payload }) => {
 						if (!active || !payload?.length) return null;
@@ -74,11 +95,9 @@ export function CompareCumulativeChart({
 								<div className="font-medium mb-2">{dataPoint.period}</div>
 								<div className="space-y-2">
 									{simulations.map((sim) => {
-										const interest = dataPoint[`${sim.id}_interest`];
-										const principal = dataPoint[`${sim.id}_principal`];
-										const total = dataPoint[`${sim.id}_total`];
-										if (interest === undefined && principal === undefined)
-											return null;
+										const rate = dataPoint[`${sim.id}_rate`];
+										const ltv = dataPoint[`${sim.id}_ltv`];
+										if (rate === undefined && ltv === undefined) return null;
 
 										return (
 											<div key={sim.id} className="space-y-1">
@@ -92,33 +111,21 @@ export function CompareCumulativeChart({
 													</span>
 												</div>
 												<div className="pl-4 space-y-0.5">
-													{principal !== undefined && (
+													{showRate && rate !== undefined && (
 														<div className="flex justify-between text-sm">
 															<span className="text-muted-foreground">
-																Principal
+																Rate
 															</span>
 															<span className="font-mono">
-																{formatChartCurrency(principal as number)}
+																{formatPercentage(rate as number)}
 															</span>
 														</div>
 													)}
-													{interest !== undefined && (
+													{showLtv && ltv !== undefined && (
 														<div className="flex justify-between text-sm">
-															<span className="text-muted-foreground">
-																Interest
-															</span>
+															<span className="text-muted-foreground">LTV</span>
 															<span className="font-mono">
-																{formatChartCurrency(interest as number)}
-															</span>
-														</div>
-													)}
-													{total !== undefined && (
-														<div className="flex justify-between text-sm border-t pt-0.5 mt-0.5">
-															<span className="text-muted-foreground font-medium">
-																Total
-															</span>
-															<span className="font-mono font-medium">
-																{formatChartCurrency(total as number)}
+																{formatPercentage(ltv as number)}
 															</span>
 														</div>
 													)}
@@ -131,14 +138,15 @@ export function CompareCumulativeChart({
 						);
 					}}
 				/>
-				{/* Principal lines (solid) */}
-				{showPrincipal &&
+				{/* Rate lines (solid) */}
+				{showRate &&
 					simulations.map((sim) => (
 						<Line
-							key={`${sim.id}_principal`}
-							type="monotone"
-							dataKey={`${sim.id}_principal`}
-							name={`${sim.name} Principal`}
+							key={`${sim.id}_rate`}
+							yAxisId="rate"
+							type="stepAfter"
+							dataKey={`${sim.id}_rate`}
+							name={`${sim.name} Rate`}
 							stroke={sim.color}
 							strokeWidth={2}
 							dot={false}
@@ -147,14 +155,15 @@ export function CompareCumulativeChart({
 							connectNulls
 						/>
 					))}
-				{/* Interest lines (dashed) - shows total when stacked */}
-				{showInterest &&
+				{/* LTV lines (dashed) */}
+				{showLtv &&
 					simulations.map((sim) => (
 						<Line
-							key={`${sim.id}_interest`}
+							key={`${sim.id}_ltv`}
+							yAxisId="ltv"
 							type="monotone"
-							dataKey={getInterestDataKey(sim.id)}
-							name={stacked ? `${sim.name} Total` : `${sim.name} Interest`}
+							dataKey={`${sim.id}_ltv`}
+							name={`${sim.name} LTV`}
 							stroke={sim.color}
 							strokeWidth={2}
 							strokeDasharray="5 5"

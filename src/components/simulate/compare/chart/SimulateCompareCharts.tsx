@@ -11,10 +11,6 @@ import {
 	downloadChartWithBranding,
 	elementToPngDataUrl,
 } from "@/lib/export/format/chart-image";
-import type {
-	CompareChartDataPoint,
-	CompareSimulationData,
-} from "@/lib/stores/simulate/simulate-compare-calculations";
 import {
 	$compareChartSettings,
 	COMPARE_CHART_LABELS,
@@ -34,6 +30,7 @@ import { CompareCumulativeChart } from "./charts/CompareCumulativeChart";
 import { CompareImpactChart } from "./charts/CompareImpactChart";
 import { ComparePaymentChart } from "./charts/ComparePaymentChart";
 import { CompareRateChart } from "./charts/CompareRateChart";
+import type { CompareChartDataPoint, CompareSimulationData } from "./types";
 
 interface SimulateCompareChartsProps {
 	simulations: CompareSimulationData[];

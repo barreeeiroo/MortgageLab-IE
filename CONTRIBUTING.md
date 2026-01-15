@@ -332,8 +332,8 @@ previous periods' durations. A `durationMonths: 0` means "until end of mortgage"
 | `src/lib/mortgage/payments.ts`                          | Monthly payment formula            |
 | `src/lib/mortgage/overpayments.ts`                      | Overpayment allowance calculations |
 | `src/lib/mortgage/self-build.ts`                        | Self-build drawdown logic          |
-| `src/components/simulate/chart/SimulateChartIsland.tsx` | Amortization chart                 |
-| `src/components/simulate/table/SimulateTableIsland.tsx` | Monthly/yearly schedule table      |
+| `src/components/simulate/chart/`                        | Chart components and shared utils  |
+| `src/components/simulate/table/`                        | Monthly/yearly schedule table      |
 
 ### Rates Page Integration
 
@@ -383,7 +383,8 @@ The Compare page (`/simulate/compare`) allows side-by-side comparison of saved s
 | `src/lib/stores/simulate/simulate-compare-calculations.ts` | Computed comparison data |
 | `src/lib/export/compare-export.ts`             | PDF/Excel export for comparisons     |
 | `src/lib/share/simulate-compare.ts`            | URL compression for sharing          |
-| `src/components/simulate/compare/`             | All comparison UI components         |
+| `src/components/simulate/compare/chart/`       | Chart components (mirrors single sim structure) |
+| `src/components/simulate/compare/table/`       | Table components (year/month rows)   |
 
 ## Breakeven Calculators
 

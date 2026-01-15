@@ -1,6 +1,6 @@
 import type { ChartConfig } from "@/components/ui/chart";
-import type { CompareSimulationData } from "@/lib/stores/simulate/simulate-compare-calculations";
 import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
+import type { CompareSimulationData } from "../../types";
 
 /**
  * Create a dynamic chart config based on the simulations being compared

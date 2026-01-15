@@ -1,47 +1,32 @@
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import type {
-	CompareChartDataPoint,
-	CompareSimulationData,
-} from "@/lib/stores/simulate/simulate-compare-calculations";
+import type { CompareChartDataPoint, CompareSimulationData } from "../types";
 import {
 	ANIMATION_DURATION,
 	createCompareChartConfig,
-	formatPercentage,
-} from "./CompareChartConfig";
+	formatChartCurrency,
+	formatChartCurrencyShort,
+} from "./shared/chartConfig";
 
-interface CompareRateChartProps {
+interface CompareBalanceChartProps {
 	data: CompareChartDataPoint[];
 	simulations: CompareSimulationData[];
-	showRate?: boolean;
-	showLtv?: boolean;
+	showBalance?: boolean;
+	showEquity?: boolean;
 	animate?: boolean;
 }
 
 /**
- * Rate & LTV comparison chart showing interest rates and LTV over time
+ * Balance & Equity comparison chart showing remaining balance and equity for each simulation
  */
-export function CompareRateChart({
+export function CompareBalanceChart({
 	data,
 	simulations,
-	showRate = true,
-	showLtv = true,
+	showBalance = true,
+	showEquity = true,
 	animate = false,
-}: CompareRateChartProps) {
+}: CompareBalanceChartProps) {
 	const chartConfig = createCompareChartConfig(simulations);
-
-	// Calculate domain for Y axis with some padding (for rate)
-	const allRates = simulations.flatMap((sim) =>
-		sim.resolvedRatePeriods.map((rp) => rp.rate),
-	);
-	const minRate = Math.min(...allRates);
-	const maxRate = Math.max(...allRates);
-	const padding = (maxRate - minRate) * 0.2 || 0.5;
-
-	// When showing both, we need to use percentage scale for both
-	// Rate is typically 0-10%, LTV is 0-100%
-	// We'll use two Y axes
-	const showBothAxes = showRate && showLtv;
 
 	return (
 		<ChartContainer
@@ -50,7 +35,7 @@ export function CompareRateChart({
 		>
 			<LineChart
 				data={data}
-				margin={{ top: 10, right: showBothAxes ? 50 : 10, left: 0, bottom: 0 }}
+				margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
 			>
 				<CartesianGrid strokeDasharray="3 3" vertical={false} />
 				<XAxis
@@ -59,34 +44,14 @@ export function CompareRateChart({
 					axisLine={false}
 					tickMargin={8}
 				/>
-				{/* Left Y-axis for Rate */}
-				{showRate && (
-					<YAxis
-						yAxisId="rate"
-						tickLine={false}
-						axisLine={false}
-						tickMargin={8}
-						width={50}
-						tickFormatter={(value) => `${value}%`}
-						domain={[
-							Math.max(0, Math.floor(minRate - padding)),
-							Math.ceil(maxRate + padding),
-						]}
-					/>
-				)}
-				{/* Right Y-axis for LTV */}
-				{showLtv && (
-					<YAxis
-						yAxisId="ltv"
-						orientation={showRate ? "right" : "left"}
-						tickLine={false}
-						axisLine={false}
-						tickMargin={8}
-						width={50}
-						tickFormatter={(value) => `${value}%`}
-						domain={[0, 100]}
-					/>
-				)}
+				<YAxis
+					tickLine={false}
+					axisLine={false}
+					tickMargin={8}
+					width={60}
+					tickFormatter={formatChartCurrencyShort}
+					domain={[0, "auto"]}
+				/>
 				<ChartTooltip
 					content={({ active, payload }) => {
 						if (!active || !payload?.length) return null;
@@ -98,9 +63,10 @@ export function CompareRateChart({
 								<div className="font-medium mb-2">{dataPoint.period}</div>
 								<div className="space-y-2">
 									{simulations.map((sim) => {
-										const rate = dataPoint[`${sim.id}_rate`];
-										const ltv = dataPoint[`${sim.id}_ltv`];
-										if (rate === undefined && ltv === undefined) return null;
+										const balance = dataPoint[`${sim.id}_balance`];
+										const equity = dataPoint[`${sim.id}_equity`];
+										if (balance === undefined && equity === undefined)
+											return null;
 
 										return (
 											<div key={sim.id} className="space-y-1">
@@ -114,21 +80,23 @@ export function CompareRateChart({
 													</span>
 												</div>
 												<div className="pl-4 space-y-0.5">
-													{showRate && rate !== undefined && (
+													{showBalance && balance !== undefined && (
 														<div className="flex justify-between text-sm">
 															<span className="text-muted-foreground">
-																Rate
+																Balance
 															</span>
 															<span className="font-mono">
-																{formatPercentage(rate as number)}
+																{formatChartCurrency(balance as number)}
 															</span>
 														</div>
 													)}
-													{showLtv && ltv !== undefined && (
+													{showEquity && equity !== undefined && (
 														<div className="flex justify-between text-sm">
-															<span className="text-muted-foreground">LTV</span>
+															<span className="text-muted-foreground">
+																Equity
+															</span>
 															<span className="font-mono">
-																{formatPercentage(ltv as number)}
+																{formatChartCurrency(equity as number)}
 															</span>
 														</div>
 													)}
@@ -141,15 +109,14 @@ export function CompareRateChart({
 						);
 					}}
 				/>
-				{/* Rate lines (solid) */}
-				{showRate &&
+				{/* Balance lines (solid) */}
+				{showBalance &&
 					simulations.map((sim) => (
 						<Line
-							key={`${sim.id}_rate`}
-							yAxisId="rate"
-							type="stepAfter"
-							dataKey={`${sim.id}_rate`}
-							name={`${sim.name} Rate`}
+							key={`${sim.id}_balance`}
+							type="monotone"
+							dataKey={`${sim.id}_balance`}
+							name={`${sim.name} Balance`}
 							stroke={sim.color}
 							strokeWidth={2}
 							dot={false}
@@ -158,15 +125,14 @@ export function CompareRateChart({
 							connectNulls
 						/>
 					))}
-				{/* LTV lines (dashed) */}
-				{showLtv &&
+				{/* Equity lines (dashed) */}
+				{showEquity &&
 					simulations.map((sim) => (
 						<Line
-							key={`${sim.id}_ltv`}
-							yAxisId="ltv"
+							key={`${sim.id}_equity`}
 							type="monotone"
-							dataKey={`${sim.id}_ltv`}
-							name={`${sim.name} LTV`}
+							dataKey={`${sim.id}_equity`}
+							name={`${sim.name} Equity`}
 							stroke={sim.color}
 							strokeWidth={2}
 							strokeDasharray="5 5"

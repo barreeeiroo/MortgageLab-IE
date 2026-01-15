@@ -1,35 +1,50 @@
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import type {
-	CompareChartDataPoint,
-	CompareSimulationData,
-} from "@/lib/stores/simulate/simulate-compare-calculations";
+import type { CompareChartDataPoint, CompareSimulationData } from "../types";
 import {
 	ANIMATION_DURATION,
 	createCompareChartConfig,
 	formatChartCurrency,
 	formatChartCurrencyShort,
-} from "./CompareChartConfig";
+} from "./shared/chartConfig";
 
-interface CompareBalanceChartProps {
+interface CompareImpactChartProps {
 	data: CompareChartDataPoint[];
 	simulations: CompareSimulationData[];
-	showBalance?: boolean;
-	showEquity?: boolean;
+	showBaseline?: boolean;
+	showActual?: boolean;
 	animate?: boolean;
 }
 
 /**
- * Balance & Equity comparison chart showing remaining balance and equity for each simulation
+ * Overpayment impact comparison chart showing baseline vs actual balance
  */
-export function CompareBalanceChart({
+export function CompareImpactChart({
 	data,
 	simulations,
-	showBalance = true,
-	showEquity = true,
+	showBaseline = true,
+	showActual = true,
 	animate = false,
-}: CompareBalanceChartProps) {
-	const chartConfig = createCompareChartConfig(simulations);
+}: CompareImpactChartProps) {
+	// Filter to only show simulations with overpayments
+	const simulationsWithOverpayments = simulations.filter(
+		(sim) => sim.summary.interestSaved > 0 || sim.summary.monthsSaved > 0,
+	);
+
+	const chartConfig = createCompareChartConfig(simulationsWithOverpayments);
+
+	if (simulationsWithOverpayments.length === 0) {
+		return (
+			<div className="flex items-center justify-center h-[300px] text-muted-foreground">
+				<div className="text-center">
+					<p className="font-medium">No overpayment impact to show</p>
+					<p className="text-sm mt-1">
+						Add overpayments to your simulations to see their impact
+					</p>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<ChartContainer
@@ -65,11 +80,15 @@ export function CompareBalanceChart({
 							<div className="border-border/50 bg-background rounded-lg border px-3 py-2 shadow-xl min-w-[200px]">
 								<div className="font-medium mb-2">{dataPoint.period}</div>
 								<div className="space-y-2">
-									{simulations.map((sim) => {
-										const balance = dataPoint[`${sim.id}_balance`];
-										const equity = dataPoint[`${sim.id}_equity`];
-										if (balance === undefined && equity === undefined)
-											return null;
+									{simulationsWithOverpayments.map((sim) => {
+										const actual = dataPoint[`${sim.id}_balance`];
+										const baseline = dataPoint[`${sim.id}_baseline`];
+										if (actual === undefined) return null;
+
+										const saved =
+											baseline !== undefined
+												? (baseline as number) - (actual as number)
+												: 0;
 
 										return (
 											<div key={sim.id} className="space-y-1">
@@ -83,23 +102,33 @@ export function CompareBalanceChart({
 													</span>
 												</div>
 												<div className="pl-4 space-y-0.5">
-													{showBalance && balance !== undefined && (
+													{showBaseline && baseline !== undefined && (
 														<div className="flex justify-between text-sm">
 															<span className="text-muted-foreground">
-																Balance
+																Without Overpay
 															</span>
 															<span className="font-mono">
-																{formatChartCurrency(balance as number)}
+																{formatChartCurrency(baseline as number)}
 															</span>
 														</div>
 													)}
-													{showEquity && equity !== undefined && (
+													{showActual && (
 														<div className="flex justify-between text-sm">
 															<span className="text-muted-foreground">
-																Equity
+																With Overpay
 															</span>
 															<span className="font-mono">
-																{formatChartCurrency(equity as number)}
+																{formatChartCurrency(actual as number)}
+															</span>
+														</div>
+													)}
+													{saved > 0 && (
+														<div className="flex justify-between text-sm border-t pt-0.5 mt-0.5">
+															<span className="text-green-600 dark:text-green-400 font-medium">
+																Ahead By
+															</span>
+															<span className="font-mono text-green-600 dark:text-green-400">
+																{formatChartCurrency(saved)}
 															</span>
 														</div>
 													)}
@@ -112,33 +141,33 @@ export function CompareBalanceChart({
 						);
 					}}
 				/>
-				{/* Balance lines (solid) */}
-				{showBalance &&
-					simulations.map((sim) => (
+				{/* Baseline lines (dashed) */}
+				{showBaseline &&
+					simulationsWithOverpayments.map((sim) => (
 						<Line
-							key={`${sim.id}_balance`}
+							key={`${sim.id}_baseline`}
 							type="monotone"
-							dataKey={`${sim.id}_balance`}
-							name={`${sim.name} Balance`}
+							dataKey={`${sim.id}_baseline`}
+							name={`${sim.name} Baseline`}
 							stroke={sim.color}
 							strokeWidth={2}
+							strokeDasharray="5 5"
 							dot={false}
 							isAnimationActive={animate}
 							animationDuration={ANIMATION_DURATION}
 							connectNulls
 						/>
 					))}
-				{/* Equity lines (dashed) */}
-				{showEquity &&
-					simulations.map((sim) => (
+				{/* Actual balance lines (solid) */}
+				{showActual &&
+					simulationsWithOverpayments.map((sim) => (
 						<Line
-							key={`${sim.id}_equity`}
+							key={`${sim.id}_actual`}
 							type="monotone"
-							dataKey={`${sim.id}_equity`}
-							name={`${sim.name} Equity`}
+							dataKey={`${sim.id}_balance`}
+							name={`${sim.name} Actual`}
 							stroke={sim.color}
 							strokeWidth={2}
-							strokeDasharray="5 5"
 							dot={false}
 							isAnimationActive={animate}
 							animationDuration={ANIMATION_DURATION}

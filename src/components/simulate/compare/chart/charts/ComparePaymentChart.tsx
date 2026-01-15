@@ -1,16 +1,13 @@
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import type {
-	CompareChartDataPoint,
-	CompareSimulationData,
-} from "@/lib/stores/simulate/simulate-compare-calculations";
+import type { CompareChartDataPoint, CompareSimulationData } from "../types";
 import {
 	ANIMATION_DURATION,
 	createCompareChartConfig,
 	formatChartCurrency,
 	formatChartCurrencyShort,
-} from "./CompareChartConfig";
+} from "./shared/chartConfig";
 
 interface ComparePaymentChartProps {
 	data: CompareChartDataPoint[];
