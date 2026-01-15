@@ -12,11 +12,6 @@ import {
 	type RatesFormState,
 	saveRatesForm,
 } from "@/lib/storage/forms";
-import {
-	$compareState,
-	COMPARE_STORAGE_KEY,
-	loadCompareState,
-} from "./compare";
 import type { StoredCustomPerk } from "./custom-perks";
 import { $storedCustomPerks, CUSTOM_PERKS_STORAGE_KEY } from "./custom-perks";
 import {
@@ -24,6 +19,11 @@ import {
 	CUSTOM_RATES_STORAGE_KEY,
 	type StoredCustomRate,
 } from "./custom-rates";
+import {
+	$compareState,
+	COMPARE_STORAGE_KEY,
+	loadCompareState,
+} from "./rates/rates-compare";
 import { $formValues } from "./rates-form";
 import {
 	$columnFilters,

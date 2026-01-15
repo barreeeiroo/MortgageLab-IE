@@ -1,20 +1,34 @@
 import {
 	Coins,
+	Download,
 	type LucideIcon,
 	PiggyBank,
 	TriangleAlert,
 	X,
 } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { useIsDesktop } from "@/hooks/use-is-desktop";
 import { getLender, resolvePerks } from "@/lib/data";
+import {
+	type CompareRateRow,
+	exportCompareRatesToCSV,
+	exportCompareRatesToExcel,
+	exportCompareRatesToPDF,
+} from "@/lib/export/rates-compare-export";
 import type { Lender } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
-import type { MortgageRate } from "@/lib/schemas/rate";
 import { cn } from "@/lib/utils/cn";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatTermDisplay } from "@/lib/utils/term";
 import { LenderLogo } from "../lenders/LenderLogo";
 import { ShareButton } from "../ShareButton";
+import { Button } from "../ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 // Map perk icon names to lucide components
@@ -40,22 +54,8 @@ import {
 	TableRow,
 } from "../ui/table";
 
-interface RateRow extends MortgageRate {
-	monthlyPayment: number;
-	followOnRate?: MortgageRate;
-	followOnLtv: number;
-	monthlyFollowOn?: number;
-	totalRepayable?: number;
-	costOfCreditPct?: number;
-	combinedPerks: string[];
-	isCustom?: boolean;
-	customLenderName?: string;
-	indicativeAprc?: number;
-	usesFixedRateForWholeTerm?: boolean;
-}
-
 interface CompareRatesModalProps {
-	rates: RateRow[];
+	rates: CompareRateRow[];
 	lenders: Lender[];
 	perks: Perk[];
 	mortgageAmount: number;
@@ -82,7 +82,7 @@ const COMPARISON_ROWS = [
 
 type ComparisonKey = (typeof COMPARISON_ROWS)[number]["key"];
 
-function getComparisonValue(rate: RateRow, key: ComparisonKey): string {
+function getComparisonValue(rate: CompareRateRow, key: ComparisonKey): string {
 	switch (key) {
 		case "perks":
 			return ""; // Handled specially in render
@@ -120,7 +120,7 @@ function getComparisonValue(rate: RateRow, key: ComparisonKey): string {
 }
 
 function getNumericValue(
-	rate: RateRow,
+	rate: CompareRateRow,
 	key: ComparisonKey,
 ): number | undefined {
 	switch (key) {
@@ -145,7 +145,7 @@ function getNumericValue(
 
 // Find all best and worst indices for highlighting (lowest is best for most metrics)
 function getBestWorstIndices(
-	rates: RateRow[],
+	rates: CompareRateRow[],
 	key: ComparisonKey,
 ): { bestIndices: number[]; worstIndices: number[] } {
 	if (rates.length < 2) return { bestIndices: [], worstIndices: [] };
@@ -211,10 +211,45 @@ export function CompareRatesModal({
 }: CompareRatesModalProps) {
 	// Track if we're on desktop (lg breakpoint) for sticky columns
 	const isDesktop = useIsDesktop();
+	const [isExporting, setIsExporting] = useState(false);
 
 	const handleShare = async (): Promise<string> => {
 		return onShare();
 	};
+
+	const exportContext = useMemo(
+		() => ({
+			rates,
+			lenders,
+			perks,
+			mortgageAmount,
+			mortgageTerm,
+		}),
+		[rates, lenders, perks, mortgageAmount, mortgageTerm],
+	);
+
+	const handleExportCSV = useCallback(() => {
+		exportCompareRatesToCSV(exportContext);
+	}, [exportContext]);
+
+	const handleExportExcel = useCallback(async () => {
+		setIsExporting(true);
+		try {
+			await exportCompareRatesToExcel(exportContext);
+		} finally {
+			setIsExporting(false);
+		}
+	}, [exportContext]);
+
+	const handleExportPDF = useCallback(async () => {
+		setIsExporting(true);
+		try {
+			const shareUrl = await onShare();
+			await exportCompareRatesToPDF({ ...exportContext, shareUrl });
+		} finally {
+			setIsExporting(false);
+		}
+	}, [exportContext, onShare]);
 
 	if (rates.length === 0) return null;
 
@@ -472,7 +507,31 @@ export function CompareRatesModal({
 				</div>
 
 				{/* Sticky Footer */}
-				<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex justify-end">
+				<div className="sticky bottom-0 bg-background z-10 px-6 py-4 border-t flex justify-between">
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button
+								variant="outline"
+								size="sm"
+								className="h-8 gap-1.5"
+								disabled={isExporting}
+							>
+								<Download className="h-4 w-4" />
+								<span>{isExporting ? "Exporting..." : "Export"}</span>
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="start">
+							<DropdownMenuItem onClick={handleExportPDF}>
+								Export as PDF
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={handleExportExcel}>
+								Export as Excel
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={handleExportCSV}>
+								Export as CSV
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 					<ShareButton onShare={handleShare} label="Share Comparison" />
 				</div>
 			</DialogContent>

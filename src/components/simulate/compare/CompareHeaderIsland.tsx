@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
 	exportCompareToExcel,
 	exportCompareToPDF,
-} from "@/lib/export/compare-export";
+} from "@/lib/export/simulate-compare-export";
 import type { ChartImageData } from "@/lib/export/simulate-export";
 import { generateCompareShareUrl } from "@/lib/share/simulate-compare";
 import {

@@ -48,12 +48,15 @@ import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { Perk } from "@/lib/schemas/perk";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import { generateRatesShareUrl } from "@/lib/share/rates";
-import { $compareState, saveCompareState } from "@/lib/stores/compare";
 import {
 	$storedCustomRates,
 	type CustomRate,
 	isCustomRate,
 } from "@/lib/stores/custom-rates";
+import {
+	$compareState,
+	saveCompareState,
+} from "@/lib/stores/rates/rates-compare";
 import type { RatesInputValues } from "@/lib/stores/rates-form";
 import { cn } from "@/lib/utils/cn";
 import { formatCurrency, parseCurrency } from "@/lib/utils/currency";
