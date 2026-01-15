@@ -57,7 +57,7 @@ import {
 	$compareState,
 	saveCompareState,
 } from "@/lib/stores/rates/rates-compare";
-import type { RatesInputValues } from "@/lib/stores/rates-form";
+import type { RatesInputValues } from "@/lib/stores/rates/rates-form";
 import { cn } from "@/lib/utils/cn";
 import { formatCurrency, parseCurrency } from "@/lib/utils/currency";
 import { LenderLogo } from "../lenders/LenderLogo";

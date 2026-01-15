@@ -27,7 +27,7 @@ import { addMonthsToDateString } from "@/lib/utils/date";
 import { $customRates } from "../custom-rates";
 import { $lenders } from "../lenders";
 import { $overpaymentPolicies } from "../overpayment-policies";
-import { $rates } from "../rates";
+import { $rates } from "../rates/rates-state";
 import { $simulationState } from "./simulate-state";
 
 // Main amortization schedule

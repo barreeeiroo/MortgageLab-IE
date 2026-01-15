@@ -13,14 +13,14 @@ import {
 	fetchLenders,
 	isLendersFetched,
 	markLendersFetched,
-} from "./lenders";
+} from "../lenders";
 import {
 	fetchOverpaymentPolicies,
 	isOverpaymentPoliciesFetched,
 	markOverpaymentPoliciesFetched,
-} from "./overpayment-policies";
-import { fetchPerks, isPerksFetched, markPerksFetched } from "./perks";
-
+} from "../overpayment-policies";
+import { fetchPerks, isPerksFetched, markPerksFetched } from "../perks";
+import { $isFormValid } from "../validation";
 // Import for use in computed values
 import {
 	$formValues,
@@ -29,7 +29,6 @@ import {
 	$mortgage,
 	$mortgageTerm,
 } from "./rates-form";
-import { $isFormValid } from "./validation";
 
 // Atoms for rates data
 export const $rates = atom<MortgageRate[]>([]);

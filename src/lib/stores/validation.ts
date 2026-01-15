@@ -7,7 +7,7 @@ import {
 	$maxLtv,
 	$mortgage,
 	$property,
-} from "./rates-form";
+} from "./rates/rates-form";
 
 export const $isMortgageAboveProperty = computed(
 	[$mortgage, $property],

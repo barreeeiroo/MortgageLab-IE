@@ -11,7 +11,7 @@ import {
 	addCustomRate,
 	initializeCustomRates,
 } from "@/lib/stores/custom-rates";
-import { fetchRatesData } from "@/lib/stores/rates";
+import { fetchRatesData } from "@/lib/stores/rates/rates-state";
 import {
 	$resolvedRatePeriods,
 	$simulationCompleteness,

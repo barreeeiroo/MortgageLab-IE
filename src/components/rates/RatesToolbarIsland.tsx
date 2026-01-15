@@ -3,18 +3,18 @@ import { useEffect } from "react";
 import { $lenders } from "@/lib/stores/lenders";
 import { initializeStore } from "@/lib/stores/persistence";
 import {
+	$formValues,
+	$ltv,
+	$mortgage,
+	$mortgageTerm,
+} from "@/lib/stores/rates/rates-form";
+import {
 	$filteredRates,
 	$isLoading,
 	$rates,
 	$ratesMetadata,
 	fetchRatesData,
-} from "@/lib/stores/rates";
-import {
-	$formValues,
-	$ltv,
-	$mortgage,
-	$mortgageTerm,
-} from "@/lib/stores/rates-form";
+} from "@/lib/stores/rates/rates-state";
 import {
 	$columnFilters,
 	$columnVisibility,
@@ -23,7 +23,7 @@ import {
 	initializeTableState,
 	setColumnVisibility,
 	setCompactMode,
-} from "@/lib/stores/rates-table";
+} from "@/lib/stores/rates/rates-table";
 import { $isFormValid } from "@/lib/stores/validation";
 import { RatesToolbar } from "./RatesToolbar";
 

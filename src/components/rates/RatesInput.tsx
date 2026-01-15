@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { BerRating } from "@/lib/constants/ber";
 import type { RatesMode } from "@/lib/constants/rates";
 import type { Lender } from "@/lib/schemas/lender";
-import type { RatesInputValues } from "@/lib/stores/rates-form";
+import type { RatesInputValues } from "@/lib/stores/rates/rates-form";
 import { formatCurrency, formatCurrencyInput } from "@/lib/utils/currency";
 import { calculateStampDuty, ESTIMATED_LEGAL_FEES } from "@/lib/utils/fees";
 import { LenderOption } from "../lenders/LenderOption";

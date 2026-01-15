@@ -24,7 +24,7 @@ import { saveRatesForm } from "@/lib/storage/forms";
 import { $customRates } from "@/lib/stores/custom-rates";
 import { $lenders } from "@/lib/stores/lenders";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
-import { $rates } from "@/lib/stores/rates";
+import { $rates } from "@/lib/stores/rates/rates-state";
 import {
 	$amortizationSchedule,
 	$bufferSuggestions,

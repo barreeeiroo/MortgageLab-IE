@@ -3,7 +3,7 @@ import type { BerRating } from "@/lib/constants/ber";
 import { DEFAULT_MAX_TERM } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import { $lenders } from "./lenders";
-import { $formValues, $ltv, $mortgageTerm } from "./rates-form";
+import { $formValues, $ltv, $mortgageTerm } from "./rates/rates-form";
 
 /**
  * Stored custom rate - what we save to localStorage

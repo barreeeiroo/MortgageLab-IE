@@ -24,7 +24,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { loadRatesForm, saveRatesForm } from "@/lib/storage/forms";
-import { DEFAULT_VALUES } from "@/lib/stores/rates-form";
+import { DEFAULT_VALUES } from "@/lib/stores/rates/rates-form";
 import {
 	$hasSavedSimulations,
 	$savedSimulations,

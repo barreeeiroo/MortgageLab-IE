@@ -10,7 +10,7 @@ import {
 	$storedCustomRates,
 	initializeCustomRates,
 } from "@/lib/stores/custom-rates";
-import { fetchRatesData } from "@/lib/stores/rates";
+import { fetchRatesData } from "@/lib/stores/rates/rates-state";
 import {
 	$compareSimulations,
 	$compareState,

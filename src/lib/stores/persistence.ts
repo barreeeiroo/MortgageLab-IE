@@ -24,13 +24,13 @@ import {
 	COMPARE_STORAGE_KEY,
 	loadCompareState,
 } from "./rates/rates-compare";
-import { $formValues } from "./rates-form";
+import { $formValues } from "./rates/rates-form";
 import {
 	$columnFilters,
 	$columnVisibility,
 	$sorting,
 	TABLE_STORAGE_KEYS,
-} from "./rates-table";
+} from "./rates/rates-table";
 
 // Track initialization state
 let initialized = false;

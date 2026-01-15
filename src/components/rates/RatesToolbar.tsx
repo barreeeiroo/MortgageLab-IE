@@ -21,7 +21,7 @@ import type { MortgageRate, RatesMetadata } from "@/lib/schemas/rate";
 import { generateRatesShareUrl } from "@/lib/share/rates";
 import { $storedCustomPerks } from "@/lib/stores/custom-perks";
 import { $storedCustomRates } from "@/lib/stores/custom-rates";
-import type { RatesInputValues } from "@/lib/stores/rates-form";
+import type { RatesInputValues } from "@/lib/stores/rates/rates-form";
 import { cn } from "@/lib/utils/cn";
 import { ShareButton } from "../ShareButton";
 import { Button } from "../ui/button";

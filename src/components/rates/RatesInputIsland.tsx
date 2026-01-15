@@ -9,7 +9,7 @@ import {
 	handleModeSwitch,
 	type RatesInputValues,
 	setFormValues,
-} from "@/lib/stores/rates-form";
+} from "@/lib/stores/rates/rates-form";
 import {
 	$errorMessage,
 	$hasError,

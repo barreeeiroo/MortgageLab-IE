@@ -11,18 +11,18 @@ import { $lenders } from "@/lib/stores/lenders";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
 import { initializeStore } from "@/lib/stores/persistence";
 import {
+	$formValues,
+	$ltv,
+	$mortgage,
+	$mortgageTerm,
+} from "@/lib/stores/rates/rates-form";
+import {
 	$error,
 	$filteredRates,
 	$isLoading,
 	$rates,
 	fetchRatesData,
-} from "@/lib/stores/rates";
-import {
-	$formValues,
-	$ltv,
-	$mortgage,
-	$mortgageTerm,
-} from "@/lib/stores/rates-form";
+} from "@/lib/stores/rates/rates-state";
 import {
 	$columnFilters,
 	$columnVisibility,
@@ -36,7 +36,7 @@ import {
 	setPageIndex,
 	setPageSize,
 	setSorting,
-} from "@/lib/stores/rates-table";
+} from "@/lib/stores/rates/rates-table";
 import { $isFormValid } from "@/lib/stores/validation";
 import { RatesTable } from "./RatesTable";
 import { RatesTableSkeleton } from "./RatesTableSkeleton";

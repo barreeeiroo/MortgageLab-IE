@@ -42,7 +42,7 @@ import {
 	type StoredCustomRate,
 } from "@/lib/stores/custom-rates";
 import { $lenders } from "@/lib/stores/lenders";
-import { $rates } from "@/lib/stores/rates";
+import { $rates } from "@/lib/stores/rates/rates-state";
 import {
 	$simulationState,
 	addRatePeriod,

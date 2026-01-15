@@ -1,4 +1,4 @@
-import type { RatesInputValues } from "@/lib/stores/rates-form";
+import type { RatesInputValues } from "@/lib/stores/rates/rates-form";
 import type { PropertyType } from "@/lib/utils/fees";
 import { loadFromStorage, saveToStorage } from "./helpers";
 
