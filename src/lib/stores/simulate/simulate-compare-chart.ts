@@ -21,6 +21,8 @@ export interface CompareBalanceVisibility {
 export interface ComparePaymentsVisibility {
 	principal: boolean;
 	interest: boolean;
+	oneTimeOverpayment: boolean;
+	recurringOverpayment: boolean;
 	monthlyAverage: boolean;
 }
 
@@ -68,7 +70,13 @@ const DEFAULT_SETTINGS: CompareChartSettings = {
 	activeChart: "balance",
 	visibility: {
 		balance: { balance: true, equity: true },
-		payments: { principal: true, interest: true, monthlyAverage: false },
+		payments: {
+			principal: true,
+			interest: true,
+			oneTimeOverpayment: true,
+			recurringOverpayment: true,
+			monthlyAverage: false,
+		},
 		cumulative: { interest: true, principal: true, stacked: false },
 		rates: { rate: true, ltv: true },
 		impact: { baseline: true, actual: true },
@@ -205,7 +213,19 @@ export const COMPARE_CHART_TOGGLES: Record<
 			key: "interest",
 			label: "Interest",
 			color: "var(--primary)",
-			opacity: 0.6,
+			opacity: 0.25,
+		},
+		{
+			key: "oneTimeOverpayment",
+			label: "One-time Overpay",
+			color: "var(--primary)",
+			opacity: 0.5,
+		},
+		{
+			key: "recurringOverpayment",
+			label: "Recurring Overpay",
+			color: "var(--primary)",
+			opacity: 0.75,
 		},
 	],
 	cumulative: [

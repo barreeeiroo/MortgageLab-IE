@@ -6,6 +6,7 @@ import {
 import type {
 	AmortizationMonth,
 	AmortizationYear,
+	AppliedOverpayment,
 	OverpaymentConfig,
 	RatePeriod,
 	ResolvedRatePeriod,
@@ -46,6 +47,7 @@ export interface CompareSimulationData {
 	overpaymentConfigs: OverpaymentConfig[];
 	selfBuildConfig?: SelfBuildConfig;
 	amortizationSchedule: AmortizationMonth[];
+	appliedOverpayments: AppliedOverpayment[]; // Overpayments with type info
 	baselineSchedule: AmortizationMonth[]; // Schedule without overpayments
 	yearlySchedule: AmortizationYear[];
 	summary: SimulationSummary;
@@ -142,6 +144,7 @@ export const $compareSimulationData = computed(
 				overpaymentConfigs: sim.state.overpaymentConfigs,
 				selfBuildConfig: sim.state.selfBuildConfig,
 				amortizationSchedule: result.months,
+				appliedOverpayments: result.appliedOverpayments,
 				baselineSchedule: baselineResult.months,
 				yearlySchedule: aggregateByYear(result.months),
 				summary,
@@ -175,6 +178,33 @@ export const $compareMaxActualTermMonths = computed(
 /**
  * Generate yearly comparison chart data
  */
+/**
+ * Helper to create overpayment maps by month for a simulation
+ */
+function createOverpaymentMaps(appliedOverpayments: AppliedOverpayment[]): {
+	oneTimeByMonth: Map<number, number>;
+	recurringByMonth: Map<number, number>;
+} {
+	const oneTimeByMonth = new Map<number, number>();
+	const recurringByMonth = new Map<number, number>();
+
+	for (const op of appliedOverpayments) {
+		if (op.isRecurring) {
+			recurringByMonth.set(
+				op.month,
+				(recurringByMonth.get(op.month) ?? 0) + op.amount,
+			);
+		} else {
+			oneTimeByMonth.set(
+				op.month,
+				(oneTimeByMonth.get(op.month) ?? 0) + op.amount,
+			);
+		}
+	}
+
+	return { oneTimeByMonth, recurringByMonth };
+}
+
 export const $compareYearlyChartData = computed(
 	$compareSimulationData,
 	(simulations): CompareChartDataPoint[] => {
@@ -184,6 +214,14 @@ export const $compareYearlyChartData = computed(
 		const maxYears = Math.max(
 			...simulations.map((s) => s.yearlySchedule.length),
 			...simulations.map((s) => Math.ceil(s.baselineSchedule.length / 12)),
+		);
+
+		// Create overpayment maps for each simulation
+		const overpaymentMaps = new Map(
+			simulations.map((sim) => [
+				sim.id,
+				createOverpaymentMaps(sim.appliedOverpayments),
+			]),
 		);
 
 		const data: CompareChartDataPoint[] = [];
@@ -197,6 +235,7 @@ export const $compareYearlyChartData = computed(
 			for (const sim of simulations) {
 				const yearData = sim.yearlySchedule[yearIndex];
 				const prefix = sim.id;
+				const maps = overpaymentMaps.get(sim.id);
 
 				if (yearData) {
 					point[`${prefix}_balance`] = yearData.closingBalance;
@@ -207,6 +246,20 @@ export const $compareYearlyChartData = computed(
 					point[`${prefix}_overpayment`] = yearData.totalOverpayments;
 					point[`${prefix}_interestPortion`] = yearData.totalInterest;
 					point[`${prefix}_principalPortion`] = yearData.totalPrincipal;
+
+					// Calculate one-time and recurring overpayments for this year
+					let yearOneTime = 0;
+					let yearRecurring = 0;
+					if (maps) {
+						const startMonth = yearIndex * 12 + 1;
+						const endMonth = (yearIndex + 1) * 12;
+						for (let m = startMonth; m <= endMonth; m++) {
+							yearOneTime += maps.oneTimeByMonth.get(m) ?? 0;
+							yearRecurring += maps.recurringByMonth.get(m) ?? 0;
+						}
+					}
+					point[`${prefix}_oneTimeOverpayment`] = yearOneTime;
+					point[`${prefix}_recurringOverpayment`] = yearRecurring;
 
 					// Calculate LTV and Equity
 					const propertyValue = sim.input.propertyValue;
@@ -271,6 +324,14 @@ export const $compareMonthlyChartData = computed(
 			...simulations.map((s) => s.baselineSchedule.length),
 		);
 
+		// Create overpayment maps for each simulation
+		const overpaymentMaps = new Map(
+			simulations.map((sim) => [
+				sim.id,
+				createOverpaymentMaps(sim.appliedOverpayments),
+			]),
+		);
+
 		const data: CompareChartDataPoint[] = [];
 
 		for (let monthIndex = 0; monthIndex < maxMonths; monthIndex++) {
@@ -283,6 +344,7 @@ export const $compareMonthlyChartData = computed(
 			for (const sim of simulations) {
 				const monthData = sim.amortizationSchedule[monthIndex];
 				const prefix = sim.id;
+				const maps = overpaymentMaps.get(sim.id);
 
 				if (monthData) {
 					point[`${prefix}_balance`] = monthData.closingBalance;
@@ -294,6 +356,12 @@ export const $compareMonthlyChartData = computed(
 					point[`${prefix}_principalPortion`] = monthData.principalPortion;
 					point[`${prefix}_overpayment`] = monthData.overpayment;
 					point[`${prefix}_rate`] = monthData.rate;
+
+					// One-time and recurring overpayments for this month
+					point[`${prefix}_oneTimeOverpayment`] =
+						maps?.oneTimeByMonth.get(monthNum) ?? 0;
+					point[`${prefix}_recurringOverpayment`] =
+						maps?.recurringByMonth.get(monthNum) ?? 0;
 
 					// Calculate LTV and Equity
 					const propertyValue = sim.input.propertyValue;
@@ -348,6 +416,14 @@ export const $compareQuarterlyChartData = computed(
 			...simulations.map((s) => s.baselineSchedule.length),
 		);
 		const maxQuarters = Math.ceil(maxMonths / 3);
+
+		// Create overpayment maps for each simulation
+		const overpaymentMaps = new Map(
+			simulations.map((sim) => [
+				sim.id,
+				createOverpaymentMaps(sim.appliedOverpayments),
+			]),
+		);
 
 		const data: CompareChartDataPoint[] = [];
 
@@ -409,6 +485,21 @@ export const $compareQuarterlyChartData = computed(
 					point[`${prefix}_overpayment`] = quarterOverpayment;
 					point[`${prefix}_interestPortion`] = quarterInterestPortion;
 					point[`${prefix}_principalPortion`] = quarterPrincipalPortion;
+
+					// Calculate one-time and recurring overpayments for this quarter
+					const maps = overpaymentMaps.get(sim.id);
+					let quarterOneTime = 0;
+					let quarterRecurring = 0;
+					if (maps) {
+						const startMonth = quarterIndex * 3 + 1;
+						const endMonthOp = (quarterIndex + 1) * 3;
+						for (let m = startMonth; m <= endMonthOp; m++) {
+							quarterOneTime += maps.oneTimeByMonth.get(m) ?? 0;
+							quarterRecurring += maps.recurringByMonth.get(m) ?? 0;
+						}
+					}
+					point[`${prefix}_oneTimeOverpayment`] = quarterOneTime;
+					point[`${prefix}_recurringOverpayment`] = quarterRecurring;
 
 					// Add baseline balance (without overpayments) for impact chart
 					const baselineEndIndex = Math.min(

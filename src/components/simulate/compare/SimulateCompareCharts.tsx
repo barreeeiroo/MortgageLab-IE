@@ -410,6 +410,10 @@ export function SimulateCompareCharts({
 								data={data}
 								simulations={visibleSims}
 								showPrincipal={visibility.payments.principal}
+								showRecurringOverpayment={
+									visibility.payments.recurringOverpayment
+								}
+								showOneTimeOverpayment={visibility.payments.oneTimeOverpayment}
 								showInterest={visibility.payments.interest}
 								monthlyAverage={visibility.payments.monthlyAverage}
 								granularity={granularity}
