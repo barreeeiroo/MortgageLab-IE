@@ -122,7 +122,7 @@ interface RatePeriodEventProps {
 	period: ResolvedRatePeriod;
 	warnings: SimulationWarning[];
 	overpaymentPolicy?: OverpaymentPolicy;
-	onEdit: () => void;
+	onEdit?: () => void;
 	onDelete?: () => void;
 	onTrim?: (durationMonths: number) => void;
 	onExtend?: () => void;
@@ -363,49 +363,53 @@ export function SimulateRatePeriodEvent({
 						</div>
 					)}
 
-					{/* Actions */}
-					<div className="flex gap-2 pt-2 border-t">
-						{onTrim && (
-							<SimulateTrimDialog
-								open={trimDialogOpen}
-								onOpenChange={setTrimDialogOpen}
-								onTrim={onTrim}
-								periodStartMonth={period.startMonth}
-								propertyValue={propertyValue}
-								amortizationSchedule={amortizationSchedule}
-								isFirstRate={isFirstRate}
-							/>
-						)}
-						{onExtend && (
-							<Button variant="outline" size="sm" onClick={onExtend}>
-								<ArrowRightToLine className="h-3.5 w-3.5" />
-							</Button>
-						)}
-						{canRepeat && isLastPeriod && period.type === "fixed" && (
-							<Button variant="outline" size="sm" onClick={onRepeatUntilEnd}>
-								<Repeat className="h-3.5 w-3.5" />
-							</Button>
-						)}
-						<Button
-							variant="outline"
-							size="sm"
-							className="flex-1"
-							onClick={onEdit}
-						>
-							<Pencil className="h-3.5 w-3.5 mr-1.5" />
-							Edit
-						</Button>
-						{onDelete && (
-							<Button
-								variant="outline"
-								size="sm"
-								className="text-destructive hover:text-destructive hover:bg-destructive/10"
-								onClick={onDelete}
-							>
-								<Trash2 className="h-3.5 w-3.5" />
-							</Button>
-						)}
-					</div>
+					{/* Actions - only show if any actions are available */}
+					{(onTrim || onExtend || onRepeatUntilEnd || onEdit || onDelete) && (
+						<div className="flex gap-2 pt-2 border-t">
+							{onTrim && (
+								<SimulateTrimDialog
+									open={trimDialogOpen}
+									onOpenChange={setTrimDialogOpen}
+									onTrim={onTrim}
+									periodStartMonth={period.startMonth}
+									propertyValue={propertyValue}
+									amortizationSchedule={amortizationSchedule}
+									isFirstRate={isFirstRate}
+								/>
+							)}
+							{onExtend && (
+								<Button variant="outline" size="sm" onClick={onExtend}>
+									<ArrowRightToLine className="h-3.5 w-3.5" />
+								</Button>
+							)}
+							{canRepeat && isLastPeriod && period.type === "fixed" && (
+								<Button variant="outline" size="sm" onClick={onRepeatUntilEnd}>
+									<Repeat className="h-3.5 w-3.5" />
+								</Button>
+							)}
+							{onEdit && (
+								<Button
+									variant="outline"
+									size="sm"
+									className="flex-1"
+									onClick={onEdit}
+								>
+									<Pencil className="h-3.5 w-3.5 mr-1.5" />
+									Edit
+								</Button>
+							)}
+							{onDelete && (
+								<Button
+									variant="outline"
+									size="sm"
+									className="text-destructive hover:text-destructive hover:bg-destructive/10"
+									onClick={onDelete}
+								>
+									<Trash2 className="h-3.5 w-3.5" />
+								</Button>
+							)}
+						</div>
+					)}
 				</div>
 			</PopoverContent>
 		</Popover>
@@ -416,9 +420,9 @@ export function SimulateRatePeriodEvent({
 interface OverpaymentEventProps {
 	config: OverpaymentConfig;
 	warnings: SimulationWarning[];
-	onEdit: () => void;
-	onDelete: () => void;
-	onToggleEnabled: () => void;
+	onEdit?: () => void;
+	onDelete?: () => void;
+	onToggleEnabled?: () => void;
 }
 
 export function SimulateOverpaymentEvent({
@@ -557,38 +561,48 @@ export function SimulateOverpaymentEvent({
 						</div>
 					)}
 
-					{/* Actions */}
-					<div className="flex gap-2 pt-2 border-t">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={onToggleEnabled}
-							title={isEnabled ? "Disable overpayment" : "Enable overpayment"}
-						>
-							{isEnabled ? (
-								<Eye className="h-3.5 w-3.5" />
-							) : (
-								<EyeOff className="h-3.5 w-3.5" />
+					{/* Actions - only show if any actions are available */}
+					{(onToggleEnabled || onEdit || onDelete) && (
+						<div className="flex gap-2 pt-2 border-t">
+							{onToggleEnabled && (
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={onToggleEnabled}
+									title={
+										isEnabled ? "Disable overpayment" : "Enable overpayment"
+									}
+								>
+									{isEnabled ? (
+										<Eye className="h-3.5 w-3.5" />
+									) : (
+										<EyeOff className="h-3.5 w-3.5" />
+									)}
+								</Button>
 							)}
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							className="flex-1"
-							onClick={onEdit}
-						>
-							<Pencil className="h-3.5 w-3.5 mr-1.5" />
-							Edit
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							className="text-destructive hover:text-destructive hover:bg-destructive/10"
-							onClick={onDelete}
-						>
-							<Trash2 className="h-3.5 w-3.5" />
-						</Button>
-					</div>
+							{onEdit && (
+								<Button
+									variant="outline"
+									size="sm"
+									className="flex-1"
+									onClick={onEdit}
+								>
+									<Pencil className="h-3.5 w-3.5 mr-1.5" />
+									Edit
+								</Button>
+							)}
+							{onDelete && (
+								<Button
+									variant="outline"
+									size="sm"
+									className="text-destructive hover:text-destructive hover:bg-destructive/10"
+									onClick={onDelete}
+								>
+									<Trash2 className="h-3.5 w-3.5" />
+								</Button>
+							)}
+						</div>
+					)}
 				</div>
 			</PopoverContent>
 		</Popover>

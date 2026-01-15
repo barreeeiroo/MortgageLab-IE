@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import type {
 	CompareSimulationData,
 	CompareSummaryMetric,
@@ -7,6 +8,7 @@ import { cn } from "@/lib/utils/cn";
 interface SimulateCompareSummaryProps {
 	simulations: CompareSimulationData[];
 	summaryMetrics: CompareSummaryMetric[];
+	onSimulationClick?: (simulation: CompareSimulationData) => void;
 }
 
 /**
@@ -15,6 +17,7 @@ interface SimulateCompareSummaryProps {
 export function SimulateCompareSummary({
 	simulations,
 	summaryMetrics,
+	onSimulationClick,
 }: SimulateCompareSummaryProps) {
 	if (simulations.length === 0) return null;
 
@@ -23,7 +26,13 @@ export function SimulateCompareSummary({
 			{/* Simulation summary cards */}
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 				{simulations.map((sim) => (
-					<SimulationCard key={sim.id} simulation={sim} />
+					<SimulationCard
+						key={sim.id}
+						simulation={sim}
+						onClick={
+							onSimulationClick ? () => onSimulationClick(sim) : undefined
+						}
+					/>
 				))}
 			</div>
 
@@ -88,7 +97,13 @@ export function SimulateCompareSummary({
 /**
  * Individual simulation card showing inputs and key values
  */
-function SimulationCard({ simulation }: { simulation: CompareSimulationData }) {
+function SimulationCard({
+	simulation,
+	onClick,
+}: {
+	simulation: CompareSimulationData;
+	onClick?: () => void;
+}) {
 	const formatCurrency = (cents: number) =>
 		new Intl.NumberFormat("en-IE", {
 			style: "currency",
@@ -104,56 +119,64 @@ function SimulationCard({ simulation }: { simulation: CompareSimulationData }) {
 	};
 
 	return (
-		<div className="rounded-lg border bg-card p-4 space-y-3">
-			{/* Header with color indicator */}
-			<div className="flex items-center gap-2">
-				<div
-					className="w-3 h-3 rounded-full flex-shrink-0"
-					style={{ backgroundColor: simulation.color }}
-				/>
-				<h4
-					className={`font-medium truncate ${simulation.isCurrentView ? "italic" : ""}`}
-					title={simulation.name}
-				>
-					{simulation.name}
-				</h4>
-				{simulation.isCurrentView && (
-					<span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">
-						Current
-					</span>
-				)}
-			</div>
+		<Button
+			variant="outline"
+			onClick={onClick}
+			disabled={!onClick}
+			className="h-full p-4 flex flex-col items-stretch gap-3 text-left justify-between"
+		>
+			{/* Top content */}
+			<div className="space-y-3">
+				{/* Header with color indicator */}
+				<div className="flex items-center gap-2">
+					<div
+						className="w-3 h-3 rounded-full flex-shrink-0"
+						style={{ backgroundColor: simulation.color }}
+					/>
+					<h4
+						className={`font-semibold text-base truncate ${simulation.isCurrentView ? "italic" : ""}`}
+						title={simulation.name}
+					>
+						{simulation.name}
+					</h4>
+					{simulation.isCurrentView && (
+						<span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">
+							Current
+						</span>
+					)}
+				</div>
 
-			{/* Mortgage details */}
-			<div className="space-y-1 text-sm">
-				<div className="flex justify-between">
-					<span className="text-muted-foreground">Amount</span>
-					<span className="font-medium">
-						{formatCurrency(simulation.input.mortgageAmount)}
-					</span>
-				</div>
-				<div className="flex justify-between">
-					<span className="text-muted-foreground">Term</span>
-					<span className="font-medium">
-						{formatTerm(simulation.input.mortgageTermMonths)}
-					</span>
-				</div>
-				<div className="flex justify-between">
-					<span className="text-muted-foreground">Rate Periods</span>
-					<span className="font-medium">{simulation.ratePeriods.length}</span>
-				</div>
-				{simulation.overpaymentConfigs.length > 0 && (
+				{/* Mortgage details */}
+				<div className="space-y-1 text-sm w-full">
 					<div className="flex justify-between">
-						<span className="text-muted-foreground">Overpayments</span>
+						<span className="text-muted-foreground">Amount</span>
 						<span className="font-medium">
-							{simulation.overpaymentConfigs.length}
+							{formatCurrency(simulation.input.mortgageAmount)}
 						</span>
 					</div>
-				)}
+					<div className="flex justify-between">
+						<span className="text-muted-foreground">Term</span>
+						<span className="font-medium">
+							{formatTerm(simulation.input.mortgageTermMonths)}
+						</span>
+					</div>
+					<div className="flex justify-between">
+						<span className="text-muted-foreground">Rate Periods</span>
+						<span className="font-medium">{simulation.ratePeriods.length}</span>
+					</div>
+					{simulation.overpaymentConfigs.length > 0 && (
+						<div className="flex justify-between">
+							<span className="text-muted-foreground">Overpayments</span>
+							<span className="font-medium">
+								{simulation.overpaymentConfigs.length}
+							</span>
+						</div>
+					)}
+				</div>
 			</div>
 
-			{/* Key outcome */}
-			<div className="pt-2 border-t">
+			{/* Key outcome - pushed to bottom */}
+			<div className="pt-2 border-t w-full">
 				<div className="flex justify-between items-baseline">
 					<span className="text-xs text-muted-foreground">Total Interest</span>
 					<span className="font-semibold text-lg">
@@ -161,6 +184,6 @@ function SimulationCard({ simulation }: { simulation: CompareSimulationData }) {
 					</span>
 				</div>
 			</div>
-		</div>
+		</Button>
 	);
 }
