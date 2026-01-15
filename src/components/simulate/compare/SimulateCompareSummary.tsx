@@ -149,7 +149,13 @@ function SimulationCard({
 				{/* Mortgage details */}
 				<div className="space-y-1 text-sm w-full">
 					<div className="flex justify-between">
-						<span className="text-muted-foreground">Amount</span>
+						<span className="text-muted-foreground">Property Value</span>
+						<span className="font-medium">
+							{formatCurrency(simulation.input.propertyValue)}
+						</span>
+					</div>
+					<div className="flex justify-between">
+						<span className="text-muted-foreground">Mortgage Amount</span>
 						<span className="font-medium">
 							{formatCurrency(simulation.input.mortgageAmount)}
 						</span>

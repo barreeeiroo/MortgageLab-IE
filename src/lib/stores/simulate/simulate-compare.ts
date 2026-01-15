@@ -6,7 +6,6 @@ import {
 	parseCompareShareState,
 } from "@/lib/share/simulate-compare";
 import { formatCurrency } from "@/lib/utils/currency";
-import { formatTermDisplay } from "@/lib/utils/term";
 import { mergeCustomRates } from "../custom-rates";
 import {
 	$savedSimulations,
@@ -27,6 +26,7 @@ export const CURRENT_SIMULATION_ID = "__current__";
 export interface CompareState {
 	savedIds: string[]; // IDs of saved simulations to compare
 	includeCurrentView: boolean; // Whether to include the current (potentially unsaved) simulation
+	displayStartDate?: string; // Optional unified display start date for all simulations (ISO date string "2025-02-01")
 }
 
 /**
@@ -49,7 +49,7 @@ export interface CompareValidation {
 		message: string;
 	}>;
 	warnings: Array<{
-		type: "self_build_mix" | "different_amounts" | "different_terms";
+		type: "self_build_mix" | "different_property_values";
 		message: string;
 		details?: string;
 	}>;
@@ -333,29 +333,16 @@ export const $compareValidation = computed(
 			});
 		}
 
-		// Warning: Different amounts
-		const amounts = sims.map((s) => s.state.input.mortgageAmount);
-		const uniqueAmounts = new Set(amounts);
-		if (uniqueAmounts.size > 1) {
-			const min = Math.min(...amounts);
-			const max = Math.max(...amounts);
+		// Warning: Different property values
+		const propertyValues = sims.map((s) => s.state.input.propertyValue);
+		const uniquePropertyValues = new Set(propertyValues);
+		if (uniquePropertyValues.size > 1) {
+			const min = Math.min(...propertyValues);
+			const max = Math.max(...propertyValues);
 			warnings.push({
-				type: "different_amounts",
-				message: "Mortgage amounts vary",
+				type: "different_property_values",
+				message: "Property values vary",
 				details: `${formatCurrency(min)} - ${formatCurrency(max)}`,
-			});
-		}
-
-		// Warning: Different terms
-		const terms = sims.map((s) => s.state.input.mortgageTermMonths);
-		const uniqueTerms = new Set(terms);
-		if (uniqueTerms.size > 1) {
-			const min = Math.min(...terms);
-			const max = Math.max(...terms);
-			warnings.push({
-				type: "different_terms",
-				message: "Mortgage terms vary",
-				details: `${formatTermDisplay(min)} - ${formatTermDisplay(max)}`,
 			});
 		}
 
