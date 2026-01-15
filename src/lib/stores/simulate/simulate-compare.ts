@@ -53,6 +53,11 @@ export interface CompareValidation {
 		message: string;
 		details?: string;
 	}>;
+	infos: Array<{
+		type: "overpayment_mix";
+		message: string;
+		details?: string;
+	}>;
 }
 
 // Default compare state
@@ -310,11 +315,13 @@ export const $compareValidation = computed(
 					},
 				],
 				warnings: [],
+				infos: [],
 			};
 		}
 
 		// Warnings (all allow comparison to proceed)
 		const warnings: CompareValidation["warnings"] = [];
+		const infos: CompareValidation["infos"] = [];
 
 		// Warning: Mix of self-build and non-self-build
 		const hasSelfBuild = sims.some((s) => s.state.selfBuildConfig?.enabled);
@@ -352,7 +359,37 @@ export const $compareValidation = computed(
 			});
 		}
 
-		return { isValid: true, errors: [], warnings };
+		// Info: Mix of overpayments and no overpayments (only for 2 simulations with identical inputs)
+		if (sims.length === 2) {
+			const hasOverpayments = sims.some(
+				(s) => s.state.overpaymentConfigs.length > 0,
+			);
+			const hasNoOverpayments = sims.some(
+				(s) => s.state.overpaymentConfigs.length === 0,
+			);
+
+			// Check if states are identical except for overpayments
+			const statesMatchExceptOverpayments = (() => {
+				const { overpaymentConfigs: _, ...state1 } = sims[0].state;
+				const { overpaymentConfigs: __, ...state2 } = sims[1].state;
+				return JSON.stringify(state1) === JSON.stringify(state2);
+			})();
+
+			if (
+				hasOverpayments &&
+				hasNoOverpayments &&
+				statesMatchExceptOverpayments
+			) {
+				infos.push({
+					type: "overpayment_mix",
+					message: "Overpayment impact visualization available",
+					details:
+						"View individual simulations to see detailed overpayment impact charts",
+				});
+			}
+		}
+
+		return { isValid: true, errors: [], warnings, infos };
 	},
 );
 

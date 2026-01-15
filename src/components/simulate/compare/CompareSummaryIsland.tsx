@@ -25,11 +25,13 @@ export function CompareSummaryIsland() {
 
 	return (
 		<>
-			{/* Warnings */}
-			{compareValidation.warnings.length > 0 && (
+			{/* Warnings and Infos */}
+			{(compareValidation.warnings.length > 0 ||
+				compareValidation.infos.length > 0) && (
 				<SimulateCompareWarning
 					errors={[]}
 					warnings={compareValidation.warnings}
+					infos={compareValidation.infos}
 				/>
 			)}
 

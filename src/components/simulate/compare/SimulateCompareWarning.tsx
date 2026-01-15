@@ -1,20 +1,23 @@
-import { AlertCircle, AlertTriangle } from "lucide-react";
+import { AlertCircle, AlertTriangle, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { CompareValidation } from "@/lib/stores/simulate/simulate-compare";
 
 interface SimulateCompareWarningProps {
 	errors: CompareValidation["errors"];
 	warnings: CompareValidation["warnings"];
+	infos: CompareValidation["infos"];
 }
 
 /**
- * Display validation errors and warnings for comparison
+ * Display validation errors, warnings, and infos for comparison
  */
 export function SimulateCompareWarning({
 	errors,
 	warnings,
+	infos,
 }: SimulateCompareWarningProps) {
-	if (errors.length === 0 && warnings.length === 0) return null;
+	if (errors.length === 0 && warnings.length === 0 && infos.length === 0)
+		return null;
 
 	return (
 		<div className="space-y-3 mb-6">
@@ -35,6 +38,15 @@ export function SimulateCompareWarning({
 					{warning.details && (
 						<AlertDescription>{warning.details}</AlertDescription>
 					)}
+				</Alert>
+			))}
+
+			{/* Infos */}
+			{infos.map((info) => (
+				<Alert key={info.type} variant="default">
+					<Info className="h-4 w-4 text-blue-600" />
+					<AlertTitle>{info.message}</AlertTitle>
+					{info.details && <AlertDescription>{info.details}</AlertDescription>}
 				</Alert>
 			))}
 		</div>

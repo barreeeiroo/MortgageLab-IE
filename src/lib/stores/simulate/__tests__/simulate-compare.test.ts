@@ -216,6 +216,7 @@ describe("simulate-compare", () => {
 			expect(validation.isValid).toBe(false);
 			expect(validation.errors).toHaveLength(1);
 			expect(validation.errors[0].type).toBe("insufficient_simulations");
+			expect(validation.infos).toHaveLength(0);
 		});
 
 		it("is valid with 2 or more simulations", () => {
@@ -273,6 +274,335 @@ describe("simulate-compare", () => {
 			expect(validation.warnings).toContainEqual(
 				expect.objectContaining({ type: "self_build_mix" }),
 			);
+		});
+
+		it("provides info about overpayment mix when comparing 2 identical simulations", () => {
+			const saveWithOverpayments = createMockSave(
+				"sim-1",
+				"With Overpayments",
+				30000000,
+			);
+			saveWithOverpayments.state.overpaymentConfigs = [
+				{
+					id: "overpayment-1",
+					type: "flat_amount",
+					value: 10000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+
+			const saveWithoutOverpayments = createMockSave(
+				"sim-2",
+				"Without Overpayments",
+				30000000,
+			);
+
+			const saves = [saveWithOverpayments, saveWithoutOverpayments];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			expect(validation.infos).toHaveLength(1);
+			expect(validation.infos[0].type).toBe("overpayment_mix");
+			expect(validation.infos[0].message).toContain("Overpayment impact");
+		});
+
+		it("does not show overpayment info when all simulations have overpayments", () => {
+			const saveWithOverpayments1 = createMockSave("sim-1", "Sim 1");
+			saveWithOverpayments1.state.overpaymentConfigs = [
+				{
+					id: "overpayment-1",
+					type: "flat_amount",
+					value: 10000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+
+			const saveWithOverpayments2 = createMockSave("sim-2", "Sim 2");
+			saveWithOverpayments2.state.overpaymentConfigs = [
+				{
+					id: "overpayment-2",
+					type: "flat_amount",
+					value: 20000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+
+			const saves = [saveWithOverpayments1, saveWithOverpayments2];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			expect(validation.infos).toHaveLength(0);
+		});
+
+		it("does not show overpayment info when no simulations have overpayments", () => {
+			const saves = [
+				createMockSave("sim-1", "Sim 1"),
+				createMockSave("sim-2", "Sim 2"),
+			];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			expect(validation.infos).toHaveLength(0);
+		});
+
+		it("does not show overpayment info when comparing 3+ simulations", () => {
+			const saveWithOverpayments = createMockSave(
+				"sim-1",
+				"With Overpayments",
+				30000000,
+			);
+			saveWithOverpayments.state.overpaymentConfigs = [
+				{
+					id: "overpayment-1",
+					type: "flat_amount",
+					value: 10000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+
+			const saves = [
+				saveWithOverpayments,
+				createMockSave("sim-2", "Without 1", 30000000),
+				createMockSave("sim-3", "Without 2", 30000000),
+			];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2", "sim-3"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			expect(validation.infos).toHaveLength(0);
+		});
+
+		it("does not show overpayment info when amounts differ", () => {
+			const saveWithOverpayments = createMockSave(
+				"sim-1",
+				"With Overpayments",
+				30000000,
+			);
+			saveWithOverpayments.state.overpaymentConfigs = [
+				{
+					id: "overpayment-1",
+					type: "flat_amount",
+					value: 10000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+
+			const saveWithoutOverpayments = createMockSave(
+				"sim-2",
+				"Without Overpayments",
+				35000000,
+			);
+
+			const saves = [saveWithOverpayments, saveWithoutOverpayments];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			expect(validation.infos).toHaveLength(0);
+		});
+
+		it("does not show overpayment info when terms differ", () => {
+			const saveWithOverpayments = createMockSave(
+				"sim-1",
+				"With Overpayments",
+				30000000,
+			);
+			saveWithOverpayments.state.overpaymentConfigs = [
+				{
+					id: "overpayment-1",
+					type: "flat_amount",
+					value: 10000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+			saveWithOverpayments.state.input.mortgageTermMonths = 300;
+
+			const saveWithoutOverpayments = createMockSave(
+				"sim-2",
+				"Without Overpayments",
+				30000000,
+			);
+			saveWithoutOverpayments.state.input.mortgageTermMonths = 360;
+
+			const saves = [saveWithOverpayments, saveWithoutOverpayments];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			expect(validation.infos).toHaveLength(0);
+		});
+
+		it("does not show overpayment info when BER differs", () => {
+			const saveWithOverpayments = createMockSave(
+				"sim-1",
+				"With Overpayments",
+				30000000,
+			);
+			saveWithOverpayments.state.overpaymentConfigs = [
+				{
+					id: "overpayment-1",
+					type: "flat_amount",
+					value: 10000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+			saveWithOverpayments.state.input.ber = "A1";
+
+			const saveWithoutOverpayments = createMockSave(
+				"sim-2",
+				"Without Overpayments",
+				30000000,
+			);
+			saveWithoutOverpayments.state.input.ber = "C1";
+
+			const saves = [saveWithOverpayments, saveWithoutOverpayments];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			expect(validation.infos).toHaveLength(0);
+		});
+
+		it("does not show overpayment info when rate periods differ", () => {
+			const saveWithOverpayments = createMockSave(
+				"sim-1",
+				"With Overpayments",
+				30000000,
+			);
+			saveWithOverpayments.state.overpaymentConfigs = [
+				{
+					id: "overpayment-1",
+					type: "flat_amount",
+					value: 10000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+			saveWithOverpayments.state.ratePeriods = [
+				{
+					id: "period-1",
+					lenderId: "aib",
+					rateId: "aib-fixed-3yr",
+					isCustom: false,
+					durationMonths: 36,
+				},
+			];
+
+			const saveWithoutOverpayments = createMockSave(
+				"sim-2",
+				"Without Overpayments",
+				30000000,
+			);
+			saveWithoutOverpayments.state.ratePeriods = [
+				{
+					id: "period-1",
+					lenderId: "aib",
+					rateId: "aib-fixed-3yr",
+					isCustom: false,
+					durationMonths: 36,
+				},
+				{
+					id: "period-2",
+					lenderId: "aib",
+					rateId: "aib-variable",
+					isCustom: false,
+					durationMonths: 0,
+				},
+			];
+
+			const saves = [saveWithOverpayments, saveWithoutOverpayments];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			expect(validation.infos).toHaveLength(0);
+		});
+
+		it("does not show overpayment info when self-build config differs", () => {
+			const saveWithOverpayments = createMockSave(
+				"sim-1",
+				"With Overpayments",
+				30000000,
+			);
+			saveWithOverpayments.state.overpaymentConfigs = [
+				{
+					id: "overpayment-1",
+					type: "flat_amount",
+					value: 10000,
+					startMonth: 1,
+					endMonth: 0,
+				},
+			];
+			saveWithOverpayments.state.selfBuildConfig = {
+				enabled: true,
+				drawdownStages: [],
+				constructionRepaymentType: "interest_only",
+				interestOnlyMonths: 0,
+			};
+
+			const saveWithoutOverpayments = createMockSave(
+				"sim-2",
+				"Without Overpayments",
+				30000000,
+			);
+			// No self-build config (disabled)
+
+			const saves = [saveWithOverpayments, saveWithoutOverpayments];
+			$savedSimulations.set(saves);
+			setCompareState({
+				savedIds: ["sim-1", "sim-2"],
+				includeCurrentView: false,
+			});
+
+			const validation = $compareValidation.get();
+			expect(validation.isValid).toBe(true);
+			// Should show self_build_mix warning but no overpayment info
+			expect(validation.warnings).toContainEqual(
+				expect.objectContaining({ type: "self_build_mix" }),
+			);
+			expect(validation.infos).toHaveLength(0);
 		});
 	});
 
