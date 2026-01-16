@@ -143,6 +143,12 @@ export async function downloadChartWithBranding(
 	const parent = element.parentElement;
 	const nextSibling = element.nextSibling;
 
+	// Temporarily disable dark mode for capture (white background needs dark text)
+	const isDarkMode = document.documentElement.classList.contains("dark");
+	if (isDarkMode) {
+		document.documentElement.classList.remove("dark");
+	}
+
 	// Create wrapper that will contain title + element + footer
 	const wrapper = document.createElement("div");
 	wrapper.style.cssText = `
@@ -203,5 +209,9 @@ export async function downloadChartWithBranding(
 		}
 		// Remove the wrapper
 		wrapper.remove();
+		// Restore dark mode if it was active
+		if (isDarkMode) {
+			document.documentElement.classList.add("dark");
+		}
 	}
 }

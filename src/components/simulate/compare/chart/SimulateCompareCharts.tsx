@@ -25,6 +25,7 @@ import {
 	$pendingCompareChartCapture,
 	completeCompareChartCapture,
 } from "@/lib/stores/simulate/simulate-compare-chart-capture";
+import { CompareStaticLegend } from "./CompareStaticLegend";
 import { CompareBalanceChart } from "./charts/CompareBalanceChart";
 import { CompareCumulativeChart } from "./charts/CompareCumulativeChart";
 import { CompareImpactChart } from "./charts/CompareImpactChart";
@@ -82,6 +83,9 @@ export function SimulateCompareCharts({
 	useEffect(() => {
 		if (!pendingCapture) return;
 
+		// Track dark mode state for restoration
+		let isDarkMode = false;
+
 		const waitForChartsAndCapture = async () => {
 			// All charts in logical order for PDF report
 			const chartTypesToCapture: CompareChartType[] = [
@@ -91,6 +95,12 @@ export function SimulateCompareCharts({
 				"rates",
 				"impact",
 			];
+
+			// Temporarily disable dark mode for capture (white background needs dark text)
+			isDarkMode = document.documentElement.classList.contains("dark");
+			if (isDarkMode) {
+				document.documentElement.classList.remove("dark");
+			}
 
 			// Wait for refs to be populated and charts to render
 			const maxAttempts = 10;
@@ -124,6 +134,10 @@ export function SimulateCompareCharts({
 					images.length === chartTypesToCapture.length ||
 					attempts >= maxAttempts
 				) {
+					// Restore dark mode before completing
+					if (isDarkMode) {
+						document.documentElement.classList.add("dark");
+					}
 					completeCompareChartCapture(images);
 				} else {
 					// Retry after a short delay
@@ -471,6 +485,10 @@ export function SimulateCompareCharts({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<CompareStaticLegend
+							toggles={COMPARE_CHART_TOGGLES.balance}
+							simulations={simulations}
+						/>
 						<CompareBalanceChart
 							data={yearlyData}
 							simulations={simulations}
@@ -483,6 +501,10 @@ export function SimulateCompareCharts({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<CompareStaticLegend
+							toggles={COMPARE_CHART_TOGGLES.payments}
+							simulations={simulations}
+						/>
 						<ComparePaymentChart
 							data={yearlyData}
 							simulations={simulations}
@@ -495,6 +517,10 @@ export function SimulateCompareCharts({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<CompareStaticLegend
+							toggles={COMPARE_CHART_TOGGLES.cumulative}
+							simulations={simulations}
+						/>
 						<CompareCumulativeChart
 							data={yearlyData}
 							simulations={simulations}
@@ -509,6 +535,10 @@ export function SimulateCompareCharts({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<CompareStaticLegend
+							toggles={COMPARE_CHART_TOGGLES.rates}
+							simulations={simulations}
+						/>
 						<CompareRateChart
 							data={yearlyData}
 							simulations={simulations}
@@ -521,6 +551,10 @@ export function SimulateCompareCharts({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<CompareStaticLegend
+							toggles={COMPARE_CHART_TOGGLES.impact}
+							simulations={simulations}
+						/>
 						<CompareImpactChart
 							data={yearlyData}
 							simulations={simulations}

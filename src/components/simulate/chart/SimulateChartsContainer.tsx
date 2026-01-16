@@ -29,6 +29,7 @@ import { OverpaymentImpactChart } from "./charts/OverpaymentImpactChart";
 import { PaymentBreakdownChart } from "./charts/PaymentBreakdownChart";
 import { RateTimelineChart } from "./charts/RateTimelineChart";
 import { CHART_COLORS } from "./charts/shared/chartConfig";
+import { StaticChartLegend } from "./StaticChartLegend";
 import type { ChartDataPoint } from "./types";
 
 interface RatePeriodInfo {
@@ -161,23 +162,36 @@ export function SimulateChartsContainer({
 				"rate_timeline",
 			];
 
+			// Temporarily disable dark mode for capture (white background needs dark text)
+			const isDarkMode = document.documentElement.classList.contains("dark");
+			if (isDarkMode) {
+				document.documentElement.classList.remove("dark");
+			}
+
 			const images: { title: string; imageDataUrl: string }[] = [];
 
-			for (const chartType of chartTypes) {
-				const element = captureRefs.current[chartType];
-				if (element) {
-					try {
-						const imageDataUrl = await elementToPngDataUrl(element, {
-							pixelRatio: 2,
-							backgroundColor: "#ffffff",
-						});
-						images.push({
-							title: CHART_LABELS[chartType],
-							imageDataUrl,
-						});
-					} catch {
-						// Skip if capture fails
+			try {
+				for (const chartType of chartTypes) {
+					const element = captureRefs.current[chartType];
+					if (element) {
+						try {
+							const imageDataUrl = await elementToPngDataUrl(element, {
+								pixelRatio: 2,
+								backgroundColor: "#ffffff",
+							});
+							images.push({
+								title: CHART_LABELS[chartType],
+								imageDataUrl,
+							});
+						} catch {
+							// Skip if capture fails
+						}
 					}
+				}
+			} finally {
+				// Restore dark mode if it was active
+				if (isDarkMode) {
+					document.documentElement.classList.add("dark");
 				}
 			}
 
@@ -438,6 +452,7 @@ export function SimulateChartsContainer({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<StaticChartLegend items={VISIBILITY_CONFIGS.balance_equity} />
 						<BalanceEquityChart
 							data={data}
 							visibility={visibility.balance_equity}
@@ -452,6 +467,7 @@ export function SimulateChartsContainer({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<StaticChartLegend items={VISIBILITY_CONFIGS.payment_breakdown} />
 						<PaymentBreakdownChart
 							data={data}
 							visibility={visibility.payment_breakdown}
@@ -465,6 +481,7 @@ export function SimulateChartsContainer({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<StaticChartLegend items={VISIBILITY_CONFIGS.cumulative_costs} />
 						<CumulativeCostsChart
 							data={data}
 							visibility={visibility.cumulative_costs}
@@ -478,6 +495,7 @@ export function SimulateChartsContainer({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<StaticChartLegend items={VISIBILITY_CONFIGS.overpayment_impact} />
 						<OverpaymentImpactChart
 							data={overpaymentImpactData}
 							visibility={visibility.overpayment_impact}
@@ -492,6 +510,7 @@ export function SimulateChartsContainer({
 						}}
 						style={{ padding: "16px" }}
 					>
+						<StaticChartLegend items={VISIBILITY_CONFIGS.rate_timeline} />
 						<RateTimelineChart
 							data={data}
 							visibility={visibility.rate_timeline}
