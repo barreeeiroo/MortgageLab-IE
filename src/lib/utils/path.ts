@@ -1,5 +1,3 @@
-declare const __BUILD_TIME__: number;
-
 /**
  * Prepends the base path to a given path.
  * Handles both development (/) and production (/MortgageLab-IE/) base paths.

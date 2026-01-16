@@ -1,5 +1,6 @@
 // @ts-check
 
+import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -39,6 +40,9 @@ export default defineConfig({
 	vite: {
 		define: {
 			__BUILD_TIME__: Date.now(),
+			__BUILD_COMMIT__: JSON.stringify(
+				execSync("git rev-parse --short HEAD").toString().trim(),
+			),
 		},
 		plugins: [tailwindcss(), serveDataFolder()],
 		build: {

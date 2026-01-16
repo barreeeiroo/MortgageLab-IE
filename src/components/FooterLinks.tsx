@@ -1,4 +1,5 @@
 import { Bug, Lightbulb, Scale, Shield } from "lucide-react";
+import { AboutDialog } from "@/components/AboutDialog";
 import {
 	Dialog,
 	DialogContent,
@@ -58,6 +59,8 @@ export function FooterLinks() {
 						</DialogHeader>
 					</DialogContent>
 				</Dialog>
+
+				<AboutDialog />
 			</div>
 
 			{/* Right side: External links */}
