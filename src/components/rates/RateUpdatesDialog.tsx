@@ -47,7 +47,7 @@ export function RateUpdatesDialog({
 				<DialogTrigger asChild>
 					<Button variant="ghost" size="sm" className="h-8 gap-1.5">
 						<Clock className="h-4 w-4" />
-						<span className="hidden sm:inline">Rate Updates</span>
+						Sources
 					</Button>
 				</DialogTrigger>
 				<DialogContent className="sm:max-w-2xl flex flex-col overflow-hidden p-0">

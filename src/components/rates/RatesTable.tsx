@@ -256,6 +256,7 @@ function ColumnHeader<TData>({
 											newValues.size > 0 ? Array.from(newValues) : undefined,
 										);
 									}}
+									className="cursor-pointer"
 								>
 									{option.label}
 								</DropdownMenuCheckboxItem>
@@ -267,7 +268,7 @@ function ColumnHeader<TData>({
 								<DropdownMenuCheckboxItem
 									checked={false}
 									onCheckedChange={() => column.setFilterValue(undefined)}
-									className="justify-center text-center"
+									className="justify-center text-center cursor-pointer"
 								>
 									Clear
 								</DropdownMenuCheckboxItem>
