@@ -1,8 +1,8 @@
 {
 	"lenderId": "ics",
 	"baseline": {
-		"timestamp": "2026-01-09T08:07:35.211Z",
-		"ratesHash": "764f2aaffbc9c6c9de921ca467d6d4af3a95b7e91a55dd8cb60d1adaa87cdce3",
+		"timestamp": "2026-01-09T01:48:04.000Z",
+		"ratesHash": "9ce5943dde872f7b23f1270dc0f1ac0be0ebac7f4fd754b01579efa9283b35d1",
 		"rates": [
 			{
 				"id": "ics-variable-60",
@@ -26,8 +26,8 @@
 				"name": "3 Year Fixed - LTV ≤60%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.3,
-				"apr": 4.31,
+				"rate": 3.85,
+				"apr": 4.17,
 				"fixedTerm": 3,
 				"minLtv": 0,
 				"maxLtv": 60,
@@ -44,8 +44,8 @@
 				"name": "5 Year Fixed - LTV ≤60%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.4,
-				"apr": 4.4,
+				"rate": 4.15,
+				"apr": 4.27,
 				"fixedTerm": 5,
 				"minLtv": 0,
 				"maxLtv": 60,
@@ -79,8 +79,8 @@
 				"name": "3 Year Fixed - LTV ≤70%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.3,
-				"apr": 4.31,
+				"rate": 3.99,
+				"apr": 4.21,
 				"fixedTerm": 3,
 				"minLtv": 60,
 				"maxLtv": 70,
@@ -97,8 +97,8 @@
 				"name": "5 Year Fixed - LTV ≤70%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.45,
-				"apr": 4.42,
+				"rate": 4.2,
+				"apr": 4.3,
 				"fixedTerm": 5,
 				"minLtv": 60,
 				"maxLtv": 70,
@@ -132,8 +132,8 @@
 				"name": "3 Year Fixed - LTV ≤80%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.35,
-				"apr": 4.33,
+				"rate": 4.05,
+				"apr": 4.23,
 				"fixedTerm": 3,
 				"minLtv": 70,
 				"maxLtv": 80,
@@ -150,8 +150,8 @@
 				"name": "5 Year Fixed - LTV ≤80%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.55,
-				"apr": 4.47,
+				"rate": 4.3,
+				"apr": 4.35,
 				"fixedTerm": 5,
 				"minLtv": 70,
 				"maxLtv": 80,
@@ -185,8 +185,8 @@
 				"name": "3 Year Fixed - LTV ≤90%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.35,
-				"apr": 4.33,
+				"rate": 4.1,
+				"apr": 4.25,
 				"fixedTerm": 3,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -203,8 +203,8 @@
 				"name": "5 Year Fixed - LTV ≤90%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.55,
-				"apr": 4.47,
+				"rate": 4.3,
+				"apr": 4.35,
 				"fixedTerm": 5,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -236,8 +236,8 @@
 				"name": "Existing Customer 3 Year Fixed - LTV ≤60%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.35,
-				"apr": 4.26,
+				"rate": 4.1,
+				"apr": 4.17,
 				"fixedTerm": 3,
 				"minLtv": 0,
 				"maxLtv": 60,
@@ -252,8 +252,8 @@
 				"name": "Existing Customer 5 Year Fixed - LTV ≤60%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.55,
-				"apr": 4.41,
+				"rate": 4.25,
+				"apr": 4.27,
 				"fixedTerm": 5,
 				"minLtv": 0,
 				"maxLtv": 60,
@@ -283,8 +283,8 @@
 				"name": "Existing Customer 3 Year Fixed - LTV ≤70%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.35,
-				"apr": 4.26,
+				"rate": 4.1,
+				"apr": 4.21,
 				"fixedTerm": 3,
 				"minLtv": 60,
 				"maxLtv": 70,
@@ -299,8 +299,8 @@
 				"name": "Existing Customer 5 Year Fixed - LTV ≤70%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.55,
-				"apr": 4.41,
+				"rate": 4.25,
+				"apr": 4.3,
 				"fixedTerm": 5,
 				"minLtv": 60,
 				"maxLtv": 70,
@@ -330,8 +330,8 @@
 				"name": "Existing Customer 3 Year Fixed - LTV ≤80%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.35,
-				"apr": 4.26,
+				"rate": 4.1,
+				"apr": 4.23,
 				"fixedTerm": 3,
 				"minLtv": 70,
 				"maxLtv": 80,
@@ -346,8 +346,8 @@
 				"name": "Existing Customer 5 Year Fixed - LTV ≤80%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.55,
-				"apr": 4.41,
+				"rate": 4.25,
+				"apr": 4.35,
 				"fixedTerm": 5,
 				"minLtv": 70,
 				"maxLtv": 80,
@@ -377,8 +377,8 @@
 				"name": "Existing Customer 3 Year Fixed - LTV ≤90%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.35,
-				"apr": 4.26,
+				"rate": 4.1,
+				"apr": 4.25,
 				"fixedTerm": 3,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -393,8 +393,8 @@
 				"name": "Existing Customer 5 Year Fixed - LTV ≤90%",
 				"lenderId": "ics",
 				"type": "fixed",
-				"rate": 4.55,
-				"apr": 4.41,
+				"rate": 4.25,
+				"apr": 4.35,
 				"fixedTerm": 5,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -511,5 +511,156 @@
 			}
 		]
 	},
-	"changesets": []
+	"changesets": [
+		{
+			"timestamp": "2026-01-09T08:07:37.000Z",
+			"afterHash": "a2e54781d29ef0566ac66a1dbb6c18be2c9e368d92303d1781494d6f181033b7",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-60",
+					"changes": {
+						"id": "ics-fixed-3yr-60",
+						"rate": 4.3,
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-60",
+					"changes": {
+						"id": "ics-fixed-5yr-60",
+						"rate": 4.4,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-70",
+					"changes": {
+						"id": "ics-fixed-3yr-70",
+						"rate": 4.3,
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-70",
+					"changes": {
+						"id": "ics-fixed-5yr-70",
+						"rate": 4.45,
+						"apr": 4.42
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-80",
+					"changes": {
+						"id": "ics-fixed-3yr-80",
+						"rate": 4.35,
+						"apr": 4.33
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-80",
+					"changes": {
+						"id": "ics-fixed-5yr-80",
+						"rate": 4.55,
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-90",
+					"changes": {
+						"id": "ics-fixed-3yr-90",
+						"rate": 4.35,
+						"apr": 4.33
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-90",
+					"changes": {
+						"id": "ics-fixed-5yr-90",
+						"rate": 4.55,
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-60",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-60",
+						"rate": 4.35,
+						"apr": 4.26
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-60",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-60",
+						"rate": 4.55,
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-70",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-70",
+						"rate": 4.35,
+						"apr": 4.26
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-70",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-70",
+						"rate": 4.55,
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-80",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-80",
+						"rate": 4.35,
+						"apr": 4.26
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-80",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-80",
+						"rate": 4.55,
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-90",
+						"rate": 4.35,
+						"apr": 4.26
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-90",
+						"rate": 4.55,
+						"apr": 4.41
+					}
+				}
+			]
+		}
+	]
 }
