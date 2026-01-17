@@ -11,8 +11,11 @@ import {
 	parseLtvFromName,
 	parsePercentageOrThrow,
 	parseTermFromText,
-} from "../parsing.ts";
-import type { LenderProvider } from "../types";
+} from "../utils/parsing";
+import type {
+	HistoricalLenderProvider,
+	StructureValidation,
+} from "../utils/types";
 
 const LENDER_ID = "aib";
 const RATES_URL =
@@ -78,12 +81,11 @@ function parseTableRow($: cheerio.CheerioAPI, row: Element): ParsedRow | null {
 	}
 }
 
-async function fetchAndParseRates(): Promise<MortgageRate[]> {
-	console.log("Fetching rates page...");
-	const response = await fetch(RATES_URL);
-	const html = await response.text();
-
-	console.log("Parsing HTML content with Cheerio...");
+/**
+ * Parse rates from HTML content.
+ * Separated from fetch for historical scraping support.
+ */
+function parseRatesFromHtml(html: string): MortgageRate[] {
 	const $ = cheerio.load(html);
 
 	// Use a Map to deduplicate rates by ID (AIB page has duplicate tables)
@@ -219,14 +221,69 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 			});
 	});
 
-	const rates = Array.from(ratesMap.values());
+	return Array.from(ratesMap.values());
+}
+
+/**
+ * Validate that the HTML structure matches what we expect.
+ * AIB uses tab panes with tables inside.
+ */
+function validateStructure(html: string): StructureValidation {
+	const $ = cheerio.load(html);
+
+	// Check for tab panes (AIB's main structure)
+	const tabPanes = $(".tab-pane");
+	if (tabPanes.length === 0) {
+		return { valid: false, error: "No tab-pane elements found" };
+	}
+
+	// Check for tables
+	const tables = $("table");
+	if (tables.length === 0) {
+		return { valid: false, error: "No tables found on page" };
+	}
+
+	// Check that at least one table has rate data (3+ columns)
+	let hasValidTable = false;
+	tables.each((_, table) => {
+		const rows = $(table).find("tr");
+		if (rows.length > 0) {
+			const firstDataRow = rows
+				.filter((_, r) => $(r).find("td").length > 0)
+				.first();
+			const cells = firstDataRow.find("td");
+			if (cells.length >= 3) {
+				hasValidTable = true;
+			}
+		}
+	});
+
+	if (!hasValidTable) {
+		return {
+			valid: false,
+			error: "No valid rate tables found (expected 3+ columns)",
+		};
+	}
+
+	return { valid: true };
+}
+
+async function fetchAndParseRates(): Promise<MortgageRate[]> {
+	console.log("Fetching rates page...");
+	const response = await fetch(RATES_URL);
+	const html = await response.text();
+
+	console.log("Parsing HTML content with Cheerio...");
+	const rates = parseRatesFromHtml(html);
 	console.log(`Parsed ${rates.length} unique rates from HTML`);
 	return rates;
 }
 
-export const aibProvider: LenderProvider = {
+export const aibProvider: HistoricalLenderProvider = {
 	lenderId: LENDER_ID,
 	name: "AIB",
 	url: RATES_URL,
 	scrape: fetchAndParseRates,
+	parseHtml: async (html: string) => parseRatesFromHtml(html),
+	validateStructure,
 };

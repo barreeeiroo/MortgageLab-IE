@@ -1,8 +1,8 @@
 {
 	"lenderId": "ics",
 	"baseline": {
-		"timestamp": "2026-01-09T01:48:04.000Z",
-		"ratesHash": "9ce5943dde872f7b23f1270dc0f1ac0be0ebac7f4fd754b01579efa9283b35d1",
+		"timestamp": "2025-10-08T19:13:06Z",
+		"ratesHash": "85a1828df3df96cf663f9f6f0250528e03b50c8afd14a7f1c27415b6bf4ca358",
 		"rates": [
 			{
 				"id": "ics-variable-60",

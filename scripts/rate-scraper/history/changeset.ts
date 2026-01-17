@@ -1,12 +1,12 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import type { MortgageRate } from "../../src/lib/schemas/rate";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import type {
 	RateDiffOperation,
 	RatesHistoryFile,
-} from "../../src/lib/schemas/rate-history";
+} from "@/lib/schemas/rate-history";
 
-const HISTORY_DIR = join(import.meta.dir, "../../data/rates/history");
+const HISTORY_DIR = join(import.meta.dir, "../../../data/rates/history");
 
 /**
  * Deep equality check for comparing rate field values.

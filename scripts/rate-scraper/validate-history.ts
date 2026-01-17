@@ -2,11 +2,11 @@
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { Lender } from "../../src/lib/schemas/lender";
-import type { RatesFile } from "../../src/lib/schemas/rate";
-import type { RatesHistoryFile } from "../../src/lib/schemas/rate-history";
-import { reconstructRates } from "./history";
-import { computeRatesHash } from "./utils";
+import type { Lender } from "@/lib/schemas/lender";
+import type { RatesFile } from "@/lib/schemas/rate";
+import type { RatesHistoryFile } from "@/lib/schemas/rate-history";
+import { reconstructRates } from "./history/changeset";
+import { computeRatesHash } from "./utils/hash";
 
 const RATES_DIR = join(import.meta.dir, "../../data/rates");
 const HISTORY_DIR = join(import.meta.dir, "../../data/rates/history");

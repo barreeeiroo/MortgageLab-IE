@@ -7,8 +7,11 @@ import {
 	parseLtvFromName,
 	parsePercentageOrThrow,
 	parseTermFromText,
-} from "../parsing.ts";
-import type { LenderProvider } from "../types";
+} from "../utils/parsing";
+import type {
+	HistoricalLenderProvider,
+	StructureValidation,
+} from "../utils/types";
 
 const LENDER_ID = "ptsb";
 const RATES_URL = "https://www.ptsb.ie/mortgages/mortgage-interest-rates/";
@@ -77,12 +80,11 @@ function parseTableRow($: cheerio.CheerioAPI, row: Element): ParsedRow | null {
 	}
 }
 
-async function fetchAndParseRates(): Promise<MortgageRate[]> {
-	console.log("Fetching rates page...");
-	const response = await fetch(RATES_URL);
-	const html = await response.text();
-
-	console.log("Parsing HTML content with Cheerio...");
+/**
+ * Parse rates from HTML content.
+ * Separated from fetch for historical scraping support.
+ */
+function parseRatesFromHtml(html: string): MortgageRate[] {
 	const $ = cheerio.load(html);
 
 	// Use a Map to deduplicate rates by ID
@@ -291,14 +293,56 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 			});
 	});
 
-	const rates = Array.from(ratesMap.values());
+	return Array.from(ratesMap.values());
+}
+
+/**
+ * Validate that the HTML structure matches what we expect.
+ * PTSB uses h4 headings followed by tables.
+ */
+function validateStructure(html: string): StructureValidation {
+	const $ = cheerio.load(html);
+
+	// Check for h4 headings
+	const headings = $("h4");
+	if (headings.length === 0) {
+		return { valid: false, error: "No h4 headings found" };
+	}
+
+	// Check for tables
+	const tables = $("table");
+	if (tables.length === 0) {
+		return { valid: false, error: "No tables found on page" };
+	}
+
+	// Check for rate-related content
+	const pageText = $("body").text().toLowerCase();
+	if (!pageText.includes("fixed") && !pageText.includes("variable")) {
+		return {
+			valid: false,
+			error: "No rate type content found (fixed/variable)",
+		};
+	}
+
+	return { valid: true };
+}
+
+async function fetchAndParseRates(): Promise<MortgageRate[]> {
+	console.log("Fetching rates page...");
+	const response = await fetch(RATES_URL);
+	const html = await response.text();
+
+	console.log("Parsing HTML content with Cheerio...");
+	const rates = parseRatesFromHtml(html);
 	console.log(`Parsed ${rates.length} unique rates from HTML`);
 	return rates;
 }
 
-export const ptsbProvider: LenderProvider = {
+export const ptsbProvider: HistoricalLenderProvider = {
 	lenderId: LENDER_ID,
 	name: "Permanent TSB",
 	url: RATES_URL,
 	scrape: fetchAndParseRates,
+	parseHtml: async (html: string) => parseRatesFromHtml(html),
+	validateStructure,
 };

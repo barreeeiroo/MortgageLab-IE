@@ -6,8 +6,11 @@ import {
 	parseLtvFromName,
 	parsePercentageOrThrow,
 	parseTermFromText,
-} from "../parsing.ts";
-import type { LenderProvider } from "../types";
+} from "../utils/parsing";
+import type {
+	HistoricalLenderProvider,
+	StructureValidation,
+} from "../utils/types";
 
 const LENDER_ID = "avant";
 const RATES_URL = "https://www.avantmoney.ie/mortgages/products-and-rates";
@@ -243,18 +246,15 @@ function parseOneMortgageTable(
 	return rates;
 }
 
-async function fetchAndParseRates(): Promise<MortgageRate[]> {
-	console.log("Fetching rates page...");
-	const response = await fetch(RATES_URL);
-	const html = await response.text();
-
-	console.log("Parsing HTML content with Cheerio...");
+/**
+ * Parse rates from HTML content.
+ * Separated from fetch for historical scraping support.
+ */
+function parseRatesFromHtml(html: string): MortgageRate[] {
 	const $ = cheerio.load(html);
-
 	const rates: MortgageRate[] = [];
 
 	// Parse Flex Mortgage (variable) rates
-	console.log("Parsing Flex Mortgage rates...");
 	rates.push(...parseFlexMortgageTable($));
 
 	// Find rate sections by article title
@@ -263,25 +263,20 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		const titleLower = title.toLowerCase();
 
 		if (titleLower.includes("fixed term rates")) {
-			console.log("Parsing Fixed Term rates...");
 			rates.push(...parseFixedTermTable($, $(article)));
 		}
 
 		if (titleLower.includes("one mortgage rates")) {
-			console.log("Parsing One Mortgage rates...");
 			rates.push(...parseOneMortgageTable($, $(article)));
 		}
 
 		if (titleLower.includes("follow on variable")) {
-			console.log("Parsing Follow-On Variable rates...");
 			rates.push(...parseFollowOnVariableTable($, $(article)));
 		}
 	});
 
 	// If we couldn't find fixed rates via the structured approach, try a broader search
 	if (rates.filter((r) => r.type === "fixed").length === 0) {
-		console.log("Trying broader search for fixed rate tables...");
-
 		$(".am-figures-table").each((_, table) => {
 			const tableTitle = $(table)
 				.find("h3")
@@ -298,13 +293,53 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		});
 	}
 
+	return rates;
+}
+
+/**
+ * Validate that the HTML structure matches what we expect.
+ * Avant uses .am-figures-table elements and tables.
+ */
+function validateStructure(html: string): StructureValidation {
+	const $ = cheerio.load(html);
+
+	// Check for Avant's custom table structure or standard tables
+	const amTables = $(".am-figures-table");
+	const standardTables = $("table");
+
+	if (amTables.length === 0 && standardTables.length === 0) {
+		return {
+			valid: false,
+			error:
+				"No rate tables found (expected .am-figures-table or table elements)",
+		};
+	}
+
+	// Check for rate content indicators
+	const pageText = $("body").text().toLowerCase();
+	if (!pageText.includes("ltv") && !pageText.includes("loan to value")) {
+		return { valid: false, error: "No LTV content found on page" };
+	}
+
+	return { valid: true };
+}
+
+async function fetchAndParseRates(): Promise<MortgageRate[]> {
+	console.log("Fetching rates page...");
+	const response = await fetch(RATES_URL);
+	const html = await response.text();
+
+	console.log("Parsing HTML content with Cheerio...");
+	const rates = parseRatesFromHtml(html);
 	console.log(`Parsed ${rates.length} rates from HTML`);
 	return rates;
 }
 
-export const avantProvider: LenderProvider = {
+export const avantProvider: HistoricalLenderProvider = {
 	lenderId: LENDER_ID,
 	name: "Avant Money",
 	url: RATES_URL,
 	scrape: fetchAndParseRates,
+	parseHtml: async (html: string) => parseRatesFromHtml(html),
+	validateStructure,
 };

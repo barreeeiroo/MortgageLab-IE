@@ -1,8 +1,8 @@
 {
 	"lenderId": "aib",
 	"baseline": {
-		"timestamp": "2026-01-07T13:13:38.530Z",
-		"ratesHash": "cce9f5e22d7301d25fe6bda9861ce703268241628bd38396da2fdb76901d9664",
+		"timestamp": "2024-01-12T06:04:00Z",
+		"ratesHash": "b5104eb594c047d1b2833b2b45de0fecc1099707746fd64d974cb3d891f7c06f",
 		"rates": [
 			{
 				"id": "aib-variable-50",
@@ -102,8 +102,8 @@
 				"name": "1 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.3,
-				"apr": 3.79,
+				"rate": 4.4,
+				"apr": 3.87,
 				"fixedTerm": 1,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -118,8 +118,8 @@
 				"name": "1 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.3,
-				"apr": 3.79,
+				"rate": 4.4,
+				"apr": 3.87,
 				"fixedTerm": 1,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -135,8 +135,8 @@
 				"name": "1 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.4,
-				"apr": 3.99,
+				"rate": 4.55,
+				"apr": 4.08,
 				"fixedTerm": 1,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -151,8 +151,8 @@
 				"name": "1 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.4,
-				"apr": 3.99,
+				"rate": 4.55,
+				"apr": 4.08,
 				"fixedTerm": 1,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -168,8 +168,8 @@
 				"name": "1 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.5,
-				"apr": 4.19,
+				"rate": 4.65,
+				"apr": 4.28,
 				"fixedTerm": 1,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -184,8 +184,8 @@
 				"name": "1 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.5,
-				"apr": 4.19,
+				"rate": 4.65,
+				"apr": 4.28,
 				"fixedTerm": 1,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -201,8 +201,8 @@
 				"name": "2 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.35,
-				"apr": 3.77,
+				"rate": 4.45,
+				"apr": 3.93,
 				"fixedTerm": 2,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -217,8 +217,8 @@
 				"name": "2 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.35,
-				"apr": 3.77,
+				"rate": 4.45,
+				"apr": 3.93,
 				"fixedTerm": 2,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -234,8 +234,8 @@
 				"name": "2 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.45,
-				"apr": 3.96,
+				"rate": 4.6,
+				"apr": 4.13,
 				"fixedTerm": 2,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -250,8 +250,8 @@
 				"name": "2 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.45,
-				"apr": 3.96,
+				"rate": 4.6,
+				"apr": 4.13,
 				"fixedTerm": 2,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -267,8 +267,8 @@
 				"name": "2 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.55,
-				"apr": 4.15,
+				"rate": 4.7,
+				"apr": 4.32,
 				"fixedTerm": 2,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -283,8 +283,8 @@
 				"name": "2 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.55,
-				"apr": 4.15,
+				"rate": 4.7,
+				"apr": 4.32,
 				"fixedTerm": 2,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -300,8 +300,8 @@
 				"name": "3 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.5,
-				"apr": 3.77,
+				"rate": 4.55,
+				"apr": 3.99,
 				"fixedTerm": 3,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -316,8 +316,8 @@
 				"name": "3 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.5,
-				"apr": 3.77,
+				"rate": 4.55,
+				"apr": 3.99,
 				"fixedTerm": 3,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -333,8 +333,8 @@
 				"name": "3 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.6,
-				"apr": 3.96,
+				"rate": 4.7,
+				"apr": 4.19,
 				"fixedTerm": 3,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -349,8 +349,8 @@
 				"name": "3 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.6,
-				"apr": 3.96,
+				"rate": 4.7,
+				"apr": 4.19,
 				"fixedTerm": 3,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -366,8 +366,8 @@
 				"name": "3 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.7,
-				"apr": 4.14,
+				"rate": 4.8,
+				"apr": 4.38,
 				"fixedTerm": 3,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -382,8 +382,8 @@
 				"name": "3 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.7,
-				"apr": 4.14,
+				"rate": 4.8,
+				"apr": 4.38,
 				"fixedTerm": 3,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -399,8 +399,8 @@
 				"name": "4 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.55,
-				"apr": 3.77,
+				"rate": 4.6,
+				"apr": 4.06,
 				"fixedTerm": 4,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -415,8 +415,8 @@
 				"name": "4 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.55,
-				"apr": 3.77,
+				"rate": 4.6,
+				"apr": 4.06,
 				"fixedTerm": 4,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -432,8 +432,8 @@
 				"name": "4 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.65,
-				"apr": 3.95,
+				"rate": 4.75,
+				"apr": 4.25,
 				"fixedTerm": 4,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -448,8 +448,8 @@
 				"name": "4 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.65,
-				"apr": 3.95,
+				"rate": 4.75,
+				"apr": 4.25,
 				"fixedTerm": 4,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -465,8 +465,8 @@
 				"name": "4 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.75,
-				"apr": 4.13,
+				"rate": 4.85,
+				"apr": 4.44,
 				"fixedTerm": 4,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -481,8 +481,8 @@
 				"name": "4 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.75,
-				"apr": 4.13,
+				"rate": 4.85,
+				"apr": 4.44,
 				"fixedTerm": 4,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -498,8 +498,8 @@
 				"name": "5 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.65,
-				"apr": 3.79,
+				"rate": 4.65,
+				"apr": 4.13,
 				"fixedTerm": 5,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -514,8 +514,8 @@
 				"name": "5 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.65,
-				"apr": 3.79,
+				"rate": 4.65,
+				"apr": 4.13,
 				"fixedTerm": 5,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -531,8 +531,8 @@
 				"name": "5 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.75,
-				"apr": 3.97,
+				"rate": 4.8,
+				"apr": 4.32,
 				"fixedTerm": 5,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -547,8 +547,8 @@
 				"name": "5 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.75,
-				"apr": 3.97,
+				"rate": 4.8,
+				"apr": 4.32,
 				"fixedTerm": 5,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -564,8 +564,8 @@
 				"name": "5 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.85,
-				"apr": 4.14,
+				"rate": 5,
+				"apr": 4.53,
 				"fixedTerm": 5,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -580,8 +580,8 @@
 				"name": "5 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.85,
-				"apr": 4.14,
+				"rate": 5,
+				"apr": 4.53,
 				"fixedTerm": 5,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -597,8 +597,8 @@
 				"name": "7 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.85,
-				"apr": 3.87,
+				"rate": 4.9,
+				"apr": 4.34,
 				"fixedTerm": 7,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -613,8 +613,8 @@
 				"name": "7 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.85,
-				"apr": 3.87,
+				"rate": 4.9,
+				"apr": 4.34,
 				"fixedTerm": 7,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -630,8 +630,8 @@
 				"name": "7 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.95,
-				"apr": 4.03,
+				"rate": 5.05,
+				"apr": 4.53,
 				"fixedTerm": 7,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -646,8 +646,8 @@
 				"name": "7 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.95,
-				"apr": 4.03,
+				"rate": 5.05,
+				"apr": 4.53,
 				"fixedTerm": 7,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -663,8 +663,8 @@
 				"name": "7 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 4.05,
-				"apr": 4.19,
+				"rate": 5.15,
+				"apr": 4.7,
 				"fixedTerm": 7,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -679,8 +679,8 @@
 				"name": "7 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 4.05,
-				"apr": 4.19,
+				"rate": 5.15,
+				"apr": 4.7,
 				"fixedTerm": 7,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -696,8 +696,8 @@
 				"name": "10 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 4,
-				"apr": 3.97,
+				"rate": 5.05,
+				"apr": 4.6,
 				"fixedTerm": 10,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -712,8 +712,8 @@
 				"name": "10 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 4,
-				"apr": 3.97,
+				"rate": 5.05,
+				"apr": 4.6,
 				"fixedTerm": 10,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -729,8 +729,8 @@
 				"name": "10 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 4.1,
-				"apr": 4.12,
+				"rate": 5.2,
+				"apr": 4.79,
 				"fixedTerm": 10,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -745,8 +745,8 @@
 				"name": "10 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 4.1,
-				"apr": 4.12,
+				"rate": 5.2,
+				"apr": 4.79,
 				"fixedTerm": 10,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -762,8 +762,8 @@
 				"name": "10 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 4.2,
-				"apr": 4.27,
+				"rate": 5.3,
+				"apr": 4.94,
 				"fixedTerm": 10,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -778,8 +778,8 @@
 				"name": "10 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 4.2,
-				"apr": 4.27,
+				"rate": 5.3,
+				"apr": 4.94,
 				"fixedTerm": 10,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -791,288 +791,12 @@
 				]
 			},
 			{
-				"id": "aib-green-fixed-2yr-50",
-				"name": "Green 2 Year Fixed - LTV ≤50%",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.15,
-				"apr": 3.74,
-				"fixedTerm": 2,
-				"minLtv": 0,
-				"maxLtv": 50,
-				"buyerTypes": [
-					"ftb",
-					"mover"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3",
-					"B1",
-					"B2",
-					"B3"
-				],
-				"perks": []
-			},
-			{
-				"id": "aib-green-fixed-2yr-50-switcher",
-				"name": "Green 2 Year Fixed - LTV ≤50%",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.15,
-				"apr": 3.74,
-				"fixedTerm": 2,
-				"minLtv": 0,
-				"maxLtv": 50,
-				"buyerTypes": [
-					"switcher-pdh"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3",
-					"B1",
-					"B2",
-					"B3"
-				],
-				"perks": [
-					"switcher-3k"
-				]
-			},
-			{
-				"id": "aib-green-fixed-2yr-80",
-				"name": "Green 2 Year Fixed - LTV ≤80%",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.25,
-				"apr": 3.93,
-				"fixedTerm": 2,
-				"minLtv": 50,
-				"maxLtv": 80,
-				"buyerTypes": [
-					"ftb",
-					"mover"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3",
-					"B1",
-					"B2",
-					"B3"
-				],
-				"perks": []
-			},
-			{
-				"id": "aib-green-fixed-2yr-80-switcher",
-				"name": "Green 2 Year Fixed - LTV ≤80%",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.25,
-				"apr": 3.93,
-				"fixedTerm": 2,
-				"minLtv": 50,
-				"maxLtv": 80,
-				"buyerTypes": [
-					"switcher-pdh"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3",
-					"B1",
-					"B2",
-					"B3"
-				],
-				"perks": [
-					"switcher-3k"
-				]
-			},
-			{
-				"id": "aib-green-fixed-2yr",
-				"name": "Green 2 Year Fixed",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.35,
-				"apr": 4.12,
-				"fixedTerm": 2,
-				"minLtv": 80,
-				"maxLtv": 90,
-				"buyerTypes": [
-					"ftb",
-					"mover"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3",
-					"B1",
-					"B2",
-					"B3"
-				],
-				"perks": []
-			},
-			{
-				"id": "aib-green-fixed-2yr-switcher",
-				"name": "Green 2 Year Fixed",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.35,
-				"apr": 4.12,
-				"fixedTerm": 2,
-				"minLtv": 80,
-				"maxLtv": 90,
-				"buyerTypes": [
-					"switcher-pdh"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3",
-					"B1",
-					"B2",
-					"B3"
-				],
-				"perks": [
-					"switcher-3k"
-				]
-			},
-			{
-				"id": "aib-green-a-fixed-3yr-50",
-				"name": "Green A 3 Year Fixed - LTV ≤50%",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3,
-				"apr": 3.67,
-				"fixedTerm": 3,
-				"minLtv": 0,
-				"maxLtv": 50,
-				"buyerTypes": [
-					"ftb",
-					"mover"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3"
-				],
-				"perks": []
-			},
-			{
-				"id": "aib-green-a-fixed-3yr-50-switcher",
-				"name": "Green A 3 Year Fixed - LTV ≤50%",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3,
-				"apr": 3.67,
-				"fixedTerm": 3,
-				"minLtv": 0,
-				"maxLtv": 50,
-				"buyerTypes": [
-					"switcher-pdh"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3"
-				],
-				"perks": [
-					"switcher-3k"
-				]
-			},
-			{
-				"id": "aib-green-a-fixed-3yr-80",
-				"name": "Green A 3 Year Fixed - LTV ≤80%",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.1,
-				"apr": 3.86,
-				"fixedTerm": 3,
-				"minLtv": 50,
-				"maxLtv": 80,
-				"buyerTypes": [
-					"ftb",
-					"mover"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3"
-				],
-				"perks": []
-			},
-			{
-				"id": "aib-green-a-fixed-3yr-80-switcher",
-				"name": "Green A 3 Year Fixed - LTV ≤80%",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.1,
-				"apr": 3.86,
-				"fixedTerm": 3,
-				"minLtv": 50,
-				"maxLtv": 80,
-				"buyerTypes": [
-					"switcher-pdh"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3"
-				],
-				"perks": [
-					"switcher-3k"
-				]
-			},
-			{
-				"id": "aib-green-a-fixed-3yr",
-				"name": "Green A 3 Year Fixed",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.2,
-				"apr": 4.04,
-				"fixedTerm": 3,
-				"minLtv": 80,
-				"maxLtv": 90,
-				"buyerTypes": [
-					"ftb",
-					"mover"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3"
-				],
-				"perks": []
-			},
-			{
-				"id": "aib-green-a-fixed-3yr-switcher",
-				"name": "Green A 3 Year Fixed",
-				"lenderId": "aib",
-				"type": "fixed",
-				"rate": 3.2,
-				"apr": 4.04,
-				"fixedTerm": 3,
-				"minLtv": 80,
-				"maxLtv": 90,
-				"buyerTypes": [
-					"switcher-pdh"
-				],
-				"berEligible": [
-					"A1",
-					"A2",
-					"A3"
-				],
-				"perks": [
-					"switcher-3k"
-				]
-			},
-			{
 				"id": "aib-green-fixed-5yr-50",
 				"name": "Green 5 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.2,
-				"apr": 3.65,
+				"rate": 3.65,
+				"apr": 3.79,
 				"fixedTerm": 5,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -1095,8 +819,8 @@
 				"name": "Green 5 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.2,
-				"apr": 3.65,
+				"rate": 3.65,
+				"apr": 3.79,
 				"fixedTerm": 5,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -1120,8 +844,8 @@
 				"name": "Green 5 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.3,
-				"apr": 3.82,
+				"rate": 3.75,
+				"apr": 3.97,
 				"fixedTerm": 5,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -1144,8 +868,8 @@
 				"name": "Green 5 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.3,
-				"apr": 3.82,
+				"rate": 3.75,
+				"apr": 3.97,
 				"fixedTerm": 5,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -1169,8 +893,8 @@
 				"name": "Green 5 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.4,
-				"apr": 3.99,
+				"rate": 3.85,
+				"apr": 4.14,
 				"fixedTerm": 5,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -1193,8 +917,8 @@
 				"name": "Green 5 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.4,
-				"apr": 3.99,
+				"rate": 3.85,
+				"apr": 4.14,
 				"fixedTerm": 5,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -1218,8 +942,8 @@
 				"name": "Higher Value 4 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.4,
-				"apr": 3.73,
+				"rate": 4.2,
+				"apr": 3.95,
 				"fixedTerm": 4,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -1235,8 +959,8 @@
 				"name": "Higher Value 4 Year Fixed - LTV ≤50%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.4,
-				"apr": 3.73,
+				"rate": 4.2,
+				"apr": 3.95,
 				"fixedTerm": 4,
 				"minLtv": 0,
 				"maxLtv": 50,
@@ -1253,8 +977,8 @@
 				"name": "Higher Value 4 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.5,
-				"apr": 3.91,
+				"rate": 4.35,
+				"apr": 4.14,
 				"fixedTerm": 4,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -1270,8 +994,8 @@
 				"name": "Higher Value 4 Year Fixed - LTV ≤80%",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.5,
-				"apr": 3.91,
+				"rate": 4.35,
+				"apr": 4.14,
 				"fixedTerm": 4,
 				"minLtv": 50,
 				"maxLtv": 80,
@@ -1288,8 +1012,8 @@
 				"name": "Higher Value 4 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.6,
-				"apr": 4.09,
+				"rate": 4.55,
+				"apr": 4.35,
 				"fixedTerm": 4,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -1305,8 +1029,8 @@
 				"name": "Higher Value 4 Year Fixed",
 				"lenderId": "aib",
 				"type": "fixed",
-				"rate": 3.6,
-				"apr": 4.09,
+				"rate": 4.55,
+				"apr": 4.35,
 				"fixedTerm": 4,
 				"minLtv": 80,
 				"maxLtv": 90,
@@ -1415,5 +1139,1462 @@
 			}
 		]
 	},
-	"changesets": []
+	"changesets": [
+		{
+			"timestamp": "2024-04-21T05:29:59Z",
+			"afterHash": "86159a922ecf0ee4be88e86c16a408e925d28bad13cf3e920f5ff5616819a3fa",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-50",
+					"changes": {
+						"id": "aib-green-fixed-5yr-50",
+						"rate": 3.45,
+						"apr": 3.73
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-50-switcher",
+					"changes": {
+						"id": "aib-green-fixed-5yr-50-switcher",
+						"rate": 3.45,
+						"apr": 3.73
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-80",
+					"changes": {
+						"id": "aib-green-fixed-5yr-80",
+						"rate": 3.55,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-80-switcher",
+					"changes": {
+						"id": "aib-green-fixed-5yr-80-switcher",
+						"rate": 3.55,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr",
+					"changes": {
+						"id": "aib-green-fixed-5yr",
+						"rate": 3.65,
+						"apr": 4.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-switcher",
+					"changes": {
+						"id": "aib-green-fixed-5yr-switcher",
+						"rate": 3.65,
+						"apr": 4.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-btl-fixed-5yr",
+					"changes": {
+						"id": "aib-btl-fixed-5yr",
+						"apr": 6.68
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-07-20T09:41:54Z",
+			"afterHash": "3f03bced382a87ba824ad70efd5f33b5c7e5b5986884b2994277e1b7b4eca3f8",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-50",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-50",
+						"rate": 3.95,
+						"apr": 3.88
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-50-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-50-switcher",
+						"rate": 3.95,
+						"apr": 3.88
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-80",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-80",
+						"rate": 4.1,
+						"apr": 4.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-80-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-80-switcher",
+						"rate": 4.1,
+						"apr": 4.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr",
+					"changes": {
+						"id": "aib-hv-fixed-4yr",
+						"rate": 4.3,
+						"apr": 4.28
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-switcher",
+						"rate": 4.3,
+						"apr": 4.28
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-btl-variable",
+					"changes": {
+						"id": "aib-btl-variable",
+						"apr": 5.33
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-08-20T00:19:20Z",
+			"afterHash": "de54cd7789be0ec8315c16c039d05e9282fd6d5c3f6136f26420b891fa860a70",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-btl-variable",
+					"changes": {
+						"id": "aib-btl-variable",
+						"apr": 5.34
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-10-13T23:36:48Z",
+			"afterHash": "4de5aaf393009a8ac6476c3a7771078b37fff05f03a7d8b2c197852d5f7812a0",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-50",
+					"changes": {
+						"id": "aib-green-fixed-5yr-50",
+						"rate": 3.2,
+						"apr": 3.65
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-50-switcher",
+					"changes": {
+						"id": "aib-green-fixed-5yr-50-switcher",
+						"rate": 3.2,
+						"apr": 3.65
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-80",
+					"changes": {
+						"id": "aib-green-fixed-5yr-80",
+						"rate": 3.3,
+						"apr": 3.82
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-80-switcher",
+					"changes": {
+						"id": "aib-green-fixed-5yr-80-switcher",
+						"rate": 3.3,
+						"apr": 3.82
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr",
+					"changes": {
+						"id": "aib-green-fixed-5yr",
+						"rate": 3.4,
+						"apr": 3.99
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-green-fixed-5yr-switcher",
+					"changes": {
+						"id": "aib-green-fixed-5yr-switcher",
+						"rate": 3.4,
+						"apr": 3.99
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-50",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-50",
+						"rate": 3.7,
+						"apr": 3.81
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-50-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-50-switcher",
+						"rate": 3.7,
+						"apr": 3.81
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-80",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-80",
+						"rate": 3.85,
+						"apr": 4.01
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-80-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-80-switcher",
+						"rate": 3.85,
+						"apr": 4.01
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr",
+					"changes": {
+						"id": "aib-hv-fixed-4yr",
+						"rate": 4.05,
+						"apr": 4.21
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-switcher",
+						"rate": 4.05,
+						"apr": 4.21
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-btl-variable",
+					"changes": {
+						"id": "aib-btl-variable",
+						"apr": 5.33
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-11-28T00:17:44Z",
+			"afterHash": "0e8f55dde73569f6a307f9d5001f5294109c21af491aaa5bade010105430e0cf",
+			"operations": [
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-fixed-2yr-50",
+						"name": "Green 2 Year Fixed - LTV ≤50%",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.15,
+						"apr": 3.74,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 50,
+						"buyerTypes": [
+							"ftb",
+							"mover"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-fixed-2yr-50-switcher",
+						"name": "Green 2 Year Fixed - LTV ≤50%",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.15,
+						"apr": 3.74,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 50,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [
+							"switcher-3k"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-fixed-2yr-80",
+						"name": "Green 2 Year Fixed - LTV ≤80%",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.25,
+						"apr": 3.93,
+						"fixedTerm": 2,
+						"minLtv": 50,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"ftb",
+							"mover"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-fixed-2yr-80-switcher",
+						"name": "Green 2 Year Fixed - LTV ≤80%",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.25,
+						"apr": 3.93,
+						"fixedTerm": 2,
+						"minLtv": 50,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [
+							"switcher-3k"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-fixed-2yr",
+						"name": "Green 2 Year Fixed",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.35,
+						"apr": 4.12,
+						"fixedTerm": 2,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-fixed-2yr-switcher",
+						"name": "Green 2 Year Fixed",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.35,
+						"apr": 4.12,
+						"fixedTerm": 2,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [
+							"switcher-3k"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-a-fixed-3yr-50",
+						"name": "Green A 3 Year Fixed - LTV ≤50%",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3,
+						"apr": 3.67,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 50,
+						"buyerTypes": [
+							"ftb",
+							"mover"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-a-fixed-3yr-50-switcher",
+						"name": "Green A 3 Year Fixed - LTV ≤50%",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3,
+						"apr": 3.67,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 50,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"perks": [
+							"switcher-3k"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-a-fixed-3yr-80",
+						"name": "Green A 3 Year Fixed - LTV ≤80%",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.1,
+						"apr": 3.86,
+						"fixedTerm": 3,
+						"minLtv": 50,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"ftb",
+							"mover"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-a-fixed-3yr-80-switcher",
+						"name": "Green A 3 Year Fixed - LTV ≤80%",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.1,
+						"apr": 3.86,
+						"fixedTerm": 3,
+						"minLtv": 50,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"perks": [
+							"switcher-3k"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-a-fixed-3yr",
+						"name": "Green A 3 Year Fixed",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.2,
+						"apr": 4.04,
+						"fixedTerm": 3,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "aib-green-a-fixed-3yr-switcher",
+						"name": "Green A 3 Year Fixed",
+						"lenderId": "aib",
+						"type": "fixed",
+						"rate": 3.2,
+						"apr": 4.04,
+						"fixedTerm": 3,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"perks": [
+							"switcher-3k"
+						]
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2025-06-26T03:05:14Z",
+			"afterHash": "ad9de43d9ba25e960802db675f1574f95f5b5d56e566472b017b8373e849b5a7",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-50",
+					"changes": {
+						"id": "aib-fixed-1yr-50",
+						"rate": 3.9,
+						"apr": 3.84
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-1yr-50-switcher",
+						"rate": 3.9,
+						"apr": 3.84
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-80",
+					"changes": {
+						"id": "aib-fixed-1yr-80",
+						"rate": 4.05,
+						"apr": 4.04
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-1yr-80-switcher",
+						"rate": 4.05,
+						"apr": 4.04
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr",
+					"changes": {
+						"id": "aib-fixed-1yr",
+						"rate": 4.15,
+						"apr": 4.24
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-switcher",
+					"changes": {
+						"id": "aib-fixed-1yr-switcher",
+						"rate": 4.15,
+						"apr": 4.24
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-50",
+					"changes": {
+						"id": "aib-fixed-2yr-50",
+						"rate": 3.7,
+						"apr": 3.82
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-2yr-50-switcher",
+						"rate": 3.7,
+						"apr": 3.82
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-80",
+					"changes": {
+						"id": "aib-fixed-2yr-80",
+						"rate": 3.85,
+						"apr": 4.02
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-2yr-80-switcher",
+						"rate": 3.85,
+						"apr": 4.02
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr",
+					"changes": {
+						"id": "aib-fixed-2yr",
+						"rate": 3.95,
+						"apr": 4.21
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-switcher",
+					"changes": {
+						"id": "aib-fixed-2yr-switcher",
+						"rate": 3.95,
+						"apr": 4.21
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-50",
+					"changes": {
+						"id": "aib-fixed-3yr-50",
+						"rate": 4.05,
+						"apr": 3.89
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-3yr-50-switcher",
+						"rate": 4.05,
+						"apr": 3.89
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-80",
+					"changes": {
+						"id": "aib-fixed-3yr-80",
+						"rate": 4.2,
+						"apr": 4.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-3yr-80-switcher",
+						"rate": 4.2,
+						"apr": 4.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr",
+					"changes": {
+						"id": "aib-fixed-3yr",
+						"rate": 4.3,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-switcher",
+					"changes": {
+						"id": "aib-fixed-3yr-switcher",
+						"rate": 4.3,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-50",
+					"changes": {
+						"id": "aib-fixed-4yr-50",
+						"rate": 4.1,
+						"apr": 3.92
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-4yr-50-switcher",
+						"rate": 4.1,
+						"apr": 3.92
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-80",
+					"changes": {
+						"id": "aib-fixed-4yr-80",
+						"rate": 4.25,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-4yr-80-switcher",
+						"rate": 4.25,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr",
+					"changes": {
+						"id": "aib-fixed-4yr",
+						"rate": 4.35,
+						"apr": 4.29
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-switcher",
+					"changes": {
+						"id": "aib-fixed-4yr-switcher",
+						"rate": 4.35,
+						"apr": 4.29
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-50",
+					"changes": {
+						"id": "aib-fixed-5yr-50",
+						"rate": 4.15,
+						"apr": 3.96
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-5yr-50-switcher",
+						"rate": 4.15,
+						"apr": 3.96
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-80",
+					"changes": {
+						"id": "aib-fixed-5yr-80",
+						"rate": 4.3,
+						"apr": 4.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-5yr-80-switcher",
+						"rate": 4.3,
+						"apr": 4.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr",
+					"changes": {
+						"id": "aib-fixed-5yr",
+						"rate": 4.5,
+						"apr": 4.36
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-switcher",
+					"changes": {
+						"id": "aib-fixed-5yr-switcher",
+						"rate": 4.5,
+						"apr": 4.36
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-50",
+					"changes": {
+						"id": "aib-fixed-7yr-50",
+						"rate": 4.4,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-7yr-50-switcher",
+						"rate": 4.4,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-80",
+					"changes": {
+						"id": "aib-fixed-7yr-80",
+						"rate": 4.55,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-7yr-80-switcher",
+						"rate": 4.55,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr",
+					"changes": {
+						"id": "aib-fixed-7yr",
+						"rate": 4.65,
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-switcher",
+					"changes": {
+						"id": "aib-fixed-7yr-switcher",
+						"rate": 4.65,
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-50",
+					"changes": {
+						"id": "aib-fixed-10yr-50",
+						"rate": 4.55,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-10yr-50-switcher",
+						"rate": 4.55,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-80",
+					"changes": {
+						"id": "aib-fixed-10yr-80",
+						"rate": 4.7,
+						"apr": 4.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-10yr-80-switcher",
+						"rate": 4.7,
+						"apr": 4.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr",
+					"changes": {
+						"id": "aib-fixed-10yr",
+						"rate": 4.8,
+						"apr": 4.63
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-switcher",
+					"changes": {
+						"id": "aib-fixed-10yr-switcher",
+						"rate": 4.8,
+						"apr": 4.63
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2025-10-23T23:30:54Z",
+			"afterHash": "90d569a6b0364fd312e4614ac838270e6487672bba49b97c54a7cfebe258d041",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-btl-variable",
+					"changes": {
+						"id": "aib-btl-variable",
+						"apr": 5.34
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-btl-fixed-5yr",
+					"changes": {
+						"id": "aib-btl-fixed-5yr",
+						"apr": 6.69
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2025-11-19T18:03:17Z",
+			"afterHash": "22d3fcc813408ca7a737301b32bc36092277e73b24f9aa8e36ee183314b42e09",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-50",
+					"changes": {
+						"id": "aib-fixed-1yr-50",
+						"rate": 3.3,
+						"apr": 3.79
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-1yr-50-switcher",
+						"rate": 3.3,
+						"apr": 3.79
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-80",
+					"changes": {
+						"id": "aib-fixed-1yr-80",
+						"rate": 3.4,
+						"apr": 3.99
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-1yr-80-switcher",
+						"rate": 3.4,
+						"apr": 3.99
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr",
+					"changes": {
+						"id": "aib-fixed-1yr",
+						"rate": 3.5,
+						"apr": 4.19
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-1yr-switcher",
+					"changes": {
+						"id": "aib-fixed-1yr-switcher",
+						"rate": 3.5,
+						"apr": 4.19
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-50",
+					"changes": {
+						"id": "aib-fixed-2yr-50",
+						"rate": 3.35,
+						"apr": 3.77
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-2yr-50-switcher",
+						"rate": 3.35,
+						"apr": 3.77
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-80",
+					"changes": {
+						"id": "aib-fixed-2yr-80",
+						"rate": 3.45,
+						"apr": 3.96
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-2yr-80-switcher",
+						"rate": 3.45,
+						"apr": 3.96
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr",
+					"changes": {
+						"id": "aib-fixed-2yr",
+						"rate": 3.55,
+						"apr": 4.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-2yr-switcher",
+					"changes": {
+						"id": "aib-fixed-2yr-switcher",
+						"rate": 3.55,
+						"apr": 4.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-50",
+					"changes": {
+						"id": "aib-fixed-3yr-50",
+						"rate": 3.5,
+						"apr": 3.77
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-3yr-50-switcher",
+						"rate": 3.5,
+						"apr": 3.77
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-80",
+					"changes": {
+						"id": "aib-fixed-3yr-80",
+						"rate": 3.6,
+						"apr": 3.96
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-3yr-80-switcher",
+						"rate": 3.6,
+						"apr": 3.96
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr",
+					"changes": {
+						"id": "aib-fixed-3yr",
+						"rate": 3.7,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-3yr-switcher",
+					"changes": {
+						"id": "aib-fixed-3yr-switcher",
+						"rate": 3.7,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-50",
+					"changes": {
+						"id": "aib-fixed-4yr-50",
+						"rate": 3.55,
+						"apr": 3.77
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-4yr-50-switcher",
+						"rate": 3.55,
+						"apr": 3.77
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-80",
+					"changes": {
+						"id": "aib-fixed-4yr-80",
+						"rate": 3.65,
+						"apr": 3.95
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-4yr-80-switcher",
+						"rate": 3.65,
+						"apr": 3.95
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr",
+					"changes": {
+						"id": "aib-fixed-4yr",
+						"rate": 3.75,
+						"apr": 4.13
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-4yr-switcher",
+					"changes": {
+						"id": "aib-fixed-4yr-switcher",
+						"rate": 3.75,
+						"apr": 4.13
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-50",
+					"changes": {
+						"id": "aib-fixed-5yr-50",
+						"rate": 3.65,
+						"apr": 3.79
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-5yr-50-switcher",
+						"rate": 3.65,
+						"apr": 3.79
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-80",
+					"changes": {
+						"id": "aib-fixed-5yr-80",
+						"rate": 3.75,
+						"apr": 3.97
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-5yr-80-switcher",
+						"rate": 3.75,
+						"apr": 3.97
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr",
+					"changes": {
+						"id": "aib-fixed-5yr",
+						"rate": 3.85,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-5yr-switcher",
+					"changes": {
+						"id": "aib-fixed-5yr-switcher",
+						"rate": 3.85,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-50",
+					"changes": {
+						"id": "aib-fixed-7yr-50",
+						"rate": 3.85,
+						"apr": 3.87
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-7yr-50-switcher",
+						"rate": 3.85,
+						"apr": 3.87
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-80",
+					"changes": {
+						"id": "aib-fixed-7yr-80",
+						"rate": 3.95,
+						"apr": 4.03
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-7yr-80-switcher",
+						"rate": 3.95,
+						"apr": 4.03
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr",
+					"changes": {
+						"id": "aib-fixed-7yr",
+						"rate": 4.05,
+						"apr": 4.19
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-7yr-switcher",
+					"changes": {
+						"id": "aib-fixed-7yr-switcher",
+						"rate": 4.05,
+						"apr": 4.19
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-50",
+					"changes": {
+						"id": "aib-fixed-10yr-50",
+						"rate": 4,
+						"apr": 3.97
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-50-switcher",
+					"changes": {
+						"id": "aib-fixed-10yr-50-switcher",
+						"rate": 4,
+						"apr": 3.97
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-80",
+					"changes": {
+						"id": "aib-fixed-10yr-80",
+						"rate": 4.1,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-80-switcher",
+					"changes": {
+						"id": "aib-fixed-10yr-80-switcher",
+						"rate": 4.1,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr",
+					"changes": {
+						"id": "aib-fixed-10yr",
+						"rate": 4.2,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-fixed-10yr-switcher",
+					"changes": {
+						"id": "aib-fixed-10yr-switcher",
+						"rate": 4.2,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-50",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-50",
+						"rate": 3.4,
+						"apr": 3.73
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-50-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-50-switcher",
+						"rate": 3.4,
+						"apr": 3.73
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-80",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-80",
+						"rate": 3.5,
+						"apr": 3.91
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-80-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-80-switcher",
+						"rate": 3.5,
+						"apr": 3.91
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr",
+					"changes": {
+						"id": "aib-hv-fixed-4yr",
+						"rate": 3.6,
+						"apr": 4.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-hv-fixed-4yr-switcher",
+					"changes": {
+						"id": "aib-hv-fixed-4yr-switcher",
+						"rate": 3.6,
+						"apr": 4.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "aib-btl-fixed-5yr",
+					"changes": {
+						"id": "aib-btl-fixed-5yr",
+						"apr": 6.68
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2025-12-28T09:45:29Z",
+			"afterHash": "cce9f5e22d7301d25fe6bda9861ce703268241628bd38396da2fdb76901d9664",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-btl-fixed-5yr",
+					"changes": {
+						"id": "aib-btl-fixed-5yr",
+						"apr": 6.69
+					}
+				}
+			]
+		}
+	]
 }
