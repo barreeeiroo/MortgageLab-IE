@@ -56,7 +56,7 @@ describe("ShareButton", () => {
 
 	it("shows loading state while generating share URL", async () => {
 		const user = userEvent.setup();
-		let resolveShare: (value: string) => void;
+		let resolveShare!: (value: string) => void;
 		const onShare = vi.fn().mockImplementation(
 			() =>
 				new Promise<string>((resolve) => {
