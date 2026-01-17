@@ -19,11 +19,15 @@ import { calculateRemainingBalance } from "./calculations";
  *
  * @param fixedRate - The fixed rate to find a follow-on for
  * @param variableRate - The candidate variable rate to check
+ * @param exactLtv - Optional exact LTV to match against (e.g., follow-on LTV after fixed term).
+ *                   When provided, checks if exactLtv falls within variable rate's LTV range.
+ *                   When omitted, checks if fixed and variable LTV ranges overlap (for validation).
  * @returns true if the variable rate is a valid follow-on candidate
  */
 export function isValidFollowOnRate(
 	fixedRate: MortgageRate,
 	variableRate: MortgageRate,
+	exactLtv?: number,
 ): boolean {
 	// Must be a variable rate from the same lender
 	if (
@@ -45,12 +49,22 @@ export function isValidFollowOnRate(
 		return false;
 	}
 
-	// LTV ranges must overlap
-	if (
-		fixedRate.maxLtv <= variableRate.minLtv ||
-		fixedRate.minLtv >= variableRate.maxLtv
-	) {
-		return false;
+	// LTV matching: exact LTV when provided, otherwise overlap check
+	if (exactLtv !== undefined) {
+		// Exact LTV matching - used at runtime when we know the actual follow-on LTV
+		// This allows matching variable rates outside the original fixed rate's LTV band
+		// because the user's LTV will have changed after years of payments
+		if (exactLtv < variableRate.minLtv || exactLtv > variableRate.maxLtv) {
+			return false;
+		}
+	} else {
+		// Overlap check - used by validator when no exact LTV is known
+		if (
+			fixedRate.maxLtv <= variableRate.minLtv ||
+			fixedRate.minLtv >= variableRate.maxLtv
+		) {
+			return false;
+		}
 	}
 
 	return true;
@@ -73,20 +87,18 @@ export function findVariableRate(
 	ber?: BerRating,
 ): MortgageRate | undefined {
 	const matchingVariables = allRates.filter((r) => {
-		// Use shared validation logic
-		if (!isValidFollowOnRate(fixedRate, r)) {
+		// Use shared validation logic (with exact LTV when provided)
+		if (!isValidFollowOnRate(fixedRate, r, ltv)) {
 			return false;
 		}
+
 		// Filter by BER eligibility if provided
 		if (ber !== undefined && r.berEligible !== undefined) {
 			if (!r.berEligible.includes(ber)) {
 				return false;
 			}
 		}
-		// When LTV is specified, check exact fit rather than overlap
-		if (ltv !== undefined) {
-			return ltv >= r.minLtv && ltv <= r.maxLtv;
-		}
+
 		return true;
 	});
 

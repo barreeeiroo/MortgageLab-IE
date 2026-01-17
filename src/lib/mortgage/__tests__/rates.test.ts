@@ -96,6 +96,87 @@ describe("isValidFollowOnRate", () => {
 		};
 		expect(isValidFollowOnRate(btlFixed, residentialVariable)).toBe(false);
 	});
+
+	describe("exact LTV matching vs overlap check", () => {
+		// This tests the bug fix where a 70-80% fixed rate with follow-on LTV of 69%
+		// should match a 0-70% variable rate, even though the LTV bands don't overlap
+		const fixedRate7080: MortgageRate = {
+			id: "fixed-4yr-70-80",
+			name: "4 Year Fixed 70-80%",
+			lenderId: "avant",
+			type: "fixed",
+			rate: 3.4,
+			fixedTerm: 4,
+			minLtv: 70,
+			maxLtv: 80,
+			buyerTypes: ["ftb", "mover"],
+			perks: [],
+		};
+
+		const variableRate070: MortgageRate = {
+			id: "var-0-70",
+			name: "Follow-On Variable 0-70%",
+			lenderId: "avant",
+			type: "variable",
+			rate: 3.75,
+			minLtv: 0,
+			maxLtv: 70,
+			buyerTypes: ["ftb", "mover"],
+			newBusiness: false,
+			perks: [],
+		};
+
+		const variableRate7090: MortgageRate = {
+			id: "var-70-90",
+			name: "Follow-On Variable 70-90%",
+			lenderId: "avant",
+			type: "variable",
+			rate: 3.95,
+			minLtv: 70,
+			maxLtv: 90,
+			buyerTypes: ["ftb", "mover"],
+			newBusiness: false,
+			perks: [],
+		};
+
+		it("overlap check rejects adjacent bands (70-80 fixed vs 0-70 variable)", () => {
+			// Without exactLtv, uses overlap check - adjacent bands don't overlap
+			expect(isValidFollowOnRate(fixedRate7080, variableRate070)).toBe(false);
+		});
+
+		it("overlap check accepts overlapping bands (70-80 fixed vs 70-90 variable)", () => {
+			// Without exactLtv, uses overlap check - these bands overlap
+			expect(isValidFollowOnRate(fixedRate7080, variableRate7090)).toBe(true);
+		});
+
+		it("exact LTV matching accepts when LTV is within variable rate range", () => {
+			// With exactLtv=69, should match 0-70% variable even though bands don't overlap
+			expect(isValidFollowOnRate(fixedRate7080, variableRate070, 69)).toBe(
+				true,
+			);
+		});
+
+		it("exact LTV matching rejects when LTV is outside variable rate range", () => {
+			// With exactLtv=75, should not match 0-70% variable
+			expect(isValidFollowOnRate(fixedRate7080, variableRate070, 75)).toBe(
+				false,
+			);
+		});
+
+		it("exact LTV at boundary is accepted (LTV equals maxLtv)", () => {
+			// With exactLtv=70, should match 0-70% variable (inclusive boundary)
+			expect(isValidFollowOnRate(fixedRate7080, variableRate070, 70)).toBe(
+				true,
+			);
+		});
+
+		it("exact LTV at boundary is accepted (LTV equals minLtv)", () => {
+			// With exactLtv=70, should match 70-90% variable (inclusive boundary)
+			expect(isValidFollowOnRate(fixedRate7080, variableRate7090, 70)).toBe(
+				true,
+			);
+		});
+	});
 });
 
 describe("findVariableRate", () => {
@@ -202,6 +283,105 @@ describe("findVariableRate", () => {
 			"D1",
 		);
 		expect(resultD1).toBeUndefined();
+	});
+
+	describe("follow-on LTV determines variable rate match", () => {
+		// This tests the real-world scenario (Avant Money) where:
+		// - User takes a 70-80% LTV fixed rate
+		// - After years of payments, their LTV drops to 69%
+		// - They should now qualify for the 0-70% variable rate (lower rate)
+		// - Not be stuck with the 70-90% variable rate
+		const fixedRate7080: MortgageRate = {
+			id: "fixed-4yr-70-80",
+			name: "4 Year Fixed 70-80%",
+			lenderId: "avant",
+			type: "fixed",
+			rate: 3.4,
+			fixedTerm: 4,
+			minLtv: 70,
+			maxLtv: 80,
+			buyerTypes: ["ftb", "mover"],
+			perks: [],
+		};
+
+		const avantVariableRates: MortgageRate[] = [
+			{
+				id: "avant-follow-on-0-70",
+				name: "Follow-On Variable 0-70%",
+				lenderId: "avant",
+				type: "variable",
+				rate: 3.75,
+				minLtv: 0,
+				maxLtv: 70,
+				buyerTypes: ["ftb", "mover"],
+				newBusiness: false,
+				perks: [],
+			},
+			{
+				id: "avant-follow-on-70-90",
+				name: "Follow-On Variable 70-90%",
+				lenderId: "avant",
+				type: "variable",
+				rate: 3.95,
+				minLtv: 70,
+				maxLtv: 90,
+				buyerTypes: ["ftb", "mover"],
+				newBusiness: false,
+				perks: [],
+			},
+			{
+				id: "avant-flex-0-80",
+				name: "Flex Mortgage 0-80%",
+				lenderId: "avant",
+				type: "variable",
+				rate: 3.17,
+				minLtv: 0,
+				maxLtv: 80,
+				buyerTypes: ["ftb", "mover"],
+				// newBusiness: undefined - available to all
+				perks: [],
+			},
+		];
+
+		it("matches 0-70% variable when follow-on LTV is 69%", () => {
+			const result = findVariableRate(fixedRate7080, avantVariableRates, 69);
+			expect(result).toBeDefined();
+			expect(result?.id).toBe("avant-follow-on-0-70");
+			expect(result?.rate).toBe(3.75);
+		});
+
+		it("matches 70-90% variable when follow-on LTV is 75%", () => {
+			const result = findVariableRate(fixedRate7080, avantVariableRates, 75);
+			expect(result).toBeDefined();
+			expect(result?.id).toBe("avant-follow-on-70-90");
+			expect(result?.rate).toBe(3.95);
+		});
+
+		it("prefers follow-on rate (newBusiness: false) over flex rate at same LTV", () => {
+			// At 69% LTV, both follow-on-0-70 and flex-0-80 match
+			// Should prefer follow-on (newBusiness: false)
+			const result = findVariableRate(fixedRate7080, avantVariableRates, 69);
+			expect(result?.newBusiness).toBe(false);
+			expect(result?.id).toBe("avant-follow-on-0-70");
+		});
+
+		it("falls back to flex rate when no follow-on rate matches", () => {
+			// Remove follow-on rates, only flex remains
+			const flexOnly = avantVariableRates.filter((r) => r.id.includes("flex"));
+			const result = findVariableRate(fixedRate7080, flexOnly, 69);
+			expect(result).toBeDefined();
+			expect(result?.id).toBe("avant-flex-0-80");
+		});
+
+		it("without LTV uses overlap check (would match 70-90% only)", () => {
+			// Without LTV parameter, uses overlap check
+			// 70-80% fixed only overlaps with 70-90% variable (not 0-70%)
+			const result = findVariableRate(fixedRate7080, avantVariableRates);
+			expect(result).toBeDefined();
+			// Should match 70-90% because it overlaps with 70-80%
+			// (0-70% doesn't overlap with 70-80%)
+			expect(result?.id).toBe("avant-follow-on-70-90");
+		});
 	});
 });
 
