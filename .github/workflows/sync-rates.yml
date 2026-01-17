@@ -23,7 +23,7 @@ jobs:
         run: bun install
 
       - name: Sync all rates
-        run: bun run rates:scrape-all --write-updates
+        run: bun run rates:scrape:all --write-updates
 
       - name: Validate rates
         run: bun run rates:validate

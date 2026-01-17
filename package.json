@@ -21,7 +21,7 @@
 		"test:coverage": "vitest run src --coverage",
 		"check": "bun run lint && bun run typecheck && bun run test:run",
 		"rates:scrape": "bun run scripts/rate-scraper/scrape.ts",
-		"rates:scrape-all": "bun run scripts/rate-scraper/scrape.ts --all",
+		"rates:scrape:all": "bun run scripts/rate-scraper/scrape.ts --all",
 		"rates:scrape-historical": "bun run scripts/rate-scraper/scrape-historical.ts",
 		"rates:validate": "bun run scripts/rate-scraper/validate.ts",
 		"rates:validate-history": "bun run scripts/rate-scraper/validate-history.ts"

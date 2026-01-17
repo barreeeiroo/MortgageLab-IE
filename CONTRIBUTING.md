@@ -180,7 +180,7 @@ Mortgage rate data is scraped from lender websites and stored in `data/rates/`.
 | Command                         | Description                              |
 |---------------------------------|------------------------------------------|
 | `bun run rates:scrape <lender>` | Scrape a specific lender                 |
-| `bun run rates:scrape-all`      | Scrape all lenders                       |
+| `bun run rates:scrape:all`      | Scrape all lenders                       |
 | `bun run rates:validate`        | Validate rate data                       |
 | `bun run rates:validate-history`| Validate history matches current rates   |
 
@@ -258,7 +258,7 @@ changesets and verifies they match the current rates file.
 Rates are automatically updated daily via `.github/workflows/sync-rates.yml`:
 
 1. Runs at 8:00 UTC every day (and can be triggered manually)
-2. Executes `bun run rates:scrape-all --write-updates`
+2. Executes `bun run rates:scrape:all --write-updates`
 3. Validates rates and history
 4. If rates changed, commits to `main` and triggers a deploy
 

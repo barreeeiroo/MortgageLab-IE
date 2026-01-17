@@ -2,6 +2,16 @@
 
 Fetches mortgage rates from lender websites and saves to data/rates/.
 
+## Directory Structure
+
+- `scrape.ts` - Main scraper entry point (single lender or --all)
+- `scrape-historical.ts` - Fetch historical rates from Wayback Machine
+- `validate.ts` - Validate rate data integrity
+- `validate-history.ts` - Validate history matches current rates
+- `providers/` - Per-lender scraping implementations
+- `history/` - History tracking (changeset.ts, wayback.ts, build-history.ts)
+- `utils/` - Shared utilities (hash.ts, parsing.ts, types.ts)
+
 ## Adding a New Lender
 
 1. Create providers/<lender>.ts implementing `LenderProvider`:
@@ -13,7 +23,7 @@ Fetches mortgage rates from lender websites and saves to data/rates/.
      scrape: async () => MortgageRate[],
    };
    ```
-2. Register in index.ts providers array
+2. Register in scrape.ts providers array
 3. Test: `bun run rates:scrape <lender>` then `bun run rates:validate`
 
 ## Rate File Format
