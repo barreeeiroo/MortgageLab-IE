@@ -138,6 +138,9 @@ function parseFixedTermTable(
 
 		if (!term) return;
 
+		// Detect High Value Mortgage products (min €300k loan, no cashback)
+		const isHighValue = heading.toLowerCase().includes("high value");
+
 		$(section)
 			.find(".am-figures-table__section-row")
 			.each((_, row) => {
@@ -155,9 +158,12 @@ function parseFixedTermTable(
 					const rate = parsePercentageOrThrow(rateText);
 					const apr = parsePercentageOrThrow(aprText);
 
+					const idSuffix = isHighValue ? "highvalue" : "fixed";
+					const nameSuffix = isHighValue ? " High Value" : "";
+
 					rates.push({
-						id: `avant-fixed-${term}yr-${maxLtv}`,
-						name: `${term} Year Fixed - LTV ≤${maxLtv}%`,
+						id: `avant-${idSuffix}-${term}yr-${maxLtv}`,
+						name: `${term} Year Fixed${nameSuffix} - LTV ≤${maxLtv}%`,
 						lenderId: LENDER_ID,
 						type: "fixed",
 						rate,
@@ -167,7 +173,10 @@ function parseFixedTermTable(
 						maxLtv,
 						buyerTypes: BUYER_TYPES,
 						newBusiness: true,
-						perks: ["cashback-1pct"],
+						// High Value mortgages don't have cashback
+						perks: isHighValue ? [] : ["cashback-1pct"],
+						// High Value mortgages require €300k minimum loan
+						...(isHighValue && { minLoan: 300000 }),
 					});
 				} catch {
 					// Skip unparseable rows

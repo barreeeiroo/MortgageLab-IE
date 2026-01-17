@@ -1,8 +1,8 @@
 {
 	"lenderId": "avant",
-	"lastScrapedAt": "2026-01-17T08:06:25.298Z",
-	"lastUpdatedAt": "2026-01-17T08:06:25.298Z",
-	"ratesHash": "60f1b6e2d0ff7dcfc7eee6d8e19216b8bcdba7ff5944df50be253cd051ff809f",
+	"lastScrapedAt": "2026-01-17T16:13:58.423Z",
+	"lastUpdatedAt": "2026-01-17T16:13:58.423Z",
+	"ratesHash": "c66f178fc46f8745c261b07b9993c0b862394e1680fef859b13335e2ab9e4313",
 	"rates": [
 		{
 			"id": "avant-flex-80",
@@ -197,8 +197,8 @@
 			]
 		},
 		{
-			"id": "avant-fixed-4yr-60",
-			"name": "4 Year Fixed - LTV ≤60%",
+			"id": "avant-highvalue-4yr-60",
+			"name": "4 Year Fixed High Value - LTV ≤60%",
 			"lenderId": "avant",
 			"type": "fixed",
 			"rate": 3.2,
@@ -206,19 +206,18 @@
 			"fixedTerm": 4,
 			"minLtv": 0,
 			"maxLtv": 60,
+			"minLoan": 300000,
 			"buyerTypes": [
 				"ftb",
 				"mover",
 				"switcher-pdh"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-1pct"
-			]
+			"perks": []
 		},
 		{
-			"id": "avant-fixed-4yr-70",
-			"name": "4 Year Fixed - LTV ≤70%",
+			"id": "avant-highvalue-4yr-70",
+			"name": "4 Year Fixed High Value - LTV ≤70%",
 			"lenderId": "avant",
 			"type": "fixed",
 			"rate": 3.3,
@@ -226,19 +225,18 @@
 			"fixedTerm": 4,
 			"minLtv": 60,
 			"maxLtv": 70,
+			"minLoan": 300000,
 			"buyerTypes": [
 				"ftb",
 				"mover",
 				"switcher-pdh"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-1pct"
-			]
+			"perks": []
 		},
 		{
-			"id": "avant-fixed-4yr-80",
-			"name": "4 Year Fixed - LTV ≤80%",
+			"id": "avant-highvalue-4yr-80",
+			"name": "4 Year Fixed High Value - LTV ≤80%",
 			"lenderId": "avant",
 			"type": "fixed",
 			"rate": 3.3,
@@ -246,19 +244,18 @@
 			"fixedTerm": 4,
 			"minLtv": 70,
 			"maxLtv": 80,
+			"minLoan": 300000,
 			"buyerTypes": [
 				"ftb",
 				"mover",
 				"switcher-pdh"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-1pct"
-			]
+			"perks": []
 		},
 		{
-			"id": "avant-fixed-4yr-90",
-			"name": "4 Year Fixed - LTV ≤90%",
+			"id": "avant-highvalue-4yr-90",
+			"name": "4 Year Fixed High Value - LTV ≤90%",
 			"lenderId": "avant",
 			"type": "fixed",
 			"rate": 3.6,
@@ -266,15 +263,14 @@
 			"fixedTerm": 4,
 			"minLtv": 80,
 			"maxLtv": 90,
+			"minLoan": 300000,
 			"buyerTypes": [
 				"ftb",
 				"mover",
 				"switcher-pdh"
 			],
 			"newBusiness": true,
-			"perks": [
-				"cashback-1pct"
-			]
+			"perks": []
 		},
 		{
 			"id": "avant-fixed-5yr-60",
