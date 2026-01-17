@@ -76,7 +76,7 @@ describe("ShareButton", () => {
 		});
 
 		// Resolve the promise
-		resolveShare!("https://example.com/share");
+		resolveShare?.("https://example.com/share");
 		await clickPromise;
 
 		// Dialog should open and button should no longer be disabled
