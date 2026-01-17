@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
-		"postbuild": "cp -r data dist/data",
+		"postbuild": "bun run scripts/copy-data.ts",
 		"preview": "astro preview",
 		"astro": "astro",
 		"typecheck": "astro check",
