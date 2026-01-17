@@ -26,6 +26,7 @@ export const LenderSchema = z.object({
 	overpaymentPolicy: z.string().optional(), // Reference to overpayment policy id, if not set breakage fee applies
 	allowsSelfBuild: z.boolean().optional(), // Whether lender offers self-build mortgages, defaults to false
 	selfBuildTemplateId: z.string().optional(), // Reference to self-build template id for this lender
+	discontinued: z.boolean().optional(), // Lender no longer offers mortgages but has historical data
 });
 export type Lender = z.infer<typeof LenderSchema>;
 

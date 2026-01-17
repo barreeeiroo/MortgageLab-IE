@@ -22,6 +22,18 @@ Fetches mortgage rates from lender websites and saves to data/rates/.
 - `lastUpdatedAt`: When rates actually changed (based on hash)
 - `ratesHash`: SHA256 of rates array - detects real changes vs formatting
 
+## History File Format
+
+Stored in `data/rates/history/<lender>.json`. Diff-based, not full snapshots.
+
+- `baseline`: Initial full rate array + timestamp + hash
+- `changesets`: Array of `{ timestamp, afterHash, operations }` where operations are:
+  - `{ op: "add", rate }` - New rate added
+  - `{ op: "remove", id }` - Rate removed
+  - `{ op: "update", id, changes }` - Only changed fields
+
+Validate with `bun run rates:validate-history`.
+
 ## Gotchas
 
 - **BER eligibility**: Some rates only for A1-B3 (green rates)

@@ -1,0 +1,203 @@
+{
+	"lenderId": "haven",
+	"baseline": {
+		"timestamp": "2026-01-11T16:22:18.975Z",
+		"ratesHash": "083f02e5393bc647691630698ff601a0af787a9742f3bfdc7b203a63e4ce972e",
+		"rates": [
+			{
+				"id": "haven-variable-50",
+				"name": "Variable Rate - LTV ≤50%",
+				"lenderId": "haven",
+				"type": "variable",
+				"rate": 3.75,
+				"apr": 3.9,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "haven-variable-80",
+				"name": "Variable Rate - LTV ≤80%",
+				"lenderId": "haven",
+				"type": "variable",
+				"rate": 3.95,
+				"apr": 4.1,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "haven-variable-90",
+				"name": "Variable Rate - LTV >80%",
+				"lenderId": "haven",
+				"type": "variable",
+				"rate": 4.15,
+				"apr": 4.3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-1yr",
+				"name": "1 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 3.55,
+				"apr": 4.2,
+				"fixedTerm": 1,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-2yr",
+				"name": "2 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 4.2,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-3yr",
+				"name": "3 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 3.75,
+				"apr": 4.2,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-green-fixed-4yr",
+				"name": "Haven Green 4 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 3.2,
+				"apr": 3.9,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-5yr",
+				"name": "5 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 3.9,
+				"apr": 4.2,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-7yr",
+				"name": "7 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 4.1,
+				"apr": 4.3,
+				"fixedTerm": 7,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-10yr",
+				"name": "10 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 4.25,
+				"apr": 4.4,
+				"fixedTerm": 10,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-variable",
+				"name": "Variable Rate",
+				"lenderId": "haven",
+				"type": "variable",
+				"rate": 4.15,
+				"apr": 4.3,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			}
+		]
+	},
+	"changesets": []
+}

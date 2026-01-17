@@ -28,6 +28,9 @@ jobs:
       - name: Validate rates
         run: bun run rates:validate
 
+      - name: Validate history
+        run: bun run rates:validate-history
+
       - name: Commit changes
         id: commit
         run: |

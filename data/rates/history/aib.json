@@ -1,0 +1,1419 @@
+{
+	"lenderId": "aib",
+	"baseline": {
+		"timestamp": "2026-01-07T13:13:38.530Z",
+		"ratesHash": "cce9f5e22d7301d25fe6bda9861ce703268241628bd38396da2fdb76901d9664",
+		"rates": [
+			{
+				"id": "aib-variable-50",
+				"name": "Variable Rate - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "variable",
+				"rate": 3.75,
+				"apr": 3.83,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-variable-50-switcher",
+				"name": "Variable Rate - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "variable",
+				"rate": 3.75,
+				"apr": 3.83,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-variable-80",
+				"name": "Variable Rate - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "variable",
+				"rate": 3.95,
+				"apr": 4.03,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-variable-80-switcher",
+				"name": "Variable Rate - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "variable",
+				"rate": 3.95,
+				"apr": 4.03,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-variable",
+				"name": "Variable Rate",
+				"lenderId": "aib",
+				"type": "variable",
+				"rate": 4.15,
+				"apr": 4.24,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-variable-switcher",
+				"name": "Variable Rate",
+				"lenderId": "aib",
+				"type": "variable",
+				"rate": 4.15,
+				"apr": 4.24,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-1yr-50",
+				"name": "1 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.3,
+				"apr": 3.79,
+				"fixedTerm": 1,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-1yr-50-switcher",
+				"name": "1 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.3,
+				"apr": 3.79,
+				"fixedTerm": 1,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-1yr-80",
+				"name": "1 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.4,
+				"apr": 3.99,
+				"fixedTerm": 1,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-1yr-80-switcher",
+				"name": "1 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.4,
+				"apr": 3.99,
+				"fixedTerm": 1,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-1yr",
+				"name": "1 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 4.19,
+				"fixedTerm": 1,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-1yr-switcher",
+				"name": "1 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 4.19,
+				"fixedTerm": 1,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-2yr-50",
+				"name": "2 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.35,
+				"apr": 3.77,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-2yr-50-switcher",
+				"name": "2 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.35,
+				"apr": 3.77,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-2yr-80",
+				"name": "2 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.45,
+				"apr": 3.96,
+				"fixedTerm": 2,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-2yr-80-switcher",
+				"name": "2 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.45,
+				"apr": 3.96,
+				"fixedTerm": 2,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-2yr",
+				"name": "2 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.55,
+				"apr": 4.15,
+				"fixedTerm": 2,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-2yr-switcher",
+				"name": "2 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.55,
+				"apr": 4.15,
+				"fixedTerm": 2,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-3yr-50",
+				"name": "3 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 3.77,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-3yr-50-switcher",
+				"name": "3 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 3.77,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-3yr-80",
+				"name": "3 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 3.96,
+				"fixedTerm": 3,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-3yr-80-switcher",
+				"name": "3 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 3.96,
+				"fixedTerm": 3,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-3yr",
+				"name": "3 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.7,
+				"apr": 4.14,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-3yr-switcher",
+				"name": "3 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.7,
+				"apr": 4.14,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-4yr-50",
+				"name": "4 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.55,
+				"apr": 3.77,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-4yr-50-switcher",
+				"name": "4 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.55,
+				"apr": 3.77,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-4yr-80",
+				"name": "4 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.65,
+				"apr": 3.95,
+				"fixedTerm": 4,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-4yr-80-switcher",
+				"name": "4 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.65,
+				"apr": 3.95,
+				"fixedTerm": 4,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-4yr",
+				"name": "4 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.75,
+				"apr": 4.13,
+				"fixedTerm": 4,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-4yr-switcher",
+				"name": "4 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.75,
+				"apr": 4.13,
+				"fixedTerm": 4,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-5yr-50",
+				"name": "5 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.65,
+				"apr": 3.79,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-5yr-50-switcher",
+				"name": "5 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.65,
+				"apr": 3.79,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-5yr-80",
+				"name": "5 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.75,
+				"apr": 3.97,
+				"fixedTerm": 5,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-5yr-80-switcher",
+				"name": "5 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.75,
+				"apr": 3.97,
+				"fixedTerm": 5,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-5yr",
+				"name": "5 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.85,
+				"apr": 4.14,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-5yr-switcher",
+				"name": "5 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.85,
+				"apr": 4.14,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-7yr-50",
+				"name": "7 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.85,
+				"apr": 3.87,
+				"fixedTerm": 7,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-7yr-50-switcher",
+				"name": "7 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.85,
+				"apr": 3.87,
+				"fixedTerm": 7,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-7yr-80",
+				"name": "7 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.95,
+				"apr": 4.03,
+				"fixedTerm": 7,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-7yr-80-switcher",
+				"name": "7 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.95,
+				"apr": 4.03,
+				"fixedTerm": 7,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-7yr",
+				"name": "7 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 4.05,
+				"apr": 4.19,
+				"fixedTerm": 7,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-7yr-switcher",
+				"name": "7 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 4.05,
+				"apr": 4.19,
+				"fixedTerm": 7,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-10yr-50",
+				"name": "10 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 4,
+				"apr": 3.97,
+				"fixedTerm": 10,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-10yr-50-switcher",
+				"name": "10 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 4,
+				"apr": 3.97,
+				"fixedTerm": 10,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-10yr-80",
+				"name": "10 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 4.1,
+				"apr": 4.12,
+				"fixedTerm": 10,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-10yr-80-switcher",
+				"name": "10 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 4.1,
+				"apr": 4.12,
+				"fixedTerm": 10,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-fixed-10yr",
+				"name": "10 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 4.2,
+				"apr": 4.27,
+				"fixedTerm": 10,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-fixed-10yr-switcher",
+				"name": "10 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 4.2,
+				"apr": 4.27,
+				"fixedTerm": 10,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-fixed-2yr-50",
+				"name": "Green 2 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.15,
+				"apr": 3.74,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-fixed-2yr-50-switcher",
+				"name": "Green 2 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.15,
+				"apr": 3.74,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-fixed-2yr-80",
+				"name": "Green 2 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.25,
+				"apr": 3.93,
+				"fixedTerm": 2,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-fixed-2yr-80-switcher",
+				"name": "Green 2 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.25,
+				"apr": 3.93,
+				"fixedTerm": 2,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-fixed-2yr",
+				"name": "Green 2 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.35,
+				"apr": 4.12,
+				"fixedTerm": 2,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-fixed-2yr-switcher",
+				"name": "Green 2 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.35,
+				"apr": 4.12,
+				"fixedTerm": 2,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-a-fixed-3yr-50",
+				"name": "Green A 3 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.67,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-a-fixed-3yr-50-switcher",
+				"name": "Green A 3 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.67,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-a-fixed-3yr-80",
+				"name": "Green A 3 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.1,
+				"apr": 3.86,
+				"fixedTerm": 3,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-a-fixed-3yr-80-switcher",
+				"name": "Green A 3 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.1,
+				"apr": 3.86,
+				"fixedTerm": 3,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-a-fixed-3yr",
+				"name": "Green A 3 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.2,
+				"apr": 4.04,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-a-fixed-3yr-switcher",
+				"name": "Green A 3 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.2,
+				"apr": 4.04,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-fixed-5yr-50",
+				"name": "Green 5 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.2,
+				"apr": 3.65,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-fixed-5yr-50-switcher",
+				"name": "Green 5 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.2,
+				"apr": 3.65,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-fixed-5yr-80",
+				"name": "Green 5 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.3,
+				"apr": 3.82,
+				"fixedTerm": 5,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-fixed-5yr-80-switcher",
+				"name": "Green 5 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.3,
+				"apr": 3.82,
+				"fixedTerm": 5,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-green-fixed-5yr",
+				"name": "Green 5 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.4,
+				"apr": 3.99,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-green-fixed-5yr-switcher",
+				"name": "Green 5 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.4,
+				"apr": 3.99,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-hv-fixed-4yr-50",
+				"name": "Higher Value 4 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.4,
+				"apr": 3.73,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-hv-fixed-4yr-50-switcher",
+				"name": "Higher Value 4 Year Fixed - LTV ≤50%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.4,
+				"apr": 3.73,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-hv-fixed-4yr-80",
+				"name": "Higher Value 4 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 3.91,
+				"fixedTerm": 4,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-hv-fixed-4yr-80-switcher",
+				"name": "Higher Value 4 Year Fixed - LTV ≤80%",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 3.91,
+				"fixedTerm": 4,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-hv-fixed-4yr",
+				"name": "Higher Value 4 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 4.09,
+				"fixedTerm": 4,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-hv-fixed-4yr-switcher",
+				"name": "Higher Value 4 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 4.09,
+				"fixedTerm": 4,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [
+					"switcher-3k"
+				]
+			},
+			{
+				"id": "aib-btl-variable",
+				"name": "Buy-to-Let Variable Rate",
+				"lenderId": "aib",
+				"type": "variable",
+				"rate": 5.2,
+				"apr": 5.34,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-btl-fixed-1yr",
+				"name": "Buy-to-Let 1 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 7.3,
+				"apr": 5.55,
+				"fixedTerm": 1,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-btl-fixed-2yr",
+				"name": "Buy-to-Let 2 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 7.5,
+				"apr": 5.8,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-btl-fixed-3yr",
+				"name": "Buy-to-Let 3 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 7.7,
+				"apr": 6.07,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-btl-fixed-4yr",
+				"name": "Buy-to-Let 4 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 7.9,
+				"apr": 6.37,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "aib-btl-fixed-5yr",
+				"name": "Buy-to-Let 5 Year Fixed",
+				"lenderId": "aib",
+				"type": "fixed",
+				"rate": 8.1,
+				"apr": 6.69,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			}
+		]
+	},
+	"changesets": []
+}

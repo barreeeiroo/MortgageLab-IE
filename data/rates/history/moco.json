@@ -1,0 +1,196 @@
+{
+	"lenderId": "moco",
+	"baseline": {
+		"timestamp": "2026-01-11T16:22:19.449Z",
+		"ratesHash": "6f676daf2163cb94e94b5f8b8bf25fef73726e9075163767521137ea64a66de6",
+		"rates": [
+			{
+				"id": "moco-fixed-3yr-50",
+				"name": "3 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.45,
+				"apr": 3.88,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-3yr-60",
+				"name": "3 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.45,
+				"apr": 3.88,
+				"fixedTerm": 3,
+				"minLtv": 50,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-3yr-70",
+				"name": "3 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 3.89,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-3yr-80",
+				"name": "3 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 3.93,
+				"fixedTerm": 3,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-3yr-90",
+				"name": "3 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.8,
+				"apr": 3.99,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-5yr-50",
+				"name": "5 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.45,
+				"apr": 3.79,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-5yr-60",
+				"name": "5 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.45,
+				"apr": 3.79,
+				"fixedTerm": 5,
+				"minLtv": 50,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-5yr-70",
+				"name": "5 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 3.82,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-5yr-80",
+				"name": "5 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 3.86,
+				"fixedTerm": 5,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-fixed-5yr-90",
+				"name": "5 Year Fixed",
+				"lenderId": "moco",
+				"type": "fixed",
+				"rate": 3.8,
+				"apr": 3.96,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "moco-variable-svr",
+				"name": "Standard Variable Rate",
+				"lenderId": "moco",
+				"type": "variable",
+				"rate": 3.96,
+				"apr": 4.04,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": [],
+				"warning": "This rate is not publicly disclosed. It has been inferred from APRC values."
+			}
+		]
+	},
+	"changesets": []
+}

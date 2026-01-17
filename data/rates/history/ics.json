@@ -1,0 +1,515 @@
+{
+	"lenderId": "ics",
+	"baseline": {
+		"timestamp": "2026-01-09T08:07:35.211Z",
+		"ratesHash": "764f2aaffbc9c6c9de921ca467d6d4af3a95b7e91a55dd8cb60d1adaa87cdce3",
+		"rates": [
+			{
+				"id": "ics-variable-60",
+				"name": "Variable Rate - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 4.1,
+				"apr": 4.25,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-fixed-3yr-60",
+				"name": "3 Year Fixed - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.3,
+				"apr": 4.31,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-fixed-5yr-60",
+				"name": "5 Year Fixed - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.4,
+				"apr": 4.4,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-variable-70",
+				"name": "Variable Rate - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 4.1,
+				"apr": 4.25,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-fixed-3yr-70",
+				"name": "3 Year Fixed - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.3,
+				"apr": 4.31,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-fixed-5yr-70",
+				"name": "5 Year Fixed - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.45,
+				"apr": 4.42,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-variable-80",
+				"name": "Variable Rate - LTV ≤80%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 4.1,
+				"apr": 4.25,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-fixed-3yr-80",
+				"name": "3 Year Fixed - LTV ≤80%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.35,
+				"apr": 4.33,
+				"fixedTerm": 3,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-fixed-5yr-80",
+				"name": "5 Year Fixed - LTV ≤80%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.55,
+				"apr": 4.47,
+				"fixedTerm": 5,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-variable-90",
+				"name": "Variable Rate - LTV ≤90%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 4.1,
+				"apr": 4.25,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-fixed-3yr-90",
+				"name": "3 Year Fixed - LTV ≤90%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.35,
+				"apr": 4.33,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-fixed-5yr-90",
+				"name": "5 Year Fixed - LTV ≤90%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.55,
+				"apr": 4.47,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-variable-60",
+				"name": "Existing Customer Variable Rate - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 4.1,
+				"apr": 4.25,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-fixed-3yr-60",
+				"name": "Existing Customer 3 Year Fixed - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.35,
+				"apr": 4.26,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-fixed-5yr-60",
+				"name": "Existing Customer 5 Year Fixed - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.55,
+				"apr": 4.41,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-variable-70",
+				"name": "Existing Customer Variable Rate - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 4.1,
+				"apr": 4.25,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-fixed-3yr-70",
+				"name": "Existing Customer 3 Year Fixed - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.35,
+				"apr": 4.26,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-fixed-5yr-70",
+				"name": "Existing Customer 5 Year Fixed - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.55,
+				"apr": 4.41,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-variable-80",
+				"name": "Existing Customer Variable Rate - LTV ≤80%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 4.1,
+				"apr": 4.25,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-fixed-3yr-80",
+				"name": "Existing Customer 3 Year Fixed - LTV ≤80%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.35,
+				"apr": 4.26,
+				"fixedTerm": 3,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-fixed-5yr-80",
+				"name": "Existing Customer 5 Year Fixed - LTV ≤80%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.55,
+				"apr": 4.41,
+				"fixedTerm": 5,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-variable-90",
+				"name": "Existing Customer Variable Rate - LTV ≤90%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 4.1,
+				"apr": 4.25,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-fixed-3yr-90",
+				"name": "Existing Customer 3 Year Fixed - LTV ≤90%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.35,
+				"apr": 4.26,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-existing-fixed-5yr-90",
+				"name": "Existing Customer 5 Year Fixed - LTV ≤90%",
+				"lenderId": "ics",
+				"type": "fixed",
+				"rate": 4.55,
+				"apr": 4.41,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			},
+			{
+				"id": "ics-btl-individual-io-60",
+				"name": "Buy-to-Let Individual Interest Only - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 5.3,
+				"apr": 5.61,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "ics-btl-individual-io-70",
+				"name": "Buy-to-Let Individual Interest Only - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 5.45,
+				"apr": 5.77,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "ics-btl-individual-ci-60",
+				"name": "Buy-to-Let Individual Capital & Interest - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 5.3,
+				"apr": 5.61,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "ics-btl-individual-ci-70",
+				"name": "Buy-to-Let Individual Capital & Interest - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 5.45,
+				"apr": 5.77,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "ics-btl-individual-flexi-60",
+				"name": "Buy-to-Let Individual Flexi-Mortgage - LTV ≤60%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 5.3,
+				"apr": 5.6,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "ics-btl-individual-flexi-70",
+				"name": "Buy-to-Let Individual Flexi-Mortgage - LTV ≤70%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 5.45,
+				"apr": 5.76,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			},
+			{
+				"id": "ics-btl-individual-ci-50",
+				"name": "Buy-to-Let Individual Capital & Interest - LTV ≤50%",
+				"lenderId": "ics",
+				"type": "variable",
+				"rate": 5.45,
+				"apr": 5.91,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": []
+			}
+		]
+	},
+	"changesets": []
+}
