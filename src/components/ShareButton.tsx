@@ -1,4 +1,4 @@
-import { Check, Clipboard, Share2 } from "lucide-react";
+import { Check, Clipboard, Loader2, Share2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { generateQRCodeWithLogo } from "@/lib/share/qrcode";
 import { Button, type ButtonProps } from "./ui/button";
@@ -38,12 +38,14 @@ export function ShareButton({
 	disabled = false,
 }: ShareButtonProps) {
 	const [copied, setCopied] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 	const [shareUrl, setShareUrl] = useState<string | null>(null);
 	const [dialogCopied, setDialogCopied] = useState(false);
 
 	const handleShare = useCallback(async () => {
+		setLoading(true);
 		try {
 			const url = await onShare();
 			setShareUrl(url);
@@ -61,6 +63,8 @@ export function ShareButton({
 			}
 		} catch {
 			// Share failed
+		} finally {
+			setLoading(false);
 		}
 	}, [onShare]);
 
@@ -82,9 +86,18 @@ export function ShareButton({
 				size={size}
 				className={`gap-1.5 ${className ?? ""}`}
 				onClick={handleShare}
-				disabled={disabled}
+				disabled={disabled || loading}
 			>
-				{copied ? (
+				{loading ? (
+					<>
+						<Loader2 className="h-4 w-4 animate-spin" />
+						{responsive ? (
+							<span className="hidden sm:inline">{label}</span>
+						) : (
+							label
+						)}
+					</>
+				) : copied ? (
 					<>
 						<Check className="h-4 w-4" />
 						{responsive ? (

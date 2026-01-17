@@ -54,6 +54,37 @@ describe("ShareButton", () => {
 		expect(onShare).toHaveBeenCalled();
 	});
 
+	it("shows loading state while generating share URL", async () => {
+		const user = userEvent.setup();
+		let resolveShare: (value: string) => void;
+		const onShare = vi.fn().mockImplementation(
+			() =>
+				new Promise<string>((resolve) => {
+					resolveShare = resolve;
+				}),
+		);
+
+		render(<ShareButton onShare={onShare} />);
+
+		// Click the button but don't resolve yet
+		const clickPromise = user.click(screen.getByRole("button"));
+
+		// Should show loading spinner (button is disabled while loading)
+		await waitFor(() => {
+			const button = screen.getByRole("button");
+			expect(button).toBeDisabled();
+		});
+
+		// Resolve the promise
+		resolveShare!("https://example.com/share");
+		await clickPromise;
+
+		// Dialog should open and button should no longer be disabled
+		await waitFor(() => {
+			expect(screen.getByRole("dialog")).toBeInTheDocument();
+		});
+	});
+
 	describe("QR code fallback", () => {
 		it("shows 'Copied!' feedback when QR generation fails", async () => {
 			const user = userEvent.setup();
