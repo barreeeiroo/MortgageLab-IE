@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
 import { TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
+import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { LenderSelector } from "@/components/lenders/LenderSelector";
 import { Label } from "@/components/ui/label";
 import {
@@ -10,6 +11,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import type { Lender } from "@/lib/schemas/lender";
 import type {
 	RatesHistoryFile,
@@ -20,6 +29,7 @@ import {
 	$trendsFilter,
 	setTrendsFilter,
 } from "@/lib/stores/rates/rates-history-ui";
+import { formatShortMonthYearFromString } from "@/lib/utils/date";
 import { RateTrendChart } from "./RateTrendChart";
 
 interface TrendChartsProps {
@@ -50,6 +60,17 @@ const LTV_RANGES = [
 	{ value: "90", label: "Up to 90% LTV" },
 ];
 
+// Buyer categories (Primary Residence and BTL are mutually exclusive mortgage types)
+const BUYER_CATEGORIES = [
+	{ value: "pdh", label: "Primary Residence" },
+	{ value: "btl", label: "Buy to Let" },
+	{ value: "all", label: "All Buyers" },
+] as const;
+
+// Buyer types that belong to each category
+const PDH_BUYER_TYPES = ["ftb", "mover", "switcher-pdh"] as const;
+const BTL_BUYER_TYPES = ["btl", "switcher-btl"] as const;
+
 /**
  * Extract rate type from rate name/type
  */
@@ -62,7 +83,7 @@ function getRateTypeKey(rate: { type: string; fixedTerm?: number }): string {
 export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 	const filter = useStore($trendsFilter);
 	const [selectedLenders, setSelectedLenders] = useState<string[]>(
-		lenders.slice(0, 3).map((l) => l.id),
+		lenders.slice(0, 1).map((l) => l.id),
 	);
 
 	// Get available rates that have history
@@ -74,6 +95,7 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 			type: string;
 			fixedTerm?: number;
 			maxLtv: number;
+			buyerTypes: string[];
 		}> = [];
 
 		for (const [lenderId, history] of historyData) {
@@ -86,6 +108,7 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 					type: rate.type,
 					fixedTerm: rate.fixedTerm,
 					maxLtv: rate.maxLtv,
+					buyerTypes: rate.buyerTypes,
 				});
 			}
 
@@ -100,6 +123,7 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 							type: op.rate.type,
 							fixedTerm: op.rate.fixedTerm,
 							maxLtv: op.rate.maxLtv,
+							buyerTypes: op.rate.buyerTypes,
 						});
 					}
 				}
@@ -134,6 +158,16 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 				if (rate.maxLtv > maxLtv) return false;
 			}
 
+			// Filter by buyer category (PDH and BTL are mutually exclusive)
+			if (filter.buyerCategory !== "all") {
+				const allowedTypes =
+					filter.buyerCategory === "pdh" ? PDH_BUYER_TYPES : BTL_BUYER_TYPES;
+				const hasAllowedType = rate.buyerTypes.some((bt) =>
+					(allowedTypes as readonly string[]).includes(bt),
+				);
+				if (!hasAllowedType) return false;
+			}
+
 			return true;
 		});
 	}, [availableRates, selectedLenders, filter]);
@@ -152,9 +186,105 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 			}
 		}
 
-		// Limit to 10 rates for readability
-		return series.slice(0, 10);
+		return series;
 	}, [filteredRates, historyData]);
+
+	// Calculate average time series across all rates
+	const averageSeries = useMemo((): RateTimeSeries | null => {
+		if (timeSeries.length < 2) return null;
+
+		// Collect all unique timestamps
+		const timestampSet = new Set<string>();
+		for (const series of timeSeries) {
+			for (const point of series.dataPoints) {
+				timestampSet.add(point.timestamp);
+			}
+		}
+
+		// Add today's date to show average extending to present
+		timestampSet.add(new Date().toISOString());
+
+		// Sort timestamps chronologically
+		const timestamps = Array.from(timestampSet).sort(
+			(a, b) => new Date(a).getTime() - new Date(b).getTime(),
+		);
+
+		// For each timestamp, calculate the average of all rates that have data at or before that time
+		const dataPoints: Array<{ timestamp: string; rate: number }> = [];
+
+		for (const ts of timestamps) {
+			const tsTime = new Date(ts).getTime();
+			const ratesAtTime: number[] = [];
+
+			for (const series of timeSeries) {
+				// Find the most recent rate at or before this timestamp
+				let lastRate: number | null = null;
+				for (const point of series.dataPoints) {
+					if (new Date(point.timestamp).getTime() <= tsTime) {
+						lastRate = point.rate;
+					} else {
+						break;
+					}
+				}
+				if (lastRate !== null) {
+					ratesAtTime.push(lastRate);
+				}
+			}
+
+			if (ratesAtTime.length > 0) {
+				const avg =
+					ratesAtTime.reduce((sum, r) => sum + r, 0) / ratesAtTime.length;
+				dataPoints.push({ timestamp: ts, rate: avg });
+			}
+		}
+
+		return {
+			rateId: "average",
+			rateName: "Average",
+			lenderId: "",
+			dataPoints,
+		};
+	}, [timeSeries]);
+
+	// Calculate min/max/current stats for each rate
+	const rateStats = useMemo(() => {
+		return timeSeries.map((series) => {
+			const lender = lenders.find((l) => l.id === series.lenderId);
+			const points = series.dataPoints;
+
+			if (points.length === 0) {
+				return {
+					rateId: series.rateId,
+					rateName: series.rateName,
+					lenderId: series.lenderId,
+					lenderName: lender?.name ?? series.lenderId,
+					min: null,
+					max: null,
+					current: null,
+				};
+			}
+
+			let minPoint = points[0];
+			let maxPoint = points[0];
+
+			for (const point of points) {
+				if (point.rate < minPoint.rate) minPoint = point;
+				if (point.rate > maxPoint.rate) maxPoint = point;
+			}
+
+			const currentPoint = points[points.length - 1];
+
+			return {
+				rateId: series.rateId,
+				rateName: series.rateName,
+				lenderId: series.lenderId,
+				lenderName: lender?.name ?? series.lenderId,
+				min: { rate: minPoint.rate, date: minPoint.timestamp },
+				max: { rate: maxPoint.rate, date: maxPoint.timestamp },
+				current: { rate: currentPoint.rate, date: currentPoint.timestamp },
+			};
+		});
+	}, [timeSeries, lenders]);
 
 	// Parse LTV filter value
 	const ltvValue = filter.ltvRange ? String(filter.ltvRange[1]) : "all";
@@ -209,6 +339,30 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 					</Select>
 				</div>
 
+				{/* Buyer Category Filter */}
+				<div className="space-y-1.5">
+					<Label className="text-xs">Buyer Type</Label>
+					<Select
+						value={filter.buyerCategory}
+						onValueChange={(v) =>
+							setTrendsFilter({
+								buyerCategory: v as "all" | "pdh" | "btl",
+							})
+						}
+					>
+						<SelectTrigger className="w-[180px] h-8">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{BUYER_CATEGORIES.map((cat) => (
+								<SelectItem key={cat.value} value={cat.value}>
+									{cat.label}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+
 				{/* Lender Selection */}
 				<div className="space-y-1.5">
 					<Label className="text-xs">Lenders</Label>
@@ -218,7 +372,7 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 						onChange={setSelectedLenders}
 						multiple
 						placeholder="Select lenders"
-						className="w-[180px]"
+						className="w-[260px]"
 					/>
 				</div>
 			</div>
@@ -241,30 +395,86 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 
 					<RateTrendChart
 						data={timeSeries}
+						averageSeries={averageSeries}
 						showLegend={true}
 						height={350}
 						animate={false}
 					/>
 
-					{/* Rate List */}
-					<div className="space-y-1">
-						<Label className="text-xs text-muted-foreground">
-							Rates shown in chart:
-						</Label>
-						<div className="flex flex-wrap gap-1">
-							{timeSeries.map((series) => {
-								const lender = lenders.find((l) => l.id === series.lenderId);
-								return (
-									<span
-										key={series.rateId}
-										className="text-xs px-2 py-0.5 rounded bg-muted"
-									>
-										{lender?.name}: {series.rateName}
-									</span>
-								);
-							})}
+					{/* Rate Stats Table */}
+					{rateStats.length > 0 && (
+						<div className="rounded-lg border overflow-hidden">
+							<Table>
+								<TableHeader>
+									<TableRow className="bg-muted/50">
+										<TableHead className="font-medium">Lender</TableHead>
+										<TableHead className="font-medium">Rate</TableHead>
+										<TableHead className="text-right font-medium">
+											Min
+										</TableHead>
+										<TableHead className="text-right font-medium">
+											Max
+										</TableHead>
+										<TableHead className="text-right font-medium">
+											Current
+										</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{rateStats.map((stat) => (
+										<TableRow key={stat.rateId}>
+											<TableCell>
+												<div className="flex items-center gap-2">
+													<LenderLogo lenderId={stat.lenderId} size={20} />
+													<span className="font-medium">{stat.lenderName}</span>
+												</div>
+											</TableCell>
+											<TableCell className="text-muted-foreground">
+												{stat.rateName}
+											</TableCell>
+											<TableCell className="text-right">
+												{stat.min ? (
+													<div>
+														<div className="font-mono">
+															{stat.min.rate.toFixed(2)}%
+														</div>
+														<div className="text-xs text-muted-foreground">
+															{formatShortMonthYearFromString(stat.min.date)}
+														</div>
+													</div>
+												) : (
+													"—"
+												)}
+											</TableCell>
+											<TableCell className="text-right">
+												{stat.max ? (
+													<div>
+														<div className="font-mono">
+															{stat.max.rate.toFixed(2)}%
+														</div>
+														<div className="text-xs text-muted-foreground">
+															{formatShortMonthYearFromString(stat.max.date)}
+														</div>
+													</div>
+												) : (
+													"—"
+												)}
+											</TableCell>
+											<TableCell className="text-right">
+												{stat.current ? (
+													<div className="font-mono font-medium">
+														{stat.current.rate.toFixed(2)}%
+													</div>
+												) : (
+													"—"
+												)}
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
 						</div>
-					</div>
+					)}
 				</div>
 			)}
 		</div>

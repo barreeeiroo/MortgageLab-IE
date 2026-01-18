@@ -94,8 +94,7 @@ export function LenderSelector({
 			<DropdownMenuTrigger asChild>
 				<Button
 					variant="outline"
-					size="sm"
-					className={cn("h-8 gap-1.5 justify-between", className)}
+					className={cn("h-8 px-3 text-sm gap-1.5 justify-between", className)}
 				>
 					<span className="flex items-center gap-1.5">
 						{singleLenderId && (
@@ -139,6 +138,19 @@ export function LenderSelector({
 						</DropdownMenuCheckboxItem>
 					);
 				})}
+				{multiple && (
+					<>
+						<DropdownMenuSeparator />
+						<DropdownMenuCheckboxItem
+							checked={value.length === lenders.length}
+							onCheckedChange={handleSelectAll}
+							onSelect={(e) => e.preventDefault()}
+							className="cursor-pointer font-medium"
+						>
+							Select All
+						</DropdownMenuCheckboxItem>
+					</>
+				)}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

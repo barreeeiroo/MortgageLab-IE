@@ -50,13 +50,15 @@ export interface TrendsFilter {
 	fixedTerm: number | null; // e.g., 3 for 3-year fixed
 	ltvRange: [number, number] | null;
 	lenderIds: string[]; // Empty = all lenders
+	buyerCategory: "all" | "pdh" | "btl"; // PDH = FTB/Mover, BTL = Buy to Let (mutually exclusive)
 }
 
 export const DEFAULT_TRENDS_FILTER: TrendsFilter = {
-	rateType: null,
+	rateType: "fixed-4", // Default to 4-year fixed
 	fixedTerm: null,
-	ltvRange: null,
+	ltvRange: [0, 80], // Default to 80% LTV
 	lenderIds: [],
+	buyerCategory: "pdh", // Default to PDH to avoid mixing with BTL
 };
 
 export const $trendsFilter = atom<TrendsFilter>(DEFAULT_TRENDS_FILTER);
@@ -132,12 +134,14 @@ export const $hasCompareFilter = computed($compareFilter, (filter) => {
 	);
 });
 
-// Check if any trends filter is active
+// Check if any trends filter is active (compared to defaults)
 export const $hasTrendsFilter = computed($trendsFilter, (filter) => {
 	return (
-		filter.rateType !== null ||
+		filter.rateType !== "fixed-4" ||
 		filter.fixedTerm !== null ||
-		filter.ltvRange !== null ||
-		filter.lenderIds.length > 0
+		(filter.ltvRange !== null &&
+			(filter.ltvRange[0] !== 0 || filter.ltvRange[1] !== 80)) ||
+		filter.lenderIds.length > 0 ||
+		filter.buyerCategory !== "pdh"
 	);
 });
