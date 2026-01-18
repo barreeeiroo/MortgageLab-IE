@@ -1,5 +1,7 @@
 import {
+	Area,
 	CartesianGrid,
+	ComposedChart,
 	Line,
 	LineChart,
 	ReferenceLine,
@@ -32,11 +34,22 @@ const SERIES_COLORS = [
 	"var(--chart-5)",
 ];
 
+export interface MarketDataPoint {
+	timestamp: string;
+	min: number;
+	max: number;
+	avg: number;
+}
+
 interface RateTrendChartProps {
 	/** Single rate or array of rates for comparison */
 	data: RateTimeSeries | RateTimeSeries[];
 	/** Optional average series to display with primary color */
 	averageSeries?: RateTimeSeries | null;
+	/** Market data for market overview mode */
+	marketData?: MarketDataPoint[];
+	/** Display style: lines (individual rates), average (market avg only), range-band (min/max area with avg line) */
+	displayStyle?: "lines" | "average" | "range-band";
 	/** Show APR line alongside rate */
 	showApr?: boolean;
 	/** Chart height in pixels */
@@ -53,6 +66,14 @@ interface ChartDataPoint {
 	timestamp: number; // Unix timestamp for sorting
 	date: string; // Display date
 	[key: string]: number | string; // Dynamic keys for rate values
+}
+
+interface MarketChartDataPoint {
+	timestamp: number;
+	date: string;
+	min: number;
+	max: number;
+	avg: number;
 }
 
 /**
@@ -72,9 +93,11 @@ function transformData(
 	data: RateTimeSeries | RateTimeSeries[],
 	showApr: boolean,
 	averageSeries?: RateTimeSeries | null,
+	forceSingleSeries?: boolean,
 ): ChartDataPoint[] {
 	const seriesArray = Array.isArray(data) ? data : [data];
-	const isSingleSeries = seriesArray.length === 1;
+	// Use forceSingleSeries if provided, otherwise default based on array length
+	const isSingleSeries = forceSingleSeries ?? seriesArray.length === 1;
 
 	// Collect all unique timestamps (including from average series)
 	const timestampSet = new Set<string>();
@@ -160,16 +183,31 @@ function transformData(
 }
 
 /**
+ * Transform market data into chart-ready format
+ */
+function transformMarketData(
+	marketData: MarketDataPoint[],
+): MarketChartDataPoint[] {
+	return marketData.map((point) => ({
+		timestamp: Math.floor(new Date(point.timestamp).getTime() / 1000),
+		date: formatDate(point.timestamp),
+		min: point.min,
+		max: point.max,
+		avg: point.avg,
+	}));
+}
+
+/**
  * Get Y-axis domain with padding
  */
 function getYAxisDomain(
-	data: ChartDataPoint[],
+	data: ChartDataPoint[] | MarketChartDataPoint[],
 	keys: string[],
 ): [number, number] {
 	const values: number[] = [];
 	for (const point of data) {
 		for (const key of keys) {
-			const val = point[key];
+			const val = point[key as keyof typeof point];
 			if (typeof val === "number") {
 				values.push(val);
 			}
@@ -188,15 +226,183 @@ function getYAxisDomain(
 export function RatesTrendChart({
 	data,
 	averageSeries,
+	marketData,
+	displayStyle = "lines",
 	showApr = false,
 	height = 250,
 	showLegend = false,
 	animate = false,
 	showCurrentRate = true,
 }: RateTrendChartProps) {
+	// Market overview modes
+	if (
+		(displayStyle === "average" || displayStyle === "range-band") &&
+		marketData &&
+		marketData.length > 0
+	) {
+		const chartData = transformMarketData(marketData);
+		const keys =
+			displayStyle === "range-band" ? ["min", "max", "avg"] : ["avg"];
+		const [yMin, yMax] = getYAxisDomain(chartData, keys);
+
+		const marketConfig: ChartConfig = {
+			avg: {
+				label: "Average",
+				color: "var(--primary)",
+			},
+			range: {
+				label: "Range",
+				color: "var(--primary)",
+			},
+		};
+
+		return (
+			<div className="space-y-2">
+				<ChartContainer
+					config={marketConfig}
+					className="w-full"
+					style={{ height: `${height}px` }}
+				>
+					<ComposedChart
+						data={chartData}
+						margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+					>
+						<CartesianGrid strokeDasharray="3 3" vertical={false} />
+						<XAxis
+							dataKey="timestamp"
+							type="number"
+							domain={["dataMin", "dataMax"]}
+							tickLine={false}
+							axisLine={false}
+							tickMargin={8}
+							tickFormatter={(value) => {
+								const date = new Date(value * 1000);
+								return `${SHORT_MONTH_NAMES[date.getMonth()]} ${date.getFullYear().toString().slice(-2)}`;
+							}}
+							minTickGap={40}
+						/>
+						<YAxis
+							tickLine={false}
+							axisLine={false}
+							tickMargin={8}
+							width={45}
+							tickFormatter={(v) => `${Number(v).toFixed(1)}%`}
+							domain={[yMin, yMax]}
+						/>
+						<ChartTooltip
+							wrapperStyle={{ zIndex: 50 }}
+							content={({ active, payload }) => {
+								if (!active || !payload?.length) return null;
+
+								const point = payload[0].payload as MarketChartDataPoint;
+
+								return (
+									<div className="border-border/50 bg-background rounded-lg border px-3 py-2 shadow-xl">
+										<div className="font-medium mb-2">{point.date}</div>
+										<div className="space-y-1">
+											<div className="flex items-center justify-between gap-4">
+												<div className="flex items-center gap-1.5">
+													<div
+														className="h-2.5 w-2.5 rounded-sm shrink-0"
+														style={{
+															backgroundColor: "var(--primary)",
+														}}
+													/>
+													<span className="text-muted-foreground text-sm">
+														Average
+													</span>
+												</div>
+												<span className="font-mono font-medium text-sm">
+													{point.avg.toFixed(2)}%
+												</span>
+											</div>
+											{displayStyle === "range-band" && (
+												<div className="flex items-center justify-between gap-4">
+													<span className="text-muted-foreground text-sm pl-4">
+														Range
+													</span>
+													<span className="font-mono text-sm text-muted-foreground">
+														{point.min.toFixed(2)}% - {point.max.toFixed(2)}%
+													</span>
+												</div>
+											)}
+										</div>
+									</div>
+								);
+							}}
+						/>
+
+						{/* Range band area (min to max) */}
+						{displayStyle === "range-band" && (
+							<Area
+								type="monotone"
+								dataKey="max"
+								stroke="none"
+								fill="var(--primary)"
+								fillOpacity={0.15}
+								isAnimationActive={animate}
+								animationDuration={300}
+							/>
+						)}
+						{displayStyle === "range-band" && (
+							<Area
+								type="monotone"
+								dataKey="min"
+								stroke="none"
+								fill="var(--background)"
+								fillOpacity={1}
+								isAnimationActive={animate}
+								animationDuration={300}
+							/>
+						)}
+
+						{/* Average line */}
+						<Line
+							type="monotone"
+							dataKey="avg"
+							name="Average"
+							stroke="var(--primary)"
+							strokeWidth={2.5}
+							dot={false}
+							isAnimationActive={animate}
+							animationDuration={300}
+							connectNulls
+						/>
+					</ComposedChart>
+				</ChartContainer>
+
+				{/* Legend for market overview */}
+				<div className="flex flex-wrap gap-x-4 gap-y-1 px-2 text-xs text-muted-foreground">
+					<div className="flex items-center gap-1.5">
+						<div
+							className="h-3 w-3 rounded-sm shrink-0"
+							style={{
+								backgroundColor: "var(--primary)",
+							}}
+						/>
+						<span>Market Average</span>
+					</div>
+					{displayStyle === "range-band" && (
+						<div className="flex items-center gap-1.5">
+							<div
+								className="h-3 w-3 rounded-sm shrink-0 opacity-20"
+								style={{
+									backgroundColor: "var(--primary)",
+								}}
+							/>
+							<span>Min/Max Range</span>
+						</div>
+					)}
+				</div>
+			</div>
+		);
+	}
+
+	// Individual rates mode (existing logic)
 	const seriesArray = Array.isArray(data) ? data : [data];
-	const isSingleSeries = seriesArray.length === 1;
-	const chartData = transformData(data, showApr, averageSeries);
+	// Use multi-series rendering when showLegend is true (grouped mode) even with single series
+	const isSingleSeries = seriesArray.length === 1 && !showLegend;
+	const chartData = transformData(data, showApr, averageSeries, isSingleSeries);
 	const hasAverage = averageSeries && averageSeries.dataPoints.length > 0;
 
 	if (chartData.length === 0) {

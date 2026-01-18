@@ -23,12 +23,23 @@ export interface ChangesFilter {
 	buyerCategory: "all" | "pdh" | "btl"; // PDH = FTB/Mover, BTL = Buy to Let
 }
 
+export type TrendsDisplayMode = "individual" | "market-overview";
+export type MarketChartStyle = "average" | "range-band" | "grouped";
+export type TrendsBreakdownDimension =
+	| "lender"
+	| "rate-type"
+	| "ltv"
+	| "buyer-type";
+
 export interface TrendsFilter {
 	rateType: string | null; // e.g., "fixed-3" for 3-year fixed
 	fixedTerm: number | null; // e.g., 3 for 3-year fixed
 	ltvRange: [number, number] | null;
 	lenderIds: string[]; // Empty = all lenders
 	buyerCategory: "all" | "pdh" | "btl"; // PDH = FTB/Mover, BTL = Buy to Let (mutually exclusive)
+	displayMode: TrendsDisplayMode;
+	marketChartStyle: MarketChartStyle;
+	breakdownBy: TrendsBreakdownDimension[]; // Empty = overall, multiple = compound grouping
 }
 
 // === Defaults ===
@@ -50,9 +61,12 @@ export const DEFAULT_CHANGES_FILTER: ChangesFilter = {
 export const DEFAULT_TRENDS_FILTER: TrendsFilter = {
 	rateType: "fixed-4",
 	fixedTerm: null,
-	ltvRange: [0, 80],
+	ltvRange: null, // All LTV
 	lenderIds: [],
 	buyerCategory: "pdh",
+	displayMode: "market-overview",
+	marketChartStyle: "grouped",
+	breakdownBy: ["lender"],
 };
 
 // === localStorage Persistence ===
@@ -110,6 +124,10 @@ export const $trendsDateRange = atom<{
 
 export const $trendsSelectedLenders = atom<string[]>([]);
 
+// Flag to track if this is a fresh session (no localStorage data existed)
+// When true, the component should inject all lenders as default
+export const $trendsLendersFirstVisit = atom<boolean>(true);
+
 // === Persistence ===
 
 // Flag to prevent persisting during share URL import
@@ -166,6 +184,7 @@ export function initializeHistoryFilters(): void {
 			$changesFilter.set(shareState.changesFilter);
 			$trendsFilter.set(shareState.trendsFilter);
 			$trendsSelectedLenders.set(shareState.trendsSelectedLenders);
+			$trendsLendersFirstVisit.set(false); // Not first visit - data from share URL
 			$changesSelectedLender.set(shareState.changesSelectedLender);
 
 			// Re-enable persistence and save the imported state
@@ -190,8 +209,12 @@ export function initializeHistoryFilters(): void {
 			$comparisonEndDate.set(stored.comparisonEndDate);
 		if (stored.changesFilter) $changesFilter.set(stored.changesFilter);
 		if (stored.trendsFilter) $trendsFilter.set(stored.trendsFilter);
-		if (stored.trendsSelectedLenders)
-			$trendsSelectedLenders.set(stored.trendsSelectedLenders);
+		// Check if trendsSelectedLenders key exists in stored data (even if empty array)
+		// This distinguishes "first visit" from "user explicitly cleared selection"
+		if ("trendsSelectedLenders" in stored) {
+			$trendsSelectedLenders.set(stored.trendsSelectedLenders ?? []);
+			$trendsLendersFirstVisit.set(false); // Not first visit - localStorage had data
+		}
 		if (stored.changesSelectedLender)
 			$changesSelectedLender.set(stored.changesSelectedLender);
 
@@ -289,4 +312,5 @@ export const $hasTrendsFilter = computed($trendsFilter, (filter) => {
 export function __resetHistoryFiltersState(): void {
 	filtersInitialized = false;
 	persistenceEnabled = true;
+	$trendsLendersFirstVisit.set(true);
 }
