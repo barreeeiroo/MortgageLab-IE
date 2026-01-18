@@ -24,7 +24,8 @@
 		"rates:scrape:all": "bun run scripts/rate-scraper/scrape.ts --all",
 		"rates:scrape-historical": "bun run scripts/rate-scraper/scrape-historical.ts",
 		"rates:validate": "bun run scripts/rate-scraper/validate.ts",
-		"rates:validate-history": "bun run scripts/rate-scraper/validate-history.ts"
+		"rates:validate-history": "bun run scripts/rate-scraper/validate-history.ts",
+		"rates:euribor": "bun run scripts/rate-scraper/euribor.ts"
 	},
 	"dependencies": {
 		"@astrojs/react": "^4.4.2",

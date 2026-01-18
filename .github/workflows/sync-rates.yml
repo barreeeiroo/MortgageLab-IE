@@ -10,7 +10,7 @@ permissions:
   actions: write
 
 jobs:
-  sync:
+  scrape-rates:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Sync all rates
+      - name: Scrape all lender rates
         run: bun run rates:scrape:all --write-updates
 
       - name: Validate rates
@@ -30,6 +30,52 @@ jobs:
 
       - name: Validate history
         run: bun run rates:validate-history
+
+      - name: Upload rates artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lender-rates
+          path: data/rates/
+
+  scrape-euribor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Scrape Euribor rates
+        run: bun run rates:euribor
+
+      - name: Upload Euribor artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: euribor-rates
+          path: data/rates/history/_euribor.json
+
+  commit:
+    needs: [scrape-rates, scrape-euribor]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download lender rates
+        uses: actions/download-artifact@v4
+        with:
+          name: lender-rates
+          path: data/rates/
+
+      - name: Download Euribor rates
+        uses: actions/download-artifact@v4
+        with:
+          name: euribor-rates
+          path: data/rates/history/
 
       - name: Commit changes
         id: commit
@@ -41,8 +87,11 @@ jobs:
             echo "No changes to commit"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            DESCRIPTION=$(cat data/rates/updates.txt)
-            printf -v MSG "Sync Mortgage Rates\n\n%s" "$DESCRIPTION"
+            DESCRIPTION=""
+            if [ -f data/rates/updates.txt ]; then
+              DESCRIPTION=$(cat data/rates/updates.txt)
+            fi
+            printf -v MSG "Sync Rates\n\n%s" "$DESCRIPTION"
             git commit -m "$MSG"
             git push
             echo "has_changes=true" >> $GITHUB_OUTPUT
