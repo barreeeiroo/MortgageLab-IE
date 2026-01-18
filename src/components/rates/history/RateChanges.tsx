@@ -685,8 +685,8 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 						</button>
 					</div>
 
-					{/* Comparison Table */}
-					<div className="space-y-2 max-h-[500px] overflow-y-auto">
+					{/* Rate Changes List */}
+					<div className="space-y-2 min-h-[800px] max-h-[800px] overflow-y-auto">
 						{displayRates.length === 0 ? (
 							<div className="text-center py-8 text-muted-foreground">
 								{searchQuery
@@ -706,8 +706,8 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 								return (
 									<Popover key={comp.rate.id}>
 										<PopoverTrigger asChild>
-											<div className="flex items-center justify-between py-2 px-3 rounded-lg bg-background border cursor-pointer hover:bg-muted/50 transition-colors">
-												<div className="flex items-center gap-3">
+											<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 px-3 rounded-lg bg-background border cursor-pointer hover:bg-muted/50 transition-colors">
+												<div className="flex items-center gap-3 min-w-0">
 													{/* Status Icon */}
 													{comp.status === "decreased" ? (
 														<div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/10">
@@ -754,7 +754,7 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 												</div>
 
 												{/* Rate Values */}
-												<div className="text-sm font-mono text-right">
+												<div className="text-sm font-mono sm:text-right pl-9 sm:pl-0 shrink-0">
 													{comp.status === "new" ? (
 														<span className="text-blue-600">
 															{comp.currentRate?.toFixed(2)}% (new)
@@ -764,7 +764,7 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 															{comp.historicalRate?.toFixed(2)}%
 														</span>
 													) : (
-														<div className="flex items-center gap-1.5">
+														<div className="flex items-center gap-1.5 flex-wrap">
 															<span className="text-muted-foreground">
 																{comp.historicalRate?.toFixed(2)}%
 															</span>
