@@ -2,12 +2,9 @@
 
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import {
-	BTL_BUYER_TYPES,
-	SWITCHER_BUYER_TYPES,
-} from "../../src/lib/constants/buyer";
-import { isValidFollowOnRate } from "../../src/lib/mortgage/rates";
-import type { MortgageRate, RatesFile } from "../../src/lib/schemas/rate";
+import { BTL_BUYER_TYPES, SWITCHER_BUYER_TYPES } from "@/lib/constants/buyer";
+import { isValidFollowOnRate } from "@/lib/mortgage/rates";
+import type { MortgageRate, RatesFile } from "@/lib/schemas/rate";
 
 const RATES_DIR = join(import.meta.dir, "../../data/rates");
 const LENDERS_FILE = join(import.meta.dir, "../../data/lenders.json");

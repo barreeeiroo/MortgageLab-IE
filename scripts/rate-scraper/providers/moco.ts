@@ -11,8 +11,11 @@ import {
 	parseLtvBandOrThrow,
 	parsePercentageOrThrow,
 	parseTermOrThrow,
-} from "../parsing.ts";
-import type { LenderProvider } from "../types";
+} from "../utils/parsing";
+import type {
+	HistoricalLenderProvider,
+	StructureValidation,
+} from "../utils/types";
 
 const LENDER_ID = "moco";
 const RATES_URL = "https://www.moco.ie/moco/our-rates";
@@ -68,14 +71,12 @@ function parseTableRow($: cheerio.CheerioAPI, row: Element): ParsedRow | null {
 	}
 }
 
-async function fetchAndParseRates(): Promise<MortgageRate[]> {
-	console.log("Fetching rates page...");
-	const response = await fetch(RATES_URL);
-	const html = await response.text();
-
-	console.log("Parsing HTML content with Cheerio...");
+/**
+ * Parse rates from HTML content.
+ * Separated from fetch for historical scraping support.
+ */
+function parseRatesFromHtml(html: string): MortgageRate[] {
 	const $ = cheerio.load(html);
-
 	const ratesMap = new Map<string, MortgageRate>();
 
 	$("table").each((_, table) => {
@@ -107,7 +108,6 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	});
 
 	const rates = Array.from(ratesMap.values());
-	console.log(`Parsed ${rates.length} unique fixed rates from HTML`);
 
 	// Infer SVR from the fixed rate products' APRCs
 	// Use multiple products and take the median for robustness
@@ -121,9 +121,6 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 				APRC_CONFIG,
 			);
 			inferredSvrs.push(svr);
-			console.log(
-				`Inferred SVR from ${rate.fixedTerm}yr fixed at ${rate.rate}% (APRC ${rate.apr}%): ${svr}%`,
-			);
 		}
 	}
 
@@ -131,7 +128,6 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		// Use median SVR for robustness against rounding errors
 		inferredSvrs.sort((a, b) => a - b);
 		const medianSvr = inferredSvrs[Math.floor(inferredSvrs.length / 2)];
-		console.log(`Inferred median SVR: ${medianSvr}%`);
 
 		// Calculate APRC for variable rate (same rate for entire term)
 		const fullTermMonths = APRC_CONFIG.termMonths;
@@ -141,7 +137,6 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 			medianSvr,
 			APRC_CONFIG,
 		);
-		console.log(`Calculated SVR APRC: ${svrAprc}%`);
 
 		// Add the SVR as a variable rate product
 		rates.push({
@@ -161,13 +156,63 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		});
 	}
 
-	console.log(`Total rates: ${rates.length} (including inferred SVR)`);
 	return rates;
 }
 
-export const mocoProvider: LenderProvider = {
+/**
+ * Validate that the HTML structure matches what we expect.
+ * MoCo uses simple tables with 4 columns: Term, LTV, Rate, APR.
+ */
+function validateStructure(html: string): StructureValidation {
+	const $ = cheerio.load(html);
+
+	// Check for tables
+	const tables = $("table");
+	if (tables.length === 0) {
+		return { valid: false, error: "No tables found on page" };
+	}
+
+	// Check that at least one table has the expected structure
+	let hasValidTable = false;
+	tables.each((_, table) => {
+		const rows = $(table).find("tbody tr");
+		if (rows.length > 0) {
+			const firstRow = rows.first();
+			const cells = firstRow.find("td");
+			// MoCo tables have 4 columns: Term, LTV, Rate, APR
+			if (cells.length >= 4) {
+				hasValidTable = true;
+			}
+		}
+	});
+
+	if (!hasValidTable) {
+		return {
+			valid: false,
+			error: "No valid rate tables found (expected 4+ columns)",
+		};
+	}
+
+	return { valid: true };
+}
+
+async function fetchAndParseRates(): Promise<MortgageRate[]> {
+	console.log("Fetching rates page...");
+	const response = await fetch(RATES_URL);
+	const html = await response.text();
+
+	console.log("Parsing HTML content with Cheerio...");
+	const rates = parseRatesFromHtml(html);
+	console.log(`Parsed ${rates.length} rates (including inferred SVR)`);
+
+	return rates;
+}
+
+export const mocoProvider: HistoricalLenderProvider = {
 	lenderId: LENDER_ID,
 	name: "MoCo",
 	url: RATES_URL,
 	scrape: fetchAndParseRates,
+	parseHtml: async (html: string) => parseRatesFromHtml(html),
+	validateStructure,
 };

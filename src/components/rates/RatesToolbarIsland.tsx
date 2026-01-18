@@ -12,7 +12,6 @@ import {
 	$filteredRates,
 	$isLoading,
 	$rates,
-	$ratesMetadata,
 	fetchRatesData,
 } from "@/lib/stores/rates/rates-state";
 import {
@@ -31,7 +30,6 @@ export function RatesToolbarIsland() {
 	const isLoading = useStore($isLoading);
 	const isFormValid = useStore($isFormValid);
 	const lenders = useStore($lenders);
-	const ratesMetadata = useStore($ratesMetadata);
 	const inputValues = useStore($formValues);
 	const filteredRates = useStore($filteredRates);
 	const allRates = useStore($rates);
@@ -54,7 +52,6 @@ export function RatesToolbarIsland() {
 	return (
 		<RatesToolbar
 			lenders={lenders}
-			ratesMetadata={ratesMetadata}
 			inputValues={inputValues}
 			filteredRates={filteredRates}
 			allRates={allRates}

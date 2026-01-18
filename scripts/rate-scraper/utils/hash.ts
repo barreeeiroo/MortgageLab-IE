@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { MortgageRate } from "../../src/lib/schemas/rate";
+import type { MortgageRate } from "@/lib/schemas/rate";
 
 /**
  * Normalizes a rate object to ensure consistent hashing.

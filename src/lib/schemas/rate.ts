@@ -9,7 +9,12 @@ export const RATE_TYPES = ["fixed", "variable"] as const;
 export const RateTypeSchema = z.enum(RATE_TYPES);
 export type RateType = z.infer<typeof RateTypeSchema>;
 
-export const MortgageRateSchema = z.object({
+/**
+ * Base mortgage rate schema WITHOUT defaults.
+ * Used for partial schemas (e.g., changeset operations) where we don't want
+ * Zod to inject default values for missing fields.
+ */
+export const MortgageRateBaseSchema = z.object({
 	id: z.string(),
 	name: z.string(), // Human-readable rate name
 	lenderId: z.string(),
@@ -19,7 +24,7 @@ export const MortgageRateSchema = z.object({
 	fixedTerm: z.number().int().positive().optional(), // Years, only for fixed rates
 
 	// Eligibility constraints
-	minLtv: z.number().min(0).max(100).default(0), // e.g., 0 for <60% bracket
+	minLtv: z.number().min(0).max(100), // e.g., 0 for <60% bracket
 	maxLtv: z.number().min(0).max(100), // e.g., 90 for 90% LTV
 	minLoan: z.number().positive().optional(), // Minimum loan amount (e.g., for HVM products)
 	buyerTypes: z.array(BuyerTypeSchema).min(1),
@@ -27,10 +32,20 @@ export const MortgageRateSchema = z.object({
 	newBusiness: z.boolean().optional(), // true = new business only, false = existing customers only, undefined = both
 
 	// Rate-specific perk IDs
-	perks: z.array(z.string()).default([]),
+	perks: z.array(z.string()),
 
 	// Optional warning message (e.g., for inferred rates)
 	warning: z.string().optional(),
+});
+
+/**
+ * Full mortgage rate schema WITH defaults for parsing rate files.
+ * - minLtv defaults to 0 (for rates that apply to all LTV brackets)
+ * - perks defaults to [] (most rates have no perks)
+ */
+export const MortgageRateSchema = MortgageRateBaseSchema.extend({
+	minLtv: z.number().min(0).max(100).default(0),
+	perks: z.array(z.string()).default([]),
 });
 export type MortgageRate = z.infer<typeof MortgageRateSchema>;
 

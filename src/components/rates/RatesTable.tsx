@@ -81,6 +81,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { CompareRatesModal } from "./CompareRatesModal";
+import { RateHistoryModal } from "./RateHistoryModal";
 import { RateInfoModal } from "./RateInfoModal";
 
 const MIN_COMPARE_RATES = 2;
@@ -256,6 +257,7 @@ function ColumnHeader<TData>({
 											newValues.size > 0 ? Array.from(newValues) : undefined,
 										);
 									}}
+									className="cursor-pointer"
 								>
 									{option.label}
 								</DropdownMenuCheckboxItem>
@@ -267,7 +269,7 @@ function ColumnHeader<TData>({
 								<DropdownMenuCheckboxItem
 									checked={false}
 									onCheckedChange={() => column.setFilterValue(undefined)}
-									className="justify-center text-center"
+									className="justify-center text-center cursor-pointer"
 								>
 									Clear
 								</DropdownMenuCheckboxItem>
@@ -984,6 +986,7 @@ export function RatesTable({
 	onPaginationChange,
 }: RatesTableProps) {
 	const [selectedRate, setSelectedRate] = useState<RateRow | null>(null);
+	const [historyOpen, setHistoryOpen] = useState(false);
 	const compareState = useStore($compareState);
 
 	// Convert compare state to row selection format
@@ -1028,6 +1031,14 @@ export function RatesTable({
 
 	const handleProductClick = useCallback((rate: RateRow) => {
 		setSelectedRate(rate);
+	}, []);
+
+	const handleViewHistory = useCallback(() => {
+		setHistoryOpen(true);
+	}, []);
+
+	const handleBackFromHistory = useCallback(() => {
+		setHistoryOpen(false);
 	}, []);
 
 	const handleCompareClick = useCallback(() => {
@@ -1243,8 +1254,30 @@ export function RatesTable({
 				ltv={ltv}
 				berRating={inputValues.berRating}
 				mode={inputValues.mode}
-				open={selectedRate !== null}
-				onOpenChange={(open) => !open && setSelectedRate(null)}
+				open={selectedRate !== null && !historyOpen}
+				onOpenChange={(open) => {
+					if (!open) {
+						setSelectedRate(null);
+						setHistoryOpen(false);
+					}
+				}}
+				onViewHistory={handleViewHistory}
+			/>
+
+			{/* Rate History Modal */}
+			<RateHistoryModal
+				rate={selectedRate}
+				lender={
+					selectedRate ? getLender(lenders, selectedRate.lenderId) : undefined
+				}
+				open={selectedRate !== null && historyOpen}
+				onOpenChange={(open) => {
+					if (!open) {
+						setSelectedRate(null);
+						setHistoryOpen(false);
+					}
+				}}
+				onBack={handleBackFromHistory}
 			/>
 
 			{/* Compare Rates Modal */}

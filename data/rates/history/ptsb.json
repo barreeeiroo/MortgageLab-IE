@@ -1,0 +1,3933 @@
+{
+	"lenderId": "ptsb",
+	"baseline": {
+		"timestamp": "2022-10-05T14:36:32Z",
+		"ratesHash": "99fb44c3f6c1d90a6e44f4173857571714a25879d41572c1d8ad308a2b56e584",
+		"rates": [
+			{
+				"id": "ptsb-fixed-2yr-60",
+				"name": "2 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3.1,
+				"apr": 3.67,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-2yr-80",
+				"name": "2 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3.1,
+				"apr": 3.79,
+				"fixedTerm": 2,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-2yr-90",
+				"name": "2 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3.1,
+				"apr": 3.84,
+				"fixedTerm": 2,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-3yr-60",
+				"name": "3 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.95,
+				"apr": 3.57,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-3yr-80",
+				"name": "3 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.95,
+				"apr": 3.67,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-3yr-90",
+				"name": "3 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.95,
+				"apr": 3.71,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-4yr-60",
+				"name": "4 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.05,
+				"apr": 3.14,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-4yr-80",
+				"name": "4 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.05,
+				"apr": 3.24,
+				"fixedTerm": 4,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-4yr-90",
+				"name": "4 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.35,
+				"apr": 3.39,
+				"fixedTerm": 4,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-5yr-60",
+				"name": "5 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.46,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-5yr-80",
+				"name": "5 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.54,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-5yr-90",
+				"name": "5 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.57,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-green-fixed-5yr-60",
+				"name": "Green 5 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.8,
+				"apr": 3.37,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-green-fixed-5yr-80",
+				"name": "Green 5 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.8,
+				"apr": 3.45,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-green-fixed-5yr-90",
+				"name": "Green 5 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.8,
+				"apr": 3.48,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-7yr-60",
+				"name": "7 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.36,
+				"fixedTerm": 7,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-7yr-80",
+				"name": "7 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.42,
+				"fixedTerm": 7,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-fixed-7yr-90",
+				"name": "7 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.44,
+				"fixedTerm": 7,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-fixed-3yr-60",
+				"name": "High Value 3 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.5,
+				"apr": 3.43,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-fixed-3yr-80",
+				"name": "High Value 3 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.5,
+				"apr": 3.53,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-fixed-3yr-90",
+				"name": "High Value 3 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.8,
+				"apr": 3.66,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-fixed-5yr-60",
+				"name": "High Value 5 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.55,
+				"apr": 3.25,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-fixed-5yr-80",
+				"name": "High Value 5 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.55,
+				"apr": 3.33,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-fixed-5yr-90",
+				"name": "High Value 5 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.85,
+				"apr": 3.5,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [
+					"cashback-2pct"
+				],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-green-fixed-5yr-60",
+				"name": "High Value Green 5 Year Fixed - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.35,
+				"apr": 3.15,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-green-fixed-5yr-80",
+				"name": "High Value Green 5 Year Fixed - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.35,
+				"apr": 3.23,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-hv-green-fixed-5yr-90",
+				"name": "High Value Green 5 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.65,
+				"apr": 3.4,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"minLoan": 250000,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-variable-50",
+				"name": "Managed Variable Rate - LTV ≤50%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 3.1,
+				"apr": 3.64,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-variable-60",
+				"name": "Managed Variable Rate - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 3.2,
+				"apr": 3.75,
+				"minLtv": 50,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-variable-70",
+				"name": "Managed Variable Rate - LTV ≤70%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 3.3,
+				"apr": 3.85,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-variable-80",
+				"name": "Managed Variable Rate - LTV ≤80%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 3.35,
+				"apr": 3.9,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-variable-90",
+				"name": "Managed Variable Rate - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 3.95,
+				"apr": 4.04,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-btl-variable-50",
+				"name": "Buy-to-Let Managed Variable Rate - LTV ≤50%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 4.8,
+				"apr": 5.1,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-btl-variable-60",
+				"name": "Buy-to-Let Managed Variable Rate - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 4.95,
+				"apr": 5.26,
+				"minLtv": 50,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-btl-variable-70",
+				"name": "Buy-to-Let Managed Variable Rate - LTV ≤70%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 5.05,
+				"apr": 5.37,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-btl-fixed-3yr-70",
+				"name": "Buy-to-Let 3 Year Fixed - LTV ≤70%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 4.65,
+				"apr": 5.23,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-btl-fixed-5yr-70",
+				"name": "Buy-to-Let 5 Year Fixed - LTV ≤70%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 5.26,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"btl",
+					"switcher-btl"
+				],
+				"perks": [],
+				"newBusiness": true
+			},
+			{
+				"id": "ptsb-existing-variable-90",
+				"name": "Managed Variable Rate - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 3.95,
+				"apr": 4.02,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing-fixed-2yr-90",
+				"name": "2 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3.1,
+				"apr": 3.84,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing-fixed-3yr-90",
+				"name": "3 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.95,
+				"apr": 3.71,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing-fixed-5yr-90",
+				"name": "5 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.56,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing-green-fixed-5yr-90",
+				"name": "Green 5 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 2.8,
+				"apr": 3.47,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing-fixed-7yr-90",
+				"name": "7 Year Fixed - LTV ≤90%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.42,
+				"fixedTerm": 7,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing",
+				"name": "- LTV ≤100%",
+				"lenderId": "ptsb",
+				"type": "fixed",
+				"rate": 3.95,
+				"apr": 4.02,
+				"minLtv": 90,
+				"maxLtv": 100,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing-btl-variable-50",
+				"name": "Buy-to-Let Managed Variable Rate - LTV ≤50%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 4.8,
+				"apr": 5.1,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-btl"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing-btl-variable-60",
+				"name": "Buy-to-Let Managed Variable Rate - LTV ≤60%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 4.95,
+				"apr": 5.26,
+				"minLtv": 50,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-btl"
+				],
+				"perks": [],
+				"newBusiness": false
+			},
+			{
+				"id": "ptsb-existing-btl-variable-70",
+				"name": "Buy-to-Let Managed Variable Rate - LTV ≤70%",
+				"lenderId": "ptsb",
+				"type": "variable",
+				"rate": 5.05,
+				"apr": 5.37,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-btl"
+				],
+				"perks": [],
+				"newBusiness": false
+			}
+		]
+	},
+	"changesets": [
+		{
+			"timestamp": "2023-06-08T14:30:19Z",
+			"afterHash": "60d4299477573e81d0ccdd6a2c72013a82b490870c56665c98a1c66d83b3668f",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-fixed-2yr-60",
+						"rate": 4.25,
+						"apr": 3.93
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-80",
+					"changes": {
+						"id": "ptsb-fixed-2yr-80",
+						"rate": 4.35,
+						"apr": 4.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-fixed-2yr-90",
+						"rate": 4.6,
+						"apr": 4.17
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-fixed-3yr-60",
+						"rate": 4.25,
+						"apr": 3.98
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-fixed-3yr-80",
+						"rate": 4.35,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-fixed-3yr-90",
+						"rate": 4.6,
+						"apr": 4.24
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-60",
+					"changes": {
+						"id": "ptsb-fixed-4yr-60",
+						"rate": 3.9,
+						"apr": 3.89
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-80",
+					"changes": {
+						"id": "ptsb-fixed-4yr-80",
+						"rate": 4,
+						"apr": 4.02
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-90",
+					"changes": {
+						"id": "ptsb-fixed-4yr-90",
+						"rate": 4.25,
+						"apr": 4.16
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-fixed-5yr-60",
+						"rate": 4.35,
+						"apr": 4.13
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-fixed-5yr-80",
+						"rate": 4.45,
+						"apr": 4.26
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-fixed-5yr-90",
+						"rate": 4.7,
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-60",
+						"rate": 4.15,
+						"apr": 4.03
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-80",
+						"rate": 4.25,
+						"apr": 4.16
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-90",
+						"rate": 4.5,
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-fixed-7yr-60",
+						"rate": 4.55,
+						"apr": 4.35
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-fixed-7yr-80",
+						"rate": 4.65,
+						"apr": 4.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-fixed-7yr-90",
+						"rate": 4.9,
+						"apr": 4.66
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-60",
+						"rate": 4.05,
+						"apr": 3.92
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-80",
+						"rate": 4.15,
+						"apr": 4.06
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-90",
+						"rate": 4.4,
+						"apr": 4.17
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-60",
+						"rate": 4.15,
+						"apr": 4.03
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-80",
+						"rate": 4.25,
+						"apr": 4.16
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-90",
+						"rate": 4.5,
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-60",
+						"rate": 3.95,
+						"apr": 3.93
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-80",
+						"rate": 4.05,
+						"apr": 4.06
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-90",
+						"rate": 4.3,
+						"apr": 4.21
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-50",
+					"changes": {
+						"id": "ptsb-variable-50",
+						"rate": 3.6,
+						"apr": 3.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-60",
+					"changes": {
+						"id": "ptsb-variable-60",
+						"rate": 3.7,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-70",
+					"changes": {
+						"id": "ptsb-variable-70",
+						"rate": 3.8,
+						"apr": 3.91
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-80",
+					"changes": {
+						"id": "ptsb-variable-80",
+						"rate": 3.85,
+						"apr": 3.96
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-fixed-2yr-60",
+						"name": "2 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 3.89,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-fixed-2yr-80",
+						"name": "2 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.35,
+						"apr": 4.03,
+						"fixedTerm": 2,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-90",
+						"rate": 4.6,
+						"apr": 4.13,
+						"minLtv": 80
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-fixed-3yr-60",
+						"name": "3 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 3.94,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-fixed-3yr-80",
+						"name": "3 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.35,
+						"apr": 4.08,
+						"fixedTerm": 3,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-90",
+						"rate": 4.6,
+						"apr": 4.2,
+						"minLtv": 80
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-fixed-5yr-60",
+						"name": "5 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.35,
+						"apr": 4.09,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-fixed-5yr-80",
+						"name": "5 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.45,
+						"apr": 4.22,
+						"fixedTerm": 5,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-90",
+						"rate": 4.7,
+						"apr": 4.37,
+						"minLtv": 80
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-green-fixed-5yr-60",
+						"name": "Green 5 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 3.99,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-green-fixed-5yr-80",
+						"name": "Green 5 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 4.12,
+						"fixedTerm": 5,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-90",
+						"rate": 4.5,
+						"apr": 4.27,
+						"minLtv": 80
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-fixed-7yr-60",
+						"name": "7 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.55,
+						"apr": 4.31,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-fixed-7yr-80",
+						"name": "7 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.65,
+						"apr": 4.44,
+						"fixedTerm": 7,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-90",
+						"rate": 4.9,
+						"apr": 4.62,
+						"minLtv": 80
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-fixed-3yr-60",
+						"name": "High Value 3 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 3.88,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-fixed-3yr-80",
+						"name": "High Value 3 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 4.02,
+						"fixedTerm": 3,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-fixed-3yr-90",
+						"name": "High Value 3 Year Fixed - LTV ≤90%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.4,
+						"apr": 4.13,
+						"fixedTerm": 3,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-fixed-5yr-60",
+						"name": "High Value 5 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 3.99,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-fixed-5yr-80",
+						"name": "High Value 5 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 4.12,
+						"fixedTerm": 5,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-fixed-5yr-90",
+						"name": "High Value 5 Year Fixed - LTV ≤90%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.5,
+						"apr": 4.27,
+						"fixedTerm": 5,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-60",
+						"name": "High Value Green 5 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 3.95,
+						"apr": 3.89,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-80",
+						"name": "High Value Green 5 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 4.02,
+						"fixedTerm": 5,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-90",
+						"name": "High Value Green 5 Year Fixed - LTV ≤90%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.3,
+						"apr": 4.17,
+						"fixedTerm": 5,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "remove",
+					"id": "ptsb-existing-variable-90"
+				},
+				{
+					"op": "remove",
+					"id": "ptsb-existing"
+				}
+			]
+		},
+		{
+			"timestamp": "2024-03-05T10:08:13Z",
+			"afterHash": "d45bbd3a264629c61736d8c163314b217146535eeee8577d5957b32ab17ea774",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-fixed-2yr-60",
+						"rate": 4.75,
+						"apr": 4.57
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-80",
+					"changes": {
+						"id": "ptsb-fixed-2yr-80",
+						"rate": 4.85,
+						"apr": 4.68
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-fixed-2yr-90",
+						"rate": 5.1,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-fixed-3yr-60",
+						"rate": 4.75,
+						"apr": 4.61
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-fixed-3yr-80",
+						"rate": 4.85,
+						"apr": 4.71
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-fixed-3yr-90",
+						"rate": 5.1,
+						"apr": 4.94
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-60",
+					"changes": {
+						"id": "ptsb-fixed-4yr-60",
+						"rate": 4,
+						"apr": 4.36
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-80",
+					"changes": {
+						"id": "ptsb-fixed-4yr-80",
+						"rate": 4.1,
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-90",
+					"changes": {
+						"id": "ptsb-fixed-4yr-90",
+						"rate": 4.35,
+						"apr": 4.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-fixed-5yr-60",
+						"rate": 4.85,
+						"apr": 4.72
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-fixed-5yr-80",
+						"rate": 4.95,
+						"apr": 4.82
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-fixed-5yr-90",
+						"rate": 5.2,
+						"apr": 5.06
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-60",
+						"apr": 4.37
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-80",
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-90",
+						"apr": 4.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-fixed-7yr-60",
+						"rate": 4.85,
+						"apr": 4.79
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-fixed-7yr-80",
+						"rate": 4.95,
+						"apr": 4.89
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-fixed-7yr-90",
+						"rate": 5.2,
+						"apr": 5.13
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-60",
+						"rate": 4.55,
+						"apr": 4.58
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-80",
+						"rate": 4.65,
+						"apr": 4.68
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-90",
+						"rate": 4.9,
+						"apr": 4.91
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-60",
+						"rate": 4.65,
+						"apr": 4.66
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-80",
+						"rate": 4.75,
+						"apr": 4.76
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-90",
+						"rate": 5,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-60",
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-80",
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-90",
+						"apr": 4.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-50",
+					"changes": {
+						"id": "ptsb-variable-50",
+						"rate": 4.4,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-60",
+					"changes": {
+						"id": "ptsb-variable-60",
+						"rate": 4.4,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-70",
+					"changes": {
+						"id": "ptsb-variable-70",
+						"rate": 4.5,
+						"apr": 4.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-80",
+					"changes": {
+						"id": "ptsb-variable-80",
+						"rate": 4.5,
+						"apr": 4.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-90",
+					"changes": {
+						"id": "ptsb-variable-90",
+						"rate": 4.7,
+						"apr": 4.82
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-btl-variable-50",
+					"changes": {
+						"id": "ptsb-btl-variable-50",
+						"rate": 5.3,
+						"apr": 5.63
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-btl-variable-60",
+					"changes": {
+						"id": "ptsb-btl-variable-60",
+						"rate": 5.45,
+						"apr": 5.79
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-btl-variable-70",
+					"changes": {
+						"id": "ptsb-btl-variable-70",
+						"rate": 5.55,
+						"apr": 5.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-btl-fixed-3yr-70",
+					"changes": {
+						"id": "ptsb-btl-fixed-3yr-70",
+						"rate": 5.65,
+						"apr": 5.93
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-btl-fixed-5yr-70",
+					"changes": {
+						"id": "ptsb-btl-fixed-5yr-70",
+						"rate": 5.85,
+						"apr": 6.06
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-60",
+						"rate": 4.75,
+						"apr": 4.57
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-80",
+						"rate": 4.85,
+						"apr": 4.68
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-90",
+						"rate": 5.1,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-60",
+						"rate": 4.75,
+						"apr": 4.61
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-80",
+						"rate": 4.85,
+						"apr": 4.71
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-90",
+						"rate": 5.1,
+						"apr": 4.94
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-60",
+						"rate": 4.85,
+						"apr": 4.72
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-80",
+						"rate": 4.95,
+						"apr": 4.82
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-90",
+						"rate": 5.2,
+						"apr": 5.06
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-60",
+						"apr": 4.37
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-80",
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-90",
+						"apr": 4.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-60",
+						"rate": 4.85,
+						"apr": 4.79
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-80",
+						"rate": 4.95,
+						"apr": 4.89
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-90",
+						"rate": 5.2,
+						"apr": 5.13
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-60",
+						"rate": 4.55,
+						"apr": 4.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-80",
+						"rate": 4.65,
+						"apr": 4.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-90",
+						"rate": 4.9,
+						"apr": 4.87
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-60",
+						"rate": 4.65,
+						"apr": 4.62
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-80",
+						"rate": 4.75,
+						"apr": 4.72
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-90",
+						"rate": 5,
+						"apr": 4.96
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-60",
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-80",
+						"apr": 4.37
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-90",
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-btl-variable-50",
+					"changes": {
+						"id": "ptsb-existing-btl-variable-50",
+						"rate": 5.3,
+						"apr": 5.43
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-btl-variable-60",
+					"changes": {
+						"id": "ptsb-existing-btl-variable-60",
+						"rate": 5.45,
+						"apr": 5.59
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-btl-variable-70",
+					"changes": {
+						"id": "ptsb-existing-btl-variable-70",
+						"rate": 5.55,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-variable-50",
+						"name": "Managed Variable Rate - LTV ≤50%",
+						"lenderId": "ptsb",
+						"type": "variable",
+						"rate": 4.4,
+						"apr": 4.49,
+						"minLtv": 0,
+						"maxLtv": 50,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-variable-60",
+						"name": "Managed Variable Rate - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "variable",
+						"rate": 4.4,
+						"apr": 4.49,
+						"minLtv": 50,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-variable-70",
+						"name": "Managed Variable Rate - LTV ≤70%",
+						"lenderId": "ptsb",
+						"type": "variable",
+						"rate": 4.5,
+						"apr": 4.6,
+						"minLtv": 60,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-variable-80",
+						"name": "Managed Variable Rate - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "variable",
+						"rate": 4.5,
+						"apr": 4.6,
+						"minLtv": 70,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-variable-90",
+						"name": "Managed Variable Rate - LTV ≤90%",
+						"lenderId": "ptsb",
+						"type": "variable",
+						"rate": 4.7,
+						"apr": 4.8,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-variable-100",
+						"name": "Managed Variable Rate - LTV ≤100%",
+						"lenderId": "ptsb",
+						"type": "variable",
+						"rate": 4.7,
+						"apr": 4.8,
+						"minLtv": 90,
+						"maxLtv": 100,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-05-08T19:39:28Z",
+			"afterHash": "8fca5a2086bb549d89f00a209db9fe9058e0f617e7de6816573bd02528421006",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-60",
+					"changes": {
+						"id": "ptsb-fixed-4yr-60",
+						"rate": 3.8,
+						"apr": 4.28
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-80",
+					"changes": {
+						"id": "ptsb-fixed-4yr-80",
+						"rate": 3.9,
+						"apr": 4.39
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-90",
+					"changes": {
+						"id": "ptsb-fixed-4yr-90",
+						"rate": 4.05,
+						"apr": 4.57
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-green-fixed-3yr-60",
+						"name": "Green 3 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4,
+						"apr": 4.4,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": true
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-green-fixed-3yr-80",
+						"name": "Green 3 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.1,
+						"apr": 4.51,
+						"fixedTerm": 3,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": true
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-green-fixed-3yr-90",
+						"name": "Green 3 Year Fixed - LTV ≤90%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.35,
+						"apr": 4.73,
+						"fixedTerm": 3,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": true
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-hv-green-fixed-3yr-60",
+						"name": "High Value Green 3 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 3.8,
+						"apr": 4.34,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": true
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-hv-green-fixed-3yr-80",
+						"name": "High Value Green 3 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 3.9,
+						"apr": 4.44,
+						"fixedTerm": 3,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": true
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-hv-green-fixed-3yr-90",
+						"name": "High Value Green 3 Year Fixed - LTV ≤90%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 4.66,
+						"fixedTerm": 3,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": true
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-06-14T19:27:26Z",
+			"afterHash": "7162fa5b26baca46ae011198126050bd480dd4ca04b0eaafe9b79dc31a6db1b8",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-fixed-2yr-60",
+						"rate": 4.5,
+						"apr": 4.51
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-80",
+					"changes": {
+						"id": "ptsb-fixed-2yr-80",
+						"rate": 4.75,
+						"apr": 4.65
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-fixed-2yr-90",
+						"rate": 4.9,
+						"apr": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-fixed-3yr-60",
+						"rate": 3.7,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-fixed-3yr-80",
+						"rate": 3.8,
+						"apr": 4.37
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-fixed-3yr-90",
+						"rate": 4.5,
+						"apr": 4.74
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-60",
+					"changes": {
+						"id": "ptsb-fixed-4yr-60",
+						"rate": 3.65,
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-80",
+					"changes": {
+						"id": "ptsb-fixed-4yr-80",
+						"rate": 3.8,
+						"apr": 4.34
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-90",
+					"changes": {
+						"id": "ptsb-fixed-4yr-90",
+						"rate": 3.95,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-fixed-5yr-60",
+						"rate": 4.5,
+						"apr": 4.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-fixed-5yr-80",
+						"rate": 4.75,
+						"apr": 4.72
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-fixed-5yr-90",
+						"rate": 4.9,
+						"apr": 4.91
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-60",
+						"rate": 3.6,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-80",
+						"rate": 3.7,
+						"apr": 4.38
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-90",
+						"rate": 4.25,
+						"apr": 4.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-fixed-7yr-60",
+						"rate": 4.5,
+						"apr": 4.56
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-fixed-7yr-80",
+						"rate": 4.75,
+						"apr": 4.76
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-fixed-7yr-90",
+						"rate": 4.9,
+						"apr": 4.94
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-60",
+						"rate": 3.6,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-80",
+						"rate": 3.7,
+						"apr": 4.38
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-90",
+						"rate": 4.25,
+						"apr": 4.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-60",
+						"rate": 4.05,
+						"apr": 4.36
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-80",
+						"rate": 4.15,
+						"apr": 4.46
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-90",
+						"rate": 4.4,
+						"apr": 4.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-60",
+						"rate": 3.5,
+						"apr": 4.24
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-80",
+						"rate": 3.6,
+						"apr": 4.34
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.63
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-60",
+						"rate": 4.5,
+						"apr": 4.51
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-80",
+						"rate": 4.75,
+						"apr": 4.65
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-90",
+						"rate": 4.9,
+						"apr": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-60",
+						"rate": 3.7,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-80",
+						"rate": 3.8,
+						"apr": 4.37
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-90",
+						"rate": 4.5,
+						"apr": 4.74
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-60",
+						"rate": 4.5,
+						"apr": 4.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-80",
+						"rate": 4.75,
+						"apr": 4.72
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-90",
+						"rate": 4.9,
+						"apr": 4.91
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-60",
+						"rate": 4.5,
+						"apr": 4.56
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-80",
+						"rate": 4.75,
+						"apr": 4.76
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-90",
+						"rate": 4.9,
+						"apr": 4.94
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-60",
+						"rate": 3.6,
+						"apr": 4.23
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-80",
+						"rate": 3.7,
+						"apr": 4.34
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-90",
+						"rate": 4.25,
+						"apr": 4.66
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-60",
+						"rate": 4.05,
+						"apr": 4.32
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-80",
+						"rate": 4.15,
+						"apr": 4.42
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-90",
+						"rate": 4.4,
+						"apr": 4.65
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-10-05T15:09:48Z",
+			"afterHash": "70de9d1b5d8da4901196304c21d62da0ea972c0ecc6a82b16e1e0c33f157c2da",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-60",
+						"apr": 4.23
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-80",
+						"apr": 4.34
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-90",
+						"apr": 4.66
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-green-fixed-3yr-60",
+						"name": "Green 3 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 3.6,
+						"apr": 4.23,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-green-fixed-3yr-80",
+						"name": "Green 3 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 3.7,
+						"apr": 4.34,
+						"fixedTerm": 3,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-green-fixed-3yr-90",
+						"name": "Green 3 Year Fixed - LTV ≤90%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 4.66,
+						"fixedTerm": 3,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-60",
+						"name": "High Value Green 3 Year Fixed - LTV ≤60%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 3.5,
+						"apr": 4.2,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-80",
+						"name": "High Value Green 3 Year Fixed - LTV ≤80%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 3.6,
+						"apr": 4.31,
+						"fixedTerm": 3,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-90",
+						"name": "High Value Green 3 Year Fixed - LTV ≤90%",
+						"lenderId": "ptsb",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 4.59,
+						"fixedTerm": 3,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"perks": [],
+						"newBusiness": false
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2025-01-21T01:03:49Z",
+			"afterHash": "158bd823fb8421f737b5a999b7015689a32bdd20710b6ead5a31ef68414f99e4",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-fixed-2yr-60",
+						"rate": 4.05,
+						"apr": 4.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-80",
+					"changes": {
+						"id": "ptsb-fixed-2yr-80",
+						"rate": 4.2,
+						"apr": 4.57
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-fixed-2yr-90",
+						"rate": 4.6,
+						"apr": 4.82
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-fixed-3yr-60",
+						"rate": 3.65,
+						"apr": 4.29
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-fixed-3yr-80",
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-fixed-3yr-90",
+						"rate": 4.2,
+						"apr": 4.68
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-60",
+					"changes": {
+						"id": "ptsb-fixed-4yr-60",
+						"rate": 3,
+						"apr": 3.96
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-80",
+					"changes": {
+						"id": "ptsb-fixed-4yr-80",
+						"rate": 3.4,
+						"apr": 4.18
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-90",
+					"changes": {
+						"id": "ptsb-fixed-4yr-90",
+						"rate": 3.8,
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-fixed-5yr-60",
+						"rate": 3.65,
+						"apr": 4.16
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-fixed-5yr-80",
+						"rate": 3.8,
+						"apr": 4.29
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-fixed-5yr-90",
+						"rate": 4.2,
+						"apr": 4.59
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-60",
+						"rate": 3.45,
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-80",
+						"rate": 3.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-90",
+						"rate": 4,
+						"apr": 4.62
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-60",
+						"rate": 3.45,
+						"apr": 4.06
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-80",
+						"rate": 3.6,
+						"apr": 4.19
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-90",
+						"rate": 4,
+						"apr": 4.49
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-fixed-7yr-60",
+						"rate": 3.65,
+						"apr": 4.05
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-fixed-7yr-80",
+						"rate": 3.8,
+						"apr": 4.18
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-fixed-7yr-90",
+						"rate": 4.2,
+						"apr": 4.52
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-60",
+						"rate": 3.45,
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-80",
+						"rate": 3.55,
+						"apr": 4.33
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.63
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-60",
+						"rate": 3.45,
+						"apr": 4.06
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-80",
+						"rate": 3.55,
+						"apr": 4.16
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-90",
+						"rate": 4.05,
+						"apr": 4.52
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-60",
+						"rate": 3.35,
+						"apr": 4.19
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-80",
+						"rate": 3.5,
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-90",
+						"rate": 3.9,
+						"apr": 4.58
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-60",
+						"rate": 3.35,
+						"apr": 4.01
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-80",
+						"rate": 3.5,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-90",
+						"rate": 3.9,
+						"apr": 4.44
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-60",
+						"rate": 4.05,
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-80",
+						"rate": 4.2,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-90",
+						"rate": 4.6,
+						"apr": 4.78
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-60",
+						"rate": 3.65,
+						"apr": 4.25
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-90",
+						"rate": 4.2,
+						"apr": 4.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-60",
+						"rate": 3.65,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-80",
+						"rate": 3.8,
+						"apr": 4.25
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-90",
+						"rate": 4.2,
+						"apr": 4.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-3yr-60",
+						"rate": 3.45,
+						"apr": 4.19
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-3yr-80",
+						"rate": 3.6,
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-3yr-90",
+						"rate": 4,
+						"apr": 4.58
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-60",
+						"rate": 3.45,
+						"apr": 4.02
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-80",
+						"rate": 3.6,
+						"apr": 4.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-90",
+						"rate": 4,
+						"apr": 4.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-60",
+						"rate": 3.65,
+						"apr": 4.01
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-80",
+						"rate": 3.8,
+						"apr": 4.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-90",
+						"rate": 4.2,
+						"apr": 4.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-60",
+						"rate": 3.45,
+						"apr": 4.19
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-80",
+						"rate": 3.55,
+						"apr": 4.29
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.59
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-60",
+						"rate": 3.45,
+						"apr": 4.02
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-80",
+						"rate": 3.55,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-90",
+						"rate": 4.05,
+						"apr": 4.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-60",
+						"rate": 3.35,
+						"apr": 4.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-80",
+						"rate": 3.5,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-90",
+						"rate": 3.9,
+						"apr": 4.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-60",
+						"rate": 3.35,
+						"apr": 3.97
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-80",
+						"rate": 3.5,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-90",
+						"rate": 3.9,
+						"apr": 4.4
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2025-10-06T19:52:52Z",
+			"afterHash": "9923f559e7ac746974528900f95c7446ff8b5a10bf38d6f6968343c2f81575e6",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-fixed-2yr-90",
+						"rate": 4.4,
+						"apr": 4.78
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.63
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-90",
+					"changes": {
+						"id": "ptsb-fixed-4yr-90",
+						"rate": 3.65,
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-fixed-5yr-90",
+						"rate": 4.05,
+						"apr": 4.52
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-90",
+						"rate": 3.8,
+						"apr": 4.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-90",
+						"rate": 3.8,
+						"apr": 4.39
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-fixed-7yr-90",
+						"rate": 4.05,
+						"apr": 4.42
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-90",
+						"rate": 3.85,
+						"apr": 4.57
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-90",
+						"rate": 3.85,
+						"apr": 4.42
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-90",
+						"rate": 3.7,
+						"apr": 4.52
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-90",
+						"rate": 3.7,
+						"apr": 4.34
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-90",
+					"changes": {
+						"id": "ptsb-variable-90",
+						"apr": 4.84,
+						"minLtv": 80
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-2yr-90",
+						"rate": 4.4,
+						"apr": 4.74
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.59
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-90",
+						"rate": 4.05,
+						"apr": 4.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-3yr-90",
+						"rate": 3.8,
+						"apr": 4.51
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-90",
+						"rate": 3.8,
+						"apr": 4.35
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-90",
+						"rate": 4.05,
+						"apr": 4.38
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-90",
+						"rate": 3.85,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-90",
+						"rate": 3.85,
+						"apr": 4.38
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-90",
+						"rate": 3.7,
+						"apr": 4.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-90",
+						"rate": 3.7,
+						"apr": 4.31
+					}
+				}
+			]
+		}
+	]
+}

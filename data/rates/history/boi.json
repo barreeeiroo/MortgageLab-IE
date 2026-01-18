@@ -1,0 +1,7263 @@
+{
+	"lenderId": "boi",
+	"baseline": {
+		"timestamp": "2019-08-18T00:36:10Z",
+		"ratesHash": "6ce3660e731b1e1f0235c84f5e8e92abaa60e8597e83b73376b3b8eb44bfe91d",
+		"rates": [
+			{
+				"id": "boi-fixed-1yr-60",
+				"name": "1 Year Fixed - LTV ≤60%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 2.9,
+				"apr": 3.9,
+				"fixedTerm": 1,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-1yr-80",
+				"name": "1 Year Fixed - LTV ≤80%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 2.9,
+				"apr": 4.2,
+				"fixedTerm": 1,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-1yr-90",
+				"name": "1 Year Fixed - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 2.9,
+				"apr": 4.4,
+				"fixedTerm": 1,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-2yr-60",
+				"name": "2 Year Fixed - LTV ≤60%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 2.9,
+				"apr": 3.8,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-2yr-80",
+				"name": "2 Year Fixed - LTV ≤80%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 2.9,
+				"apr": 4,
+				"fixedTerm": 2,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-2yr-90",
+				"name": "2 Year Fixed - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 2.9,
+				"apr": 4.3,
+				"fixedTerm": 2,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-3yr-60",
+				"name": "3 Year Fixed - LTV ≤60%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.7,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-3yr-80",
+				"name": "3 Year Fixed - LTV ≤80%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.9,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-3yr-90",
+				"name": "3 Year Fixed - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 4.1,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-5yr-60",
+				"name": "5 Year Fixed - LTV ≤60%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.6,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-5yr-80",
+				"name": "5 Year Fixed - LTV ≤80%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.7,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-5yr-90",
+				"name": "5 Year Fixed - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3,
+				"apr": 3.9,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-10yr-60",
+				"name": "10 Year Fixed - LTV ≤60%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3.3,
+				"apr": 3.5,
+				"fixedTerm": 10,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-10yr-80",
+				"name": "10 Year Fixed - LTV ≤80%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3.3,
+				"apr": 3.6,
+				"fixedTerm": 10,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-fixed-10yr-90",
+				"name": "10 Year Fixed - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 3.5,
+				"apr": 3.8,
+				"fixedTerm": 10,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-variable-60",
+				"name": "Variable Rate - LTV ≤60%",
+				"lenderId": "boi",
+				"type": "variable",
+				"rate": 3.9,
+				"apr": 4,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-variable-80",
+				"name": "Variable Rate - LTV ≤80%",
+				"lenderId": "boi",
+				"type": "variable",
+				"rate": 4.2,
+				"apr": 4.3,
+				"minLtv": 60,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-variable-90",
+				"name": "Variable Rate - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "variable",
+				"rate": 4.5,
+				"apr": 4.6,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-btl-fixed-2yr-90",
+				"name": "Buy-to-Let 2 Year Fixed - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 4.75,
+				"apr": 5.1,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"btl"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-btl-fixed-5yr-90",
+				"name": "Buy-to-Let 5 Year Fixed - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "fixed",
+				"rate": 4.9,
+				"apr": 5.2,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"btl"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "boi-btl-variable-90",
+				"name": "Buy-to-Let Variable Rate - LTV ≤90%",
+				"lenderId": "boi",
+				"type": "variable",
+				"rate": 4.6,
+				"apr": 4.9,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"btl"
+				],
+				"newBusiness": true,
+				"perks": []
+			}
+		]
+	},
+	"changesets": [
+		{
+			"timestamp": "2022-01-19T13:06:44Z",
+			"afterHash": "5a33551c8d8aaf384ef7b28701bac39b4ffa7ed3ef56897d3dffa3d7c7021b05",
+			"operations": [
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-4yr-60",
+						"name": "4 Year Fixed - LTV ≤60%",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 2.3,
+						"apr": 3.4,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-4yr-80",
+						"name": "4 Year Fixed - LTV ≤80%",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 2.3,
+						"apr": 3.6,
+						"fixedTerm": 4,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-4yr-90",
+						"name": "4 Year Fixed - LTV ≤90%",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 2.3,
+						"apr": 3.7,
+						"fixedTerm": 4,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-7yr-60",
+						"name": "7 Year Fixed - LTV ≤60%",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 2.55,
+						"apr": 3.2,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 60,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-7yr-80",
+						"name": "7 Year Fixed - LTV ≤80%",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 2.55,
+						"apr": 3.3,
+						"fixedTerm": 7,
+						"minLtv": 60,
+						"maxLtv": 80,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-7yr-90",
+						"name": "7 Year Fixed - LTV ≤90%",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 2.55,
+						"apr": 3.4,
+						"fixedTerm": 7,
+						"minLtv": 80,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2022-06-17T16:20:47Z",
+			"afterHash": "4492acf96fea1d55a4d81ce375dfa6d45081760f6d0944d3eaee33acb0b7bc21",
+			"operations": [
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-60",
+					"changes": {
+						"id": "boi-fixed-4yr-60",
+						"rate": 2.2,
+						"apr": 3.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-80",
+					"changes": {
+						"id": "boi-fixed-4yr-80",
+						"rate": 2.2,
+						"apr": 3.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-90",
+					"changes": {
+						"id": "boi-fixed-4yr-90",
+						"rate": 2.2
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2022-11-19T19:32:28Z",
+			"afterHash": "ee0bece6f7c9d1a417ef1b09935ad9d6cb1019cdf2144473993accdf5a7477b3",
+			"operations": [
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-60",
+					"changes": {
+						"id": "boi-fixed-1yr-60",
+						"rate": 3.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-80",
+					"changes": {
+						"id": "boi-fixed-1yr-80",
+						"rate": 3.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-90",
+					"changes": {
+						"id": "boi-fixed-1yr-90",
+						"rate": 3.15,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-60",
+					"changes": {
+						"id": "boi-fixed-2yr-60",
+						"rate": 3.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-80",
+					"changes": {
+						"id": "boi-fixed-2yr-80",
+						"rate": 3.15,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-90",
+					"changes": {
+						"id": "boi-fixed-2yr-90",
+						"rate": 3.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-60",
+					"changes": {
+						"id": "boi-fixed-3yr-60",
+						"rate": 3.25,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-80",
+					"changes": {
+						"id": "boi-fixed-3yr-80",
+						"rate": 3.25,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-90",
+					"changes": {
+						"id": "boi-fixed-3yr-90",
+						"rate": 3.25,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-60",
+					"changes": {
+						"id": "boi-fixed-5yr-60",
+						"rate": 3.25,
+						"apr": 3.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-80",
+					"changes": {
+						"id": "boi-fixed-5yr-80",
+						"rate": 3.25,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-90",
+					"changes": {
+						"id": "boi-fixed-5yr-90",
+						"rate": 3.25,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-60",
+					"changes": {
+						"id": "boi-fixed-4yr-60",
+						"rate": 2.45,
+						"apr": 3.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-80",
+					"changes": {
+						"id": "boi-fixed-4yr-80",
+						"rate": 2.45,
+						"apr": 3.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-90",
+					"changes": {
+						"id": "boi-fixed-4yr-90",
+						"rate": 2.45,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-60",
+					"changes": {
+						"id": "boi-fixed-7yr-60",
+						"rate": 2.8,
+						"apr": 3.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-80",
+					"changes": {
+						"id": "boi-fixed-7yr-80",
+						"rate": 2.8,
+						"apr": 3.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-90",
+					"changes": {
+						"id": "boi-fixed-7yr-90",
+						"rate": 2.8,
+						"apr": 3.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-60",
+					"changes": {
+						"id": "boi-fixed-10yr-60",
+						"rate": 3.55,
+						"apr": 3.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-80",
+					"changes": {
+						"id": "boi-fixed-10yr-80",
+						"rate": 3.55,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-90",
+					"changes": {
+						"id": "boi-fixed-10yr-90",
+						"rate": 3.75,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-90",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-90",
+						"rate": 5,
+						"apr": 5.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-90",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-90",
+						"rate": 5.15,
+						"apr": 5.5
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2023-01-30T13:51:49Z",
+			"afterHash": "9a44da01fc24fbac090b2985574f3c76ff1645f25b93c795ac372f6f4a5e4dc6",
+			"operations": [
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-60",
+					"changes": {
+						"id": "boi-fixed-1yr-60",
+						"rate": 3.9,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-80",
+					"changes": {
+						"id": "boi-fixed-1yr-80",
+						"rate": 3.9,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-90",
+					"changes": {
+						"id": "boi-fixed-1yr-90",
+						"rate": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-60",
+					"changes": {
+						"id": "boi-fixed-2yr-60",
+						"rate": 3.9,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-80",
+					"changes": {
+						"id": "boi-fixed-2yr-80",
+						"rate": 3.9,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-90",
+					"changes": {
+						"id": "boi-fixed-2yr-90",
+						"rate": 3.9,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-60",
+					"changes": {
+						"id": "boi-fixed-3yr-60",
+						"rate": 4,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-80",
+					"changes": {
+						"id": "boi-fixed-3yr-80",
+						"rate": 4,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-90",
+					"changes": {
+						"id": "boi-fixed-3yr-90",
+						"rate": 4,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-60",
+					"changes": {
+						"id": "boi-fixed-5yr-60",
+						"rate": 4,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-80",
+					"changes": {
+						"id": "boi-fixed-5yr-80",
+						"rate": 4,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-90",
+					"changes": {
+						"id": "boi-fixed-5yr-90",
+						"rate": 4,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-60",
+					"changes": {
+						"id": "boi-fixed-4yr-60",
+						"rate": 3.2,
+						"apr": 3.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-80",
+					"changes": {
+						"id": "boi-fixed-4yr-80",
+						"rate": 3.2,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-90",
+					"changes": {
+						"id": "boi-fixed-4yr-90",
+						"rate": 3.2,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-60",
+					"changes": {
+						"id": "boi-fixed-7yr-60",
+						"rate": 3.55,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-80",
+					"changes": {
+						"id": "boi-fixed-7yr-80",
+						"rate": 3.55,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-90",
+					"changes": {
+						"id": "boi-fixed-7yr-90",
+						"rate": 3.55,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-60",
+					"changes": {
+						"id": "boi-fixed-10yr-60",
+						"rate": 4.3,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-80",
+					"changes": {
+						"id": "boi-fixed-10yr-80",
+						"rate": 4.3,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-90",
+					"changes": {
+						"id": "boi-fixed-10yr-90",
+						"rate": 4.5,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-90",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-90",
+						"rate": 5.75,
+						"apr": 6.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-90",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-90",
+						"rate": 5.9,
+						"apr": 6.3
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2023-05-14T16:05:00Z",
+			"afterHash": "c45a736e5143a6194d2186c2751f2bdde252ef995583383713960621aa003210",
+			"operations": [
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-60",
+					"changes": {
+						"id": "boi-fixed-1yr-60",
+						"rate": 4.4,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-80",
+					"changes": {
+						"id": "boi-fixed-1yr-80",
+						"rate": 4.4,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-90",
+					"changes": {
+						"id": "boi-fixed-1yr-90",
+						"rate": 4.4,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-60",
+					"changes": {
+						"id": "boi-fixed-2yr-60",
+						"rate": 4.4,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-80",
+					"changes": {
+						"id": "boi-fixed-2yr-80",
+						"rate": 4.4,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-90",
+					"changes": {
+						"id": "boi-fixed-2yr-90",
+						"rate": 4.4,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-60",
+					"changes": {
+						"id": "boi-fixed-3yr-60",
+						"rate": 4.5,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-80",
+					"changes": {
+						"id": "boi-fixed-3yr-80",
+						"rate": 4.5,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-90",
+					"changes": {
+						"id": "boi-fixed-3yr-90",
+						"rate": 4.5,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-60",
+					"changes": {
+						"id": "boi-fixed-5yr-60",
+						"rate": 4.5,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-80",
+					"changes": {
+						"id": "boi-fixed-5yr-80",
+						"rate": 4.5,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-90",
+					"changes": {
+						"id": "boi-fixed-5yr-90",
+						"rate": 4.5,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-60",
+					"changes": {
+						"id": "boi-fixed-4yr-60",
+						"rate": 3.7,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-80",
+					"changes": {
+						"id": "boi-fixed-4yr-80",
+						"rate": 3.7,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-90",
+					"changes": {
+						"id": "boi-fixed-4yr-90",
+						"rate": 3.7,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-60",
+					"changes": {
+						"id": "boi-fixed-7yr-60",
+						"rate": 4.05,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-80",
+					"changes": {
+						"id": "boi-fixed-7yr-80",
+						"rate": 4.05,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-90",
+					"changes": {
+						"id": "boi-fixed-7yr-90",
+						"rate": 4.05,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-60",
+					"changes": {
+						"id": "boi-fixed-10yr-60",
+						"rate": 4.8,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-80",
+					"changes": {
+						"id": "boi-fixed-10yr-80",
+						"rate": 4.8,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-90",
+					"changes": {
+						"id": "boi-fixed-10yr-90",
+						"rate": 5,
+						"apr": 5.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-90",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-90",
+						"rate": 6.25,
+						"apr": 6.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-90",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-90",
+						"rate": 6.4,
+						"apr": 6.8
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2023-08-17T19:58:19Z",
+			"afterHash": "9ae9c4f07a5c44ff23531184775e87bf508b654b04a5cf64753fac3b765a091c",
+			"operations": [
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-60",
+					"changes": {
+						"id": "boi-fixed-1yr-60",
+						"rate": 4.65,
+						"apr": 4.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-80",
+					"changes": {
+						"id": "boi-fixed-1yr-80",
+						"rate": 4.65,
+						"apr": 4.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-90",
+					"changes": {
+						"id": "boi-fixed-1yr-90",
+						"rate": 4.65,
+						"apr": 4.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-60",
+					"changes": {
+						"id": "boi-fixed-2yr-60",
+						"rate": 4.65,
+						"apr": 4.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-80",
+					"changes": {
+						"id": "boi-fixed-2yr-80",
+						"rate": 4.65,
+						"apr": 4.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-90",
+					"changes": {
+						"id": "boi-fixed-2yr-90",
+						"rate": 4.65,
+						"apr": 4.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-60",
+					"changes": {
+						"id": "boi-fixed-3yr-60",
+						"rate": 4.75,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-80",
+					"changes": {
+						"id": "boi-fixed-3yr-80",
+						"rate": 4.75,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-90",
+					"changes": {
+						"id": "boi-fixed-3yr-90",
+						"rate": 4.75,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-60",
+					"changes": {
+						"id": "boi-fixed-5yr-60",
+						"rate": 4.75,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-80",
+					"changes": {
+						"id": "boi-fixed-5yr-80",
+						"rate": 4.75,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-90",
+					"changes": {
+						"id": "boi-fixed-5yr-90",
+						"rate": 4.75,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-60",
+					"changes": {
+						"id": "boi-fixed-4yr-60",
+						"rate": 3.95,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-80",
+					"changes": {
+						"id": "boi-fixed-4yr-80",
+						"rate": 3.95,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-90",
+					"changes": {
+						"id": "boi-fixed-4yr-90",
+						"rate": 3.95,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-60",
+					"changes": {
+						"id": "boi-fixed-7yr-60",
+						"rate": 4.3,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-80",
+					"changes": {
+						"id": "boi-fixed-7yr-80",
+						"rate": 4.3,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-90",
+					"changes": {
+						"id": "boi-fixed-7yr-90",
+						"rate": 4.3,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-60",
+					"changes": {
+						"id": "boi-fixed-10yr-60",
+						"rate": 5.05,
+						"apr": 5.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-80",
+					"changes": {
+						"id": "boi-fixed-10yr-80",
+						"rate": 5.05,
+						"apr": 5.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-90",
+					"changes": {
+						"id": "boi-fixed-10yr-90",
+						"rate": 5.25,
+						"apr": 5.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-90",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-90",
+						"rate": 6.5,
+						"apr": 6.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-90",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-90",
+						"rate": 6.65,
+						"apr": 7
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-02-22T23:21:45Z",
+			"afterHash": "9b334750aab4775d04276782d38e421e4e1c082afe03e28af56d88b70e503c67",
+			"operations": [
+				{
+					"op": "update",
+					"id": "boi-fixed-1yr-90",
+					"changes": {
+						"id": "boi-fixed-1yr-90",
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-90",
+					"changes": {
+						"id": "boi-fixed-2yr-90",
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-60",
+					"changes": {
+						"id": "boi-fixed-4yr-60",
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-80",
+					"changes": {
+						"id": "boi-fixed-4yr-80",
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-4yr-90",
+					"changes": {
+						"id": "boi-fixed-4yr-90",
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-80",
+					"changes": {
+						"id": "boi-fixed-7yr-80",
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-7yr-90",
+					"changes": {
+						"id": "boi-fixed-7yr-90",
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-variable-60",
+					"changes": {
+						"id": "boi-variable-60",
+						"rate": 4.15,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-variable-80",
+					"changes": {
+						"id": "boi-variable-80",
+						"rate": 4.45,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-variable-90",
+					"changes": {
+						"id": "boi-variable-90",
+						"rate": 4.75,
+						"apr": 4.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-variable-90",
+					"changes": {
+						"id": "boi-btl-variable-90",
+						"rate": 4.85,
+						"apr": 5.1
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2024-06-12T23:53:23Z",
+			"afterHash": "454067189e3bda1b2af79ae8a0688075fe56a467b4ad8c9b11c0213de544f430",
+			"operations": [
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-1yr-ber-a",
+						"name": "1 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.3,
+						"apr": 4.4,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-2yr-ber-b",
+						"name": "2 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.35,
+						"apr": 4.5,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-5yr-ber-d",
+						"name": "5 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.55,
+						"apr": 4.7,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-5yr-ber-e",
+						"name": "5 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.6,
+						"apr": 4.7,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-5yr-ber-f",
+						"name": "5 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.65,
+						"apr": 4.8,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-5yr-ber-g",
+						"name": "5 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.7,
+						"apr": 4.8,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-5yr-ber-exempt",
+						"name": "5 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.75,
+						"apr": 4.9,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-4yr-ber-a",
+						"name": "High Value 4 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.6,
+						"apr": 4,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-4yr-ber-b",
+						"name": "High Value 4 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.65,
+						"apr": 4,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-4yr-ber-c",
+						"name": "High Value 4 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.7,
+						"apr": 4.1,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-4yr-ber-d",
+						"name": "High Value 4 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.75,
+						"apr": 4.1,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-4yr-ber-e",
+						"name": "High Value 4 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.8,
+						"apr": 4.1,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-2yr-ber-c",
+						"name": "2 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.4,
+						"apr": 4.5,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-4yr-ber-f",
+						"name": "High Value 4 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.85,
+						"apr": 4.1,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-4yr-ber-g",
+						"name": "High Value 4 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.9,
+						"apr": 4.2,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-4yr-ber-exempt",
+						"name": "High Value 4 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.95,
+						"apr": 4.2,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-5yr-ber-a",
+						"name": "High Value 5 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.9,
+						"apr": 4.1,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-5yr-ber-b",
+						"name": "High Value 5 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.95,
+						"apr": 4.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-5yr-ber-c",
+						"name": "High Value 5 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4,
+						"apr": 4.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-5yr-ber-d",
+						"name": "High Value 5 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 4.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-5yr-ber-e",
+						"name": "High Value 5 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.1,
+						"apr": 4.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-5yr-ber-f",
+						"name": "High Value 5 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 4.3,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-5yr-ber-g",
+						"name": "High Value 5 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.2,
+						"apr": 4.3,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-2yr-ber-d",
+						"name": "2 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.45,
+						"apr": 4.6,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-5yr-ber-exempt",
+						"name": "High Value 5 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 4.4,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-7yr-ber-a",
+						"name": "High Value 7 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.95,
+						"apr": 4.1,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-7yr-ber-b",
+						"name": "High Value 7 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4,
+						"apr": 4.2,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-7yr-ber-c",
+						"name": "High Value 7 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 4.2,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-7yr-ber-d",
+						"name": "High Value 7 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.1,
+						"apr": 4.2,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-7yr-ber-e",
+						"name": "High Value 7 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 4.3,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-7yr-ber-f",
+						"name": "High Value 7 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.2,
+						"apr": 4.3,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-7yr-ber-g",
+						"name": "High Value 7 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 4.4,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-7yr-ber-exempt",
+						"name": "High Value 7 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.3,
+						"apr": 4.4,
+						"fixedTerm": 7,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-10yr-ber-a",
+						"name": "10 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.7,
+						"apr": 4.8,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-2yr-ber-e",
+						"name": "2 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.5,
+						"apr": 4.6,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-10yr-ber-b",
+						"name": "10 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.75,
+						"apr": 4.9,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-10yr-ber-c",
+						"name": "10 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.8,
+						"apr": 4.9,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-10yr-ber-d",
+						"name": "10 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.85,
+						"apr": 5,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-10yr-ber-e",
+						"name": "10 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.9,
+						"apr": 5,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-10yr-ber-f",
+						"name": "10 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.95,
+						"apr": 5.1,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-10yr-ber-g",
+						"name": "10 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5,
+						"apr": 5.1,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-10yr-ber-exempt",
+						"name": "10 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.05,
+						"apr": 5.2,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-variable-ber-a",
+						"name": "Variable Rate - BER A",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-variable-ber-b",
+						"name": "Variable Rate - BER B",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-variable-ber-c",
+						"name": "Variable Rate - BER C",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-2yr-ber-f",
+						"name": "2 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.55,
+						"apr": 4.7,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-variable-ber-d",
+						"name": "Variable Rate - BER D",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-variable-ber-e",
+						"name": "Variable Rate - BER E",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-variable-ber-f",
+						"name": "Variable Rate - BER F",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-variable-ber-g",
+						"name": "Variable Rate - BER G",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-variable-ber-exempt",
+						"name": "Variable Rate - BER Exempt",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-1yr-ber-b",
+						"name": "1 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.35,
+						"apr": 4.5,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-1yr-ber-c",
+						"name": "1 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.4,
+						"apr": 4.5,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-1yr-ber-d",
+						"name": "1 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.45,
+						"apr": 4.6,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-1yr-ber-e",
+						"name": "1 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.5,
+						"apr": 4.6,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-2yr-ber-g",
+						"name": "2 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.6,
+						"apr": 4.7,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-1yr-ber-f",
+						"name": "1 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.55,
+						"apr": 4.7,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-1yr-ber-g",
+						"name": "1 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.6,
+						"apr": 4.7,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-1yr-ber-exempt",
+						"name": "1 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.65,
+						"apr": 4.8,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-2yr-ber-a",
+						"name": "2 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.3,
+						"apr": 4.4,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-2yr-ber-exempt",
+						"name": "2 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.65,
+						"apr": 4.8,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-3yr-ber-a",
+						"name": "3 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.4,
+						"apr": 4.5,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-3yr-ber-b",
+						"name": "3 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.45,
+						"apr": 4.6,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-3yr-ber-c",
+						"name": "3 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.5,
+						"apr": 4.6,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-3yr-ber-d",
+						"name": "3 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.55,
+						"apr": 4.7,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-3yr-ber-e",
+						"name": "3 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.6,
+						"apr": 4.7,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-3yr-ber-f",
+						"name": "3 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.65,
+						"apr": 4.8,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-3yr-ber-g",
+						"name": "3 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.7,
+						"apr": 4.8,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-3yr-ber-exempt",
+						"name": "3 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.75,
+						"apr": 4.9,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-5yr-ber-a",
+						"name": "5 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.4,
+						"apr": 4.5,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-5yr-ber-b",
+						"name": "5 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.45,
+						"apr": 4.6,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-fixed-5yr-ber-c",
+						"name": "5 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.5,
+						"apr": 4.6,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": [
+							"cashback-3pct"
+						]
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-1yr-ber-a",
+						"name": "Existing 1 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.8,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-1yr-ber-b",
+						"name": "Existing 1 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.85,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-1yr-ber-c",
+						"name": "Existing 1 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.9,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-1yr-ber-d",
+						"name": "Existing 1 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.95,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-1yr-ber-e",
+						"name": "Existing 1 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-1yr-ber-f",
+						"name": "Existing 1 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-1yr-ber-g",
+						"name": "Existing 1 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.1,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-1yr-ber-exempt",
+						"name": "Existing 1 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 4.3,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-2yr-ber-a",
+						"name": "Existing 2 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.8,
+						"apr": 4.2,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-2yr-ber-b",
+						"name": "Existing 2 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.85,
+						"apr": 4.2,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-2yr-ber-c",
+						"name": "Existing 2 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.9,
+						"apr": 4.2,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-2yr-ber-d",
+						"name": "Existing 2 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.95,
+						"apr": 4.2,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-2yr-ber-e",
+						"name": "Existing 2 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4,
+						"apr": 4.2,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-2yr-ber-f",
+						"name": "Existing 2 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 4.2,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-2yr-ber-g",
+						"name": "Existing 2 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.1,
+						"apr": 4.2,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-2yr-ber-exempt",
+						"name": "Existing 2 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 4.3,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-3yr-ber-a",
+						"name": "Existing 3 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.9,
+						"apr": 4.2,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-3yr-ber-b",
+						"name": "Existing 3 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.95,
+						"apr": 4.2,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-3yr-ber-c",
+						"name": "Existing 3 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4,
+						"apr": 4.2,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-3yr-ber-d",
+						"name": "Existing 3 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 4.2,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-3yr-ber-e",
+						"name": "Existing 3 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.1,
+						"apr": 4.2,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-3yr-ber-f",
+						"name": "Existing 3 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 4.3,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-3yr-ber-g",
+						"name": "Existing 3 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.2,
+						"apr": 4.3,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-3yr-ber-exempt",
+						"name": "Existing 3 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 4.4,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-5yr-ber-a",
+						"name": "Existing 5 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.9,
+						"apr": 4.1,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-5yr-ber-b",
+						"name": "Existing 5 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.95,
+						"apr": 4.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-5yr-ber-c",
+						"name": "Existing 5 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4,
+						"apr": 4.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-5yr-ber-d",
+						"name": "Existing 5 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.05,
+						"apr": 4.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-5yr-ber-e",
+						"name": "Existing 5 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.1,
+						"apr": 4.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-5yr-ber-f",
+						"name": "Existing 5 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.15,
+						"apr": 4.3,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-5yr-ber-g",
+						"name": "Existing 5 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.2,
+						"apr": 4.3,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-5yr-ber-exempt",
+						"name": "Existing 5 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 4.4,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-10yr-ber-a",
+						"name": "Existing 10 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.2,
+						"apr": 4.3,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-10yr-ber-b",
+						"name": "Existing 10 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.25,
+						"apr": 4.4,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-10yr-ber-c",
+						"name": "Existing 10 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.3,
+						"apr": 4.4,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-10yr-ber-d",
+						"name": "Existing 10 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.35,
+						"apr": 4.5,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-10yr-ber-e",
+						"name": "Existing 10 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.4,
+						"apr": 4.5,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-10yr-ber-f",
+						"name": "Existing 10 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.45,
+						"apr": 4.6,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-10yr-ber-g",
+						"name": "Existing 10 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.5,
+						"apr": 4.6,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-10yr-ber-exempt",
+						"name": "Existing 10 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 4.55,
+						"apr": 4.7,
+						"fixedTerm": 10,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-variable-ber-a",
+						"name": "Existing Variable Rate - BER A",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-variable-ber-b",
+						"name": "Existing Variable Rate - BER B",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-variable-ber-c",
+						"name": "Existing Variable Rate - BER C",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-variable-ber-d",
+						"name": "Existing Variable Rate - BER D",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-variable-ber-e",
+						"name": "Existing Variable Rate - BER E",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-variable-ber-f",
+						"name": "Existing Variable Rate - BER F",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-variable-ber-g",
+						"name": "Existing Variable Rate - BER G",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-variable-ber-exempt",
+						"name": "Existing Variable Rate - BER Exempt",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.15,
+						"apr": 4.3,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-2yr-ber-a",
+						"name": "Buy-to-Let 2 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.15,
+						"apr": 6.5,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-2yr-ber-b",
+						"name": "Buy-to-Let 2 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.2,
+						"apr": 6.6,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-2yr-ber-c",
+						"name": "Buy-to-Let 2 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.25,
+						"apr": 6.6,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-2yr-ber-d",
+						"name": "Buy-to-Let 2 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.3,
+						"apr": 6.7,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-2yr-ber-e",
+						"name": "Buy-to-Let 2 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.35,
+						"apr": 6.7,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-2yr-ber-f",
+						"name": "Buy-to-Let 2 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.4,
+						"apr": 6.8,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-2yr-ber-g",
+						"name": "Buy-to-Let 2 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.45,
+						"apr": 6.8,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-2yr-ber-exempt",
+						"name": "Buy-to-Let 2 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.5,
+						"apr": 6.9,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-5yr-ber-a",
+						"name": "Buy-to-Let 5 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.3,
+						"apr": 6.7,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-5yr-ber-b",
+						"name": "Buy-to-Let 5 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.35,
+						"apr": 6.7,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-5yr-ber-c",
+						"name": "Buy-to-Let 5 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.4,
+						"apr": 6.8,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-5yr-ber-d",
+						"name": "Buy-to-Let 5 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.45,
+						"apr": 6.8,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-5yr-ber-e",
+						"name": "Buy-to-Let 5 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.5,
+						"apr": 6.9,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-5yr-ber-f",
+						"name": "Buy-to-Let 5 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.55,
+						"apr": 6.9,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-5yr-ber-g",
+						"name": "Buy-to-Let 5 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.6,
+						"apr": 7,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-fixed-5yr-ber-exempt",
+						"name": "Buy-to-Let 5 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.65,
+						"apr": 7,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-variable-ber-a",
+						"name": "Buy-to-Let Variable Rate - BER A",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-variable-ber-b",
+						"name": "Buy-to-Let Variable Rate - BER B",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-variable-ber-c",
+						"name": "Buy-to-Let Variable Rate - BER C",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-variable-ber-d",
+						"name": "Buy-to-Let Variable Rate - BER D",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-variable-ber-e",
+						"name": "Buy-to-Let Variable Rate - BER E",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-variable-ber-f",
+						"name": "Buy-to-Let Variable Rate - BER F",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-variable-ber-g",
+						"name": "Buy-to-Let Variable Rate - BER G",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-variable-ber-exempt",
+						"name": "Buy-to-Let Variable Rate - BER Exempt",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-2yr-ber-a",
+						"name": "Buy-to-Let Existing 2 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.65,
+						"apr": 6,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-2yr-ber-b",
+						"name": "Buy-to-Let Existing 2 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.7,
+						"apr": 6,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-2yr-ber-c",
+						"name": "Buy-to-Let Existing 2 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.75,
+						"apr": 6.1,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-2yr-ber-d",
+						"name": "Buy-to-Let Existing 2 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.8,
+						"apr": 6.1,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-2yr-ber-e",
+						"name": "Buy-to-Let Existing 2 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.85,
+						"apr": 6.2,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-2yr-ber-f",
+						"name": "Buy-to-Let Existing 2 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.9,
+						"apr": 6.3,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-2yr-ber-g",
+						"name": "Buy-to-Let Existing 2 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.95,
+						"apr": 6.3,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-2yr-ber-exempt",
+						"name": "Buy-to-Let Existing 2 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6,
+						"apr": 6.4,
+						"fixedTerm": 2,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-5yr-ber-a",
+						"name": "Buy-to-Let Existing 5 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.8,
+						"apr": 6.1,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-5yr-ber-b",
+						"name": "Buy-to-Let Existing 5 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.85,
+						"apr": 6.2,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-5yr-ber-c",
+						"name": "Buy-to-Let Existing 5 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.9,
+						"apr": 6.3,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-5yr-ber-d",
+						"name": "Buy-to-Let Existing 5 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 5.95,
+						"apr": 6.3,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-5yr-ber-e",
+						"name": "Buy-to-Let Existing 5 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6,
+						"apr": 6.4,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-5yr-ber-f",
+						"name": "Buy-to-Let Existing 5 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.05,
+						"apr": 6.4,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-5yr-ber-g",
+						"name": "Buy-to-Let Existing 5 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.1,
+						"apr": 6.5,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-fixed-5yr-ber-exempt",
+						"name": "Buy-to-Let Existing 5 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 6.15,
+						"apr": 6.5,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-variable-ber-a",
+						"name": "Buy-to-Let Existing Variable Rate - BER A",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-variable-ber-b",
+						"name": "Buy-to-Let Existing Variable Rate - BER B",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-variable-ber-c",
+						"name": "Buy-to-Let Existing Variable Rate - BER C",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-variable-ber-d",
+						"name": "Buy-to-Let Existing Variable Rate - BER D",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-variable-ber-e",
+						"name": "Buy-to-Let Existing Variable Rate - BER E",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-variable-ber-f",
+						"name": "Buy-to-Let Existing Variable Rate - BER F",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-variable-ber-g",
+						"name": "Buy-to-Let Existing Variable Rate - BER G",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-btl-existing-variable-ber-exempt",
+						"name": "Buy-to-Let Existing Variable Rate - BER Exempt",
+						"lenderId": "boi",
+						"type": "variable",
+						"rate": 4.85,
+						"apr": 5.1,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"switcher-btl"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-2yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-2yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-2yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-3yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-3yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-3yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-5yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-5yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-5yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-4yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-4yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-4yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-7yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-7yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-7yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-10yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-10yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-10yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-variable-60"
+				},
+				{
+					"op": "remove",
+					"id": "boi-variable-80"
+				},
+				{
+					"op": "remove",
+					"id": "boi-variable-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-btl-fixed-2yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-btl-fixed-5yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "boi-btl-variable-90"
+				}
+			]
+		},
+		{
+			"timestamp": "2025-01-16T17:15:44Z",
+			"afterHash": "9a12ec57e8c9176878af6b5bf97280cc4afa201202af8f9158a0db132588a7ea",
+			"operations": [
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-1yr-ber-a",
+						"name": "High Value 1 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.3,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-1yr-ber-b",
+						"name": "High Value 1 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.35,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-1yr-ber-c",
+						"name": "High Value 1 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.4,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-1yr-ber-d",
+						"name": "High Value 1 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.45,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-1yr-ber-e",
+						"name": "High Value 1 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.5,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-1yr-ber-f",
+						"name": "High Value 1 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.55,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-1yr-ber-g",
+						"name": "High Value 1 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.6,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-hvm-fixed-1yr-ber-exempt",
+						"name": "High Value 1 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.65,
+						"apr": 4.2,
+						"fixedTerm": 1,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"minLoan": 250000,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-ber-a",
+					"changes": {
+						"id": "boi-fixed-2yr-ber-a",
+						"rate": 3.8,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-ber-b",
+					"changes": {
+						"id": "boi-fixed-2yr-ber-b",
+						"rate": 3.85,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-ber-c",
+					"changes": {
+						"id": "boi-fixed-2yr-ber-c",
+						"rate": 3.9,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-ber-d",
+					"changes": {
+						"id": "boi-fixed-2yr-ber-d",
+						"rate": 3.95,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-ber-e",
+					"changes": {
+						"id": "boi-fixed-2yr-ber-e",
+						"rate": 4,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-ber-f",
+					"changes": {
+						"id": "boi-fixed-2yr-ber-f",
+						"rate": 4.05,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-ber-g",
+					"changes": {
+						"id": "boi-fixed-2yr-ber-g",
+						"rate": 4.1,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-2yr-ber-exempt",
+					"changes": {
+						"id": "boi-fixed-2yr-ber-exempt",
+						"rate": 4.15,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-ber-a",
+					"changes": {
+						"id": "boi-fixed-3yr-ber-a",
+						"rate": 3.9,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-ber-b",
+					"changes": {
+						"id": "boi-fixed-3yr-ber-b",
+						"rate": 3.95,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-ber-c",
+					"changes": {
+						"id": "boi-fixed-3yr-ber-c",
+						"rate": 4,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-ber-d",
+					"changes": {
+						"id": "boi-fixed-3yr-ber-d",
+						"rate": 4.05,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-ber-e",
+					"changes": {
+						"id": "boi-fixed-3yr-ber-e",
+						"rate": 4.1,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-ber-f",
+					"changes": {
+						"id": "boi-fixed-3yr-ber-f",
+						"rate": 4.15,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-ber-g",
+					"changes": {
+						"id": "boi-fixed-3yr-ber-g",
+						"rate": 4.2,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-3yr-ber-exempt",
+					"changes": {
+						"id": "boi-fixed-3yr-ber-exempt",
+						"rate": 4.25,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-ber-a",
+					"changes": {
+						"id": "boi-fixed-5yr-ber-a",
+						"rate": 3.9,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-ber-b",
+					"changes": {
+						"id": "boi-fixed-5yr-ber-b",
+						"rate": 3.95,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-ber-c",
+					"changes": {
+						"id": "boi-fixed-5yr-ber-c",
+						"rate": 4,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-ber-d",
+					"changes": {
+						"id": "boi-fixed-5yr-ber-d",
+						"rate": 4.05,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-ber-e",
+					"changes": {
+						"id": "boi-fixed-5yr-ber-e",
+						"rate": 4.1,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-ber-f",
+					"changes": {
+						"id": "boi-fixed-5yr-ber-f",
+						"rate": 4.15,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-ber-g",
+					"changes": {
+						"id": "boi-fixed-5yr-ber-g",
+						"rate": 4.2,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-5yr-ber-exempt",
+					"changes": {
+						"id": "boi-fixed-5yr-ber-exempt",
+						"rate": 4.25,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-4yr-ber-a",
+					"changes": {
+						"id": "boi-hvm-fixed-4yr-ber-a",
+						"rate": 3.1,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-4yr-ber-b",
+					"changes": {
+						"id": "boi-hvm-fixed-4yr-ber-b",
+						"rate": 3.15,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-4yr-ber-c",
+					"changes": {
+						"id": "boi-hvm-fixed-4yr-ber-c",
+						"rate": 3.2,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-4yr-ber-d",
+					"changes": {
+						"id": "boi-hvm-fixed-4yr-ber-d",
+						"rate": 3.25,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-4yr-ber-e",
+					"changes": {
+						"id": "boi-hvm-fixed-4yr-ber-e",
+						"rate": 3.3,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-4yr-ber-f",
+					"changes": {
+						"id": "boi-hvm-fixed-4yr-ber-f",
+						"rate": 3.35,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-4yr-ber-g",
+					"changes": {
+						"id": "boi-hvm-fixed-4yr-ber-g",
+						"rate": 3.4,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-4yr-ber-exempt",
+					"changes": {
+						"id": "boi-hvm-fixed-4yr-ber-exempt",
+						"rate": 3.45,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-5yr-ber-a",
+					"changes": {
+						"id": "boi-hvm-fixed-5yr-ber-a",
+						"rate": 3.4,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-5yr-ber-b",
+					"changes": {
+						"id": "boi-hvm-fixed-5yr-ber-b",
+						"rate": 3.45,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-5yr-ber-c",
+					"changes": {
+						"id": "boi-hvm-fixed-5yr-ber-c",
+						"rate": 3.5,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-5yr-ber-d",
+					"changes": {
+						"id": "boi-hvm-fixed-5yr-ber-d",
+						"rate": 3.55,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-5yr-ber-e",
+					"changes": {
+						"id": "boi-hvm-fixed-5yr-ber-e",
+						"rate": 3.6,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-5yr-ber-f",
+					"changes": {
+						"id": "boi-hvm-fixed-5yr-ber-f",
+						"rate": 3.65,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-5yr-ber-g",
+					"changes": {
+						"id": "boi-hvm-fixed-5yr-ber-g",
+						"rate": 3.7,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-5yr-ber-exempt",
+					"changes": {
+						"id": "boi-hvm-fixed-5yr-ber-exempt",
+						"rate": 3.75,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-7yr-ber-a",
+					"changes": {
+						"id": "boi-hvm-fixed-7yr-ber-a",
+						"rate": 3.45,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-7yr-ber-b",
+					"changes": {
+						"id": "boi-hvm-fixed-7yr-ber-b",
+						"rate": 3.5,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-7yr-ber-c",
+					"changes": {
+						"id": "boi-hvm-fixed-7yr-ber-c",
+						"rate": 3.55,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-7yr-ber-d",
+					"changes": {
+						"id": "boi-hvm-fixed-7yr-ber-d",
+						"rate": 3.6,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-7yr-ber-e",
+					"changes": {
+						"id": "boi-hvm-fixed-7yr-ber-e",
+						"rate": 3.65,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-7yr-ber-f",
+					"changes": {
+						"id": "boi-hvm-fixed-7yr-ber-f",
+						"rate": 3.7,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-7yr-ber-g",
+					"changes": {
+						"id": "boi-hvm-fixed-7yr-ber-g",
+						"rate": 3.75,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-hvm-fixed-7yr-ber-exempt",
+					"changes": {
+						"id": "boi-hvm-fixed-7yr-ber-exempt",
+						"rate": 3.8,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-ber-a",
+					"changes": {
+						"id": "boi-fixed-10yr-ber-a",
+						"rate": 4.2,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-ber-b",
+					"changes": {
+						"id": "boi-fixed-10yr-ber-b",
+						"rate": 4.25,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-ber-c",
+					"changes": {
+						"id": "boi-fixed-10yr-ber-c",
+						"rate": 4.3,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-ber-d",
+					"changes": {
+						"id": "boi-fixed-10yr-ber-d",
+						"rate": 4.35,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-ber-e",
+					"changes": {
+						"id": "boi-fixed-10yr-ber-e",
+						"rate": 4.4,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-ber-f",
+					"changes": {
+						"id": "boi-fixed-10yr-ber-f",
+						"rate": 4.45,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-ber-g",
+					"changes": {
+						"id": "boi-fixed-10yr-ber-g",
+						"rate": 4.5,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-fixed-10yr-ber-exempt",
+					"changes": {
+						"id": "boi-fixed-10yr-ber-exempt",
+						"rate": 4.55,
+						"apr": 4.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-1yr-ber-a",
+					"changes": {
+						"id": "boi-existing-fixed-1yr-ber-a",
+						"rate": 3.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-1yr-ber-b",
+					"changes": {
+						"id": "boi-existing-fixed-1yr-ber-b",
+						"rate": 3.35
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-1yr-ber-c",
+					"changes": {
+						"id": "boi-existing-fixed-1yr-ber-c",
+						"rate": 3.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-1yr-ber-d",
+					"changes": {
+						"id": "boi-existing-fixed-1yr-ber-d",
+						"rate": 3.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-1yr-ber-e",
+					"changes": {
+						"id": "boi-existing-fixed-1yr-ber-e",
+						"rate": 3.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-1yr-ber-f",
+					"changes": {
+						"id": "boi-existing-fixed-1yr-ber-f",
+						"rate": 3.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-1yr-ber-g",
+					"changes": {
+						"id": "boi-existing-fixed-1yr-ber-g",
+						"rate": 3.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-1yr-ber-exempt",
+					"changes": {
+						"id": "boi-existing-fixed-1yr-ber-exempt",
+						"rate": 3.65,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-2yr-ber-a",
+					"changes": {
+						"id": "boi-existing-fixed-2yr-ber-a",
+						"rate": 3.3,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-2yr-ber-b",
+					"changes": {
+						"id": "boi-existing-fixed-2yr-ber-b",
+						"rate": 3.35,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-2yr-ber-c",
+					"changes": {
+						"id": "boi-existing-fixed-2yr-ber-c",
+						"rate": 3.4,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-2yr-ber-d",
+					"changes": {
+						"id": "boi-existing-fixed-2yr-ber-d",
+						"rate": 3.45,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-2yr-ber-e",
+					"changes": {
+						"id": "boi-existing-fixed-2yr-ber-e",
+						"rate": 3.5,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-2yr-ber-f",
+					"changes": {
+						"id": "boi-existing-fixed-2yr-ber-f",
+						"rate": 3.55,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-2yr-ber-g",
+					"changes": {
+						"id": "boi-existing-fixed-2yr-ber-g",
+						"rate": 3.6,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-2yr-ber-exempt",
+					"changes": {
+						"id": "boi-existing-fixed-2yr-ber-exempt",
+						"rate": 3.65,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-3yr-ber-a",
+					"changes": {
+						"id": "boi-existing-fixed-3yr-ber-a",
+						"rate": 3.4,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-3yr-ber-b",
+					"changes": {
+						"id": "boi-existing-fixed-3yr-ber-b",
+						"rate": 3.45,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-3yr-ber-c",
+					"changes": {
+						"id": "boi-existing-fixed-3yr-ber-c",
+						"rate": 3.5,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-3yr-ber-d",
+					"changes": {
+						"id": "boi-existing-fixed-3yr-ber-d",
+						"rate": 3.55,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-3yr-ber-e",
+					"changes": {
+						"id": "boi-existing-fixed-3yr-ber-e",
+						"rate": 3.6,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-3yr-ber-f",
+					"changes": {
+						"id": "boi-existing-fixed-3yr-ber-f",
+						"rate": 3.65,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-3yr-ber-g",
+					"changes": {
+						"id": "boi-existing-fixed-3yr-ber-g",
+						"rate": 3.7,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-3yr-ber-exempt",
+					"changes": {
+						"id": "boi-existing-fixed-3yr-ber-exempt",
+						"rate": 3.75,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-5yr-ber-a",
+					"changes": {
+						"id": "boi-existing-fixed-5yr-ber-a",
+						"rate": 3.4,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-5yr-ber-b",
+					"changes": {
+						"id": "boi-existing-fixed-5yr-ber-b",
+						"rate": 3.45,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-5yr-ber-c",
+					"changes": {
+						"id": "boi-existing-fixed-5yr-ber-c",
+						"rate": 3.5,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-5yr-ber-d",
+					"changes": {
+						"id": "boi-existing-fixed-5yr-ber-d",
+						"rate": 3.55,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-5yr-ber-e",
+					"changes": {
+						"id": "boi-existing-fixed-5yr-ber-e",
+						"rate": 3.6,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-5yr-ber-f",
+					"changes": {
+						"id": "boi-existing-fixed-5yr-ber-f",
+						"rate": 3.65,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-5yr-ber-g",
+					"changes": {
+						"id": "boi-existing-fixed-5yr-ber-g",
+						"rate": 3.7,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-5yr-ber-exempt",
+					"changes": {
+						"id": "boi-existing-fixed-5yr-ber-exempt",
+						"rate": 3.75,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-10yr-ber-a",
+					"changes": {
+						"id": "boi-existing-fixed-10yr-ber-a",
+						"rate": 3.7,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-10yr-ber-b",
+					"changes": {
+						"id": "boi-existing-fixed-10yr-ber-b",
+						"rate": 3.75,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-10yr-ber-c",
+					"changes": {
+						"id": "boi-existing-fixed-10yr-ber-c",
+						"rate": 3.8,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-10yr-ber-d",
+					"changes": {
+						"id": "boi-existing-fixed-10yr-ber-d",
+						"rate": 3.85,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-10yr-ber-e",
+					"changes": {
+						"id": "boi-existing-fixed-10yr-ber-e",
+						"rate": 3.9,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-10yr-ber-f",
+					"changes": {
+						"id": "boi-existing-fixed-10yr-ber-f",
+						"rate": 3.95,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-10yr-ber-g",
+					"changes": {
+						"id": "boi-existing-fixed-10yr-ber-g",
+						"rate": 4,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-existing-fixed-10yr-ber-exempt",
+					"changes": {
+						"id": "boi-existing-fixed-10yr-ber-exempt",
+						"rate": 4.05,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-ber-a",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-ber-a",
+						"rate": 5.65,
+						"apr": 6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-ber-b",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-ber-b",
+						"rate": 5.7,
+						"apr": 6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-ber-c",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-ber-c",
+						"rate": 5.75,
+						"apr": 6.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-ber-d",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-ber-d",
+						"rate": 5.8,
+						"apr": 6.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-ber-e",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-ber-e",
+						"rate": 5.85,
+						"apr": 6.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-ber-f",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-ber-f",
+						"rate": 5.9,
+						"apr": 6.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-ber-g",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-ber-g",
+						"rate": 5.95,
+						"apr": 6.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-2yr-ber-exempt",
+					"changes": {
+						"id": "boi-btl-fixed-2yr-ber-exempt",
+						"rate": 6,
+						"apr": 6.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-ber-a",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-ber-a",
+						"rate": 5.8,
+						"apr": 6.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-ber-b",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-ber-b",
+						"rate": 5.85,
+						"apr": 6.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-ber-c",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-ber-c",
+						"rate": 5.9,
+						"apr": 6.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-ber-d",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-ber-d",
+						"rate": 5.95,
+						"apr": 6.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-ber-e",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-ber-e",
+						"rate": 6,
+						"apr": 6.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-ber-f",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-ber-f",
+						"rate": 6.05,
+						"apr": 6.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-ber-g",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-ber-g",
+						"rate": 6.1,
+						"apr": 6.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-fixed-5yr-ber-exempt",
+					"changes": {
+						"id": "boi-btl-fixed-5yr-ber-exempt",
+						"rate": 6.15,
+						"apr": 6.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-2yr-ber-a",
+					"changes": {
+						"id": "boi-btl-existing-fixed-2yr-ber-a",
+						"rate": 5.15,
+						"apr": 5.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-2yr-ber-b",
+					"changes": {
+						"id": "boi-btl-existing-fixed-2yr-ber-b",
+						"rate": 5.2,
+						"apr": 5.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-2yr-ber-c",
+					"changes": {
+						"id": "boi-btl-existing-fixed-2yr-ber-c",
+						"rate": 5.25,
+						"apr": 5.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-2yr-ber-d",
+					"changes": {
+						"id": "boi-btl-existing-fixed-2yr-ber-d",
+						"rate": 5.3,
+						"apr": 5.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-2yr-ber-e",
+					"changes": {
+						"id": "boi-btl-existing-fixed-2yr-ber-e",
+						"rate": 5.35,
+						"apr": 5.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-2yr-ber-f",
+					"changes": {
+						"id": "boi-btl-existing-fixed-2yr-ber-f",
+						"rate": 5.4,
+						"apr": 5.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-2yr-ber-g",
+					"changes": {
+						"id": "boi-btl-existing-fixed-2yr-ber-g",
+						"rate": 5.45,
+						"apr": 5.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-2yr-ber-exempt",
+					"changes": {
+						"id": "boi-btl-existing-fixed-2yr-ber-exempt",
+						"rate": 5.5,
+						"apr": 5.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-5yr-ber-a",
+					"changes": {
+						"id": "boi-btl-existing-fixed-5yr-ber-a",
+						"rate": 5.3,
+						"apr": 5.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-5yr-ber-b",
+					"changes": {
+						"id": "boi-btl-existing-fixed-5yr-ber-b",
+						"rate": 5.35,
+						"apr": 5.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-5yr-ber-c",
+					"changes": {
+						"id": "boi-btl-existing-fixed-5yr-ber-c",
+						"rate": 5.4,
+						"apr": 5.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-5yr-ber-d",
+					"changes": {
+						"id": "boi-btl-existing-fixed-5yr-ber-d",
+						"rate": 5.45,
+						"apr": 5.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-5yr-ber-e",
+					"changes": {
+						"id": "boi-btl-existing-fixed-5yr-ber-e",
+						"rate": 5.5,
+						"apr": 5.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-5yr-ber-f",
+					"changes": {
+						"id": "boi-btl-existing-fixed-5yr-ber-f",
+						"rate": 5.55,
+						"apr": 5.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-5yr-ber-g",
+					"changes": {
+						"id": "boi-btl-existing-fixed-5yr-ber-g",
+						"rate": 5.6,
+						"apr": 5.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "boi-btl-existing-fixed-5yr-ber-exempt",
+					"changes": {
+						"id": "boi-btl-existing-fixed-5yr-ber-exempt",
+						"rate": 5.65,
+						"apr": 6
+					}
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-ber-a"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-ber-b"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-ber-c"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-ber-d"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-ber-e"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-ber-f"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-ber-g"
+				},
+				{
+					"op": "remove",
+					"id": "boi-fixed-1yr-ber-exempt"
+				}
+			]
+		},
+		{
+			"timestamp": "2025-11-29T15:49:17Z",
+			"afterHash": "c3c43b36de57da36330eb0aef1334b51714acac037317ecbd5dbc06b1a165cbf",
+			"operations": [
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-4yr-ber-a",
+						"name": "Existing 4 Year Fixed - BER A",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.1,
+						"apr": 3.8,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-4yr-ber-b",
+						"name": "Existing 4 Year Fixed - BER B",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.15,
+						"apr": 3.8,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-4yr-ber-c",
+						"name": "Existing 4 Year Fixed - BER C",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.2,
+						"apr": 3.9,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"C1",
+							"C2",
+							"C3"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-4yr-ber-d",
+						"name": "Existing 4 Year Fixed - BER D",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.25,
+						"apr": 3.9,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"D1",
+							"D2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-4yr-ber-e",
+						"name": "Existing 4 Year Fixed - BER E",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.3,
+						"apr": 3.9,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"E1",
+							"E2"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-4yr-ber-f",
+						"name": "Existing 4 Year Fixed - BER F",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.35,
+						"apr": 3.9,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"F"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-4yr-ber-g",
+						"name": "Existing 4 Year Fixed - BER G",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.4,
+						"apr": 3.9,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"G"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "boi-existing-fixed-4yr-ber-exempt",
+						"name": "Existing 4 Year Fixed - BER Exempt",
+						"lenderId": "boi",
+						"type": "fixed",
+						"rate": 3.45,
+						"apr": 4,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"Exempt"
+						],
+						"newBusiness": false,
+						"perks": []
+					}
+				}
+			]
+		}
+	]
+}

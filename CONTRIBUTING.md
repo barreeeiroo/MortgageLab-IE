@@ -177,11 +177,12 @@ When adding new SVGs:
 
 Mortgage rate data is scraped from lender websites and stored in `data/rates/`.
 
-| Command                         | Description              |
-|---------------------------------|--------------------------|
-| `bun run rates:scrape <lender>` | Scrape a specific lender |
-| `bun run rates:scrape-all`      | Scrape all lenders       |
-| `bun run rates:validate`        | Validate rate data       |
+| Command                         | Description                              |
+|---------------------------------|------------------------------------------|
+| `bun run rates:scrape <lender>` | Scrape a specific lender                 |
+| `bun run rates:scrape:all`      | Scrape all lenders                       |
+| `bun run rates:validate`        | Validate rate data                       |
+| `bun run rates:validate-history`| Validate history matches current rates   |
 
 ### How It Works
 
@@ -220,13 +221,46 @@ Mortgage rate data is scraped from lender websites and stored in `data/rates/`.
 }
 ```
 
+### Rate History
+
+Historical rate changes are tracked in `data/rates/history/`. When rates change,
+the scraper stores a diff-based changeset rather than full snapshots.
+
+**History file format** (`data/rates/history/<lender>.json`):
+
+```json
+{
+  "lenderId": "aib",
+  "baseline": {
+    "timestamp": "2024-01-01T00:00:00.000Z",
+    "ratesHash": "abc123...",
+    "rates": [/* initial full rate array */]
+  },
+  "changesets": [
+    {
+      "timestamp": "2024-03-01T10:30:00.000Z",
+      "afterHash": "def456...",
+      "operations": [
+        { "op": "add", "rate": {/* full rate */} },
+        { "op": "remove", "id": "old-rate-id" },
+        { "op": "update", "id": "rate-id", "changes": { "id": "rate-id", "rate": 3.5 } }
+      ]
+    }
+  ]
+}
+```
+
+The validator (`bun run rates:validate-history`) reconstructs rates from baseline +
+changesets and verifies they match the current rates file.
+
 ### Automated Updates via GitHub Actions
 
 Rates are automatically updated daily via `.github/workflows/sync-rates.yml`:
 
 1. Runs at 8:00 UTC every day (and can be triggered manually)
-2. Executes `bun run rates:scrape-all --write-updates`
-3. If rates changed, commits to `main` and triggers a deploy
+2. Executes `bun run rates:scrape:all --write-updates`
+3. Validates rates and history
+4. If rates changed, commits to `main` and triggers a deploy
 
 ### Adding a New Lender
 

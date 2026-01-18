@@ -2,7 +2,8 @@
 
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { RatesFile } from "../../src/lib/schemas/rate";
+import type { RatesFile } from "@/lib/schemas/rate";
+import { appendChangeset, ensureHistoryExists } from "./history/changeset";
 import { aibProvider } from "./providers/aib";
 import { avantProvider } from "./providers/avant";
 import { boiProvider } from "./providers/boi";
@@ -13,8 +14,8 @@ import { icsProvider } from "./providers/ics";
 import { mocoProvider } from "./providers/moco";
 import { nuaProvider } from "./providers/nua";
 import { ptsbProvider } from "./providers/ptsb";
-import type { LenderProvider } from "./types";
-import { computeRatesHash } from "./utils";
+import { computeRatesHash } from "./utils/hash";
+import type { LenderProvider } from "./utils/types";
 
 interface RateDiff {
 	added: number;
@@ -117,6 +118,8 @@ async function scrapeProvider(
 			lastUpdatedAt = now;
 			diff = { added: newRates.length, removed: 0, updated: 0 };
 			console.log("No existing rates file found, creating new one");
+			// Create history baseline
+			await appendChangeset(lenderId, newRates, newHash, now);
 		} else if (existing.ratesHash !== newHash) {
 			// Rates have changed
 			lastUpdatedAt = now;
@@ -124,11 +127,20 @@ async function scrapeProvider(
 			console.log("Rates have CHANGED since last scrape");
 			console.log(`  Old hash: ${existing.ratesHash}`);
 			console.log(`  New hash: ${newHash}`);
+			// Append changeset to history
+			await appendChangeset(lenderId, newRates, newHash, now);
 		} else {
 			// Rates unchanged, keep the old timestamp
 			lastUpdatedAt = existing.lastUpdatedAt;
 			console.log("Rates UNCHANGED since last scrape");
 			console.log(`  Hash: ${newHash}`);
+			// Ensure history exists (creates baseline if missing)
+			await ensureHistoryExists(
+				lenderId,
+				newRates,
+				newHash,
+				existing.lastUpdatedAt,
+			);
 		}
 
 		const ratesFile: RatesFile = {

@@ -1,0 +1,49 @@
+---
+import { ArrowLeft, History as HistoryIcon } from "lucide-react";
+import Layout from "@/layouts/Layout.astro";
+import { RateChangesIsland } from "@/components/rates/history/RateChangesIsland";
+import { HistoryShareButton } from "@/components/rates/history/HistoryShareButton";
+import { HistoryTabsIsland } from "@/components/rates/history/HistoryTabsIsland";
+import { RatesTrendsIsland } from "@/components/rates/history/RatesTrendsIsland";
+import { RatesUpdatesTimelineIsland } from "@/components/rates/history/RatesUpdatesTimelineIsland";
+---
+
+<Layout
+	title="Rate History"
+	description="Track historical mortgage rate changes from Irish lenders. Compare rates over time and identify trends."
+>
+	<div class="container mx-auto px-4 py-8">
+		<div class="mb-6 flex items-start justify-between gap-3">
+			<div class="flex items-start gap-3">
+				<a
+					href="/rates"
+					class="inline-flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+					title="Back to rates"
+				>
+					<ArrowLeft className="h-4 w-4" />
+					<span class="sr-only">Back</span>
+				</a>
+				<div
+					class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10"
+				>
+					<HistoryIcon className="h-5 w-5 text-primary" />
+				</div>
+				<div>
+					<h1 class="text-xl font-semibold">Rate History</h1>
+					<p class="text-muted-foreground text-sm">
+						Track historical rate changes and trends from Irish mortgage lenders.
+					</p>
+				</div>
+			</div>
+			<HistoryShareButton client:load />
+		</div>
+
+		<HistoryTabsIsland client:load />
+
+		<div class="mt-4">
+			<RatesUpdatesTimelineIsland client:idle />
+			<RateChangesIsland client:idle />
+			<RatesTrendsIsland client:idle />
+		</div>
+	</div>
+</Layout>

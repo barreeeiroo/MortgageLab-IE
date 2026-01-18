@@ -1,0 +1,570 @@
+{
+	"lenderId": "ebs",
+	"baseline": {
+		"timestamp": "2017-10-23T23:52:40Z",
+		"ratesHash": "517d3b956e2e8b57ee06fb2deded9f3a9316ac547a99c9c26fde6a68abe53228",
+		"rates": [
+			{
+				"id": "ebs-fixed-1yr",
+				"name": "1 Year Fixed",
+				"lenderId": "ebs",
+				"type": "fixed",
+				"rate": 3.15,
+				"apr": 3.8,
+				"fixedTerm": 1,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ebs-fixed-2yr",
+				"name": "2 Year Fixed",
+				"lenderId": "ebs",
+				"type": "fixed",
+				"rate": 3.15,
+				"apr": 3.7,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ebs-fixed-3yr",
+				"name": "3 Year Fixed",
+				"lenderId": "ebs",
+				"type": "fixed",
+				"rate": 3.15,
+				"apr": 3.6,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ebs-fixed-4yr",
+				"name": "4 Year Fixed",
+				"lenderId": "ebs",
+				"type": "fixed",
+				"rate": 3.25,
+				"apr": 3.6,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ebs-fixed-5yr",
+				"name": "5 Year Fixed",
+				"lenderId": "ebs",
+				"type": "fixed",
+				"rate": 3.25,
+				"apr": 3.6,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ebs-variable-50",
+				"name": "Variable Rate - LTV ≤50%",
+				"lenderId": "ebs",
+				"type": "variable",
+				"rate": 3.3,
+				"apr": 3.4,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ebs-variable-80",
+				"name": "Variable Rate - LTV ≤80%",
+				"lenderId": "ebs",
+				"type": "variable",
+				"rate": 3.5,
+				"apr": 3.6,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "ebs-variable",
+				"name": "Variable Rate",
+				"lenderId": "ebs",
+				"type": "variable",
+				"rate": 3.7,
+				"apr": 3.8,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			}
+		]
+	},
+	"changesets": [
+		{
+			"timestamp": "2019-08-31T15:53:32Z",
+			"afterHash": "9b2a8c0f4a399bfd7ddac5b8f41a3b2a812f401b591ad60d9a793a68e20a65db",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ebs-fixed-1yr",
+					"changes": {
+						"id": "ebs-fixed-1yr",
+						"rate": 3,
+						"apr": 3.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-2yr",
+					"changes": {
+						"id": "ebs-fixed-2yr",
+						"rate": 3
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-3yr",
+					"changes": {
+						"id": "ebs-fixed-3yr",
+						"rate": 3
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-4yr",
+					"changes": {
+						"id": "ebs-fixed-4yr",
+						"rate": 3,
+						"apr": 3.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-5yr",
+					"changes": {
+						"id": "ebs-fixed-5yr",
+						"rate": 3,
+						"apr": 3.5
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ebs-btl",
+						"name": "Buy-to-Let",
+						"lenderId": "ebs",
+						"type": "fixed",
+						"rate": 5.3,
+						"apr": 7.95,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl",
+							"switcher-btl"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ebs-btl-fixed-3yr",
+						"name": "Buy-to-Let 3 Year Fixed",
+						"lenderId": "ebs",
+						"type": "fixed",
+						"rate": 5.4,
+						"apr": 5.3,
+						"fixedTerm": 3,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl",
+							"switcher-btl"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ebs-btl-fixed-5yr",
+						"name": "Buy-to-Let 5 Year Fixed",
+						"lenderId": "ebs",
+						"type": "fixed",
+						"rate": 5.9,
+						"apr": 5.6,
+						"fixedTerm": 5,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl",
+							"switcher-btl"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2019-12-16T02:32:07Z",
+			"afterHash": "e48c2aec36e8471f1d0d3ad5d46c0b2f334deeb59528fed57437d1c0cce32be3",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ebs-fixed-1yr",
+					"changes": {
+						"id": "ebs-fixed-1yr",
+						"rate": 2.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-2yr",
+					"changes": {
+						"id": "ebs-fixed-2yr",
+						"rate": 2.9,
+						"apr": 3.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-3yr",
+					"changes": {
+						"id": "ebs-fixed-3yr",
+						"rate": 2.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-4yr",
+					"changes": {
+						"id": "ebs-fixed-4yr",
+						"rate": 2.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-5yr",
+					"changes": {
+						"id": "ebs-fixed-5yr",
+						"rate": 2.9,
+						"apr": 3.4
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2021-09-24T12:37:25Z",
+			"afterHash": "ceb72dcd41d1d77a47afe9e603d153e65412d778fa3cba4b45eac020c8b51d87",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ebs-fixed-3yr",
+					"changes": {
+						"id": "ebs-fixed-3yr",
+						"rate": 2.75,
+						"apr": 3.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-5yr",
+					"changes": {
+						"id": "ebs-fixed-5yr",
+						"rate": 2.75
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2022-02-26T21:36:08Z",
+			"afterHash": "eecdcf695a19947562b9f141e06bc8c2cb609583a4729102a905e805e2f2a6b8",
+			"operations": [
+				{
+					"op": "add",
+					"rate": {
+						"id": "ebs-green-fixed-4yr",
+						"name": "Green 4 Year Fixed",
+						"lenderId": "ebs",
+						"type": "fixed",
+						"rate": 2.1,
+						"apr": 3.2,
+						"fixedTerm": 4,
+						"minLtv": 0,
+						"maxLtv": 90,
+						"buyerTypes": [
+							"ftb",
+							"mover",
+							"switcher-pdh"
+						],
+						"berEligible": [
+							"A1",
+							"A2",
+							"A3",
+							"B1",
+							"B2",
+							"B3"
+						],
+						"newBusiness": true,
+						"perks": []
+					}
+				},
+				{
+					"op": "remove",
+					"id": "ebs-fixed-4yr"
+				}
+			]
+		},
+		{
+			"timestamp": "2022-11-19T19:43:45Z",
+			"afterHash": "58aea362793a183234e05a0bc67bb698aeaae0e39e891de290656059c2b50b86",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ebs-fixed-1yr",
+					"changes": {
+						"id": "ebs-fixed-1yr",
+						"rate": 3.4,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-2yr",
+					"changes": {
+						"id": "ebs-fixed-2yr",
+						"rate": 3.4,
+						"apr": 3.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-3yr",
+					"changes": {
+						"id": "ebs-fixed-3yr",
+						"rate": 3.25,
+						"apr": 3.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-green-fixed-4yr",
+					"changes": {
+						"id": "ebs-green-fixed-4yr",
+						"rate": 2.6,
+						"apr": 3.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-5yr",
+					"changes": {
+						"id": "ebs-fixed-5yr",
+						"rate": 3.25,
+						"apr": 3.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-btl-fixed-3yr",
+					"changes": {
+						"id": "ebs-btl-fixed-3yr",
+						"rate": 5.9,
+						"apr": 5.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-btl-fixed-5yr",
+					"changes": {
+						"id": "ebs-btl-fixed-5yr",
+						"rate": 6.3,
+						"apr": 6
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2025-07-29T11:21:14Z",
+			"afterHash": "6b3c8db22c291931d5490af4147245d1b16284f4184c67e3a12e1c79e350d95f",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ebs-fixed-1yr",
+					"changes": {
+						"id": "ebs-fixed-1yr",
+						"rate": 3.85,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-2yr",
+					"changes": {
+						"id": "ebs-fixed-2yr",
+						"rate": 3.9,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-3yr",
+					"changes": {
+						"id": "ebs-fixed-3yr",
+						"rate": 4.3,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-green-fixed-4yr",
+					"changes": {
+						"id": "ebs-green-fixed-4yr",
+						"rate": 3.55,
+						"apr": 4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-fixed-5yr",
+					"changes": {
+						"id": "ebs-fixed-5yr",
+						"rate": 4.4,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-variable-50",
+					"changes": {
+						"id": "ebs-variable-50",
+						"rate": 3.75,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-variable-80",
+					"changes": {
+						"id": "ebs-variable-80",
+						"rate": 3.95,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-variable",
+					"changes": {
+						"id": "ebs-variable",
+						"rate": 4.15,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "add",
+					"rate": {
+						"id": "ebs-btl-variable",
+						"name": "Buy-to-Let Variable Rate",
+						"lenderId": "ebs",
+						"type": "variable",
+						"rate": 5.43,
+						"apr": 5.6,
+						"minLtv": 0,
+						"maxLtv": 70,
+						"buyerTypes": [
+							"btl",
+							"switcher-btl"
+						],
+						"perks": []
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-btl-fixed-3yr",
+					"changes": {
+						"id": "ebs-btl-fixed-3yr",
+						"rate": 7.15,
+						"apr": 6
+					}
+				},
+				{
+					"op": "update",
+					"id": "ebs-btl-fixed-5yr",
+					"changes": {
+						"id": "ebs-btl-fixed-5yr",
+						"rate": 7.55,
+						"apr": 6.6
+					}
+				},
+				{
+					"op": "remove",
+					"id": "ebs-btl"
+				}
+			]
+		},
+		{
+			"timestamp": "2025-11-13T08:41:45Z",
+			"afterHash": "7c6fbb8fc438780b6dada713de0650aa722ee91ddd34fc089dee6e2a327f31f3",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ebs-green-fixed-4yr",
+					"changes": {
+						"id": "ebs-green-fixed-4yr",
+						"rate": 3.2,
+						"apr": 3.9
+					}
+				}
+			]
+		}
+	]
+}

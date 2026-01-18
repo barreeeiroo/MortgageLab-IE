@@ -17,7 +17,7 @@ import {
 	exportRatesToPDF,
 } from "@/lib/export/rates-export";
 import type { Lender } from "@/lib/schemas/lender";
-import type { MortgageRate, RatesMetadata } from "@/lib/schemas/rate";
+import type { MortgageRate } from "@/lib/schemas/rate";
 import { generateRatesShareUrl } from "@/lib/share/rates";
 import { $storedCustomPerks } from "@/lib/stores/custom-perks";
 import { $storedCustomRates } from "@/lib/stores/custom-rates";
@@ -34,7 +34,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { RateUpdatesDialog } from "./RateUpdatesDialog";
 
 // Column labels for the visibility toggle
 const COLUMN_LABELS: Record<string, string> = {
@@ -67,9 +66,8 @@ const HIDEABLE_COLUMNS = [
 ] as const;
 
 export interface RatesToolbarProps {
-	// Data for dialogs and export
+	// Data for export
 	lenders: Lender[];
-	ratesMetadata: RatesMetadata[];
 	inputValues: RatesInputValues;
 	// Export data
 	filteredRates: MortgageRate[];
@@ -91,7 +89,6 @@ export interface RatesToolbarProps {
 
 export function RatesToolbar({
 	lenders,
-	ratesMetadata,
 	inputValues,
 	filteredRates,
 	allRates,
@@ -246,7 +243,6 @@ export function RatesToolbar({
 				</Button>
 			</div>
 			<div className="flex gap-2">
-				<RateUpdatesDialog lenders={lenders} ratesMetadata={ratesMetadata} />
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button

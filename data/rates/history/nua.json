@@ -1,0 +1,729 @@
+{
+	"lenderId": "nua",
+	"baseline": {
+		"timestamp": "2026-01-11T16:22:19.605Z",
+		"ratesHash": "f14f668d2b76bb21a9ffd1f1d1881145a0f96d3b5279e2bcc171d57b707c970b",
+		"rates": [
+			{
+				"id": "nua-ftb-fixed-5yr-60",
+				"name": "5 Year Fixed - LTV ≤60%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.65,
+				"apr": 4.39,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ftb-fixed-5yr-70",
+				"name": "5 Year Fixed - LTV ≤70%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.95,
+				"apr": 4.54,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"ftb"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ftb-fixed-5yr-80",
+				"name": "5 Year Fixed - LTV ≤80%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.75,
+				"apr": 4.94,
+				"fixedTerm": 5,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ftb-fixed-5yr-90",
+				"name": "5 Year Fixed - LTV ≤90%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.75,
+				"apr": 4.94,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ftb-fixed-3yr-90",
+				"name": "3 Year Fixed - LTV ≤90%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.99,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ftb-fixed-3yr-60",
+				"name": "3 Year Fixed - LTV ≤60%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 4.58,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"ftb"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ftb-fixed-3yr-70",
+				"name": "3 Year Fixed - LTV ≤70%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.9,
+				"apr": 4.68,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"ftb"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ftb-fixed-3yr-80",
+				"name": "3 Year Fixed - LTV ≤80%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.99,
+				"fixedTerm": 3,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ssb-fixed-5yr-90",
+				"name": "5 Year Fixed - LTV ≤90%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.75,
+				"apr": 4.94,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"mover"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ssb-fixed-3yr-60",
+				"name": "3 Year Fixed - LTV ≤60%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 4.58,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"mover"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ssb-fixed-3yr-70",
+				"name": "3 Year Fixed - LTV ≤70%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.9,
+				"apr": 4.68,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"mover"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ssb-fixed-3yr-80",
+				"name": "3 Year Fixed - LTV ≤80%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.99,
+				"fixedTerm": 3,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"mover"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ssb-fixed-5yr-60",
+				"name": "5 Year Fixed - LTV ≤60%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.65,
+				"apr": 4.39,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"mover"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ssb-fixed-5yr-70",
+				"name": "5 Year Fixed - LTV ≤70%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.95,
+				"apr": 4.54,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"mover"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ssb-fixed-5yr-80",
+				"name": "5 Year Fixed - LTV ≤80%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.75,
+				"apr": 4.94,
+				"fixedTerm": 5,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"mover"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-ssb-fixed-3yr-90",
+				"name": "3 Year Fixed - LTV ≤90%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.99,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"mover"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-fixed-3yr-90",
+				"name": "3 Year Fixed - LTV ≤90%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.99,
+				"fixedTerm": 3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-extra-fixed-3yr-80",
+				"name": "Switcher Extra 70-80% LTV 3Yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.04,
+				"fixedTerm": 3,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-extra-fixed-5yr-80",
+				"name": "Switcher Extra 70-80% LTV 5Yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.06,
+				"fixedTerm": 5,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-one-fixed-3yr-80",
+				"name": "Switcher One 70-80% LTV 3Yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.04,
+				"fixedTerm": 3,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-fixed-3yr-60",
+				"name": "3 Year Fixed - LTV ≤60%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.6,
+				"apr": 4.58,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-fixed-3yr-70",
+				"name": "3 Year Fixed - LTV ≤70%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.9,
+				"apr": 4.68,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-fixed-3yr-80",
+				"name": "3 Year Fixed - LTV ≤80%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.99,
+				"fixedTerm": 3,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-fixed-5yr-60",
+				"name": "5 Year Fixed - LTV ≤60%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.65,
+				"apr": 4.39,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-fixed-5yr-70",
+				"name": "5 Year Fixed - LTV ≤70%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 3.95,
+				"apr": 4.54,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-fixed-5yr-80",
+				"name": "5 Year Fixed - LTV ≤80%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.75,
+				"apr": 4.94,
+				"fixedTerm": 5,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-extra-fixed-3yr-60",
+				"name": "Switcher Extra 0-60% LTV 3yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.8,
+				"apr": 4.97,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-extra-fixed-3yr-70",
+				"name": "Switcher Extra 60-70% LTV 3yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.8,
+				"apr": 4.97,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-extra-fixed-5yr-60",
+				"name": "Switcher Extra 0-60% LTV 5yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.06,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-extra-fixed-5yr-70",
+				"name": "Switcher Extra 60-70% LTV 5yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.06,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-one-fixed-3yr-60",
+				"name": "Switcher One 0-60% LTV 3yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.04,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-one-fixed-3yr-70",
+				"name": "Switcher One 60-70% LTV 3yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.04,
+				"fixedTerm": 3,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-one-fixed-5yr-60",
+				"name": "Switcher One 0-60% LTV 5yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.06,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-one-fixed-5yr-70",
+				"name": "Switcher One 60-70% LTV 5yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.06,
+				"fixedTerm": 5,
+				"minLtv": 60,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-one-fixed-5yr-80",
+				"name": "Switcher One 70-80% LTV 5yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5,
+				"apr": 5.06,
+				"fixedTerm": 5,
+				"minLtv": 70,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-freedom-fixed-3yr-75",
+				"name": "Freedom 75% LTV 3yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5.25,
+				"apr": 5.12,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 75,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-freedom-fixed-5yr-75",
+				"name": "Freedom 75% LTV 5yr Fixed",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5.25,
+				"apr": 5.19,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 75,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-homeplus-fixed-5yr-50",
+				"name": "HOME PLUS 5yr Fixed 50% LTV",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.99,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-homeplus-fixed-3yr-50",
+				"name": "HOME PLUS 3yr Fixed 50% LTV",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.6,
+				"apr": 4.91,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-homeplus-fixed-3yr-60",
+				"name": "HOME PLUS 3yr Fixed 60% LTV",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.6,
+				"apr": 4.91,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-homeplus-fixed-3yr-70",
+				"name": "HOME PLUS 3yr Fixed 70% LTV",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5.1,
+				"apr": 5.07,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-homeplus-fixed-5yr-60",
+				"name": "HOME PLUS 5yr Fixed 60% LTV",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.99,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 60,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-homeplus-fixed-5yr-70",
+				"name": "HOME PLUS 5yr Fixed 70% LTV",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 5.25,
+				"apr": 5.19,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 70,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-switcher-fixed-5yr-90",
+				"name": "5 Year Fixed - LTV ≤90%",
+				"lenderId": "nua",
+				"type": "fixed",
+				"rate": 4.75,
+				"apr": 4.94,
+				"fixedTerm": 5,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "nua-variable-svr",
+				"name": "Standard Variable Rate",
+				"lenderId": "nua",
+				"type": "variable",
+				"rate": 4.85,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": [],
+				"warning": "This rate is not publicly listed on their website, but is used as part of the APRC calculation."
+			}
+		]
+	},
+	"changesets": []
+}

@@ -1,7 +1,10 @@
 import * as cheerio from "cheerio";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import type { MortgageRate } from "@/lib/schemas/rate";
-import type { LenderProvider } from "../types";
+import type {
+	HistoricalLenderProvider,
+	StructureValidation,
+} from "../utils/types";
 
 const LENDER_ID = "cu";
 const RATES_URL = "https://creditunionmortgages.com/our-mortgage/";
@@ -9,14 +12,13 @@ const RATES_URL = "https://creditunionmortgages.com/our-mortgage/";
 // Credit Union Mortgages only offers PDH mortgages (no BTL)
 const BUYER_TYPES: BuyerType[] = ["ftb", "mover", "switcher-pdh"];
 
-async function fetchAndParseRates(): Promise<MortgageRate[]> {
-	console.log("Fetching rates page...");
-	const response = await fetch(RATES_URL);
-	const html = await response.text();
-
-	console.log("Parsing HTML content with Cheerio...");
+/**
+ * Parse rates from HTML content.
+ * Separated from fetch for historical scraping support.
+ * Note: CU has a very loose structure, parsing is based on text patterns.
+ */
+function parseRatesFromHtml(html: string): MortgageRate[] {
 	const $ = cheerio.load(html);
-
 	const rates: MortgageRate[] = [];
 	const pageText = $("body").text();
 
@@ -100,6 +102,38 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 		});
 	}
 
+	return rates;
+}
+
+/**
+ * Validate that the HTML structure matches what we expect.
+ * CU has minimal structure - we just check for percentage patterns.
+ */
+function validateStructure(html: string): StructureValidation {
+	const $ = cheerio.load(html);
+	const pageText = $("body").text();
+
+	// Check for any percentage values (rate indicators)
+	if (!pageText.match(/\d+\.?\d*%/)) {
+		return { valid: false, error: "No percentage values found on page" };
+	}
+
+	// Check for mortgage-related content
+	const lowerText = pageText.toLowerCase();
+	if (!lowerText.includes("mortgage") && !lowerText.includes("rate")) {
+		return { valid: false, error: "No mortgage-related content found" };
+	}
+
+	return { valid: true };
+}
+
+async function fetchAndParseRates(): Promise<MortgageRate[]> {
+	console.log("Fetching rates page...");
+	const response = await fetch(RATES_URL);
+	const html = await response.text();
+
+	console.log("Parsing HTML content with Cheerio...");
+	const rates = parseRatesFromHtml(html);
 	console.log(`Parsed ${rates.length} rates from HTML`);
 
 	if (rates.length === 0) {
@@ -111,9 +145,11 @@ async function fetchAndParseRates(): Promise<MortgageRate[]> {
 	return rates;
 }
 
-export const cuProvider: LenderProvider = {
+export const cuProvider: HistoricalLenderProvider = {
 	lenderId: LENDER_ID,
 	name: "Credit Union Mortgages",
 	url: RATES_URL,
 	scrape: fetchAndParseRates,
+	parseHtml: async (html: string) => parseRatesFromHtml(html),
+	validateStructure,
 };

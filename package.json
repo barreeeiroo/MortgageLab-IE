@@ -20,9 +20,11 @@
 		"test:run": "bun run test:unit && bun run test:integration",
 		"test:coverage": "vitest run src --coverage",
 		"check": "bun run lint && bun run typecheck && bun run test:run",
-		"rates:scrape": "bun run scripts/rate-scraper/index.ts",
-		"rates:scrape-all": "bun run scripts/rate-scraper/index.ts --all",
-		"rates:validate": "bun run scripts/rate-scraper/validator.ts"
+		"rates:scrape": "bun run scripts/rate-scraper/scrape.ts",
+		"rates:scrape:all": "bun run scripts/rate-scraper/scrape.ts --all",
+		"rates:scrape-historical": "bun run scripts/rate-scraper/scrape-historical.ts",
+		"rates:validate": "bun run scripts/rate-scraper/validate.ts",
+		"rates:validate-history": "bun run scripts/rate-scraper/validate-history.ts"
 	},
 	"dependencies": {
 		"@astrojs/react": "^4.4.2",

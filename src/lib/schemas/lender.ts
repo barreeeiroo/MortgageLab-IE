@@ -17,6 +17,7 @@ export type AprcFees = z.infer<typeof AprcFeesSchema>;
 export const LenderSchema = z.object({
 	id: z.string(),
 	name: z.string(),
+	shortName: z.string(), // Short name for display in charts/tables (e.g., "AIB", "BOI")
 	logo: z.string().optional(),
 	mortgagesUrl: z.url(), // Link to lender's mortgages home page
 	ratesUrl: z.url().optional(), // Link to lender's mortgage rates page
@@ -26,6 +27,7 @@ export const LenderSchema = z.object({
 	overpaymentPolicy: z.string().optional(), // Reference to overpayment policy id, if not set breakage fee applies
 	allowsSelfBuild: z.boolean().optional(), // Whether lender offers self-build mortgages, defaults to false
 	selfBuildTemplateId: z.string().optional(), // Reference to self-build template id for this lender
+	discontinued: z.boolean().optional(), // Lender no longer offers mortgages but has historical data
 });
 export type Lender = z.infer<typeof LenderSchema>;
 

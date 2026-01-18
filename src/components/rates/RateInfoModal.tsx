@@ -2,6 +2,7 @@ import {
 	Check,
 	Coins,
 	Copy,
+	History,
 	Infinity as InfinityIcon,
 	type LucideIcon,
 	MoreHorizontal,
@@ -102,6 +103,7 @@ interface RateInfoModalProps {
 	mode?: RatesMode;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	onViewHistory?: () => void;
 }
 
 interface RateCalculations {
@@ -348,6 +350,7 @@ export function RateInfoModal({
 	mode,
 	open,
 	onOpenChange,
+	onViewHistory,
 }: RateInfoModalProps) {
 	const [selectedTerm, setSelectedTerm] = useState(mortgageTerm);
 	const [highlightedFields, setHighlightedFields] = useState<Set<string>>(
@@ -1187,6 +1190,21 @@ export function RateInfoModal({
 							)}
 						</div>
 					</div>
+
+					{/* View History button - hidden for custom rates */}
+					{onViewHistory && !isCustom && (
+						<div className="flex justify-end mt-4">
+							<Button
+								variant="ghost"
+								size="sm"
+								className="gap-1.5"
+								onClick={onViewHistory}
+							>
+								<History className="h-4 w-4" />
+								View History
+							</Button>
+						</div>
+					)}
 				</div>
 
 				{/* Sticky Footer */}
@@ -1327,8 +1345,6 @@ export function RateInfoModal({
 					</div>
 				</div>
 			</DialogContent>
-
-			{/* Confirmation dialog for starting new simulation in remortgage mode */}
 			<AlertDialog
 				open={showSimulateConfirm}
 				onOpenChange={setShowSimulateConfirm}
@@ -1360,8 +1376,6 @@ export function RateInfoModal({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-
-			{/* Simulation Options dialog */}
 			<AlertDialog open={showOptionsDialog} onOpenChange={setShowOptionsDialog}>
 				<AlertDialogContent className="max-h-[85vh]">
 					<AlertDialogHeader>

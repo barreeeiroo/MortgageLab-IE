@@ -1,0 +1,332 @@
+{
+	"lenderId": "haven",
+	"baseline": {
+		"timestamp": "2024-05-27T13:48:52Z",
+		"ratesHash": "3e0564ba4087c597d4eacf7be078bf63477a9196fb7bac17875aa86e3ec4e0b0",
+		"rates": [
+			{
+				"id": "haven-variable-50",
+				"name": "Variable Rate - LTV ≤50%",
+				"lenderId": "haven",
+				"type": "variable",
+				"rate": 3.75,
+				"apr": 3.9,
+				"minLtv": 0,
+				"maxLtv": 50,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "haven-variable-80",
+				"name": "Variable Rate - LTV ≤80%",
+				"lenderId": "haven",
+				"type": "variable",
+				"rate": 3.95,
+				"apr": 4.1,
+				"minLtv": 50,
+				"maxLtv": 80,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "haven-variable-90",
+				"name": "Variable Rate - LTV >80%",
+				"lenderId": "haven",
+				"type": "variable",
+				"rate": 4.15,
+				"apr": 4.3,
+				"minLtv": 80,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"newBusiness": true,
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-1yr",
+				"name": "1 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 4.55,
+				"apr": 4.3,
+				"fixedTerm": 1,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-2yr",
+				"name": "2 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 4.65,
+				"apr": 4.4,
+				"fixedTerm": 2,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-3yr",
+				"name": "3 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 4.75,
+				"apr": 4.5,
+				"fixedTerm": 3,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-green-fixed-4yr",
+				"name": "Haven Green 4 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 3.45,
+				"apr": 4,
+				"fixedTerm": 4,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"berEligible": [
+					"A1",
+					"A2",
+					"A3",
+					"B1",
+					"B2",
+					"B3"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-5yr",
+				"name": "5 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 4.85,
+				"apr": 4.6,
+				"fixedTerm": 5,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-7yr",
+				"name": "7 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 5.05,
+				"apr": 4.9,
+				"fixedTerm": 7,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-fixed-10yr",
+				"name": "10 Year Fixed",
+				"lenderId": "haven",
+				"type": "fixed",
+				"rate": 5.15,
+				"apr": 5,
+				"fixedTerm": 10,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"ftb",
+					"mover",
+					"switcher-pdh"
+				],
+				"perks": []
+			},
+			{
+				"id": "haven-variable",
+				"name": "Variable Rate",
+				"lenderId": "haven",
+				"type": "variable",
+				"rate": 4.15,
+				"apr": 4.3,
+				"minLtv": 0,
+				"maxLtv": 90,
+				"buyerTypes": [
+					"switcher-pdh"
+				],
+				"newBusiness": false,
+				"perks": []
+			}
+		]
+	},
+	"changesets": [
+		{
+			"timestamp": "2025-06-24T20:30:22Z",
+			"afterHash": "4f99e8894813c06819ce6c9d005db40e8c18a51d50e704689375323239dac61e",
+			"operations": [
+				{
+					"op": "update",
+					"id": "haven-fixed-1yr",
+					"changes": {
+						"id": "haven-fixed-1yr",
+						"rate": 4.05
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-2yr",
+					"changes": {
+						"id": "haven-fixed-2yr",
+						"rate": 4.15,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-3yr",
+					"changes": {
+						"id": "haven-fixed-3yr",
+						"rate": 4.25,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-5yr",
+					"changes": {
+						"id": "haven-fixed-5yr",
+						"rate": 4.35,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-7yr",
+					"changes": {
+						"id": "haven-fixed-7yr",
+						"rate": 4.55,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-10yr",
+					"changes": {
+						"id": "haven-fixed-10yr",
+						"rate": 4.65,
+						"apr": 4.6
+					}
+				}
+			]
+		},
+		{
+			"timestamp": "2025-12-05T21:55:46Z",
+			"afterHash": "083f02e5393bc647691630698ff601a0af787a9742f3bfdc7b203a63e4ce972e",
+			"operations": [
+				{
+					"op": "update",
+					"id": "haven-fixed-1yr",
+					"changes": {
+						"id": "haven-fixed-1yr",
+						"rate": 3.55,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-2yr",
+					"changes": {
+						"id": "haven-fixed-2yr",
+						"rate": 3.6,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-3yr",
+					"changes": {
+						"id": "haven-fixed-3yr",
+						"rate": 3.75,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-green-fixed-4yr",
+					"changes": {
+						"id": "haven-green-fixed-4yr",
+						"rate": 3.2,
+						"apr": 3.9
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-5yr",
+					"changes": {
+						"id": "haven-fixed-5yr",
+						"rate": 3.9,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-7yr",
+					"changes": {
+						"id": "haven-fixed-7yr",
+						"rate": 4.1,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "haven-fixed-10yr",
+					"changes": {
+						"id": "haven-fixed-10yr",
+						"rate": 4.25,
+						"apr": 4.4
+					}
+				}
+			]
+		}
+	]
+}

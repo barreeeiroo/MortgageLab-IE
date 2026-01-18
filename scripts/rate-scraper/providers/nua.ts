@@ -1,7 +1,7 @@
 import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import type { MortgageRate } from "@/lib/schemas/rate";
-import type { LenderProvider } from "../types";
+import type { LenderProvider } from "../utils/types";
 
 const LENDER_ID = "nua";
 const PRODUCTS_API_URL =
