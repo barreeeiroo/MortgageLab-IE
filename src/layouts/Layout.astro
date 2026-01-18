@@ -44,6 +44,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 		<title>{fullTitle}</title>
 		<script is:inline>
+			// Storage key: "theme" (sync with STORAGE_KEYS.THEME in src/lib/storage/forms.ts)
 			const theme = localStorage.getItem("theme");
 			if (theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
 				document.documentElement.classList.add("dark");

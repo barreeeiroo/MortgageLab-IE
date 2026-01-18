@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
 	RENT_VS_BUY_CALCULATOR: "rent-vs-buy-calculator",
 	REMORTGAGE_BREAKEVEN_CALCULATOR: "remortgage-breakeven-calculator",
 	WHATS_NEW_VERSION: "whats-new-version",
+	THEME: "theme",
 } as const;
 
 // FTB Calculator form state

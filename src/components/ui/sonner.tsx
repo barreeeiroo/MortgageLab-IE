@@ -7,13 +7,14 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
+import { getStoredTheme } from "@/lib/storage/theme";
 
 function useTheme(): "light" | "dark" | "system" {
 	const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
 
 	useEffect(() => {
-		const stored = localStorage.getItem("theme");
-		if (stored === "dark" || stored === "light") {
+		const stored = getStoredTheme();
+		if (stored) {
 			setTheme(stored);
 		}
 	}, []);
