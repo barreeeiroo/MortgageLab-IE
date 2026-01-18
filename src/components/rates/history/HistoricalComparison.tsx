@@ -22,9 +22,11 @@ import type { MortgageRate } from "@/lib/schemas/rate";
 import type { RatesHistoryFile } from "@/lib/schemas/rate-history";
 import { reconstructRatesAtDate } from "@/lib/stores/rates/rates-history";
 import {
+	$compareSelectedLender,
 	$comparisonDate,
+	setCompareSelectedLender,
 	setComparisonDate,
-} from "@/lib/stores/rates/rates-history-ui";
+} from "@/lib/stores/rates/rates-history-filters";
 import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 
 interface HistoricalComparisonProps {
@@ -69,8 +71,8 @@ export function HistoricalComparison({
 	lenders,
 }: HistoricalComparisonProps) {
 	const comparisonDateStr = useStore($comparisonDate);
+	const selectedLender = useStore($compareSelectedLender);
 	const [currentRates, setCurrentRates] = useState<MortgageRate[]>([]);
-	const [selectedLender, setSelectedLender] = useState<string>("all");
 	const [loading, setLoading] = useState(true);
 
 	const comparisonDate = comparisonDateStr
@@ -244,7 +246,7 @@ export function HistoricalComparison({
 				<span className="text-sm text-muted-foreground">to today</span>
 
 				{/* Lender Filter */}
-				<Select value={selectedLender} onValueChange={setSelectedLender}>
+				<Select value={selectedLender} onValueChange={setCompareSelectedLender}>
 					<SelectTrigger className="w-[140px] h-8">
 						<SelectValue placeholder="All Lenders" />
 					</SelectTrigger>

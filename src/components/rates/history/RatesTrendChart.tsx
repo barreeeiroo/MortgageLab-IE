@@ -185,7 +185,7 @@ function getYAxisDomain(
 	return [Math.max(0, min - padding), max + padding];
 }
 
-export function RateTrendChart({
+export function RatesTrendChart({
 	data,
 	averageSeries,
 	showApr = false,

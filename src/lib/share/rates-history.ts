@@ -1,0 +1,158 @@
+import type {
+	CompareFilter,
+	HistoryTab,
+	TrendsFilter,
+	UpdatesFilter,
+} from "@/lib/stores/rates/rates-history-filters";
+import {
+	clearUrlParam,
+	generateShareUrl,
+	hasUrlParam,
+	parseShareParam,
+} from "./common";
+
+/**
+ * History page share state encoding/decoding
+ *
+ * Encodes all filter state for all tabs + active tab into a single URL param.
+ */
+
+export const HISTORY_SHARE_PARAM = "h";
+
+/**
+ * Full share state for history page
+ */
+export interface HistoryShareState {
+	activeTab: HistoryTab;
+	updatesFilter: UpdatesFilter;
+	comparisonDate: string | null;
+	compareFilter: CompareFilter;
+	trendsFilter: TrendsFilter;
+	trendsSelectedLenders: string[];
+	compareSelectedLender: string;
+}
+
+/**
+ * Compressed format with abbreviated keys to reduce URL length
+ */
+interface CompressedHistoryShareState {
+	t: string; // activeTab
+	u: {
+		// updatesFilter
+		l: string[]; // lenderIds
+		s: string | null; // startDate
+		e: string | null; // endDate
+		c: string; // changeType
+	};
+	cd: string | null; // comparisonDate
+	c: {
+		// compareFilter
+		l: string[]; // lenderIds
+		r: string; // rateType
+		v: [number, number] | null; // ltvRange
+	};
+	r: {
+		// trendsFilter
+		t: string | null; // rateType
+		f: number | null; // fixedTerm
+		v: [number, number] | null; // ltvRange
+		l: string[]; // lenderIds
+		b: string; // buyerCategory
+	};
+	tl: string[]; // trendsSelectedLenders
+	cl: string; // compareSelectedLender
+}
+
+/**
+ * Compress share state
+ */
+function compressState(state: HistoryShareState): CompressedHistoryShareState {
+	return {
+		t: state.activeTab,
+		u: {
+			l: state.updatesFilter.lenderIds,
+			s: state.updatesFilter.startDate,
+			e: state.updatesFilter.endDate,
+			c: state.updatesFilter.changeType,
+		},
+		cd: state.comparisonDate,
+		c: {
+			l: state.compareFilter.lenderIds,
+			r: state.compareFilter.rateType,
+			v: state.compareFilter.ltvRange,
+		},
+		r: {
+			t: state.trendsFilter.rateType,
+			f: state.trendsFilter.fixedTerm,
+			v: state.trendsFilter.ltvRange,
+			l: state.trendsFilter.lenderIds,
+			b: state.trendsFilter.buyerCategory,
+		},
+		tl: state.trendsSelectedLenders,
+		cl: state.compareSelectedLender,
+	};
+}
+
+/**
+ * Decompress share state
+ */
+function decompressState(
+	compressed: CompressedHistoryShareState,
+): HistoryShareState {
+	return {
+		activeTab: compressed.t as HistoryTab,
+		updatesFilter: {
+			lenderIds: compressed.u.l ?? [],
+			startDate: compressed.u.s ?? null,
+			endDate: compressed.u.e ?? null,
+			changeType: (compressed.u.c ?? "all") as UpdatesFilter["changeType"],
+		},
+		comparisonDate: compressed.cd ?? null,
+		compareFilter: {
+			lenderIds: compressed.c.l ?? [],
+			rateType: (compressed.c.r ?? "all") as CompareFilter["rateType"],
+			ltvRange: compressed.c.v ?? null,
+		},
+		trendsFilter: {
+			rateType: compressed.r.t ?? "fixed-4",
+			fixedTerm: compressed.r.f ?? null,
+			ltvRange: compressed.r.v ?? [0, 80],
+			lenderIds: compressed.r.l ?? [],
+			buyerCategory: (compressed.r.b ?? "pdh") as TrendsFilter["buyerCategory"],
+		},
+		trendsSelectedLenders: compressed.tl ?? [],
+		compareSelectedLender: compressed.cl ?? "all",
+	};
+}
+
+/**
+ * Generate a shareable URL for history page state
+ */
+export function generateHistoryShareUrl(state: HistoryShareState): string {
+	const compressed = compressState(state);
+	return generateShareUrl(HISTORY_SHARE_PARAM, compressed);
+}
+
+/**
+ * Parse history share state from URL if present
+ */
+export function parseHistoryShareState(): HistoryShareState | null {
+	const compressed =
+		parseShareParam<CompressedHistoryShareState>(HISTORY_SHARE_PARAM);
+	if (!compressed) return null;
+	return decompressState(compressed);
+}
+
+/**
+ * Check if URL has history share param
+ */
+export function hasHistoryShareParam(): boolean {
+	return hasUrlParam(HISTORY_SHARE_PARAM);
+}
+
+/**
+ * Clear the history share param from URL
+ */
+export function clearHistoryShareParam(): void {
+	clearUrlParam(HISTORY_SHARE_PARAM);
+}

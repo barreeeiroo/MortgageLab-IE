@@ -18,7 +18,7 @@ import {
 	$updatesFilter,
 	resetUpdatesFilter,
 	setUpdatesFilter,
-} from "@/lib/stores/rates/rates-history-ui";
+} from "@/lib/stores/rates/rates-history-filters";
 import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 
 interface UpdatesTimelineProps {
@@ -74,7 +74,7 @@ function groupChangesByDate(
 	}));
 }
 
-export function UpdatesTimeline({
+export function RatesUpdatesTimeline({
 	historyData,
 	lenders,
 }: UpdatesTimelineProps) {

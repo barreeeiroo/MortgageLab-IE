@@ -1,6 +1,6 @@
 import { useStore } from "@nanostores/react";
 import { TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { LenderSelector } from "@/components/lenders/LenderSelector";
 import { Label } from "@/components/ui/label";
@@ -27,10 +27,12 @@ import type {
 import { getRateTimeSeries } from "@/lib/stores/rates/rates-history";
 import {
 	$trendsFilter,
+	$trendsSelectedLenders,
 	setTrendsFilter,
-} from "@/lib/stores/rates/rates-history-ui";
+	setTrendsSelectedLenders,
+} from "@/lib/stores/rates/rates-history-filters";
 import { formatShortMonthYearFromString } from "@/lib/utils/date";
-import { RateTrendChart } from "./RateTrendChart";
+import { RatesTrendChart } from "./RatesTrendChart";
 
 interface TrendChartsProps {
 	historyData: Map<string, RatesHistoryFile>;
@@ -80,11 +82,16 @@ function getRateTypeKey(rate: { type: string; fixedTerm?: number }): string {
 	return "other";
 }
 
-export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
+export function RatesTrendCharts({ historyData, lenders }: TrendChartsProps) {
 	const filter = useStore($trendsFilter);
-	const [selectedLenders, setSelectedLenders] = useState<string[]>(
-		lenders.slice(0, 1).map((l) => l.id),
-	);
+	const selectedLenders = useStore($trendsSelectedLenders);
+
+	// Initialize selected lenders to first lender if empty
+	useEffect(() => {
+		if (selectedLenders.length === 0 && lenders.length > 0) {
+			setTrendsSelectedLenders([lenders[0].id]);
+		}
+	}, [lenders, selectedLenders.length]);
 
 	// Get available rates that have history
 	const availableRates = useMemo(() => {
@@ -369,7 +376,7 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 					<LenderSelector
 						lenders={lenders}
 						value={selectedLenders}
-						onChange={setSelectedLenders}
+						onChange={setTrendsSelectedLenders}
 						multiple
 						placeholder="Select lenders"
 						className="w-[260px]"
@@ -393,7 +400,7 @@ export function TrendCharts({ historyData, lenders }: TrendChartsProps) {
 						{timeSeries.length !== 1 ? "s" : ""} with historical data
 					</div>
 
-					<RateTrendChart
+					<RatesTrendChart
 						data={timeSeries}
 						averageSeries={averageSeries}
 						showLegend={true}

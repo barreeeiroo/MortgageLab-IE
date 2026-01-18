@@ -37,7 +37,7 @@ import {
 } from "@/lib/stores/rates/rates-history";
 import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 import { LenderLogo } from "../lenders/LenderLogo";
-import { RateTrendChart } from "./history/RateTrendChart";
+import { RatesTrendChart } from "./history/RatesTrendChart";
 
 interface RateHistoryModalProps {
 	rate: MortgageRate | null;
@@ -252,7 +252,7 @@ export function RateHistoryModal({
 				{/* Rate Trend Chart */}
 				<div>
 					<h4 className="text-sm font-medium mb-3">Rate Trend</h4>
-					<RateTrendChart
+					<RatesTrendChart
 						data={timeSeries}
 						showApr={true}
 						height={200}
