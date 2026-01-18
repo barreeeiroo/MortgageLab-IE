@@ -179,10 +179,11 @@ Mortgage rate data is scraped from lender websites and stored in `data/rates/`.
 
 | Command                         | Description                              |
 |---------------------------------|------------------------------------------|
-| `bun run rates:scrape <lender>` | Scrape a specific lender                 |
-| `bun run rates:scrape:all`      | Scrape all lenders                       |
-| `bun run rates:validate`        | Validate rate data                       |
-| `bun run rates:validate-history`| Validate history matches current rates   |
+| `bun run rates:scrape <lender>`       | Scrape a specific lender                 |
+| `bun run rates:scrape:all`            | Scrape all lenders                       |
+| `bun run rates:scrape-historical`     | Fetch historical rates from Wayback Machine |
+| `bun run rates:validate`              | Validate rate data                       |
+| `bun run rates:validate-history`      | Validate history matches current rates   |
 
 ### How It Works
 
@@ -266,7 +267,7 @@ Rates are automatically updated daily via `.github/workflows/sync-rates.yml`:
 
 1. Create `scripts/rate-scraper/providers/<lender>.ts`
 2. Implement the `LenderProvider` interface with a `scrape()` function
-3. Register the provider in `scripts/rate-scraper/index.ts`
+3. Register the provider in `scripts/rate-scraper/scrape.ts`
 4. Test with `bun run rates:scrape <lender>` and `bun run rates:validate`
 
 ## Rates Page
@@ -297,13 +298,55 @@ The Rates page uses several Nanostores:
 
 | File                                        | Purpose                            |
 |---------------------------------------------|------------------------------------|
-| `src/pages/rates.astro`                     | Page layout                        |
+| `src/pages/rates/index.astro`               | Page layout                        |
 | `src/components/rates/RatesInputIsland.tsx` | Form inputs                        |
 | `src/components/rates/RatesTableIsland.tsx` | Rate comparison table              |
 | `src/components/rates/RateInfoModal.tsx`    | Rate details modal                 |
+| `src/components/rates/RateHistoryModal.tsx` | Individual rate history modal      |
 | `src/lib/stores/rates-form.ts`              | Form state                         |
 | `src/lib/stores/rates-table.ts`             | Table UI state                     |
 | `src/lib/data/index.ts`                     | `filterRates()` and data utilities |
+
+## Rate History
+
+The Rate History page (`/rates/history`) tracks historical rate changes from all lenders.
+
+### Features
+
+* **Timeline View**: Chronological list of rate updates grouped by date, filterable by lender
+* **Changes View**: Detailed change log showing rate increases/decreases/additions/removals
+* **Trends View**: Interactive charts showing rate trends over time with statistics
+* View individual rate history from the main rates table via `RateHistoryModal`
+* Shareable URLs for specific history views and filters
+
+### How It Works
+
+1. **Data Loading**: Fetches history from `data/rates/history/*.json` on-demand per lender
+2. **Reconstruction**: Pure functions reconstruct rate state at any point in time from
+   baseline + changesets (see `reconstructRatesAtDate()`)
+3. **Time Series**: Extract rate history for trend charts with `getRateTimeSeries()`
+4. **Change Detection**: Compare changesets to build detailed change lists with field-level diffs
+
+### State Management
+
+* `$historyByLender` - Cached history data per lender (loaded on-demand)
+* `$historyTab` - Active tab (timeline, changes, trends)
+* `$historyFilters` - Date range, lender selection, rate type filters
+* `$historyTrendsFilters` - Trend-specific filters (selected rates, chart options)
+
+### Key Files
+
+| File                                             | Purpose                              |
+|--------------------------------------------------|--------------------------------------|
+| `src/pages/rates/history.astro`                  | Page layout with tabs                |
+| `src/components/rates/history/RatesUpdatesTimeline.tsx` | Timeline view component       |
+| `src/components/rates/history/RateChanges.tsx`   | Changes view component               |
+| `src/components/rates/history/RatesTrends.tsx`   | Trends view with charts              |
+| `src/components/rates/RateHistoryModal.tsx`      | Individual rate history modal        |
+| `src/lib/stores/rates/rates-history.ts`          | History data and query functions     |
+| `src/lib/stores/rates/rates-history-filters.ts`  | Filter state for history views       |
+| `src/lib/schemas/rate-history.ts`                | Zod schemas for history data         |
+| `src/lib/share/rates-history.ts`                 | URL compression for sharing          |
 
 ## Simulation
 

@@ -12,7 +12,7 @@ Business logic layer. Components should be thin - move pure JS functions here.
 | schemas/     | Zod validation schemas (source of truth for types)                       |
 | constants/   | Business rules (Central Bank limits, BER ratings)                        |
 | data/        | Data fetching from JSON files                                            |
-| share/       | URL compression and shareable link generation (rates, borrowing, breakeven, simulate-compare) |
+| share/       | URL compression and shareable link generation (rates, borrowing, breakeven, simulate-compare, rates-history) |
 | storage/     | localStorage persistence                                                 |
 | hooks/       | React custom hooks (e.g., `useIsDesktop`)                                |
 | export/      | PDF/Excel/CSV export (lazy-loaded jsPDF, ExcelJS). Includes share URL in PDFs. |
@@ -78,6 +78,9 @@ Don't overlook these - they contain reusable logic:
 | simulate/simulate-chart.ts        | Chart display state (year range, view options)       |
 | simulate/simulate-compare.ts      | Compare state (selected IDs, display start date)     |
 | simulate/simulate-compare-calculations.ts | Computed comparison data and metrics        |
+| rates/rates-history.ts            | History data loading and query functions (reconstructRatesAtDate, getRateTimeSeries) |
+| rates/rates-history-filters.ts    | Filter state for history views (tabs, date range, lender selection) |
+| rates/rates-history-data.ts       | Computed history data for UI components              |
 
 ## Adding New Logic
 

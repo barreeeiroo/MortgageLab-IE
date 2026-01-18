@@ -20,7 +20,8 @@ Three calculators aligned with Central Bank of Ireland lending rules:
 
 Compare mortgage rates from 10 Irish lenders (AIB, Bank of Ireland, EBS, PTSB,
 Avant Money, Haven, ICS Mortgages, MoCo, Núa, Credit Union Mortgages). Filter by
-LTV, fixed period, buyer type, and BER rating.
+LTV, fixed period, buyer type, and BER rating. View historical rate trends and
+track changes over time.
 
 ### Mortgage Simulator
 
