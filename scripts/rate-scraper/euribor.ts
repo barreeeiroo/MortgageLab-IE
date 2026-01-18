@@ -152,12 +152,12 @@ async function main() {
 	if (!existing) {
 		lastUpdatedAt = now;
 		console.log("\nNo existing file found, creating new one");
-	} else if (existing.dataHash !== newHash) {
+	} else if (existing.ratesHash !== newHash) {
 		lastUpdatedAt = now;
 		const oldCount = existing.rates.length;
 		const newCount = rates.length;
 		console.log("\nRates have CHANGED since last scrape");
-		console.log(`  Old hash: ${existing.dataHash}`);
+		console.log(`  Old hash: ${existing.ratesHash}`);
 		console.log(`  New hash: ${newHash}`);
 		console.log(
 			`  Rows: ${oldCount} -> ${newCount} (${newCount - oldCount > 0 ? "+" : ""}${newCount - oldCount})`,
@@ -172,7 +172,7 @@ async function main() {
 	const output: EuriborFile = {
 		lastScrapedAt: now,
 		lastUpdatedAt,
-		dataHash: newHash,
+		ratesHash: newHash,
 		rates,
 	};
 
@@ -186,7 +186,7 @@ async function main() {
 	);
 	console.log(`  Last scraped: ${output.lastScrapedAt}`);
 	console.log(`  Last updated: ${output.lastUpdatedAt}`);
-	console.log(`  Data hash: ${output.dataHash}`);
+	console.log(`  Rates hash: ${output.ratesHash}`);
 	console.log(`  Output: ${outputPath}`);
 
 	// Validate rate ranges

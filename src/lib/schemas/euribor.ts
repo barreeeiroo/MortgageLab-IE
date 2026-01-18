@@ -18,7 +18,7 @@ export type EuriborRate = z.infer<typeof EuriborRateSchema>;
 export const EuriborFileSchema = z.object({
 	lastScrapedAt: z.string().datetime(),
 	lastUpdatedAt: z.string().datetime(),
-	dataHash: z.string(),
+	ratesHash: z.string(),
 	rates: z.array(EuriborRateSchema),
 });
 export type EuriborFile = z.infer<typeof EuriborFileSchema>;
