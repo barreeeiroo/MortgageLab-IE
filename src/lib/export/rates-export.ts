@@ -5,7 +5,7 @@
 
 import type { SortingState, VisibilityState } from "@tanstack/react-table";
 import type { BerRating } from "@/lib/constants/ber";
-import { getLender } from "@/lib/data";
+import { getLender } from "@/lib/data/lenders";
 import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
 import { calculateMonthlyPayment } from "@/lib/mortgage/calculations";
 import {

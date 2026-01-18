@@ -1,4 +1,4 @@
-import { fetchLendersData } from "@/lib/data/fetch";
+import { fetchLendersData } from "@/lib/data/lenders";
 import type { Lender } from "@/lib/schemas/lender";
 import { createDataStore } from "./common";
 

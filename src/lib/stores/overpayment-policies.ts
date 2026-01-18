@@ -1,4 +1,4 @@
-import { fetchOverpaymentPoliciesData } from "@/lib/data/fetch";
+import { fetchOverpaymentPoliciesData } from "@/lib/data/overpayment-policies";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import { createDataStore } from "./common";
 

@@ -1,6 +1,5 @@
 import { atom, computed } from "nanostores";
-import { filterRates } from "@/lib/data";
-import { fetchAllRates } from "@/lib/data/fetch";
+import { fetchAllRates, filterRates } from "@/lib/data/rates";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import { DEFAULT_MAX_TERM } from "@/lib/schemas/lender";
 import type {

@@ -17,7 +17,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
 import { getIncorrectRateUrl } from "@/lib/constants/contact";
 import type { RatesMode } from "@/lib/constants/rates";
-import { getOverpaymentPolicy, resolvePerks } from "@/lib/data";
+import { getOverpaymentPolicy } from "@/lib/data/overpayment-policies";
+import { resolvePerks } from "@/lib/data/perks";
 import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
 import {
 	calculateMonthlyPayment,

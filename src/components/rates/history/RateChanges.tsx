@@ -28,7 +28,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { fetchAllRates } from "@/lib/data/fetch";
+import { fetchAllRates } from "@/lib/data/rates";
 import type { Lender } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type { RatesHistoryFile } from "@/lib/schemas/rate-history";

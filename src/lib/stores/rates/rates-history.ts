@@ -1,5 +1,5 @@
 import { atom } from "nanostores";
-import { fetchLenderHistory } from "@/lib/data/fetch-history";
+import { fetchLenderHistory } from "@/lib/data/history";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type {
 	RateChange,

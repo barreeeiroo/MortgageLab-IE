@@ -32,7 +32,9 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import type { BerRating } from "@/lib/constants/ber";
 import { getMissingVariableRateUrl } from "@/lib/constants/contact";
-import { getAvailableFixedTerms, getLender, resolvePerks } from "@/lib/data";
+import { getLender } from "@/lib/data/lenders";
+import { resolvePerks } from "@/lib/data/perks";
+import { getAvailableFixedTerms } from "@/lib/data/rates";
 import { type AprcConfig, calculateAprc } from "@/lib/mortgage/aprc";
 import { calculateMonthlyPayment } from "@/lib/mortgage/calculations";
 import {

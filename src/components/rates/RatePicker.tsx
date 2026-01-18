@@ -1,8 +1,8 @@
 import { ExternalLink } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { BerRating } from "@/lib/constants/ber";
-import { filterRates, getLender } from "@/lib/data";
-import { fetchAllRates, fetchLendersData } from "@/lib/data/fetch";
+import { fetchLendersData, getLender } from "@/lib/data/lenders";
+import { fetchAllRates, filterRates } from "@/lib/data/rates";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Lender } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";

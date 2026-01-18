@@ -8,7 +8,8 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useIsDesktop } from "@/hooks/use-is-desktop";
-import { getLender, resolvePerks } from "@/lib/data";
+import { getLender } from "@/lib/data/lenders";
+import { resolvePerks } from "@/lib/data/perks";
 import {
 	type CompareRateRow,
 	exportCompareRatesToCSV,

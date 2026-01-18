@@ -1,49 +1,66 @@
+/**
+ * Rate data fetching and filtering utilities.
+ */
+
 import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Lender } from "@/lib/schemas/lender";
-import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
-import type { Perk } from "@/lib/schemas/perk";
-import type { BerRating, MortgageRate, RateType } from "@/lib/schemas/rate";
+import {
+	type BerRating,
+	type MortgageRate,
+	type RatesFile,
+	RatesFileSchema,
+	type RatesMetadata,
+	type RateType,
+} from "@/lib/schemas/rate";
+import { getPath } from "@/lib/utils/path";
 
 /**
- * Get a perk by ID from a perks array
+ * Fetch rates data for a specific lender.
+ * @param lenderId - The lender ID to fetch rates for
+ * @returns Object containing rates array and metadata, or empty rates on error
  */
-export function getPerk(perks: Perk[], id: string): Perk | undefined {
-	return perks.find((p) => p.id === id);
+export async function fetchLenderRates(
+	lenderId: string,
+): Promise<{ rates: MortgageRate[]; metadata: RatesMetadata | null }> {
+	try {
+		const res = await fetch(getPath(`data/rates/${lenderId}.json`));
+		if (!res.ok) {
+			return { rates: [], metadata: null };
+		}
+		const json = await res.json();
+		const ratesFile: RatesFile = RatesFileSchema.parse(json);
+		return {
+			rates: ratesFile.rates,
+			metadata: {
+				lenderId: ratesFile.lenderId,
+				lastScrapedAt: ratesFile.lastScrapedAt,
+				lastUpdatedAt: ratesFile.lastUpdatedAt,
+			},
+		};
+	} catch {
+		return { rates: [], metadata: null };
+	}
 }
 
 /**
- * Resolve an array of perk IDs to full Perk objects
+ * Fetch all rates data for all lenders.
+ * @param lenders - Array of lenders to fetch rates for
+ * @returns Object containing all rates and metadata arrays
  */
-export function resolvePerks(perks: Perk[], perkIds: string[]): Perk[] {
-	const perkMap = new Map<string, Perk>(perks.map((perk) => [perk.id, perk]));
-	return perkIds.map((id) => perkMap.get(id)).filter((p): p is Perk => !!p);
-}
+export async function fetchAllRates(lenders: Lender[]): Promise<{
+	rates: MortgageRate[];
+	metadata: RatesMetadata[];
+}> {
+	const results = await Promise.all(
+		lenders.map((lender) => fetchLenderRates(lender.id)),
+	);
 
-/**
- * Get an overpayment policy by ID from a policies array
- */
-export function getOverpaymentPolicy(
-	policies: OverpaymentPolicy[],
-	id: string,
-): OverpaymentPolicy | undefined {
-	return policies.find((p) => p.id === id);
-}
-
-/**
- * Get a lender by ID from an array of lenders
- */
-export function getLender(lenders: Lender[], id: string): Lender | undefined {
-	return lenders.find((l) => l.id === id);
-}
-
-/**
- * Get the lender for a given rate
- */
-export function getLenderForRate(
-	lenders: Lender[],
-	rate: MortgageRate,
-): Lender | undefined {
-	return getLender(lenders, rate.lenderId);
+	return {
+		rates: results.flatMap((r) => r.rates),
+		metadata: results
+			.map((r) => r.metadata)
+			.filter((m): m is RatesMetadata => m !== null),
+	};
 }
 
 export interface RateFilter {

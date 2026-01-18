@@ -3,7 +3,8 @@
  * Exports compared rates in transposed format (metrics as rows, rates as columns).
  */
 
-import { getLender, resolvePerks } from "@/lib/data";
+import { getLender } from "@/lib/data/lenders";
+import { resolvePerks } from "@/lib/data/perks";
 import type { Lender } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
 import type { MortgageRate } from "@/lib/schemas/rate";

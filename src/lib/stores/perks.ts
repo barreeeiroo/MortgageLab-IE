@@ -1,4 +1,4 @@
-import { fetchPerksData } from "@/lib/data/fetch";
+import { fetchPerksData } from "@/lib/data/perks";
 import type { Perk } from "@/lib/schemas/perk";
 import { createDataStore } from "./common";
 

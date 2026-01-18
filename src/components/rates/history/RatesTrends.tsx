@@ -1,7 +1,7 @@
 import { useStore } from "@nanostores/react";
 import { TrendingUp } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
-import { getEuriborTimeSeries } from "@/lib/data/fetch-euribor";
+import { getEuriborTimeSeries } from "@/lib/data/euribor";
 import type { EuriborFile } from "@/lib/schemas/euribor";
 import type { Lender } from "@/lib/schemas/lender";
 import type {

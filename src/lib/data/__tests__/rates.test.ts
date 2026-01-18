@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MortgageRate } from "@/lib/schemas/rate";
-import { filterRates } from "../index";
+import { filterRates } from "../rates";
 
 // Helper to create a minimal valid rate
 function createRate(overrides: Partial<MortgageRate> = {}): MortgageRate {

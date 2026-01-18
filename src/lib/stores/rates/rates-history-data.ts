@@ -1,7 +1,7 @@
 import { atom } from "nanostores";
-import { fetchLendersData } from "@/lib/data/fetch";
-import { fetchEuriborData } from "@/lib/data/fetch-euribor";
-import { fetchAllHistory } from "@/lib/data/fetch-history";
+import { fetchEuriborData } from "@/lib/data/euribor";
+import { fetchAllHistory } from "@/lib/data/history";
+import { fetchLendersData } from "@/lib/data/lenders";
 import type { EuriborFile } from "@/lib/schemas/euribor";
 import type { Lender } from "@/lib/schemas/lender";
 import type { RatesHistoryFile } from "@/lib/schemas/rate-history";

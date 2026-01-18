@@ -1,4 +1,4 @@
-import { fetchSelfBuildTemplatesData } from "@/lib/data/fetch";
+import { fetchSelfBuildTemplatesData } from "@/lib/data/self-build-templates";
 import type { SelfBuildTemplate } from "@/lib/schemas/self-build-template";
 import { createDataStore } from "./common";
 
