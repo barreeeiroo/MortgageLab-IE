@@ -4,7 +4,9 @@ import {
 	ArrowUp,
 	Calendar,
 	History,
+	Info,
 	Minus,
+	Pencil,
 	Search,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -50,13 +52,26 @@ interface RateChangesProps {
 	lenders: Lender[];
 }
 
+interface FieldChange {
+	field: string;
+	previousValue: unknown;
+	newValue: unknown;
+}
+
 interface ComparisonRate {
 	rate: MortgageRate;
 	historicalRate?: number;
 	currentRate?: number;
 	change?: number;
 	changePercent?: number;
-	status: "unchanged" | "increased" | "decreased" | "new" | "removed";
+	status:
+		| "unchanged"
+		| "increased"
+		| "decreased"
+		| "new"
+		| "removed"
+		| "modified";
+	fieldChanges?: FieldChange[];
 }
 
 // Common rate types to filter by
@@ -115,6 +130,97 @@ function getMortgageTypeLabel(rate: MortgageRate): string {
 	return rate.type;
 }
 
+// Fields to compare between rate objects (excluding rate which is handled separately)
+const COMPARABLE_FIELDS: (keyof MortgageRate)[] = [
+	"apr",
+	"name",
+	"minLtv",
+	"maxLtv",
+	"buyerTypes",
+	"berEligible",
+	"perks",
+	"fixedTerm",
+	"minLoan",
+	"newBusiness",
+	"warning",
+];
+
+/**
+ * Compares two values for equality (handles arrays and primitives)
+ */
+function valuesEqual(a: unknown, b: unknown): boolean {
+	if (Array.isArray(a) && Array.isArray(b)) {
+		if (a.length !== b.length) return false;
+		const sortedA = [...a].sort();
+		const sortedB = [...b].sort();
+		return sortedA.every((val, idx) => val === sortedB[idx]);
+	}
+	return a === b;
+}
+
+/**
+ * Detects field changes between two rate objects (excluding rate field)
+ */
+function detectFieldChanges(
+	historical: MortgageRate,
+	current: MortgageRate,
+): FieldChange[] {
+	const changes: FieldChange[] = [];
+
+	for (const field of COMPARABLE_FIELDS) {
+		const previousValue = historical[field];
+		const newValue = current[field];
+
+		if (!valuesEqual(previousValue, newValue)) {
+			changes.push({
+				field,
+				previousValue,
+				newValue,
+			});
+		}
+	}
+
+	return changes;
+}
+
+/**
+ * Format a field name for display
+ */
+function formatFieldName(field: string): string {
+	const names: Record<string, string> = {
+		apr: "APR",
+		name: "Name",
+		minLtv: "Min LTV",
+		maxLtv: "Max LTV",
+		buyerTypes: "Buyer Types",
+		berEligible: "BER Eligible",
+		perks: "Perks",
+		fixedTerm: "Fixed Term",
+		minLoan: "Min Loan",
+		newBusiness: "New Business",
+		warning: "Warning",
+	};
+	return names[field] ?? field;
+}
+
+/**
+ * Format a field value for display
+ */
+function formatFieldValue(field: string, value: unknown): string {
+	if (value === undefined || value === null) return "—";
+	if (Array.isArray(value)) {
+		if (value.length === 0) return "None";
+		return value.join(", ");
+	}
+	if (typeof value === "boolean") return value ? "Yes" : "No";
+	if (typeof value === "number") {
+		if (field === "apr") return `${value.toFixed(2)}%`;
+		if (field.includes("Ltv") || field.includes("ltv")) return `${value}%`;
+		return String(value);
+	}
+	return String(value);
+}
+
 /**
  * Get the earliest date available in history
  */
@@ -141,7 +247,7 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 	const [activeStatuses, setActiveStatuses] = useState<
 		Set<ComparisonRate["status"]>
 	>(
-		() => new Set(["decreased", "increased", "new", "removed"]), // All except "unchanged"
+		() => new Set(["decreased", "increased", "modified", "new", "removed"]), // All except "unchanged"
 	);
 
 	const comparisonDate = comparisonDateStr
@@ -290,28 +396,46 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 						currentRate: undefined,
 						status: "removed",
 					});
-				} else if (endRate.rate !== histRate.rate) {
-					// Rate changed
-					const change = endRate.rate - histRate.rate;
-					const changePercent = (change / histRate.rate) * 100;
-					comparisons.push({
-						rate: endRate,
-						historicalRate: histRate.rate,
-						currentRate: endRate.rate,
-						change,
-						changePercent,
-						status: change > 0 ? "increased" : "decreased",
-					});
 				} else {
-					// Rate unchanged
-					comparisons.push({
-						rate: endRate,
-						historicalRate: histRate.rate,
-						currentRate: endRate.rate,
-						change: 0,
-						changePercent: 0,
-						status: "unchanged",
-					});
+					// Detect field changes between historical and current
+					const fieldChanges = detectFieldChanges(histRate, endRate);
+					const hasRateChange = endRate.rate !== histRate.rate;
+
+					if (hasRateChange) {
+						// Rate changed (possibly with other field changes)
+						const change = endRate.rate - histRate.rate;
+						const changePercent = (change / histRate.rate) * 100;
+						comparisons.push({
+							rate: endRate,
+							historicalRate: histRate.rate,
+							currentRate: endRate.rate,
+							change,
+							changePercent,
+							status: change > 0 ? "increased" : "decreased",
+							fieldChanges: fieldChanges.length > 0 ? fieldChanges : undefined,
+						});
+					} else if (fieldChanges.length > 0) {
+						// Only non-rate fields changed
+						comparisons.push({
+							rate: endRate,
+							historicalRate: histRate.rate,
+							currentRate: endRate.rate,
+							change: 0,
+							changePercent: 0,
+							status: "modified",
+							fieldChanges,
+						});
+					} else {
+						// Completely unchanged
+						comparisons.push({
+							rate: endRate,
+							historicalRate: histRate.rate,
+							currentRate: endRate.rate,
+							change: 0,
+							changePercent: 0,
+							status: "unchanged",
+						});
+					}
 				}
 			}
 		}
@@ -340,13 +464,14 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 
 		// Sort by change amount (biggest decreases first)
 		return comparisons.sort((a, b) => {
-			// Decreases first, then unchanged, then increases, then new, then removed
-			const statusOrder = {
+			// Decreases first, then modified, then unchanged, then increases, then new, then removed
+			const statusOrder: Record<ComparisonRate["status"], number> = {
 				decreased: 0,
-				unchanged: 1,
-				increased: 2,
-				new: 3,
-				removed: 4,
+				modified: 1,
+				unchanged: 2,
+				increased: 3,
+				new: 4,
+				removed: 5,
 			};
 			const statusDiff = statusOrder[a.status] - statusOrder[b.status];
 			if (statusDiff !== 0) return statusDiff;
@@ -387,13 +512,14 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 		const increased = searchFilteredRates.filter(
 			(r) => r.status === "increased",
 		);
+		const modified = searchFilteredRates.filter((r) => r.status === "modified");
 		const unchanged = searchFilteredRates.filter(
 			(r) => r.status === "unchanged",
 		);
 		const newRates = searchFilteredRates.filter((r) => r.status === "new");
 		const removed = searchFilteredRates.filter((r) => r.status === "removed");
 
-		return { decreased, increased, unchanged, newRates, removed };
+		return { decreased, increased, modified, unchanged, newRates, removed };
 	}, [searchFilteredRates]);
 
 	// Filter by active status toggles (for display)
@@ -572,7 +698,7 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 			) : (
 				<>
 					{/* Summary Stats - Clickable Filters */}
-					<div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+					<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
 						<button
 							type="button"
 							onClick={() => toggleStatus("decreased")}
@@ -619,9 +745,31 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 						</button>
 						<button
 							type="button"
+							onClick={() => toggleStatus("modified")}
+							className={cn(
+								"p-3 rounded-lg text-center transition-all cursor-pointer hover:opacity-80",
+								activeStatuses.has("modified")
+									? "bg-amber-500/10 ring-2 ring-amber-500/50"
+									: "bg-muted/30 opacity-50 hover:opacity-70",
+							)}
+						>
+							<div
+								className={cn(
+									"text-2xl font-bold",
+									activeStatuses.has("modified")
+										? "text-amber-600"
+										: "text-muted-foreground",
+								)}
+							>
+								{stats.modified.length}
+							</div>
+							<div className="text-xs text-muted-foreground">Modified</div>
+						</button>
+						<button
+							type="button"
 							onClick={() => toggleStatus("unchanged")}
 							className={cn(
-								"p-3 rounded-lg text-center transition-all cursor-pointer hover:opacity-80 col-span-2 sm:col-span-1",
+								"p-3 rounded-lg text-center transition-all cursor-pointer hover:opacity-80",
 								activeStatuses.has("unchanged")
 									? "bg-muted/50 ring-2 ring-muted-foreground/30"
 									: "bg-muted/30 opacity-50 hover:opacity-70",
@@ -686,7 +834,7 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 					</div>
 
 					{/* Rate Changes List */}
-					<div className="space-y-2 min-h-[800px] max-h-[800px] overflow-y-auto">
+					<div className="space-y-2">
 						{displayRates.length === 0 ? (
 							<div className="text-center py-8 text-muted-foreground">
 								{searchQuery
@@ -710,12 +858,28 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 												<div className="flex items-center gap-3 min-w-0">
 													{/* Status Icon */}
 													{comp.status === "decreased" ? (
-														<div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/10">
+														<div className="relative flex items-center justify-center w-6 h-6 rounded-full bg-green-500/10">
 															<ArrowDown className="h-3.5 w-3.5 text-green-600" />
+															{comp.fieldChanges &&
+																comp.fieldChanges.length > 0 && (
+																	<span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">
+																		{comp.fieldChanges.length}
+																	</span>
+																)}
 														</div>
 													) : comp.status === "increased" ? (
-														<div className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive/10">
+														<div className="relative flex items-center justify-center w-6 h-6 rounded-full bg-destructive/10">
 															<ArrowUp className="h-3.5 w-3.5 text-destructive" />
+															{comp.fieldChanges &&
+																comp.fieldChanges.length > 0 && (
+																	<span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">
+																		{comp.fieldChanges.length}
+																	</span>
+																)}
+														</div>
+													) : comp.status === "modified" ? (
+														<div className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/10">
+															<Pencil className="h-3.5 w-3.5 text-amber-600" />
 														</div>
 													) : comp.status === "new" ? (
 														<div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/10">
@@ -763,6 +927,14 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 														<span className="text-muted-foreground line-through">
 															{comp.historicalRate?.toFixed(2)}%
 														</span>
+													) : comp.status === "modified" ? (
+														<div className="flex items-center gap-1.5">
+															<span>{comp.currentRate?.toFixed(2)}%</span>
+															<span className="text-amber-600 text-xs">
+																({comp.fieldChanges?.length} field
+																{comp.fieldChanges?.length !== 1 ? "s" : ""})
+															</span>
+														</div>
 													) : (
 														<div className="flex items-center gap-1.5 flex-wrap">
 															<span className="text-muted-foreground">
@@ -793,6 +965,12 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 																		{comp.change.toFixed(2)})
 																	</span>
 																)}
+															{comp.fieldChanges &&
+																comp.fieldChanges.length > 0 && (
+																	<span className="text-amber-600 text-xs">
+																		+{comp.fieldChanges.length}
+																	</span>
+																)}
 														</div>
 													)}
 												</div>
@@ -802,11 +980,49 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 											<div className="space-y-3">
 												<div className="flex items-center gap-2">
 													<History className="h-4 w-4 text-muted-foreground" />
-													<span className="font-medium">Rate History</span>
+													<span className="font-medium">Rate Details</span>
 												</div>
 												<div className="text-sm text-muted-foreground">
 													{comp.rate.name}
 												</div>
+
+												{/* Field Changes Section */}
+												{comp.fieldChanges && comp.fieldChanges.length > 0 && (
+													<div className="border-t pt-3">
+														<div className="flex items-center gap-2 mb-2">
+															<Info className="h-4 w-4 text-amber-600" />
+															<span className="text-sm font-medium">
+																Field Changes
+															</span>
+														</div>
+														<div className="space-y-1.5">
+															{comp.fieldChanges.map((fc) => (
+																<div
+																	key={fc.field}
+																	className="text-xs rounded bg-muted/50 px-2 py-1.5"
+																>
+																	<span className="font-medium text-foreground">
+																		{formatFieldName(fc.field)}:
+																	</span>
+																	<div className="flex items-center gap-1 mt-0.5 text-muted-foreground">
+																		<span className="line-through">
+																			{formatFieldValue(
+																				fc.field,
+																				fc.previousValue,
+																			)}
+																		</span>
+																		<span>→</span>
+																		<span className="text-foreground">
+																			{formatFieldValue(fc.field, fc.newValue)}
+																		</span>
+																	</div>
+																</div>
+															))}
+														</div>
+													</div>
+												)}
+
+												{/* Rate History Section */}
 												{(() => {
 													if (
 														!timeSeries ||

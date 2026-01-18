@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { MortgageRateSchema } from "./rate";
+import { MortgageRateBaseSchema, MortgageRateSchema } from "./rate";
+
+// Schema for partial rate changes using the base schema (no defaults)
+// This prevents Zod from adding default values like minLtv: 0 when parsing
+const RateChangesSchema = MortgageRateBaseSchema.partial().extend({
+	id: z.string(), // id is always required in changes
+});
 
 // Diff operations for rate changes
 export const RateAddOperationSchema = z.object({
@@ -15,7 +21,7 @@ export const RateRemoveOperationSchema = z.object({
 export const RateUpdateOperationSchema = z.object({
 	op: z.literal("update"),
 	id: z.string(),
-	changes: MortgageRateSchema.partial().extend({ id: z.string() }),
+	changes: RateChangesSchema,
 });
 
 export const RateDiffOperationSchema = z.discriminatedUnion("op", [
@@ -49,6 +55,13 @@ export const RatesHistoryFileSchema = z.object({
 });
 export type RatesHistoryFile = z.infer<typeof RatesHistoryFileSchema>;
 
+// Field change tracking for detailed change history
+export interface RateFieldChange {
+	field: string;
+	previousValue: unknown;
+	newValue: unknown;
+}
+
 // Computed types for UI (not stored)
 export interface RateChange {
 	rateId: string;
@@ -59,6 +72,7 @@ export interface RateChange {
 	changeType: "added" | "removed" | "changed";
 	changeAmount?: number;
 	changePercent?: number;
+	fieldChanges?: RateFieldChange[]; // All field changes (including non-rate fields)
 }
 
 export interface RateTimeSeries {

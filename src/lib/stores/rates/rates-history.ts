@@ -3,6 +3,7 @@ import { fetchLenderHistory } from "@/lib/data/fetch-history";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type {
 	RateChange,
+	RateFieldChange,
 	RatesHistoryFile,
 	RateTimeSeries,
 } from "@/lib/schemas/rate-history";
@@ -77,8 +78,13 @@ export function reconstructRatesAtDate(
 		history.baseline.rates.map((r) => [r.id, { ...r }]),
 	);
 
+	// Sort changesets by timestamp to ensure correct chronological processing
+	const sortedChangesets = [...history.changesets].sort(
+		(a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+	);
+
 	// Apply changesets up to and including target date
-	for (const changeset of history.changesets) {
+	for (const changeset of sortedChangesets) {
 		const changesetTs = new Date(changeset.timestamp).getTime();
 		if (changesetTs > targetTs) {
 			break; // Past target date
@@ -135,8 +141,13 @@ export function getRateTimeSeries(
 	let currentApr = baselineRate?.apr;
 	let rateExists = !!baselineRate;
 
+	// Sort changesets by timestamp to ensure correct chronological processing
+	const sortedChangesets = [...history.changesets].sort(
+		(a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+	);
+
 	// Walk through changesets
-	for (const changeset of history.changesets) {
+	for (const changeset of sortedChangesets) {
 		for (const op of changeset.operations) {
 			if (op.op === "add" && op.rate.id === rateId) {
 				rateName = op.rate.name;
@@ -183,6 +194,63 @@ export function getRateTimeSeries(
 	return { rateId, rateName, lenderId, dataPoints };
 }
 
+// Fields to track for changes (excluding 'id' and 'lenderId' which don't change)
+const TRACKED_FIELDS: (keyof MortgageRate)[] = [
+	"rate",
+	"apr",
+	"name",
+	"minLtv",
+	"maxLtv",
+	"buyerTypes",
+	"berEligible",
+	"perks",
+	"fixedTerm",
+	"minLoan",
+	"newBusiness",
+	"warning",
+];
+
+/**
+ * Compares two values for equality (handles arrays and primitives)
+ */
+function valuesEqual(a: unknown, b: unknown): boolean {
+	if (Array.isArray(a) && Array.isArray(b)) {
+		if (a.length !== b.length) return false;
+		const sortedA = [...a].sort();
+		const sortedB = [...b].sort();
+		return sortedA.every((val, idx) => val === sortedB[idx]);
+	}
+	return a === b;
+}
+
+/**
+ * Detects which fields changed between two rate objects.
+ * Returns an array of field changes for non-equal fields.
+ */
+function detectFieldChanges(
+	existing: MortgageRate,
+	changes: Partial<MortgageRate>,
+): RateFieldChange[] {
+	const fieldChanges: RateFieldChange[] = [];
+
+	for (const field of TRACKED_FIELDS) {
+		if (!(field in changes)) continue;
+
+		const previousValue = existing[field];
+		const newValue = changes[field];
+
+		if (!valuesEqual(previousValue, newValue)) {
+			fieldChanges.push({
+				field,
+				previousValue,
+				newValue,
+			});
+		}
+	}
+
+	return fieldChanges;
+}
+
 /**
  * Gets all rate changes for a lender within a date range.
  * Useful for "what changed" views.
@@ -217,8 +285,13 @@ export function getRateChanges(
 		previousRates = new Map(history.baseline.rates.map((r) => [r.id, r]));
 	}
 
+	// Sort changesets by timestamp to ensure correct chronological processing
+	const sortedChangesets = [...history.changesets].sort(
+		(a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+	);
+
 	// Walk through changesets
-	for (const changeset of history.changesets) {
+	for (const changeset of sortedChangesets) {
 		const changesetTs = new Date(changeset.timestamp).getTime();
 
 		// Skip changesets before our range but track state
@@ -275,21 +348,38 @@ export function getRateChanges(
 				previousRates.delete(op.id);
 			} else if (op.op === "update") {
 				const existing = previousRates.get(op.id);
-				if (existing && op.changes.rate !== undefined) {
-					const changeAmount = op.changes.rate - existing.rate;
-					const changePercent = (changeAmount / existing.rate) * 100;
-					changes.push({
-						rateId: op.id,
-						rateName: op.changes.name ?? existing.name,
-						timestamp: changeset.timestamp,
-						previousRate: existing.rate,
-						newRate: op.changes.rate,
-						changeType: "changed",
-						changeAmount,
-						changePercent,
-					});
-				}
 				if (existing) {
+					// Detect all field changes
+					const fieldChanges = detectFieldChanges(existing, op.changes);
+
+					// Only create a change entry if there are actual changes
+					if (fieldChanges.length > 0) {
+						const rateChange = fieldChanges.find((fc) => fc.field === "rate");
+						const hasRateChange = !!rateChange;
+
+						// Calculate rate change metrics if rate changed
+						let changeAmount: number | undefined;
+						let changePercent: number | undefined;
+						if (hasRateChange && typeof rateChange.newValue === "number") {
+							changeAmount = rateChange.newValue - existing.rate;
+							changePercent = (changeAmount / existing.rate) * 100;
+						}
+
+						changes.push({
+							rateId: op.id,
+							rateName: op.changes.name ?? existing.name,
+							timestamp: changeset.timestamp,
+							previousRate: existing.rate,
+							newRate: hasRateChange
+								? (rateChange.newValue as number)
+								: existing.rate,
+							changeType: "changed",
+							changeAmount,
+							changePercent,
+							fieldChanges,
+						});
+					}
+
 					previousRates.set(op.id, { ...existing, ...op.changes });
 				}
 			}

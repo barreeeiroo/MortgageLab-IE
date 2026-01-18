@@ -13,7 +13,13 @@ export interface UpdatesFilter {
 	lenderIds: string[]; // Empty = all lenders
 	startDate: string | null; // ISO date string
 	endDate: string | null;
-	changeType: "all" | "increase" | "decrease" | "added" | "removed";
+	changeType:
+		| "all"
+		| "increase"
+		| "decrease"
+		| "modified"
+		| "added"
+		| "removed";
 }
 
 export interface ChangesFilter {

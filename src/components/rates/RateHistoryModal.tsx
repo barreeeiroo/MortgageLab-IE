@@ -2,8 +2,12 @@ import {
 	ArrowDown,
 	ArrowLeft,
 	ArrowUp,
+	ChevronDown,
+	ChevronUp,
 	Copy,
+	Info,
 	Minus,
+	Pencil,
 	TriangleAlert,
 	X,
 } from "lucide-react";
@@ -87,6 +91,87 @@ function getRateChangeSince(
 	return { change, percent };
 }
 
+/**
+ * Format a field name for display
+ */
+function formatFieldName(field: string): string {
+	const names: Record<string, string> = {
+		apr: "APR",
+		name: "Name",
+		minLtv: "Min LTV",
+		maxLtv: "Max LTV",
+		buyerTypes: "Buyer Types",
+		berEligible: "BER Eligible",
+		perks: "Perks",
+		fixedTerm: "Fixed Term",
+		minLoan: "Min Loan",
+		newBusiness: "New Business",
+		warning: "Warning",
+		rate: "Rate",
+	};
+	return names[field] ?? field;
+}
+
+/** Buyer type labels for display */
+const BUYER_TYPE_LABELS: Record<string, string> = {
+	ftb: "First Time Buyer",
+	mover: "Mover",
+	btl: "Buy to Let",
+	"switcher-pdh": "Switcher (Home)",
+	"switcher-btl": "Switcher (BTL)",
+};
+
+/**
+ * Format a perk ID to a readable label
+ */
+function formatPerkId(perkId: string): string {
+	return perkId
+		.split("-")
+		.map((word) => {
+			if (word === "pct") return "%";
+			return word.charAt(0).toUpperCase() + word.slice(1);
+		})
+		.join(" ")
+		.replace(" %", "%");
+}
+
+/**
+ * Format a field value for display
+ */
+function formatFieldValue(field: string, value: unknown): string {
+	if (value === undefined || value === null) return "—";
+
+	// Handle arrays based on field type
+	if (Array.isArray(value)) {
+		if (value.length === 0) return "None";
+		if (field === "buyerTypes") {
+			return value.map((v) => BUYER_TYPE_LABELS[v] ?? v).join(", ");
+		}
+		if (field === "perks") {
+			return value.map((v) => formatPerkId(v)).join(", ");
+		}
+		return value.join(", ");
+	}
+
+	if (typeof value === "boolean") return value ? "Yes" : "No";
+
+	if (typeof value === "number") {
+		if (field === "apr" || field === "rate") return `${value.toFixed(2)}%`;
+		if (field === "minLtv" || field === "maxLtv") return `${value}%`;
+		if (field === "fixedTerm") return `${value} year${value !== 1 ? "s" : ""}`;
+		if (field === "minLoan") {
+			return new Intl.NumberFormat("en-IE", {
+				style: "currency",
+				currency: "EUR",
+				maximumFractionDigits: 0,
+			}).format(value);
+		}
+		return String(value);
+	}
+
+	return String(value);
+}
+
 export function RateHistoryModal({
 	rate,
 	lender,
@@ -99,6 +184,9 @@ export function RateHistoryModal({
 	const [changes, setChanges] = useState<RateChange[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [copiedTimestamp, setCopiedTimestamp] = useState<string | null>(null);
+	const [expandedChanges, setExpandedChanges] = useState<Set<string>>(
+		new Set(),
+	);
 
 	const isCustom = rate ? (rate as { isCustom?: boolean }).isCustom : false;
 	const customLenderName =
@@ -198,6 +286,7 @@ export function RateHistoryModal({
 	useEffect(() => {
 		if (rate) {
 			setCopiedTimestamp(null);
+			setExpandedChanges(new Set());
 		}
 	}, [rate]);
 
@@ -341,7 +430,7 @@ export function RateHistoryModal({
 				{changes.length > 0 && (
 					<div>
 						<h4 className="text-sm font-medium mb-3">Change History</h4>
-						<div className="space-y-2 max-h-[200px] overflow-y-auto">
+						<div className="space-y-2 max-h-[300px] overflow-y-auto">
 							{changes.map((change, idx) => {
 								const isCopied = copiedTimestamp === change.timestamp;
 								const canCopy =
@@ -349,82 +438,170 @@ export function RateHistoryModal({
 									(change.changeType !== "removed"
 										? change.newRate !== null
 										: change.previousRate !== null);
+								const changeKey = `${change.timestamp}-${idx}`;
+								const isExpanded = expandedChanges.has(changeKey);
+								const hasFieldChanges =
+									change.fieldChanges && change.fieldChanges.length > 0;
+								const hasRateChange =
+									change.changeAmount !== undefined &&
+									change.changeAmount !== 0;
+								const isModifiedOnly =
+									change.changeType === "changed" &&
+									!hasRateChange &&
+									hasFieldChanges;
+
+								const toggleExpanded = () => {
+									const newExpanded = new Set(expandedChanges);
+									if (isExpanded) {
+										newExpanded.delete(changeKey);
+									} else {
+										newExpanded.add(changeKey);
+									}
+									setExpandedChanges(newExpanded);
+								};
 
 								return (
 									<div
-										key={`${change.timestamp}-${idx}`}
-										className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50"
+										key={changeKey}
+										className="rounded-lg bg-muted/50 overflow-hidden"
 									>
-										<div className="flex items-center gap-2">
-											{change.changeType === "changed" ? (
-												change.changeAmount && change.changeAmount > 0 ? (
-													<ArrowUp className="h-3.5 w-3.5 text-destructive" />
-												) : (
-													<ArrowDown className="h-3.5 w-3.5 text-green-600" />
-												)
-											) : change.changeType === "added" ? (
-												<span className="text-xs font-medium text-blue-600">
-													NEW
-												</span>
-											) : (
-												<span className="text-xs font-medium text-muted-foreground">
-													REMOVED
-												</span>
-											)}
-											<span className="text-sm">
-												{formatDate(change.timestamp)}
-											</span>
-										</div>
-										<div className="flex items-center gap-2">
-											<div className="text-sm font-mono">
+										<div className="flex items-center justify-between py-2 px-3">
+											<div className="flex items-center gap-2">
 												{change.changeType === "changed" ? (
-													<>
+													isModifiedOnly ? (
+														<Pencil className="h-3.5 w-3.5 text-amber-600" />
+													) : change.changeAmount && change.changeAmount > 0 ? (
+														<div className="relative">
+															<ArrowUp className="h-3.5 w-3.5 text-destructive" />
+															{hasFieldChanges && (
+																<span className="absolute -top-1 -right-2 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">
+																	{change.fieldChanges?.length}
+																</span>
+															)}
+														</div>
+													) : (
+														<div className="relative">
+															<ArrowDown className="h-3.5 w-3.5 text-green-600" />
+															{hasFieldChanges && (
+																<span className="absolute -top-1 -right-2 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">
+																	{change.fieldChanges?.length}
+																</span>
+															)}
+														</div>
+													)
+												) : change.changeType === "added" ? (
+													<span className="text-xs font-medium text-blue-600">
+														NEW
+													</span>
+												) : (
+													<span className="text-xs font-medium text-muted-foreground">
+														REMOVED
+													</span>
+												)}
+												<span className="text-sm">
+													{formatDate(change.timestamp)}
+												</span>
+												{hasFieldChanges && (
+													<button
+														type="button"
+														onClick={toggleExpanded}
+														className="flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700 cursor-pointer"
+													>
+														<Info className="h-3 w-3" />
+														<span>
+															{change.fieldChanges?.length} field
+															{change.fieldChanges?.length !== 1 ? "s" : ""}
+														</span>
+														{isExpanded ? (
+															<ChevronUp className="h-3 w-3" />
+														) : (
+															<ChevronDown className="h-3 w-3" />
+														)}
+													</button>
+												)}
+											</div>
+											<div className="flex items-center gap-2">
+												<div className="text-sm font-mono">
+													{change.changeType === "changed" ? (
+														isModifiedOnly ? (
+															<span>{change.newRate?.toFixed(2)}%</span>
+														) : (
+															<>
+																<span className="text-muted-foreground">
+																	{change.previousRate?.toFixed(2)}%
+																</span>
+																<span className="mx-1.5">→</span>
+																<span
+																	className={
+																		change.changeAmount &&
+																		change.changeAmount > 0
+																			? "text-destructive"
+																			: "text-green-600"
+																	}
+																>
+																	{change.newRate?.toFixed(2)}%
+																</span>
+															</>
+														)
+													) : change.changeType === "added" ? (
+														<span>{change.newRate?.toFixed(2)}%</span>
+													) : (
 														<span className="text-muted-foreground">
 															{change.previousRate?.toFixed(2)}%
 														</span>
-														<span className="mx-1.5">→</span>
-														<span
-															className={
-																change.changeAmount && change.changeAmount > 0
-																	? "text-destructive"
-																	: "text-green-600"
-															}
-														>
-															{change.newRate?.toFixed(2)}%
-														</span>
-													</>
-												) : change.changeType === "added" ? (
-													<span>{change.newRate?.toFixed(2)}%</span>
-												) : (
-													<span className="text-muted-foreground">
-														{change.previousRate?.toFixed(2)}%
-													</span>
+													)}
+												</div>
+												{canCopy && (
+													<Tooltip>
+														<TooltipTrigger asChild>
+															<Button
+																variant="ghost"
+																size="icon"
+																className="h-6 w-6"
+																onClick={() => handleCopyAsCustom(change)}
+																disabled={isCopied}
+															>
+																<Copy
+																	className={`h-3.5 w-3.5 ${isCopied ? "text-green-600" : "text-muted-foreground"}`}
+																/>
+																<span className="sr-only">
+																	Copy as custom rate
+																</span>
+															</Button>
+														</TooltipTrigger>
+														<TooltipContent>
+															{isCopied ? "Copied!" : "Copy as custom rate"}
+														</TooltipContent>
+													</Tooltip>
 												)}
 											</div>
-											{canCopy && (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<Button
-															variant="ghost"
-															size="icon"
-															className="h-6 w-6"
-															onClick={() => handleCopyAsCustom(change)}
-															disabled={isCopied}
-														>
-															<Copy
-																className={`h-3.5 w-3.5 ${isCopied ? "text-green-600" : "text-muted-foreground"}`}
-															/>
-															<span className="sr-only">
-																Copy as custom rate
-															</span>
-														</Button>
-													</TooltipTrigger>
-													<TooltipContent>
-														{isCopied ? "Copied!" : "Copy as custom rate"}
-													</TooltipContent>
-												</Tooltip>
-											)}
 										</div>
+										{/* Expanded Field Changes */}
+										{isExpanded && hasFieldChanges && (
+											<div className="px-3 pb-3 pt-1 border-t border-border/50">
+												<div className="space-y-1.5">
+													{change.fieldChanges?.map((fc) => (
+														<div
+															key={fc.field}
+															className="text-xs rounded bg-background px-2 py-1.5"
+														>
+															<span className="font-medium text-foreground">
+																{formatFieldName(fc.field)}:
+															</span>
+															<div className="flex items-center gap-1 mt-0.5 text-muted-foreground">
+																<span className="line-through">
+																	{formatFieldValue(fc.field, fc.previousValue)}
+																</span>
+																<span>→</span>
+																<span className="text-foreground">
+																	{formatFieldValue(fc.field, fc.newValue)}
+																</span>
+															</div>
+														</div>
+													))}
+												</div>
+											</div>
+										)}
 									</div>
 								);
 							})}

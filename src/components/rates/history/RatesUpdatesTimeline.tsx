@@ -1,5 +1,16 @@
 import { useStore } from "@nanostores/react";
-import { ArrowDown, ArrowUp, Filter, Plus, Trash2, X } from "lucide-react";
+import {
+	ArrowDown,
+	ArrowUp,
+	ChevronDown,
+	ChevronUp,
+	Filter,
+	Info,
+	Pencil,
+	Plus,
+	Trash2,
+	X,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { LenderLogo } from "@/components/lenders/LenderLogo";
 import { LenderSelector } from "@/components/lenders/LenderSelector";
@@ -74,12 +85,98 @@ function groupChangesByDate(
 	}));
 }
 
+/**
+ * Format a field name for display
+ */
+function formatFieldName(field: string): string {
+	const names: Record<string, string> = {
+		apr: "APR",
+		name: "Name",
+		minLtv: "Min LTV",
+		maxLtv: "Max LTV",
+		buyerTypes: "Buyer Types",
+		berEligible: "BER Eligible",
+		perks: "Perks",
+		fixedTerm: "Fixed Term",
+		minLoan: "Min Loan",
+		newBusiness: "New Business",
+		warning: "Warning",
+		rate: "Rate",
+	};
+	return names[field] ?? field;
+}
+
+/** Buyer type labels for display */
+const BUYER_TYPE_LABELS: Record<string, string> = {
+	ftb: "First Time Buyer",
+	mover: "Mover",
+	btl: "Buy to Let",
+	"switcher-pdh": "Switcher (Home)",
+	"switcher-btl": "Switcher (BTL)",
+};
+
+/**
+ * Format a perk ID to a readable label
+ */
+function formatPerkId(perkId: string): string {
+	// Convert "cashback-2pct" to "Cashback 2%", "fee-free-banking" to "Fee Free Banking"
+	return perkId
+		.split("-")
+		.map((word) => {
+			if (word === "pct") return "%";
+			return word.charAt(0).toUpperCase() + word.slice(1);
+		})
+		.join(" ")
+		.replace(" %", "%");
+}
+
+/**
+ * Format a field value for display
+ */
+function formatFieldValue(field: string, value: unknown): string {
+	if (value === undefined || value === null) return "—";
+
+	// Handle arrays based on field type
+	if (Array.isArray(value)) {
+		if (value.length === 0) return "None";
+		if (field === "buyerTypes") {
+			return value.map((v) => BUYER_TYPE_LABELS[v] ?? v).join(", ");
+		}
+		if (field === "perks") {
+			return value.map((v) => formatPerkId(v)).join(", ");
+		}
+		// berEligible and others - show as-is
+		return value.join(", ");
+	}
+
+	if (typeof value === "boolean") return value ? "Yes" : "No";
+
+	if (typeof value === "number") {
+		if (field === "apr" || field === "rate") return `${value.toFixed(2)}%`;
+		if (field === "minLtv" || field === "maxLtv") return `${value}%`;
+		if (field === "fixedTerm") return `${value} year${value !== 1 ? "s" : ""}`;
+		if (field === "minLoan") {
+			return new Intl.NumberFormat("en-IE", {
+				style: "currency",
+				currency: "EUR",
+				maximumFractionDigits: 0,
+			}).format(value);
+		}
+		return String(value);
+	}
+
+	return String(value);
+}
+
 export function RatesUpdatesTimeline({
 	historyData,
 	lenders,
 }: UpdatesTimelineProps) {
 	const filter = useStore($updatesFilter);
 	const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
+	const [expandedFieldChanges, setExpandedFieldChanges] = useState<Set<string>>(
+		new Set(),
+	);
 
 	// Create lender lookup map
 	const lenderMap = useMemo(() => {
@@ -109,28 +206,38 @@ export function RatesUpdatesTimeline({
 			for (const change of lenderChanges) {
 				// Apply change type filter
 				if (filter.changeType !== "all") {
-					if (
-						filter.changeType === "increase" &&
-						change.changeType !== "changed"
-					)
-						continue;
-					if (
-						filter.changeType === "increase" &&
-						change.changeAmount !== undefined &&
-						change.changeAmount <= 0
-					)
-						continue;
-					if (
-						filter.changeType === "decrease" &&
-						change.changeType !== "changed"
-					)
-						continue;
-					if (
-						filter.changeType === "decrease" &&
-						change.changeAmount !== undefined &&
-						change.changeAmount >= 0
-					)
-						continue;
+					// Determine if this is a "modified only" change (has field changes but no rate change)
+					const hasRateChange =
+						change.changeAmount !== undefined && change.changeAmount !== 0;
+					const hasFieldChanges =
+						change.fieldChanges && change.fieldChanges.length > 0;
+					const isModifiedOnly =
+						change.changeType === "changed" &&
+						!hasRateChange &&
+						hasFieldChanges;
+
+					if (filter.changeType === "increase") {
+						if (change.changeType !== "changed") continue;
+						if (
+							!hasRateChange ||
+							change.changeAmount === undefined ||
+							change.changeAmount <= 0
+						)
+							continue;
+					}
+					if (filter.changeType === "decrease") {
+						if (change.changeType !== "changed") continue;
+						if (
+							!hasRateChange ||
+							change.changeAmount === undefined ||
+							change.changeAmount >= 0
+						)
+							continue;
+					}
+					if (filter.changeType === "modified") {
+						// Only show changes where the rate didn't change but other fields did
+						if (!isModifiedOnly) continue;
+					}
 					if (filter.changeType === "added" && change.changeType !== "added")
 						continue;
 					if (
@@ -201,6 +308,7 @@ export function RatesUpdatesTimeline({
 						<SelectItem value="all">All Changes</SelectItem>
 						<SelectItem value="increase">Increases</SelectItem>
 						<SelectItem value="decrease">Decreases</SelectItem>
+						<SelectItem value="modified">Modified</SelectItem>
 						<SelectItem value="added">New Rates</SelectItem>
 						<SelectItem value="removed">Removed</SelectItem>
 					</SelectContent>
@@ -256,7 +364,7 @@ export function RatesUpdatesTimeline({
 								<button
 									type="button"
 									onClick={() => toggleDate(group.date)}
-									className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-full"
+									className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-full cursor-pointer"
 								>
 									<span className="bg-muted px-2 py-0.5 rounded">
 										{group.dateLabel}
@@ -272,75 +380,181 @@ export function RatesUpdatesTimeline({
 									{visibleChanges.map((change, idx) => {
 										const lender = lenderMap.get(change.lenderId);
 
+										// Determine if this is a "modified only" change
+										const hasRateChange =
+											change.changeAmount !== undefined &&
+											change.changeAmount !== 0;
+										const hasFieldChanges =
+											change.fieldChanges && change.fieldChanges.length > 0;
+										const isModifiedOnly =
+											change.changeType === "changed" &&
+											!hasRateChange &&
+											hasFieldChanges;
+
+										const changeKey = `${change.rateId}-${change.timestamp}-${idx}`;
+										const isFieldsExpanded =
+											expandedFieldChanges.has(changeKey);
+
+										const toggleFieldsExpanded = () => {
+											const newExpanded = new Set(expandedFieldChanges);
+											if (isFieldsExpanded) {
+												newExpanded.delete(changeKey);
+											} else {
+												newExpanded.add(changeKey);
+											}
+											setExpandedFieldChanges(newExpanded);
+										};
+
 										return (
 											<div
-												key={`${change.rateId}-${change.timestamp}-${idx}`}
-												className="flex items-center justify-between py-2 px-3 rounded-lg bg-background border hover:border-border/80 transition-colors"
+												key={changeKey}
+												className="rounded-lg bg-background border hover:border-border/80 transition-colors overflow-hidden"
 											>
-												<div className="flex items-center gap-3">
-													{/* Change Type Icon */}
-													{change.changeType === "changed" ? (
-														change.changeAmount && change.changeAmount > 0 ? (
-															<div className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive/10">
-																<ArrowUp className="h-3.5 w-3.5 text-destructive" />
-															</div>
-														) : (
-															<div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/10">
-																<ArrowDown className="h-3.5 w-3.5 text-green-600" />
-															</div>
-														)
-													) : change.changeType === "added" ? (
-														<div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/10">
-															<Plus className="h-3.5 w-3.5 text-blue-600" />
+												<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 gap-2">
+													<div className="flex items-center gap-3 min-w-0">
+														{/* Change Type Icon */}
+														<div className="shrink-0">
+															{change.changeType === "changed" ? (
+																isModifiedOnly ? (
+																	<div className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/10">
+																		<Pencil className="h-3.5 w-3.5 text-amber-600" />
+																	</div>
+																) : change.changeAmount &&
+																	change.changeAmount > 0 ? (
+																	<div className="relative flex items-center justify-center w-6 h-6 rounded-full bg-destructive/10">
+																		<ArrowUp className="h-3.5 w-3.5 text-destructive" />
+																		{hasFieldChanges && (
+																			<span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">
+																				{change.fieldChanges?.length}
+																			</span>
+																		)}
+																	</div>
+																) : (
+																	<div className="relative flex items-center justify-center w-6 h-6 rounded-full bg-green-500/10">
+																		<ArrowDown className="h-3.5 w-3.5 text-green-600" />
+																		{hasFieldChanges && (
+																			<span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">
+																				{change.fieldChanges?.length}
+																			</span>
+																		)}
+																	</div>
+																)
+															) : change.changeType === "added" ? (
+																<div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/10">
+																	<Plus className="h-3.5 w-3.5 text-blue-600" />
+																</div>
+															) : (
+																<div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted">
+																	<Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+																</div>
+															)}
 														</div>
-													) : (
-														<div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted">
-															<Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-														</div>
-													)}
 
-													{/* Lender Logo & Info */}
-													<div className="flex items-center gap-2">
-														<LenderLogo lenderId={change.lenderId} size={24} />
-														<div>
-															<div className="text-sm font-medium">
-																{lender?.name ?? change.lenderId}
+														{/* Lender Logo & Info */}
+														<div className="flex items-center gap-2 min-w-0">
+															<LenderLogo
+																lenderId={change.lenderId}
+																size={24}
+															/>
+															<div className="min-w-0">
+																<div className="text-sm font-medium truncate">
+																	{lender?.name ?? change.lenderId}
+																</div>
+																<div className="text-xs text-muted-foreground truncate">
+																	{change.rateName}
+																</div>
 															</div>
-															<div className="text-xs text-muted-foreground truncate max-w-[200px]">
-																{change.rateName}
-															</div>
+														</div>
+													</div>
+
+													<div className="flex items-center gap-2 sm:gap-3 justify-between sm:justify-end pl-9 sm:pl-0">
+														{/* Field Changes Toggle */}
+														{hasFieldChanges && (
+															<button
+																type="button"
+																onClick={toggleFieldsExpanded}
+																className="flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700 cursor-pointer shrink-0"
+															>
+																<Info className="h-3 w-3" />
+																<span>
+																	{change.fieldChanges?.length} field
+																	{change.fieldChanges?.length !== 1 ? "s" : ""}
+																</span>
+																{isFieldsExpanded ? (
+																	<ChevronUp className="h-3 w-3" />
+																) : (
+																	<ChevronDown className="h-3 w-3" />
+																)}
+															</button>
+														)}
+
+														{/* Rate Values */}
+														<div className="text-sm font-mono text-right shrink-0">
+															{change.changeType === "changed" ? (
+																isModifiedOnly ? (
+																	<span>{change.newRate?.toFixed(2)}%</span>
+																) : (
+																	<div className="flex items-center gap-1.5">
+																		<span className="text-muted-foreground">
+																			{change.previousRate?.toFixed(2)}%
+																		</span>
+																		<span className="text-muted-foreground">
+																			→
+																		</span>
+																		<span
+																			className={
+																				change.changeAmount &&
+																				change.changeAmount > 0
+																					? "text-destructive font-medium"
+																					: "text-green-600 font-medium"
+																			}
+																		>
+																			{change.newRate?.toFixed(2)}%
+																		</span>
+																	</div>
+																)
+															) : change.changeType === "added" ? (
+																<span className="text-blue-600">
+																	{change.newRate?.toFixed(2)}%
+																</span>
+															) : (
+																<span className="text-muted-foreground line-through">
+																	{change.previousRate?.toFixed(2)}%
+																</span>
+															)}
 														</div>
 													</div>
 												</div>
 
-												{/* Rate Values */}
-												<div className="text-sm font-mono text-right">
-													{change.changeType === "changed" ? (
-														<div className="flex items-center gap-1.5">
-															<span className="text-muted-foreground">
-																{change.previousRate?.toFixed(2)}%
-															</span>
-															<span className="text-muted-foreground">→</span>
-															<span
-																className={
-																	change.changeAmount && change.changeAmount > 0
-																		? "text-destructive font-medium"
-																		: "text-green-600 font-medium"
-																}
-															>
-																{change.newRate?.toFixed(2)}%
-															</span>
+												{/* Expanded Field Changes */}
+												{isFieldsExpanded && hasFieldChanges && (
+													<div className="px-3 pb-3 pt-1 border-t border-border/50">
+														<div className="space-y-1.5">
+															{change.fieldChanges?.map((fc) => (
+																<div
+																	key={fc.field}
+																	className="text-xs rounded bg-muted/50 px-2 py-1.5"
+																>
+																	<span className="font-medium text-foreground">
+																		{formatFieldName(fc.field)}:
+																	</span>
+																	<div className="flex items-center gap-1 mt-0.5 text-muted-foreground">
+																		<span className="line-through">
+																			{formatFieldValue(
+																				fc.field,
+																				fc.previousValue,
+																			)}
+																		</span>
+																		<span>→</span>
+																		<span className="text-foreground">
+																			{formatFieldValue(fc.field, fc.newValue)}
+																		</span>
+																	</div>
+																</div>
+															))}
 														</div>
-													) : change.changeType === "added" ? (
-														<span className="text-blue-600">
-															{change.newRate?.toFixed(2)}%
-														</span>
-													) : (
-														<span className="text-muted-foreground line-through">
-															{change.previousRate?.toFixed(2)}%
-														</span>
-													)}
-												</div>
+													</div>
+												)}
 											</div>
 										);
 									})}
@@ -350,7 +564,7 @@ export function RatesUpdatesTimeline({
 										<button
 											type="button"
 											onClick={() => toggleDate(group.date)}
-											className="text-xs text-muted-foreground hover:text-foreground transition-colors pl-2"
+											className="text-xs text-muted-foreground hover:text-foreground transition-colors pl-2 cursor-pointer"
 										>
 											+ {group.changes.length - 3} more changes
 										</button>
