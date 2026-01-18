@@ -8,14 +8,14 @@ import {
 	$historyActiveTab,
 	initializeHistoryFilters,
 } from "@/lib/stores/rates/rates-history-filters";
-import { RatesTrendCharts } from "./RatesTrendCharts";
+import { RatesTrends } from "./RatesTrends";
 
 /**
- * Island wrapper for Trend Charts tab.
+ * Island wrapper for Rate Trends tab.
  * Only renders when the "trends" tab is active and data is loaded.
  * Loading/error states are handled by HistoryTabsIsland.
  */
-export function RatesTrendChartsIsland() {
+export function RatesTrendsIsland() {
 	// Initialize filters synchronously so the correct tab check works on first render
 	initializeHistoryFilters();
 
@@ -32,5 +32,5 @@ export function RatesTrendChartsIsland() {
 		return null;
 	}
 
-	return <RatesTrendCharts historyData={historyData} lenders={lenders} />;
+	return <RatesTrends historyData={historyData} lenders={lenders} />;
 }

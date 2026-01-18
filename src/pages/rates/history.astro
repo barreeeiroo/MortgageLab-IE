@@ -4,7 +4,7 @@ import Layout from "@/layouts/Layout.astro";
 import { RateChangesIsland } from "@/components/rates/history/RateChangesIsland";
 import { HistoryShareButton } from "@/components/rates/history/HistoryShareButton";
 import { HistoryTabsIsland } from "@/components/rates/history/HistoryTabsIsland";
-import { RatesTrendChartsIsland } from "@/components/rates/history/RatesTrendChartsIsland";
+import { RatesTrendsIsland } from "@/components/rates/history/RatesTrendsIsland";
 import { RatesUpdatesTimelineIsland } from "@/components/rates/history/RatesUpdatesTimelineIsland";
 ---
 
@@ -43,7 +43,7 @@ import { RatesUpdatesTimelineIsland } from "@/components/rates/history/RatesUpda
 		<div class="mt-4">
 			<RatesUpdatesTimelineIsland client:idle />
 			<RateChangesIsland client:idle />
-			<RatesTrendChartsIsland client:idle />
+			<RatesTrendsIsland client:idle />
 		</div>
 	</div>
 </Layout>
