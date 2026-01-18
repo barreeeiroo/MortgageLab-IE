@@ -603,68 +603,68 @@ export function RatesTrendChart({
 					)}
 
 					{/* Rate lines */}
-					{isSingleSeries ? (
-						<>
-							<Line
-								type="monotone"
-								dataKey="rate"
-								name="rate"
-								stroke="var(--chart-interest)"
-								strokeWidth={2}
-								dot={chartData.length <= 12}
-								isAnimationActive={animate}
-								animationDuration={300}
-								connectNulls
-							/>
-							{showApr && (
+					{isSingleSeries
+						? [
 								<Line
+									key="rate"
 									type="monotone"
-									dataKey="apr"
-									name="apr"
-									stroke="var(--chart-principal)"
+									dataKey="rate"
+									name="rate"
+									stroke="var(--chart-interest)"
 									strokeWidth={2}
-									strokeDasharray="5 5"
-									dot={false}
+									dot={chartData.length <= 12}
 									isAnimationActive={animate}
 									animationDuration={300}
 									connectNulls
-								/>
-							)}
-						</>
-					) : (
-						[
-							...seriesArray.map((series, i) => (
-								<Line
-									key={series.rateId}
-									type="monotone"
-									dataKey={`rate_${i}`}
-									name={series.rateName}
-									stroke={SERIES_COLORS[i % SERIES_COLORS.length]}
-									strokeWidth={1.5}
-									strokeOpacity={0.6}
-									dot={false}
-									isAnimationActive={animate}
-									animationDuration={300}
-									connectNulls
-								/>
-							)),
-							// Average line - rendered last to be on top
-							hasAverage ? (
-								<Line
-									key="average"
-									type="monotone"
-									dataKey="average"
-									name="Average"
-									stroke="var(--primary)"
-									strokeWidth={2.5}
-									dot={false}
-									isAnimationActive={animate}
-									animationDuration={300}
-									connectNulls
-								/>
-							) : null,
-						]
-					)}
+								/>,
+								showApr ? (
+									<Line
+										key="apr"
+										type="monotone"
+										dataKey="apr"
+										name="apr"
+										stroke="var(--chart-principal)"
+										strokeWidth={2}
+										strokeDasharray="5 5"
+										dot={false}
+										isAnimationActive={animate}
+										animationDuration={300}
+										connectNulls
+									/>
+								) : null,
+							]
+						: [
+								...seriesArray.map((series, i) => (
+									<Line
+										key={series.rateId}
+										type="monotone"
+										dataKey={`rate_${i}`}
+										name={series.rateName}
+										stroke={SERIES_COLORS[i % SERIES_COLORS.length]}
+										strokeWidth={1.5}
+										strokeOpacity={0.6}
+										dot={false}
+										isAnimationActive={animate}
+										animationDuration={300}
+										connectNulls
+									/>
+								)),
+								// Average line - rendered last to be on top
+								hasAverage ? (
+									<Line
+										key="average"
+										type="monotone"
+										dataKey="average"
+										name="Average"
+										stroke="var(--primary)"
+										strokeWidth={2.5}
+										dot={false}
+										isAnimationActive={animate}
+										animationDuration={300}
+										connectNulls
+									/>
+								) : null,
+							]}
 				</LineChart>
 			</ChartContainer>
 
