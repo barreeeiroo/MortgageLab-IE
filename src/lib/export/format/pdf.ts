@@ -2,6 +2,7 @@
  * PDF document generation using jsPDF and jspdf-autotable (lazy-loaded).
  */
 
+import { formatTimestamp } from "@/lib/utils/date";
 import { sanitizeForPDF } from "../formatters";
 import {
 	loadLogo,
@@ -411,7 +412,7 @@ export function addFooter(
 	doc: Awaited<ReturnType<typeof createPDFDocument>>,
 ): void {
 	const pageCount = doc.getNumberOfPages();
-	const timestamp = new Date().toLocaleString("en-IE");
+	const timestamp = formatTimestamp();
 
 	// Get page dimensions (works for both portrait and landscape)
 	const pageHeight = doc.internal.pageSize.getHeight();

@@ -3,7 +3,8 @@
  * These are tailored for CSV/Excel/PDF output rather than UI display.
  */
 
-import { DATE_LOCALE, formatMonthYearShort } from "@/lib/utils/date";
+import { formatCurrency, formatNumber } from "@/lib/utils/currency";
+import { formatMonthYearShort } from "@/lib/utils/date";
 
 /**
  * Formats currency for export with Euro symbol.
@@ -14,12 +15,7 @@ export function formatCurrencyForExport(
 	value: number,
 	showDecimals = false,
 ): string {
-	return new Intl.NumberFormat(DATE_LOCALE, {
-		style: "currency",
-		currency: "EUR",
-		minimumFractionDigits: showDecimals ? 2 : 0,
-		maximumFractionDigits: showDecimals ? 2 : 0,
-	}).format(value);
+	return formatCurrency(value, { showCents: showDecimals });
 }
 
 /**
@@ -86,10 +82,7 @@ export function formatTermForExport(months: number): string {
  * Formats a number with thousand separators for display.
  */
 export function formatNumberForExport(value: number, decimals = 0): string {
-	return new Intl.NumberFormat("en-IE", {
-		minimumFractionDigits: decimals,
-		maximumFractionDigits: decimals,
-	}).format(value);
+	return formatNumber(value, decimals);
 }
 
 /**

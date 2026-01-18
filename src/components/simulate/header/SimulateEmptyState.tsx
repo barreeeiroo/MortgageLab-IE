@@ -34,6 +34,7 @@ import {
 	$hasRequiredData,
 	$initialized,
 } from "@/lib/stores/simulate/simulate-state";
+import { formatShortDate } from "@/lib/utils/date";
 import { getPath } from "@/lib/utils/path";
 import { SimulateCompareSelectDialog } from "../compare/SimulateCompareSelectDialog";
 
@@ -55,14 +56,7 @@ export function SimulateEmptyState() {
 		}
 	};
 
-	const formatDate = (isoDate: string) => {
-		const date = new Date(isoDate);
-		return date.toLocaleDateString(undefined, {
-			month: "short",
-			day: "numeric",
-			year: "numeric",
-		});
-	};
+	const formatDate = (isoDate: string) => formatShortDate(isoDate);
 
 	// Can compare if at least 2 saved simulations
 	const canCompare = savedSimulations.length >= 2;

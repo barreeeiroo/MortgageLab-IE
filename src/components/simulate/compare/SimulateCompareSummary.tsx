@@ -4,6 +4,7 @@ import type {
 	CompareSummaryMetric,
 } from "@/lib/stores/simulate/simulate-compare-calculations";
 import { cn } from "@/lib/utils/cn";
+import { formatCurrencyFromCents } from "@/lib/utils/currency";
 
 interface SimulateCompareSummaryProps {
 	simulations: CompareSimulationData[];
@@ -104,12 +105,7 @@ function SimulationCard({
 	simulation: CompareSimulationData;
 	onClick?: () => void;
 }) {
-	const formatCurrency = (cents: number) =>
-		new Intl.NumberFormat("en-IE", {
-			style: "currency",
-			currency: "EUR",
-			maximumFractionDigits: 0,
-		}).format(cents / 100);
+	const formatCurrency = (cents: number) => formatCurrencyFromCents(cents);
 
 	const formatTerm = (months: number) => {
 		const years = Math.floor(months / 12);

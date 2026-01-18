@@ -18,6 +18,7 @@ import {
 import { WHATS_NEW_ITEMS, WHATS_NEW_VERSION } from "@/lib/constants/whats-new";
 import { getStoredVersion, setStoredVersion } from "@/lib/storage/whats-new";
 import { cn } from "@/lib/utils/cn";
+import { formatTimestamp } from "@/lib/utils/date";
 
 export function AboutDialog() {
 	const [open, setOpen] = useState(false);
@@ -142,7 +143,7 @@ export function AboutDialog() {
 						<span>
 							Compiled At:{" "}
 							<span className="font-mono">
-								{new Date(__BUILD_TIME__).toLocaleString()}
+								{formatTimestamp(new Date(__BUILD_TIME__))}
 							</span>
 						</span>
 						<span>

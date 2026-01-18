@@ -8,7 +8,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getCalendarDate } from "@/lib/utils/date";
+import { formatMonthName, getCalendarDate } from "@/lib/utils/date";
 
 export type TimingMode = "calendar" | "duration";
 
@@ -243,11 +243,7 @@ export function SimulateMonthSelector({
 								<SelectContent>
 									{calendarMonthOptions.map((m) => (
 										<SelectItem key={m} value={String(m)}>
-											{startDate
-												? new Date(2000, m - 1).toLocaleString("en-IE", {
-														month: "long",
-													})
-												: `Month ${m}`}
+											{startDate ? formatMonthName(m) : `Month ${m}`}
 										</SelectItem>
 									))}
 								</SelectContent>
@@ -311,11 +307,7 @@ export function SimulateMonthSelector({
 					</div>
 					{startDate && (
 						<p className="text-xs text-muted-foreground mt-2">
-							={" "}
-							{new Date(2000, calendarValues.monthOfYear - 1).toLocaleString(
-								"en-IE",
-								{ month: "long" },
-							)}{" "}
+							= {formatMonthName(calendarValues.monthOfYear)}{" "}
 							{calendarValues.year}
 						</p>
 					)}

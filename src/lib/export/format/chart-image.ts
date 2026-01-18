@@ -3,6 +3,7 @@
  * Captures DOM elements including charts and their legends.
  */
 
+import { formatTimestamp } from "@/lib/utils/date";
 import {
 	downloadFile,
 	type ExportPage,
@@ -136,7 +137,7 @@ export async function downloadChartWithBranding(
 	options: ChartExportWithBrandingOptions,
 ): Promise<void> {
 	const { title, ...imageOptions } = options;
-	const timestamp = new Date().toLocaleString("en-IE");
+	const timestamp = formatTimestamp();
 	const bgColor = imageOptions.backgroundColor ?? "#ffffff";
 
 	// Get the parent to restore later

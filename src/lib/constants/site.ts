@@ -99,3 +99,9 @@ export const EXTERNAL_RESOURCES = {
 		],
 	},
 } as const;
+
+/**
+ * Locale used for all number, currency, and date formatting in the app.
+ * Irish English locale with Euro currency.
+ */
+export const LOCALE = "en-IE";

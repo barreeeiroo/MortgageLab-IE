@@ -36,6 +36,7 @@ import type {
 	SimulationWarning,
 } from "@/lib/schemas/simulate";
 import type { CustomRate } from "@/lib/stores/custom-rates";
+import { formatNumber } from "@/lib/utils/currency";
 import {
 	addMonthsToDateString,
 	getCalendarYearForMonth,
@@ -520,10 +521,7 @@ export function calculateAmortization(
 				const overpaymentLabel =
 					config?.label ||
 					(config?.type === "one_time" ? "One-time" : "Recurring");
-				const excessFormatted = (applied.excessAmount / 100).toLocaleString(
-					"en-IE",
-					{ minimumFractionDigits: 2, maximumFractionDigits: 2 },
-				);
+				const excessFormatted = formatNumber(applied.excessAmount / 100, 2);
 				const policyLabel = policy?.label ?? "free allowance";
 				warnings.push({
 					type: "allowance_exceeded",

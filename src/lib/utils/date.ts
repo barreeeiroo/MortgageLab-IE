@@ -1,7 +1,4 @@
-/**
- * Locale used for all date formatting in the app
- */
-export const DATE_LOCALE = "en-IE";
+import { LOCALE } from "@/lib/constants/site";
 
 /**
  * Short month names for display (Jan, Feb, Mar, etc.)
@@ -25,7 +22,7 @@ export const SHORT_MONTH_NAMES = [
  * Format a date to short month/year format (e.g., "Feb '26")
  */
 export function formatShortMonthYear(date: Date): string {
-	return date.toLocaleDateString(DATE_LOCALE, {
+	return date.toLocaleDateString(LOCALE, {
 		month: "short",
 		year: "2-digit",
 	});
@@ -45,7 +42,7 @@ export function formatShortMonthYearFromString(
  * Format a date to month/year format with full year (e.g., "Feb 2026")
  */
 export function formatMonthYearShort(date: Date): string {
-	return date.toLocaleDateString(DATE_LOCALE, {
+	return date.toLocaleDateString(LOCALE, {
 		month: "short",
 		year: "numeric",
 	});
@@ -147,7 +144,7 @@ export function calculateAge(birthDate: Date | undefined): number | null {
 export function formatShortDate(isoString: string | undefined): string {
 	if (!isoString) return "—";
 	const date = new Date(isoString);
-	return date.toLocaleDateString(DATE_LOCALE, {
+	return date.toLocaleDateString(LOCALE, {
 		day: "numeric",
 		month: "short",
 		year: "numeric",
@@ -160,7 +157,7 @@ export function formatShortDate(isoString: string | undefined): string {
 export function formatMonthYear(isoString: string | undefined): string {
 	if (!isoString) return "Not set";
 	const date = new Date(isoString);
-	return date.toLocaleDateString(DATE_LOCALE, {
+	return date.toLocaleDateString(LOCALE, {
 		month: "long",
 		year: "numeric",
 	});
@@ -224,4 +221,43 @@ export function formatTransitionDate(
 		return `${formatted} (${incremental})`;
 	}
 	return incremental;
+}
+
+/**
+ * Get the full month name for a given month number.
+ * @param month - Month number (1-12)
+ * @returns Full month name (e.g., "January", "February")
+ */
+export function formatMonthName(month: number): string {
+	return new Date(2000, month - 1).toLocaleString(LOCALE, { month: "long" });
+}
+
+/**
+ * Format a date as a full timestamp.
+ * @param date - Date to format (defaults to now)
+ * @returns Localized timestamp (e.g., "18/01/2026, 14:30:00")
+ */
+export function formatTimestamp(date: Date = new Date()): string {
+	return date.toLocaleString(LOCALE);
+}
+
+/**
+ * Format a date as month and day (e.g., "Jan 18").
+ * @param date - Date to format
+ * @returns Short month and day string
+ */
+export function formatMonthDay(date: Date): string {
+	return date.toLocaleDateString(LOCALE, {
+		month: "short",
+		day: "numeric",
+	});
+}
+
+/**
+ * Format a date as a localized date string (e.g., "18/01/2026").
+ * @param date - Date to format (defaults to now)
+ * @returns Localized date string without time
+ */
+export function formatDateOnly(date: Date = new Date()): string {
+	return date.toLocaleDateString(LOCALE);
 }

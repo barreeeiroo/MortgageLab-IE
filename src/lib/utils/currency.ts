@@ -1,8 +1,10 @@
+import { LOCALE } from "@/lib/constants/site";
+
 export function formatCurrency(
 	value: number,
 	options?: { showCents?: boolean },
 ): string {
-	return new Intl.NumberFormat("en-IE", {
+	return new Intl.NumberFormat(LOCALE, {
 		style: "currency",
 		currency: "EUR",
 		minimumFractionDigits: options?.showCents ? 2 : 0,
@@ -13,7 +15,7 @@ export function formatCurrency(
 export function formatCurrencyInput(value: string): string {
 	const num = Number.parseInt(value.replace(/[^0-9]/g, ""), 10);
 	if (Number.isNaN(num) || num === 0) return "";
-	return new Intl.NumberFormat("en-IE", {
+	return new Intl.NumberFormat(LOCALE, {
 		style: "currency",
 		currency: "EUR",
 		maximumFractionDigits: 0,
@@ -51,4 +53,17 @@ export function formatCurrencyFromCents(
 	options?: { showCents?: boolean },
 ): string {
 	return formatCurrency(cents / 100, options);
+}
+
+/**
+ * Format a number with thousand separators.
+ * @param value - The number to format
+ * @param decimals - Number of decimal places (default: 0)
+ * @returns Formatted number string (e.g., "1,234" or "1,234.56")
+ */
+export function formatNumber(value: number, decimals = 0): string {
+	return new Intl.NumberFormat(LOCALE, {
+		minimumFractionDigits: decimals,
+		maximumFractionDigits: decimals,
+	}).format(value);
 }

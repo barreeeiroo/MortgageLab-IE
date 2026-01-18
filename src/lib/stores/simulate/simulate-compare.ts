@@ -6,6 +6,7 @@ import {
 	parseCompareShareState,
 } from "@/lib/share/simulate-compare";
 import { formatCurrency } from "@/lib/utils/currency";
+import { formatDateOnly } from "@/lib/utils/date";
 import { mergeCustomRates } from "../custom-rates";
 import {
 	$savedSimulations,
@@ -154,7 +155,7 @@ export function importSharedComparison(): ImportCompareResult | null {
 			let name = shared.name;
 			if (shared.isCurrentView) {
 				// Rename "Shared Simulation" to something more descriptive
-				name = `Shared Simulation ${new Date().toLocaleDateString()}`;
+				name = `Shared Simulation ${formatDateOnly()}`;
 			}
 			if (savedSims.some((s) => s.name === name)) {
 				name = `${name} (imported)`;

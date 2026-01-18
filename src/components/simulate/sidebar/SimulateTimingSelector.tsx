@@ -9,7 +9,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getCalendarDate } from "@/lib/utils/date";
+import { formatMonthName, getCalendarDate } from "@/lib/utils/date";
 
 export type TimingMode = "calendar" | "duration";
 
@@ -304,11 +304,7 @@ export function SimulateTimingSelector({
 									<SelectContent>
 										{startCalendarMonthOptions.map((m) => (
 											<SelectItem key={m} value={String(m)}>
-												{startDate
-													? new Date(2000, m - 1).toLocaleString("en-IE", {
-															month: "long",
-														})
-													: `Month ${m}`}
+												{startDate ? formatMonthName(m) : `Month ${m}`}
 											</SelectItem>
 										))}
 									</SelectContent>
@@ -412,12 +408,7 @@ export function SimulateTimingSelector({
 														? endCalendarMonthOptions.map((m) => (
 																<SelectItem key={m} value={String(m)}>
 																	{startDate
-																		? new Date(2000, m - 1).toLocaleString(
-																				"en-IE",
-																				{
-																					month: "long",
-																				},
-																			)
+																		? formatMonthName(m)
 																		: `Month ${m}`}
 																</SelectItem>
 															))
@@ -427,12 +418,7 @@ export function SimulateTimingSelector({
 															).map((m) => (
 																<SelectItem key={m} value={String(m)}>
 																	{startDate
-																		? new Date(2000, m - 1).toLocaleString(
-																				"en-IE",
-																				{
-																					month: "long",
-																				},
-																			)
+																		? formatMonthName(m)
 																		: `Month ${m}`}
 																</SelectItem>
 															))}
@@ -506,11 +492,7 @@ export function SimulateTimingSelector({
 						</div>
 						{startDate && (
 							<p className="text-xs text-muted-foreground">
-								={" "}
-								{new Date(
-									2000,
-									startCalendarValues.monthOfYear - 1,
-								).toLocaleString("en-IE", { month: "long" })}{" "}
+								= {formatMonthName(startCalendarValues.monthOfYear)}{" "}
 								{startCalendarValues.year}
 							</p>
 						)}
@@ -623,11 +605,10 @@ export function SimulateTimingSelector({
 											!isPeriodUntilEnd) && (
 											<p className="text-xs text-muted-foreground">
 												={" "}
-												{new Date(
-													2000,
-													(endCalendarValues?.monthOfYear ??
-														maxCalendarValues.monthOfYear) - 1,
-												).toLocaleString("en-IE", { month: "long" })}{" "}
+												{formatMonthName(
+													endCalendarValues?.monthOfYear ??
+														maxCalendarValues.monthOfYear,
+												)}{" "}
 												{endCalendarValues?.year ?? maxCalendarValues.year}
 											</p>
 										)}

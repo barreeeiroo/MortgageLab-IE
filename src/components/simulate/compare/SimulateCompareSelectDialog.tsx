@@ -28,6 +28,7 @@ import {
 import { $savedSimulations } from "@/lib/stores/simulate/simulate-saves";
 import { $simulationState } from "@/lib/stores/simulate/simulate-state";
 import { formatCurrency } from "@/lib/utils/currency";
+import { formatMonthDay } from "@/lib/utils/date";
 import { formatTermDisplay } from "@/lib/utils/term";
 
 interface SimulateCompareSelectDialogProps {
@@ -101,13 +102,7 @@ export function SimulateCompareSelectDialog({
 		navigateToCompare();
 	};
 
-	const formatDate = (isoDate: string) => {
-		const date = new Date(isoDate);
-		return date.toLocaleDateString(undefined, {
-			month: "short",
-			day: "numeric",
-		});
-	};
+	const formatDate = (isoDate: string) => formatMonthDay(new Date(isoDate));
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>

@@ -15,6 +15,7 @@ import type {
 	SimulateInputValues,
 	SimulationSummary,
 } from "@/lib/schemas/simulate";
+import { formatCurrencyFromCents } from "@/lib/utils/currency";
 import { formatShortMonthYear } from "@/lib/utils/date";
 import { $customRates } from "../custom-rates";
 import { $lenders } from "../lenders";
@@ -674,13 +675,8 @@ export const $compareSummaryMetrics = computed(
 			return { key, label, values };
 		};
 
-		// Currency formatter
-		const formatCurrency = (v: number) =>
-			new Intl.NumberFormat("en-IE", {
-				style: "currency",
-				currency: "EUR",
-				maximumFractionDigits: 0,
-			}).format(v / 100);
+		// Currency formatter (from cents)
+		const formatCurrency = (v: number) => formatCurrencyFromCents(v);
 
 		// Term formatter
 		const formatTerm = (months: number) => {

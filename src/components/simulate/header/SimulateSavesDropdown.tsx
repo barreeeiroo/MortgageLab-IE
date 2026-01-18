@@ -44,6 +44,7 @@ import {
 	saveSimulation,
 } from "@/lib/stores/simulate/simulate-saves";
 import { $simulationState } from "@/lib/stores/simulate/simulate-state";
+import { formatShortDate } from "@/lib/utils/date";
 
 export function SimulateSavesDropdown() {
 	const simulationState = useStore($simulationState);
@@ -158,14 +159,7 @@ export function SimulateSavesDropdown() {
 		navigateToCompare();
 	};
 
-	const formatDate = (isoDate: string) => {
-		const date = new Date(isoDate);
-		return date.toLocaleDateString(undefined, {
-			month: "short",
-			day: "numeric",
-			year: "numeric",
-		});
-	};
+	const formatDate = (isoDate: string) => formatShortDate(isoDate);
 
 	return (
 		<>

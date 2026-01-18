@@ -25,7 +25,7 @@ import type { MortgageRate } from "@/lib/schemas/rate";
 import type { OverpaymentConfig, RatePeriod } from "@/lib/schemas/simulate";
 import type { CustomRate } from "@/lib/stores/custom-rates";
 import { getAffectedOverpaymentsByDurationChange } from "@/lib/stores/simulate/simulate-state";
-import { getCalendarDate } from "@/lib/utils/date";
+import { formatMonthName, getCalendarDate } from "@/lib/utils/date";
 
 type DurationMode = "calendar" | "duration" | "end";
 
@@ -455,19 +455,13 @@ export function SimulateEditRatePeriodDialog({
 													</SelectTrigger>
 													<SelectContent>
 														{Array.from({ length: 12 }, (_, i) => i + 1).map(
-															(month) =>
-																startDate ? (
-																	<SelectItem key={month} value={String(month)}>
-																		{new Date(2000, month - 1).toLocaleString(
-																			"en-IE",
-																			{ month: "long" },
-																		)}
-																	</SelectItem>
-																) : (
-																	<SelectItem key={month} value={String(month)}>
-																		Month {month}
-																	</SelectItem>
-																),
+															(month) => (
+																<SelectItem key={month} value={String(month)}>
+																	{startDate
+																		? formatMonthName(month)
+																		: `Month ${month}`}
+																</SelectItem>
+															),
 														)}
 													</SelectContent>
 												</Select>

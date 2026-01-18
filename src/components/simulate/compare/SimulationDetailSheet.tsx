@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { calculateMilestones } from "@/lib/mortgage/simulation";
 import type { CompareSimulationData } from "@/lib/stores/simulate/simulate-compare-calculations";
+import { formatCurrencyFromCents } from "@/lib/utils/currency";
 import {
 	SimulateMilestoneEvent,
 	SimulateOverpaymentEvent,
@@ -153,11 +154,7 @@ export function SimulationDetailSheet({
 																{stage.label && ` - ${stage.label}`}
 															</span>
 															<span className="font-medium">
-																{new Intl.NumberFormat("en-IE", {
-																	style: "currency",
-																	currency: "EUR",
-																	maximumFractionDigits: 0,
-																}).format(stage.amount / 100)}
+																{formatCurrencyFromCents(stage.amount)}
 															</span>
 														</div>
 													),

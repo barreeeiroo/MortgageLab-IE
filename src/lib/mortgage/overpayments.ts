@@ -1,5 +1,6 @@
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { ResolvedRatePeriod } from "@/lib/schemas/simulate";
+import { formatNumber } from "@/lib/utils/currency";
 import { calculateMonthlyPayment } from "./calculations";
 
 /**
@@ -267,7 +268,7 @@ export function formatPolicyDescription(
 	}
 
 	if (policy.allowanceType === "flat") {
-		return `€${policy.allowanceValue.toLocaleString()} per year`;
+		return `€${formatNumber(policy.allowanceValue)} per year`;
 	}
 
 	return "No allowance";
