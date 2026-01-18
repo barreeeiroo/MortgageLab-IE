@@ -36,6 +36,15 @@ export type TrendsBreakdownDimension =
 	| "rate-type"
 	| "ltv"
 	| "buyer-type";
+/**
+ * Time range for trends chart. Supports multiple formats:
+ * - "all" - Show all historical data
+ * - Duration: "5y", "3y", "1y", "6m", "3m" - Last N years/months
+ * - Year: "2025", "2024" - Specific year
+ * - Quarter: "2024-Q3", "2025-Q1" - Specific quarter
+ * - Month: "2023-12", "2024-01" - Specific month
+ */
+export type TrendsTimeRange = string;
 
 export interface TrendsFilter {
 	rateType: string | null; // e.g., "fixed-3" for 3-year fixed
@@ -46,6 +55,7 @@ export interface TrendsFilter {
 	displayMode: TrendsDisplayMode;
 	marketChartStyle: MarketChartStyle;
 	breakdownBy: TrendsBreakdownDimension[]; // Empty = overall, multiple = compound grouping
+	timeRange: TrendsTimeRange; // Time range for chart view
 }
 
 // === Defaults ===
@@ -73,6 +83,7 @@ export const DEFAULT_TRENDS_FILTER: TrendsFilter = {
 	displayMode: "market-overview",
 	marketChartStyle: "grouped",
 	breakdownBy: ["lender"],
+	timeRange: "all",
 };
 
 // === localStorage Persistence ===

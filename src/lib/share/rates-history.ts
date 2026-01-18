@@ -5,6 +5,7 @@ import type {
 	TrendsBreakdownDimension,
 	TrendsDisplayMode,
 	TrendsFilter,
+	TrendsTimeRange,
 	UpdatesFilter,
 } from "@/lib/stores/rates/rates-history-filters";
 import {
@@ -67,6 +68,7 @@ interface CompressedHistoryShareState {
 		d?: string; // displayMode
 		m?: string; // marketChartStyle
 		g?: string[]; // breakdownBy (array of dimensions)
+		x?: string; // timeRange
 	};
 	tl: string[]; // trendsSelectedLenders
 	cl: string; // changesSelectedLender
@@ -101,6 +103,7 @@ function compressState(state: HistoryShareState): CompressedHistoryShareState {
 			d: state.trendsFilter.displayMode,
 			m: state.trendsFilter.marketChartStyle,
 			g: state.trendsFilter.breakdownBy,
+			x: state.trendsFilter.timeRange,
 		},
 		tl: state.trendsSelectedLenders,
 		cl: state.changesSelectedLender,
@@ -139,6 +142,7 @@ function decompressState(
 			displayMode: (compressed.r.d ?? "individual") as TrendsDisplayMode,
 			marketChartStyle: (compressed.r.m ?? "average") as MarketChartStyle,
 			breakdownBy: (compressed.r.g ?? ["lender"]) as TrendsBreakdownDimension[],
+			timeRange: (compressed.r.x ?? "all") as TrendsTimeRange,
 		},
 		trendsSelectedLenders: compressed.tl ?? [],
 		changesSelectedLender: compressed.cl ?? "all",

@@ -19,6 +19,7 @@ import {
 	type TrendsBreakdownDimension,
 	type TrendsDisplayMode,
 } from "@/lib/stores/rates/rates-history-filters";
+import { TimeRangeCommand } from "./TimeRangeCommand";
 
 interface TrendsFiltersProps {
 	lenders: Lender[];
@@ -177,6 +178,16 @@ export function TrendsFilters({ lenders }: TrendsFiltersProps) {
 						multiple
 						placeholder="Select lenders"
 						className="w-[260px]"
+					/>
+				</div>
+
+				{/* Time Range */}
+				<div className="space-y-1.5">
+					<Label className="text-xs">Time Range</Label>
+					<TimeRangeCommand
+						value={filter.timeRange}
+						onChange={(value) => setTrendsFilter({ timeRange: value })}
+						className="w-[200px]"
 					/>
 				</div>
 			</div>

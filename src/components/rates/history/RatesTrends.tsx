@@ -95,6 +95,131 @@ function getBuyerTypeLabel(key: string): string {
 	return key;
 }
 
+/**
+ * Time range parsed into start/end dates
+ */
+interface ParsedTimeRange {
+	startDate: Date | null;
+	endDate: Date | null; // null means "now"
+}
+
+/**
+ * Parse time range string into start/end dates
+ * Supports: "all", durations (5y, 3m), years (2024), quarters (2024-Q3), months (2024-01)
+ */
+function parseTimeRange(timeRange: string): ParsedTimeRange {
+	if (timeRange === "all") {
+		return { startDate: null, endDate: null };
+	}
+
+	const now = new Date();
+
+	// Duration patterns: 5y, 3y, 1y, 6m, 3m
+	const durationMatch = timeRange.match(/^(\d+)(y|m)$/);
+	if (durationMatch) {
+		const num = Number.parseInt(durationMatch[1], 10);
+		const unit = durationMatch[2];
+		if (unit === "y") {
+			return {
+				startDate: new Date(
+					now.getFullYear() - num,
+					now.getMonth(),
+					now.getDate(),
+				),
+				endDate: null,
+			};
+		}
+		if (unit === "m") {
+			return {
+				startDate: new Date(
+					now.getFullYear(),
+					now.getMonth() - num,
+					now.getDate(),
+				),
+				endDate: null,
+			};
+		}
+	}
+
+	// Year pattern: 2024
+	const yearMatch = timeRange.match(/^(\d{4})$/);
+	if (yearMatch) {
+		const year = Number.parseInt(yearMatch[1], 10);
+		return {
+			startDate: new Date(year, 0, 1),
+			endDate: new Date(year, 11, 31, 23, 59, 59, 999),
+		};
+	}
+
+	// Quarter pattern: 2024-Q3
+	const quarterMatch = timeRange.match(/^(\d{4})-Q([1-4])$/);
+	if (quarterMatch) {
+		const year = Number.parseInt(quarterMatch[1], 10);
+		const quarter = Number.parseInt(quarterMatch[2], 10);
+		const startMonth = (quarter - 1) * 3;
+		const endMonth = startMonth + 2;
+		return {
+			startDate: new Date(year, startMonth, 1),
+			endDate: new Date(year, endMonth + 1, 0, 23, 59, 59, 999), // Last day of end month
+		};
+	}
+
+	// Month pattern: 2024-01
+	const monthMatch = timeRange.match(/^(\d{4})-(\d{2})$/);
+	if (monthMatch) {
+		const year = Number.parseInt(monthMatch[1], 10);
+		const month = Number.parseInt(monthMatch[2], 10) - 1; // 0-indexed
+		return {
+			startDate: new Date(year, month, 1),
+			endDate: new Date(year, month + 1, 0, 23, 59, 59, 999), // Last day of month
+		};
+	}
+
+	// Unknown format, show all
+	return { startDate: null, endDate: null };
+}
+
+/**
+ * Filter time series data points to only include those within the date range.
+ * Also adds the last data point before start (at the start timestamp) to ensure
+ * the chart shows the rate that was in effect at the start of the range.
+ */
+function filterTimeSeriesByDateRange(
+	series: RateTimeSeries,
+	range: ParsedTimeRange,
+): RateTimeSeries {
+	if (!range.startDate && !range.endDate) return series;
+
+	const startTs = range.startDate?.getTime() ?? 0;
+	const endTs = range.endDate?.getTime() ?? Number.POSITIVE_INFINITY;
+	const filteredPoints: typeof series.dataPoints = [];
+
+	// Find the last point before start to establish the starting rate
+	let lastPointBeforeStart: (typeof series.dataPoints)[0] | null = null;
+
+	for (const point of series.dataPoints) {
+		const pointTs = new Date(point.timestamp).getTime();
+		if (pointTs < startTs) {
+			lastPointBeforeStart = point;
+		} else if (pointTs <= endTs) {
+			filteredPoints.push(point);
+		}
+	}
+
+	// If there was a rate before the start, add it at the start timestamp
+	if (lastPointBeforeStart && range.startDate) {
+		filteredPoints.unshift({
+			...lastPointBeforeStart,
+			timestamp: range.startDate.toISOString(),
+		});
+	}
+
+	return {
+		...series,
+		dataPoints: filteredPoints,
+	};
+}
+
 export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 	const filter = useStore($trendsFilter);
 	const selectedLenders = useStore($trendsSelectedLenders);
@@ -205,6 +330,12 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 		return new Map(lenders.map((l) => [l.id, l]));
 	}, [lenders]);
 
+	// Parse time range into start/end dates
+	const timeRange = useMemo(
+		() => parseTimeRange(filter.timeRange),
+		[filter.timeRange],
+	);
+
 	// Get time series for filtered rates
 	const timeSeries = useMemo(() => {
 		const series: RateTimeSeries[] = [];
@@ -216,22 +347,37 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 
 			const rateSeries = getRateTimeSeries(history, rate.id);
 			if (rateSeries && rateSeries.dataPoints.length >= 1) {
+				// Apply time range filter
+				const filteredSeries = filterTimeSeriesByDateRange(
+					rateSeries,
+					timeRange,
+				);
+
+				// Skip if no data points after filtering
+				if (filteredSeries.dataPoints.length === 0) continue;
+
 				// Prefix rate name with lender short name when multiple lenders selected
 				if (showLenderPrefix) {
 					const lender = lenderMap.get(rate.lenderId);
 					const prefix = lender?.shortName ?? rate.lenderId;
 					series.push({
-						...rateSeries,
-						rateName: `${prefix} ${rateSeries.rateName}`,
+						...filteredSeries,
+						rateName: `${prefix} ${filteredSeries.rateName}`,
 					});
 				} else {
-					series.push(rateSeries);
+					series.push(filteredSeries);
 				}
 			}
 		}
 
 		return series;
-	}, [filteredRates, historyData, selectedLenders.length, lenderMap]);
+	}, [
+		filteredRates,
+		historyData,
+		selectedLenders.length,
+		lenderMap,
+		timeRange,
+	]);
 
 	// Calculate average time series across all rates (for individual mode)
 	const averageSeries = useMemo((): RateTimeSeries | null => {
@@ -245,8 +391,12 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 			}
 		}
 
-		// Add today's date to show average extending to present
-		timestampSet.add(new Date().toISOString());
+		// Add start and end dates for proper range boundaries
+		if (timeRange.startDate) {
+			timestampSet.add(timeRange.startDate.toISOString());
+		}
+		const endDate = timeRange.endDate ?? new Date();
+		timestampSet.add(endDate.toISOString());
 
 		// Sort timestamps chronologically
 		const timestamps = Array.from(timestampSet).sort(
@@ -288,7 +438,7 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 			lenderId: "",
 			dataPoints,
 		};
-	}, [timeSeries, isMarketOverview]);
+	}, [timeSeries, isMarketOverview, timeRange]);
 
 	// Calculate market data (min/avg/max per timestamp) for market overview mode
 	const marketData = useMemo((): MarketDataPoint[] => {
@@ -304,8 +454,12 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 			}
 		}
 
-		// Add today's date
-		timestampSet.add(new Date().toISOString());
+		// Add start and end dates for proper range boundaries
+		if (timeRange.startDate) {
+			timestampSet.add(timeRange.startDate.toISOString());
+		}
+		const endDate = timeRange.endDate ?? new Date();
+		timestampSet.add(endDate.toISOString());
 
 		// Sort timestamps chronologically
 		const timestamps = Array.from(timestampSet).sort(
@@ -343,7 +497,7 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 		}
 
 		return dataPoints;
-	}, [timeSeries, isMarketOverview, filter.marketChartStyle]);
+	}, [timeSeries, isMarketOverview, filter.marketChartStyle, timeRange]);
 
 	// Calculate breakdown series - grouped by selected dimensions
 	const breakdownSeries = useMemo((): RateTimeSeries[] => {
@@ -436,7 +590,12 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 					timestampSet.add(point.timestamp);
 				}
 			}
-			timestampSet.add(new Date().toISOString());
+			// Add start and end dates for proper range boundaries
+			if (timeRange.startDate) {
+				timestampSet.add(timeRange.startDate.toISOString());
+			}
+			const endDate = timeRange.endDate ?? new Date();
+			timestampSet.add(endDate.toISOString());
 
 			// Sort timestamps chronologically
 			const timestamps = Array.from(timestampSet).sort(
@@ -471,12 +630,20 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 				}
 			}
 
-			series.push({
-				rateId: groupKey,
-				rateName: getGroupLabel(groupKey),
-				lenderId: getLenderIdFromKey(groupKey),
-				dataPoints,
-			});
+			// Apply time range filter to the computed series
+			const filteredSeries = filterTimeSeriesByDateRange(
+				{
+					rateId: groupKey,
+					rateName: getGroupLabel(groupKey),
+					lenderId: getLenderIdFromKey(groupKey),
+					dataPoints,
+				},
+				timeRange,
+			);
+
+			if (filteredSeries.dataPoints.length > 0) {
+				series.push(filteredSeries);
+			}
 		}
 
 		// Sort series for consistent ordering
@@ -488,6 +655,7 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 		filteredRates,
 		historyData,
 		lenderMap,
+		timeRange,
 	]);
 
 	// Calculate market overview statistics
@@ -682,6 +850,7 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 						showLegend={!isMarketOverview || isGroupedActive}
 						height={350}
 						animate={false}
+						endDate={timeRange.endDate}
 					/>
 
 					{/* Stats Table */}

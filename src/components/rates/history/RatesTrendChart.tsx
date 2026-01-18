@@ -60,6 +60,8 @@ interface RateTrendChartProps {
 	animate?: boolean;
 	/** Highlight current rate with reference line */
 	showCurrentRate?: boolean;
+	/** End date for the chart (defaults to today if not specified) */
+	endDate?: Date | null;
 }
 
 interface ChartDataPoint {
@@ -94,6 +96,7 @@ function transformData(
 	showApr: boolean,
 	averageSeries?: RateTimeSeries | null,
 	forceSingleSeries?: boolean,
+	endDate?: Date | null,
 ): ChartDataPoint[] {
 	const seriesArray = Array.isArray(data) ? data : [data];
 	// Use forceSingleSeries if provided, otherwise default based on array length
@@ -112,8 +115,9 @@ function transformData(
 		}
 	}
 
-	// Add today's date to show current rates extending to present
-	timestampSet.add(new Date().toISOString());
+	// Add end date to extend chart (today if not specified)
+	const chartEndDate = endDate ?? new Date();
+	timestampSet.add(chartEndDate.toISOString());
 
 	// Sort timestamps chronologically
 	const timestamps = Array.from(timestampSet).sort(
@@ -233,6 +237,7 @@ export function RatesTrendChart({
 	showLegend = false,
 	animate = false,
 	showCurrentRate = true,
+	endDate,
 }: RateTrendChartProps) {
 	// Market overview modes
 	if (
@@ -402,7 +407,13 @@ export function RatesTrendChart({
 	const seriesArray = Array.isArray(data) ? data : [data];
 	// Use multi-series rendering when showLegend is true (grouped mode) even with single series
 	const isSingleSeries = seriesArray.length === 1 && !showLegend;
-	const chartData = transformData(data, showApr, averageSeries, isSingleSeries);
+	const chartData = transformData(
+		data,
+		showApr,
+		averageSeries,
+		isSingleSeries,
+		endDate,
+	);
 	const hasAverage = averageSeries && averageSeries.dataPoints.length > 0;
 
 	if (chartData.length === 0) {
