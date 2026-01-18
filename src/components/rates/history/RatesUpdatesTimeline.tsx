@@ -31,6 +31,7 @@ import {
 	setUpdatesFilter,
 } from "@/lib/stores/rates/rates-history-filters";
 import { cn } from "@/lib/utils/cn";
+import { formatCurrency } from "@/lib/utils/currency";
 import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 
 interface UpdatesTimelineProps {
@@ -157,11 +158,7 @@ function formatFieldValue(field: string, value: unknown): string {
 		if (field === "minLtv" || field === "maxLtv") return `${value}%`;
 		if (field === "fixedTerm") return `${value} year${value !== 1 ? "s" : ""}`;
 		if (field === "minLoan") {
-			return new Intl.NumberFormat("en-IE", {
-				style: "currency",
-				currency: "EUR",
-				maximumFractionDigits: 0,
-			}).format(value);
+			return formatCurrency(value);
 		}
 		return String(value);
 	}

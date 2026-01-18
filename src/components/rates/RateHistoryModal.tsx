@@ -39,6 +39,7 @@ import {
 	getRateChanges,
 	getRateTimeSeries,
 } from "@/lib/stores/rates/rates-history";
+import { formatCurrency } from "@/lib/utils/currency";
 import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 import { LenderLogo } from "../lenders/LenderLogo";
 import { RatesTrendChart } from "./history/RatesTrendChart";
@@ -160,11 +161,7 @@ function formatFieldValue(field: string, value: unknown): string {
 		if (field === "minLtv" || field === "maxLtv") return `${value}%`;
 		if (field === "fixedTerm") return `${value} year${value !== 1 ? "s" : ""}`;
 		if (field === "minLoan") {
-			return new Intl.NumberFormat("en-IE", {
-				style: "currency",
-				currency: "EUR",
-				maximumFractionDigits: 0,
-			}).format(value);
+			return formatCurrency(value);
 		}
 		return String(value);
 	}
