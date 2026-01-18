@@ -34,6 +34,14 @@ const SERIES_COLORS = [
 	"var(--chart-5)",
 ];
 
+// Colors for Euribor reference rates (muted tones)
+const EURIBOR_COLORS: Record<string, string> = {
+	"euribor-1M": "var(--chart-5)",
+	"euribor-3M": "var(--chart-4)",
+	"euribor-6M": "var(--chart-3)",
+	"euribor-12M": "var(--chart-2)",
+};
+
 export interface MarketDataPoint {
 	timestamp: string;
 	min: number;
@@ -62,6 +70,8 @@ interface RateTrendChartProps {
 	showCurrentRate?: boolean;
 	/** End date for the chart (defaults to today if not specified) */
 	endDate?: Date | null;
+	/** Euribor reference rate series to display as dashed lines */
+	euriborSeries?: RateTimeSeries[];
 }
 
 interface ChartDataPoint {
@@ -97,12 +107,13 @@ function transformData(
 	averageSeries?: RateTimeSeries | null,
 	forceSingleSeries?: boolean,
 	endDate?: Date | null,
+	euriborSeries?: RateTimeSeries[],
 ): ChartDataPoint[] {
 	const seriesArray = Array.isArray(data) ? data : [data];
 	// Use forceSingleSeries if provided, otherwise default based on array length
 	const isSingleSeries = forceSingleSeries ?? seriesArray.length === 1;
 
-	// Collect all unique timestamps (including from average series)
+	// Collect all unique timestamps (including from average series and Euribor)
 	const timestampSet = new Set<string>();
 	for (const series of seriesArray) {
 		for (const point of series.dataPoints) {
@@ -112,6 +123,13 @@ function transformData(
 	if (averageSeries) {
 		for (const point of averageSeries.dataPoints) {
 			timestampSet.add(point.timestamp);
+		}
+	}
+	if (euriborSeries) {
+		for (const series of euriborSeries) {
+			for (const point of series.dataPoints) {
+				timestampSet.add(point.timestamp);
+			}
 		}
 	}
 
@@ -128,6 +146,13 @@ function transformData(
 	// Track last known values for each series
 	const lastKnownRates: (number | null)[] = seriesArray.map(() => null);
 	const lastKnownAprs: (number | null)[] = seriesArray.map(() => null);
+	// Track last known Euribor values
+	const lastKnownEuribor: Map<string, number | null> = new Map();
+	if (euriborSeries) {
+		for (const series of euriborSeries) {
+			lastKnownEuribor.set(series.rateId, null);
+		}
+	}
 
 	const chartData: ChartDataPoint[] = timestamps.map((ts) => {
 		const tsTime = Math.floor(new Date(ts).getTime() / 1000); // seconds
@@ -180,6 +205,25 @@ function transformData(
 			}
 		}
 
+		// Add Euribor data if present
+		if (euriborSeries) {
+			for (const series of euriborSeries) {
+				// Find the most recent Euribor rate at or before this timestamp
+				for (const dp of series.dataPoints) {
+					const dpTime = Math.floor(new Date(dp.timestamp).getTime() / 1000);
+					if (dpTime <= tsTime) {
+						lastKnownEuribor.set(series.rateId, dp.rate);
+					} else {
+						break;
+					}
+				}
+				const lastEuribor = lastKnownEuribor.get(series.rateId);
+				if (lastEuribor !== null && lastEuribor !== undefined) {
+					point[series.rateId] = lastEuribor;
+				}
+			}
+		}
+
 		return point;
 	});
 
@@ -203,10 +247,12 @@ function transformMarketData(
 
 /**
  * Get Y-axis domain with padding
+ * @param allowNegative - If true, allows negative values (for Euribor rates)
  */
 function getYAxisDomain(
 	data: ChartDataPoint[] | MarketChartDataPoint[],
 	keys: string[],
+	allowNegative = false,
 ): [number, number] {
 	const values: number[] = [];
 	for (const point of data) {
@@ -224,7 +270,10 @@ function getYAxisDomain(
 	const max = Math.max(...values);
 	const padding = (max - min) * 0.1 || 0.5;
 
-	return [Math.max(0, min - padding), max + padding];
+	return [
+		allowNegative ? min - padding : Math.max(0, min - padding),
+		max + padding,
+	];
 }
 
 export function RatesTrendChart({
@@ -238,6 +287,7 @@ export function RatesTrendChart({
 	animate = false,
 	showCurrentRate = true,
 	endDate,
+	euriborSeries,
 }: RateTrendChartProps) {
 	// Market overview modes
 	if (
@@ -245,10 +295,91 @@ export function RatesTrendChart({
 		marketData &&
 		marketData.length > 0
 	) {
-		const chartData = transformMarketData(marketData);
+		const hasEuribor = euriborSeries && euriborSeries.length > 0;
+
+		// Transform market data and merge with Euribor if present
+		let chartData = transformMarketData(marketData);
+
+		// Merge Euribor data into market chart data
+		if (hasEuribor) {
+			// Track last known Euribor values for carry-forward
+			const lastKnownEuribor: Map<string, number | null> = new Map();
+			for (const series of euriborSeries) {
+				lastKnownEuribor.set(series.rateId, null);
+			}
+
+			// Collect all Euribor timestamps
+			const euriborTimestamps = new Set<number>();
+			for (const series of euriborSeries) {
+				for (const point of series.dataPoints) {
+					euriborTimestamps.add(
+						Math.floor(new Date(point.timestamp).getTime() / 1000),
+					);
+				}
+			}
+
+			// Get existing timestamps from market data
+			const existingTimestamps = new Set(chartData.map((d) => d.timestamp));
+
+			// Add missing Euribor timestamps to chart data
+			for (const ts of euriborTimestamps) {
+				if (!existingTimestamps.has(ts)) {
+					// Find closest market data point before this timestamp
+					let closestData: MarketChartDataPoint | null = null;
+					for (const point of chartData) {
+						if (point.timestamp <= ts) {
+							closestData = point;
+						} else {
+							break;
+						}
+					}
+					if (closestData) {
+						chartData.push({
+							timestamp: ts,
+							date: formatDate(new Date(ts * 1000).toISOString()),
+							min: closestData.min,
+							max: closestData.max,
+							avg: closestData.avg,
+						});
+					}
+				}
+			}
+
+			// Re-sort by timestamp
+			chartData = chartData.sort((a, b) => a.timestamp - b.timestamp);
+
+			// Add Euribor values to each data point
+			chartData = chartData.map((point) => {
+				const newPoint = { ...point } as MarketChartDataPoint & {
+					[key: string]: number | string;
+				};
+				for (const series of euriborSeries) {
+					// Find the most recent Euribor rate at or before this timestamp
+					for (const dp of series.dataPoints) {
+						const dpTime = Math.floor(new Date(dp.timestamp).getTime() / 1000);
+						if (dpTime <= point.timestamp) {
+							lastKnownEuribor.set(series.rateId, dp.rate);
+						} else {
+							break;
+						}
+					}
+					const lastEuribor = lastKnownEuribor.get(series.rateId);
+					if (lastEuribor !== null && lastEuribor !== undefined) {
+						newPoint[series.rateId] = lastEuribor;
+					}
+				}
+				return newPoint;
+			});
+		}
+
 		const keys =
 			displayStyle === "range-band" ? ["min", "max", "avg"] : ["avg"];
-		const [yMin, yMax] = getYAxisDomain(chartData, keys);
+		const euriborKeys = hasEuribor ? euriborSeries.map((s) => s.rateId) : [];
+		const [yMin, yMax] = getYAxisDomain(
+			chartData,
+			[...keys, ...euriborKeys],
+			hasEuribor,
+		);
 
 		const marketConfig: ChartConfig = {
 			avg: {
@@ -259,6 +390,16 @@ export function RatesTrendChart({
 				label: "Range",
 				color: "var(--primary)",
 			},
+			...(hasEuribor &&
+				Object.fromEntries(
+					euriborSeries.map((series) => [
+						series.rateId,
+						{
+							label: series.rateName,
+							color: EURIBOR_COLORS[series.rateId] ?? "var(--muted-foreground)",
+						},
+					]),
+				)),
 		};
 
 		return (
@@ -299,7 +440,9 @@ export function RatesTrendChart({
 							content={({ active, payload }) => {
 								if (!active || !payload?.length) return null;
 
-								const point = payload[0].payload as MarketChartDataPoint;
+								const point = payload[0].payload as MarketChartDataPoint & {
+									[key: string]: number | string;
+								};
 
 								return (
 									<div className="border-border/50 bg-background rounded-lg border px-3 py-2 shadow-xl">
@@ -331,6 +474,35 @@ export function RatesTrendChart({
 													</span>
 												</div>
 											)}
+											{/* Euribor values */}
+											{hasEuribor &&
+												euriborSeries.map((series) => {
+													const euriborValue = point[series.rateId];
+													if (euriborValue === undefined) return null;
+													return (
+														<div
+															key={series.rateId}
+															className="flex items-center justify-between gap-4"
+														>
+															<div className="flex items-center gap-1.5">
+																<div
+																	className="h-2.5 w-0.5 shrink-0"
+																	style={{
+																		backgroundColor:
+																			EURIBOR_COLORS[series.rateId] ??
+																			"var(--muted-foreground)",
+																	}}
+																/>
+																<span className="text-muted-foreground text-sm">
+																	{series.rateName}
+																</span>
+															</div>
+															<span className="font-mono text-sm text-muted-foreground">
+																{Number(euriborValue).toFixed(2)}%
+															</span>
+														</div>
+													);
+												})}
 										</div>
 									</div>
 								);
@@ -373,6 +545,26 @@ export function RatesTrendChart({
 							animationDuration={300}
 							connectNulls
 						/>
+
+						{/* Euribor reference lines (dashed) */}
+						{hasEuribor &&
+							euriborSeries.map((series) => (
+								<Line
+									key={series.rateId}
+									type="monotone"
+									dataKey={series.rateId}
+									name={series.rateName}
+									stroke={
+										EURIBOR_COLORS[series.rateId] ?? "var(--muted-foreground)"
+									}
+									strokeWidth={1.5}
+									strokeDasharray="4 3"
+									dot={false}
+									isAnimationActive={animate}
+									animationDuration={300}
+									connectNulls
+								/>
+							))}
 					</ComposedChart>
 				</ChartContainer>
 
@@ -398,6 +590,21 @@ export function RatesTrendChart({
 							<span>Min/Max Range</span>
 						</div>
 					)}
+					{/* Euribor legend items */}
+					{hasEuribor &&
+						euriborSeries.map((series) => (
+							<div key={series.rateId} className="flex items-center gap-1.5">
+								<div
+									className="h-3 w-0.5 shrink-0"
+									style={{
+										backgroundColor:
+											EURIBOR_COLORS[series.rateId] ??
+											"var(--muted-foreground)",
+									}}
+								/>
+								<span>{series.rateName}</span>
+							</div>
+						))}
 				</div>
 			</div>
 		);
@@ -407,12 +614,14 @@ export function RatesTrendChart({
 	const seriesArray = Array.isArray(data) ? data : [data];
 	// Use multi-series rendering when showLegend is true (grouped mode) even with single series
 	const isSingleSeries = seriesArray.length === 1 && !showLegend;
+	const hasEuribor = euriborSeries && euriborSeries.length > 0;
 	const chartData = transformData(
 		data,
 		showApr,
 		averageSeries,
 		isSingleSeries,
 		endDate,
+		euriborSeries,
 	);
 	const hasAverage = averageSeries && averageSeries.dataPoints.length > 0;
 
@@ -437,9 +646,11 @@ export function RatesTrendChart({
 			: seriesArray.map((_, i) => `apr_${i}`)
 		: [];
 	const averageKeys = hasAverage ? ["average"] : [];
-	const allKeys = [...rateKeys, ...aprKeys, ...averageKeys];
+	const euriborKeys = hasEuribor ? euriborSeries.map((s) => s.rateId) : [];
+	const allKeys = [...rateKeys, ...aprKeys, ...averageKeys, ...euriborKeys];
 
-	const [yMin, yMax] = getYAxisDomain(chartData, allKeys);
+	// Allow negative values when Euribor is displayed (pre-2022 rates were negative)
+	const [yMin, yMax] = getYAxisDomain(chartData, allKeys, hasEuribor);
 
 	// Get current rate for reference line (last data point)
 	const currentRate = isSingleSeries
@@ -465,6 +676,17 @@ export function RatesTrendChart({
 						color: "var(--primary)",
 					},
 				}),
+				...(hasEuribor &&
+					Object.fromEntries(
+						euriborSeries.map((series) => [
+							series.rateId,
+							{
+								label: series.rateName,
+								color:
+									EURIBOR_COLORS[series.rateId] ?? "var(--muted-foreground)",
+							},
+						]),
+					)),
 			};
 
 	return (
@@ -549,6 +771,35 @@ export function RatesTrendChart({
 														</span>
 													</div>
 												)}
+												{/* Euribor values */}
+												{hasEuribor &&
+													euriborSeries.map((series) => {
+														const euriborValue = point[series.rateId];
+														if (euriborValue === undefined) return null;
+														return (
+															<div
+																key={series.rateId}
+																className="flex items-center justify-between gap-4"
+															>
+																<div className="flex items-center gap-1.5">
+																	<div
+																		className="h-2.5 w-0.5 shrink-0"
+																		style={{
+																			backgroundColor:
+																				EURIBOR_COLORS[series.rateId] ??
+																				"var(--muted-foreground)",
+																		}}
+																	/>
+																	<span className="text-muted-foreground text-sm">
+																		{series.rateName}
+																	</span>
+																</div>
+																<span className="font-mono text-sm text-muted-foreground">
+																	{Number(euriborValue).toFixed(2)}%
+																</span>
+															</div>
+														);
+													})}
 											</>
 										) : (
 											<>
@@ -595,6 +846,35 @@ export function RatesTrendChart({
 														</div>
 													);
 												})}
+												{/* Euribor values */}
+												{hasEuribor &&
+													euriborSeries.map((series) => {
+														const euriborValue = point[series.rateId];
+														if (euriborValue === undefined) return null;
+														return (
+															<div
+																key={series.rateId}
+																className="flex items-center justify-between gap-4"
+															>
+																<div className="flex items-center gap-1.5">
+																	<div
+																		className="h-2.5 w-0.5 shrink-0"
+																		style={{
+																			backgroundColor:
+																				EURIBOR_COLORS[series.rateId] ??
+																				"var(--muted-foreground)",
+																		}}
+																	/>
+																	<span className="text-muted-foreground text-sm">
+																		{series.rateName}
+																	</span>
+																</div>
+																<span className="font-mono text-sm text-muted-foreground">
+																	{Number(euriborValue).toFixed(2)}%
+																</span>
+															</div>
+														);
+													})}
 											</>
 										)}
 									</div>
@@ -676,14 +956,34 @@ export function RatesTrendChart({
 									/>
 								) : null,
 							]}
+
+					{/* Euribor reference lines (dashed) */}
+					{hasEuribor &&
+						euriborSeries.map((series) => (
+							<Line
+								key={series.rateId}
+								type="monotone"
+								dataKey={series.rateId}
+								name={series.rateName}
+								stroke={
+									EURIBOR_COLORS[series.rateId] ?? "var(--muted-foreground)"
+								}
+								strokeWidth={1.5}
+								strokeDasharray="4 3"
+								dot={false}
+								isAnimationActive={animate}
+								animationDuration={300}
+								connectNulls
+							/>
+						))}
 				</LineChart>
 			</ChartContainer>
 
 			{/* Legend for multi-series */}
-			{showLegend && !isSingleSeries && (
+			{(showLegend && !isSingleSeries) || hasEuribor ? (
 				<div className="flex flex-wrap gap-x-4 gap-y-1 px-2 text-xs text-muted-foreground">
-					{/* Average legend item first */}
-					{hasAverage && (
+					{/* Average legend item first (multi-series only) */}
+					{hasAverage && !isSingleSeries && (
 						<div className="flex items-center gap-1.5 font-medium">
 							<div
 								className="h-3 w-3 rounded-sm shrink-0"
@@ -694,19 +994,38 @@ export function RatesTrendChart({
 							<span>Average</span>
 						</div>
 					)}
-					{seriesArray.map((series, i) => (
-						<div key={series.rateId} className="flex items-center gap-1.5">
-							<div
-								className="h-3 w-3 rounded-sm shrink-0 opacity-60"
-								style={{
-									backgroundColor: SERIES_COLORS[i % SERIES_COLORS.length],
-								}}
-							/>
-							<span className="truncate max-w-[120px]">{series.rateName}</span>
-						</div>
-					))}
+					{/* Rate legend items (multi-series only) */}
+					{!isSingleSeries &&
+						seriesArray.map((series, i) => (
+							<div key={series.rateId} className="flex items-center gap-1.5">
+								<div
+									className="h-3 w-3 rounded-sm shrink-0 opacity-60"
+									style={{
+										backgroundColor: SERIES_COLORS[i % SERIES_COLORS.length],
+									}}
+								/>
+								<span className="truncate max-w-[120px]">
+									{series.rateName}
+								</span>
+							</div>
+						))}
+					{/* Euribor legend items */}
+					{hasEuribor &&
+						euriborSeries.map((series) => (
+							<div key={series.rateId} className="flex items-center gap-1.5">
+								<div
+									className="h-3 w-0.5 shrink-0"
+									style={{
+										backgroundColor:
+											EURIBOR_COLORS[series.rateId] ??
+											"var(--muted-foreground)",
+									}}
+								/>
+								<span>{series.rateName}</span>
+							</div>
+						))}
 				</div>
-			)}
+			) : null}
 		</div>
 	);
 }

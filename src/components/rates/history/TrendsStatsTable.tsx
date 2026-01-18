@@ -25,12 +25,16 @@ export interface MarketOverviewStats {
 	currentMin: number;
 	currentMax: number;
 	currentDate: string;
-	historicalLowest: number;
-	historicalLowestDate: string;
-	historicalHighest: number;
-	historicalHighestDate: string;
-	lendersIncluded: number;
-	ratesIncluded: number;
+	// Historical averages (avg across all rates at each point in time)
+	lowestAverage: number;
+	lowestAverageDate: string;
+	highestAverage: number;
+	highestAverageDate: string;
+	// Absolute extremes (single lowest/highest rate ever offered)
+	absoluteLowest: number;
+	absoluteLowestDate: string;
+	absoluteHighest: number;
+	absoluteHighestDate: string;
 }
 
 interface TrendsStatsTableProps {
@@ -83,47 +87,69 @@ export function TrendsStatsTable({
 							</TableCell>
 						</TableRow>
 						<TableRow>
-							<TableCell className="font-medium">Historical Lowest</TableCell>
+							<TableCell>
+								<div className="font-medium">Lowest Average</div>
+								<div className="text-xs text-muted-foreground">
+									Market average at its lowest
+								</div>
+							</TableCell>
 							<TableCell className="text-right">
 								<span className="font-mono text-green-600 dark:text-green-500">
-									{marketStats.historicalLowest.toFixed(2)}%
+									{marketStats.lowestAverage.toFixed(2)}%
 								</span>
 							</TableCell>
 							<TableCell className="text-right text-muted-foreground">
-								{formatShortMonthYearFromString(
-									marketStats.historicalLowestDate,
-								)}
+								{formatShortMonthYearFromString(marketStats.lowestAverageDate)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
-							<TableCell className="font-medium">Historical Highest</TableCell>
+							<TableCell>
+								<div className="font-medium">Highest Average</div>
+								<div className="text-xs text-muted-foreground">
+									Market average at its highest
+								</div>
+							</TableCell>
 							<TableCell className="text-right">
 								<span className="font-mono text-red-600 dark:text-red-500">
-									{marketStats.historicalHighest.toFixed(2)}%
+									{marketStats.highestAverage.toFixed(2)}%
+								</span>
+							</TableCell>
+							<TableCell className="text-right text-muted-foreground">
+								{formatShortMonthYearFromString(marketStats.highestAverageDate)}
+							</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell>
+								<div className="font-medium">Absolute Lowest</div>
+								<div className="text-xs text-muted-foreground">
+									Lowest single rate ever offered
+								</div>
+							</TableCell>
+							<TableCell className="text-right">
+								<span className="font-mono text-green-600 dark:text-green-500">
+									{marketStats.absoluteLowest.toFixed(2)}%
+								</span>
+							</TableCell>
+							<TableCell className="text-right text-muted-foreground">
+								{formatShortMonthYearFromString(marketStats.absoluteLowestDate)}
+							</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell>
+								<div className="font-medium">Absolute Highest</div>
+								<div className="text-xs text-muted-foreground">
+									Highest single rate ever offered
+								</div>
+							</TableCell>
+							<TableCell className="text-right">
+								<span className="font-mono text-red-600 dark:text-red-500">
+									{marketStats.absoluteHighest.toFixed(2)}%
 								</span>
 							</TableCell>
 							<TableCell className="text-right text-muted-foreground">
 								{formatShortMonthYearFromString(
-									marketStats.historicalHighestDate,
+									marketStats.absoluteHighestDate,
 								)}
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell className="font-medium">Lenders Included</TableCell>
-							<TableCell className="text-right">
-								<span className="font-mono">{marketStats.lendersIncluded}</span>
-							</TableCell>
-							<TableCell className="text-right text-muted-foreground">
-								—
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell className="font-medium">Rates Included</TableCell>
-							<TableCell className="text-right">
-								<span className="font-mono">{marketStats.ratesIncluded}</span>
-							</TableCell>
-							<TableCell className="text-right text-muted-foreground">
-								—
 							</TableCell>
 						</TableRow>
 					</TableBody>

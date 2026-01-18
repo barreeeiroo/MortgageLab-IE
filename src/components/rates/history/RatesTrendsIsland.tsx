@@ -20,7 +20,8 @@ export function RatesTrendsIsland() {
 	initializeHistoryFilters();
 
 	const activeTab = useStore($historyActiveTab);
-	const { loading, error, historyData, lenders } = useStore($historyDataState);
+	const { loading, error, historyData, lenders, euriborData } =
+		useStore($historyDataState);
 
 	// Load data on mount
 	useEffect(() => {
@@ -32,5 +33,11 @@ export function RatesTrendsIsland() {
 		return null;
 	}
 
-	return <RatesTrends historyData={historyData} lenders={lenders} />;
+	return (
+		<RatesTrends
+			historyData={historyData}
+			lenders={lenders}
+			euriborData={euriborData}
+		/>
+	);
 }

@@ -1,6 +1,8 @@
 import { atom } from "nanostores";
 import { fetchLendersData } from "@/lib/data/fetch";
+import { fetchEuriborData } from "@/lib/data/fetch-euribor";
 import { fetchAllHistory } from "@/lib/data/fetch-history";
+import type { EuriborFile } from "@/lib/schemas/euribor";
 import type { Lender } from "@/lib/schemas/lender";
 import type { RatesHistoryFile } from "@/lib/schemas/rate-history";
 
@@ -16,6 +18,7 @@ export interface HistoryDataState {
 	error: string | null;
 	historyData: Map<string, RatesHistoryFile>;
 	lenders: Lender[];
+	euriborData: EuriborFile | null;
 }
 
 const DEFAULT_STATE: HistoryDataState = {
@@ -23,6 +26,7 @@ const DEFAULT_STATE: HistoryDataState = {
 	error: null,
 	historyData: new Map(),
 	lenders: [],
+	euriborData: null,
 };
 
 // Main data state atom
@@ -57,14 +61,19 @@ export async function loadHistoryData(): Promise<void> {
 	dataLoadPromise = (async () => {
 		try {
 			// First fetch lenders, then history (history needs lenders)
+			// Euribor can be fetched in parallel with history
 			const lenderData = await fetchLendersData();
-			const history = await fetchAllHistory(lenderData);
+			const [history, euriborData] = await Promise.all([
+				fetchAllHistory(lenderData),
+				fetchEuriborData(),
+			]);
 
 			$historyDataState.set({
 				loading: false,
 				error: null,
 				historyData: history,
 				lenders: lenderData,
+				euriborData,
 			});
 		} catch (_err) {
 			$historyDataState.set({
@@ -72,6 +81,7 @@ export async function loadHistoryData(): Promise<void> {
 				error: "Failed to load historical data",
 				historyData: new Map(),
 				lenders: [],
+				euriborData: null,
 			});
 		}
 	})();

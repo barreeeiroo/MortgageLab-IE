@@ -1,6 +1,8 @@
 import { useStore } from "@nanostores/react";
 import { TrendingUp } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
+import { getEuriborTimeSeries } from "@/lib/data/fetch-euribor";
+import type { EuriborFile } from "@/lib/schemas/euribor";
 import type { Lender } from "@/lib/schemas/lender";
 import type {
 	RatesHistoryFile,
@@ -8,11 +10,13 @@ import type {
 } from "@/lib/schemas/rate-history";
 import { getRateTimeSeries } from "@/lib/stores/rates/rates-history";
 import {
+	$euriborToggles,
 	$trendsFilter,
 	$trendsLendersFirstVisit,
 	$trendsSelectedLenders,
 	setTrendsSelectedLenders,
 } from "@/lib/stores/rates/rates-history-filters";
+import { EuriborToggles } from "./EuriborToggles";
 import { type MarketDataPoint, RatesTrendChart } from "./RatesTrendChart";
 import { TrendsFilters } from "./TrendsFilters";
 import {
@@ -24,6 +28,7 @@ import {
 interface RatesTrendsProps {
 	historyData: Map<string, RatesHistoryFile>;
 	lenders: Lender[];
+	euriborData: EuriborFile | null;
 }
 
 // Buyer types that belong to each category
@@ -220,10 +225,15 @@ function filterTimeSeriesByDateRange(
 	};
 }
 
-export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
+export function RatesTrends({
+	historyData,
+	lenders,
+	euriborData,
+}: RatesTrendsProps) {
 	const filter = useStore($trendsFilter);
 	const selectedLenders = useStore($trendsSelectedLenders);
 	const isFirstVisit = useStore($trendsLendersFirstVisit);
+	const euriborToggles = useStore($euriborToggles);
 
 	const isMarketOverview = filter.displayMode === "market-overview";
 
@@ -378,6 +388,23 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 		lenderMap,
 		timeRange,
 	]);
+
+	// Get Euribor time series filtered by enabled toggles
+	const euriborTimeSeries = useMemo((): RateTimeSeries[] => {
+		if (!euriborData) return [];
+
+		const enabledTenors = Object.entries(euriborToggles)
+			.filter(([, enabled]) => enabled)
+			.map(([tenor]) => tenor as "1M" | "3M" | "6M" | "12M");
+
+		if (enabledTenors.length === 0) return [];
+
+		return enabledTenors.map((tenor) => {
+			const series = getEuriborTimeSeries(euriborData, tenor);
+			// Apply the same date range filter as mortgage rates
+			return filterTimeSeriesByDateRange(series, timeRange);
+		});
+	}, [euriborData, euriborToggles, timeRange]);
 
 	// Calculate average time series across all rates (for individual mode)
 	const averageSeries = useMemo((): RateTimeSeries | null => {
@@ -668,15 +695,25 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 		let lowestAvgPoint = marketData[0];
 		let highestAvgPoint = marketData[0];
 
+		// Find absolute lowest and highest (from min/max at each point)
+		let absoluteLowest = {
+			rate: marketData[0].min,
+			timestamp: marketData[0].timestamp,
+		};
+		let absoluteHighest = {
+			rate: marketData[0].max,
+			timestamp: marketData[0].timestamp,
+		};
+
 		for (const point of marketData) {
 			if (point.avg < lowestAvgPoint.avg) lowestAvgPoint = point;
 			if (point.avg > highestAvgPoint.avg) highestAvgPoint = point;
-		}
-
-		// Count unique lenders included
-		const lenderSet = new Set<string>();
-		for (const rate of filteredRates) {
-			lenderSet.add(rate.lenderId);
+			if (point.min < absoluteLowest.rate) {
+				absoluteLowest = { rate: point.min, timestamp: point.timestamp };
+			}
+			if (point.max > absoluteHighest.rate) {
+				absoluteHighest = { rate: point.max, timestamp: point.timestamp };
+			}
 		}
 
 		return {
@@ -684,14 +721,16 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 			currentMin: currentPoint.min,
 			currentMax: currentPoint.max,
 			currentDate: currentPoint.timestamp,
-			historicalLowest: lowestAvgPoint.avg,
-			historicalLowestDate: lowestAvgPoint.timestamp,
-			historicalHighest: highestAvgPoint.avg,
-			historicalHighestDate: highestAvgPoint.timestamp,
-			lendersIncluded: lenderSet.size,
-			ratesIncluded: timeSeries.length,
+			lowestAverage: lowestAvgPoint.avg,
+			lowestAverageDate: lowestAvgPoint.timestamp,
+			highestAverage: highestAvgPoint.avg,
+			highestAverageDate: highestAvgPoint.timestamp,
+			absoluteLowest: absoluteLowest.rate,
+			absoluteLowestDate: absoluteLowest.timestamp,
+			absoluteHighest: absoluteHighest.rate,
+			absoluteHighestDate: absoluteHighest.timestamp,
 		};
-	}, [marketData, isMarketOverview, filteredRates, timeSeries.length]);
+	}, [marketData, isMarketOverview]);
 
 	// Calculate breakdown statistics (per-group stats for grouped mode)
 	const breakdownStats = useMemo((): RateStat[] => {
@@ -826,32 +865,39 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 						)}
 					</div>
 
-					<RatesTrendChart
-						data={
-							isGroupedActive
-								? breakdownSeries
-								: isMarketOverview
-									? []
-									: timeSeries
-						}
-						averageSeries={isMarketOverview ? null : averageSeries}
-						marketData={
-							isMarketOverview && !isGroupedActive ? marketData : undefined
-						}
-						displayStyle={
-							isGroupedActive
-								? "lines"
-								: isMarketOverview
-									? filter.marketChartStyle === "range-band"
-										? "range-band"
-										: "average"
-									: "lines"
-						}
-						showLegend={!isMarketOverview || isGroupedActive}
-						height={350}
-						animate={false}
-						endDate={timeRange.endDate}
-					/>
+					<div className="relative">
+						<RatesTrendChart
+							data={
+								isGroupedActive
+									? breakdownSeries
+									: isMarketOverview
+										? []
+										: timeSeries
+							}
+							averageSeries={isMarketOverview ? null : averageSeries}
+							marketData={
+								isMarketOverview && !isGroupedActive ? marketData : undefined
+							}
+							displayStyle={
+								isGroupedActive
+									? "lines"
+									: isMarketOverview
+										? filter.marketChartStyle === "range-band"
+											? "range-band"
+											: "average"
+										: "lines"
+							}
+							showLegend={!isMarketOverview || isGroupedActive}
+							height={350}
+							animate={false}
+							endDate={timeRange.endDate}
+							euriborSeries={euriborTimeSeries}
+						/>
+						{/* Euribor toggles positioned at bottom-right of chart */}
+						<div className="flex justify-end mt-2">
+							<EuriborToggles />
+						</div>
+					</div>
 
 					{/* Stats Table */}
 					<TrendsStatsTable

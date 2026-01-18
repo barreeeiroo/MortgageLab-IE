@@ -1,4 +1,5 @@
 import { atom, computed } from "nanostores";
+import type { EuriborTenor } from "@/lib/schemas/euribor";
 import {
 	clearHistoryShareParam,
 	hasHistoryShareParam,
@@ -58,6 +59,15 @@ export interface TrendsFilter {
 	timeRange: TrendsTimeRange; // Time range for chart view
 }
 
+export type EuriborToggles = Record<EuriborTenor, boolean>;
+
+export const DEFAULT_EURIBOR_TOGGLES: EuriborToggles = {
+	"1M": false,
+	"3M": false,
+	"6M": false,
+	"12M": true,
+};
+
 // === Defaults ===
 
 export const DEFAULT_UPDATES_FILTER: UpdatesFilter = {
@@ -99,6 +109,7 @@ interface HistoryFiltersPersistedState {
 	trendsFilter: TrendsFilter;
 	trendsSelectedLenders: string[];
 	changesSelectedLender: string;
+	euriborToggles: EuriborToggles;
 }
 
 /**
@@ -145,6 +156,8 @@ export const $trendsSelectedLenders = atom<string[]>([]);
 // When true, the component should inject all lenders as default
 export const $trendsLendersFirstVisit = atom<boolean>(true);
 
+export const $euriborToggles = atom<EuriborToggles>(DEFAULT_EURIBOR_TOGGLES);
+
 // === Persistence ===
 
 // Flag to prevent persisting during share URL import
@@ -161,6 +174,7 @@ function persistHistoryFilters(): void {
 		trendsFilter: $trendsFilter.get(),
 		trendsSelectedLenders: $trendsSelectedLenders.get(),
 		changesSelectedLender: $changesSelectedLender.get(),
+		euriborToggles: $euriborToggles.get(),
 	};
 	localStorage.setItem(HISTORY_FILTERS_KEY, JSON.stringify(state));
 }
@@ -174,6 +188,7 @@ $changesFilter.listen(persistHistoryFilters);
 $trendsFilter.listen(persistHistoryFilters);
 $trendsSelectedLenders.listen(persistHistoryFilters);
 $changesSelectedLender.listen(persistHistoryFilters);
+$euriborToggles.listen(persistHistoryFilters);
 
 // === Initialization ===
 
@@ -234,6 +249,7 @@ export function initializeHistoryFilters(): void {
 		}
 		if (stored.changesSelectedLender)
 			$changesSelectedLender.set(stored.changesSelectedLender);
+		if (stored.euriborToggles) $euriborToggles.set(stored.euriborToggles);
 
 		persistenceEnabled = true;
 	}
@@ -290,6 +306,15 @@ export function setTrendsSelectedLenders(lenderIds: string[]): void {
 
 export function setChangesSelectedLender(lenderId: string): void {
 	$changesSelectedLender.set(lenderId);
+}
+
+export function toggleEuriborTenor(tenor: EuriborTenor): void {
+	const current = $euriborToggles.get();
+	$euriborToggles.set({ ...current, [tenor]: !current[tenor] });
+}
+
+export function setEuriborToggles(toggles: EuriborToggles): void {
+	$euriborToggles.set(toggles);
 }
 
 // === Computed Values ===
