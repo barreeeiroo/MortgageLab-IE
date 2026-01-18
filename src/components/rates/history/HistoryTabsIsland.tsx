@@ -54,15 +54,15 @@ export function HistoryTabsIsland() {
 						disabled={tabsDisabled}
 					>
 						<CalendarClock className="h-4 w-4" />
-						<span className="hidden sm:inline">Updates</span>
+						<span className="hidden sm:inline">Updates History</span>
 					</TabsTrigger>
 					<TabsTrigger
-						value="compare"
+						value="changes"
 						className="gap-1.5"
 						disabled={tabsDisabled}
 					>
 						<ArrowLeftRight className="h-4 w-4" />
-						<span className="hidden sm:inline">Compare</span>
+						<span className="hidden sm:inline">Rate Changes</span>
 					</TabsTrigger>
 					<TabsTrigger
 						value="trends"

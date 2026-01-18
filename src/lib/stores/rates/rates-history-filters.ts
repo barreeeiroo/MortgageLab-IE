@@ -7,7 +7,7 @@ import {
 
 // === Types ===
 
-export type HistoryTab = "updates" | "compare" | "trends";
+export type HistoryTab = "updates" | "changes" | "trends";
 
 export interface UpdatesFilter {
 	lenderIds: string[]; // Empty = all lenders
@@ -16,7 +16,7 @@ export interface UpdatesFilter {
 	changeType: "all" | "increase" | "decrease" | "added" | "removed";
 }
 
-export interface CompareFilter {
+export interface ChangesFilter {
 	lenderIds: string[]; // Empty = all lenders
 	rateType: string | null; // e.g., "fixed-3" for 3-year fixed, null = all
 	ltvRange: [number, number] | null; // e.g., [0, 80]
@@ -40,7 +40,7 @@ export const DEFAULT_UPDATES_FILTER: UpdatesFilter = {
 	changeType: "all",
 };
 
-export const DEFAULT_COMPARE_FILTER: CompareFilter = {
+export const DEFAULT_CHANGES_FILTER: ChangesFilter = {
 	lenderIds: [],
 	rateType: null,
 	ltvRange: null,
@@ -64,10 +64,10 @@ interface HistoryFiltersPersistedState {
 	updatesFilter: UpdatesFilter;
 	comparisonDate: string | null;
 	comparisonEndDate: string | null;
-	compareFilter: CompareFilter;
+	changesFilter: ChangesFilter;
 	trendsFilter: TrendsFilter;
 	trendsSelectedLenders: string[];
-	compareSelectedLender: string;
+	changesSelectedLender: string;
 }
 
 /**
@@ -94,9 +94,9 @@ export const $comparisonDate = atom<string | null>(null);
 
 export const $comparisonEndDate = atom<string | null>(null); // null = today
 
-export const $compareFilter = atom<CompareFilter>(DEFAULT_COMPARE_FILTER);
+export const $changesFilter = atom<ChangesFilter>(DEFAULT_CHANGES_FILTER);
 
-export const $compareSelectedLender = atom<string>("all");
+export const $changesSelectedLender = atom<string>("all");
 
 export const $trendsFilter = atom<TrendsFilter>(DEFAULT_TRENDS_FILTER);
 
@@ -122,10 +122,10 @@ function persistHistoryFilters(): void {
 		updatesFilter: $updatesFilter.get(),
 		comparisonDate: $comparisonDate.get(),
 		comparisonEndDate: $comparisonEndDate.get(),
-		compareFilter: $compareFilter.get(),
+		changesFilter: $changesFilter.get(),
 		trendsFilter: $trendsFilter.get(),
 		trendsSelectedLenders: $trendsSelectedLenders.get(),
-		compareSelectedLender: $compareSelectedLender.get(),
+		changesSelectedLender: $changesSelectedLender.get(),
 	};
 	localStorage.setItem(HISTORY_FILTERS_KEY, JSON.stringify(state));
 }
@@ -135,10 +135,10 @@ $historyActiveTab.listen(persistHistoryFilters);
 $updatesFilter.listen(persistHistoryFilters);
 $comparisonDate.listen(persistHistoryFilters);
 $comparisonEndDate.listen(persistHistoryFilters);
-$compareFilter.listen(persistHistoryFilters);
+$changesFilter.listen(persistHistoryFilters);
 $trendsFilter.listen(persistHistoryFilters);
 $trendsSelectedLenders.listen(persistHistoryFilters);
-$compareSelectedLender.listen(persistHistoryFilters);
+$changesSelectedLender.listen(persistHistoryFilters);
 
 // === Initialization ===
 
@@ -163,10 +163,10 @@ export function initializeHistoryFilters(): void {
 			$updatesFilter.set(shareState.updatesFilter);
 			$comparisonDate.set(shareState.comparisonDate);
 			$comparisonEndDate.set(shareState.comparisonEndDate);
-			$compareFilter.set(shareState.compareFilter);
+			$changesFilter.set(shareState.changesFilter);
 			$trendsFilter.set(shareState.trendsFilter);
 			$trendsSelectedLenders.set(shareState.trendsSelectedLenders);
-			$compareSelectedLender.set(shareState.compareSelectedLender);
+			$changesSelectedLender.set(shareState.changesSelectedLender);
 
 			// Re-enable persistence and save the imported state
 			persistenceEnabled = true;
@@ -188,12 +188,12 @@ export function initializeHistoryFilters(): void {
 			$comparisonDate.set(stored.comparisonDate);
 		if (stored.comparisonEndDate !== undefined)
 			$comparisonEndDate.set(stored.comparisonEndDate);
-		if (stored.compareFilter) $compareFilter.set(stored.compareFilter);
+		if (stored.changesFilter) $changesFilter.set(stored.changesFilter);
 		if (stored.trendsFilter) $trendsFilter.set(stored.trendsFilter);
 		if (stored.trendsSelectedLenders)
 			$trendsSelectedLenders.set(stored.trendsSelectedLenders);
-		if (stored.compareSelectedLender)
-			$compareSelectedLender.set(stored.compareSelectedLender);
+		if (stored.changesSelectedLender)
+			$changesSelectedLender.set(stored.changesSelectedLender);
 
 		persistenceEnabled = true;
 	}
@@ -221,12 +221,12 @@ export function setComparisonEndDate(date: string | null): void {
 	$comparisonEndDate.set(date);
 }
 
-export function setCompareFilter(filter: Partial<CompareFilter>): void {
-	$compareFilter.set({ ...$compareFilter.get(), ...filter });
+export function setChangesFilter(filter: Partial<ChangesFilter>): void {
+	$changesFilter.set({ ...$changesFilter.get(), ...filter });
 }
 
-export function resetCompareFilter(): void {
-	$compareFilter.set(DEFAULT_COMPARE_FILTER);
+export function resetChangesFilter(): void {
+	$changesFilter.set(DEFAULT_CHANGES_FILTER);
 }
 
 export function setTrendsFilter(filter: Partial<TrendsFilter>): void {
@@ -248,8 +248,8 @@ export function setTrendsSelectedLenders(lenderIds: string[]): void {
 	$trendsSelectedLenders.set(lenderIds);
 }
 
-export function setCompareSelectedLender(lenderId: string): void {
-	$compareSelectedLender.set(lenderId);
+export function setChangesSelectedLender(lenderId: string): void {
+	$changesSelectedLender.set(lenderId);
 }
 
 // === Computed Values ===
@@ -263,7 +263,7 @@ export const $hasUpdatesFilter = computed($updatesFilter, (filter) => {
 	);
 });
 
-export const $hasCompareFilter = computed($compareFilter, (filter) => {
+export const $hasChangesFilter = computed($changesFilter, (filter) => {
 	return (
 		filter.lenderIds.length > 0 ||
 		filter.rateType !== "all" ||

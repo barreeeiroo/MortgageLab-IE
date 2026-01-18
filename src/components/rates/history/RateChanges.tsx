@@ -35,17 +35,17 @@ import {
 	reconstructRatesAtDate,
 } from "@/lib/stores/rates/rates-history";
 import {
-	$compareFilter,
+	$changesFilter,
 	$comparisonDate,
 	$comparisonEndDate,
-	setCompareFilter,
+	setChangesFilter,
 	setComparisonDate,
 	setComparisonEndDate,
 } from "@/lib/stores/rates/rates-history-filters";
 import { cn } from "@/lib/utils/cn";
 import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 
-interface HistoricalComparisonProps {
+interface RateChangesProps {
 	historyData: Map<string, RatesHistoryFile>;
 	lenders: Lender[];
 }
@@ -131,13 +131,10 @@ function getEarliestDate(historyData: Map<string, RatesHistoryFile>): Date {
 	return earliest;
 }
 
-export function HistoricalComparison({
-	historyData,
-	lenders,
-}: HistoricalComparisonProps) {
+export function RateChanges({ historyData, lenders }: RateChangesProps) {
 	const comparisonDateStr = useStore($comparisonDate);
 	const comparisonEndDateStr = useStore($comparisonEndDate);
-	const compareFilter = useStore($compareFilter);
+	const changesFilter = useStore($changesFilter);
 	const [currentRates, setCurrentRates] = useState<MortgageRate[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -156,7 +153,7 @@ export function HistoricalComparison({
 	const isEndDateToday = !comparisonEndDate;
 
 	// Extract filter values
-	const selectedLenderIds = compareFilter.lenderIds;
+	const selectedLenderIds = changesFilter.lenderIds;
 	const selectedLenderSet = useMemo(
 		() => new Set(selectedLenderIds),
 		[selectedLenderIds],
@@ -205,15 +202,15 @@ export function HistoricalComparison({
 			}
 
 			// Filter by rate type
-			if (compareFilter.rateType) {
+			if (changesFilter.rateType) {
 				const rateTypeKey = getRateTypeKey(rate);
-				if (rateTypeKey !== compareFilter.rateType) return false;
+				if (rateTypeKey !== changesFilter.rateType) return false;
 			}
 
 			// Filter by buyer category
-			if (compareFilter.buyerCategory !== "all") {
+			if (changesFilter.buyerCategory !== "all") {
 				const allowedTypes =
-					compareFilter.buyerCategory === "pdh"
+					changesFilter.buyerCategory === "pdh"
 						? PDH_BUYER_TYPES
 						: BTL_BUYER_TYPES;
 				const hasAllowedType = rate.buyerTypes.some((bt) =>
@@ -227,8 +224,8 @@ export function HistoricalComparison({
 		[
 			selectedLenderIds.length,
 			selectedLenderSet,
-			compareFilter.rateType,
-			compareFilter.buyerCategory,
+			changesFilter.rateType,
+			changesFilter.buyerCategory,
 		],
 	);
 
@@ -491,9 +488,9 @@ export function HistoricalComparison({
 				<div className="space-y-1.5">
 					<Label className="text-xs">Rate Type</Label>
 					<Select
-						value={compareFilter.rateType ?? "all"}
+						value={changesFilter.rateType ?? "all"}
 						onValueChange={(v) =>
-							setCompareFilter({ rateType: v === "all" ? null : v })
+							setChangesFilter({ rateType: v === "all" ? null : v })
 						}
 					>
 						<SelectTrigger className="w-[140px]">
@@ -513,9 +510,9 @@ export function HistoricalComparison({
 				<div className="space-y-1.5">
 					<Label className="text-xs">Buyer Type</Label>
 					<Select
-						value={compareFilter.buyerCategory}
+						value={changesFilter.buyerCategory}
 						onValueChange={(v) =>
-							setCompareFilter({
+							setChangesFilter({
 								buyerCategory: v as "all" | "pdh" | "btl",
 							})
 						}
@@ -539,7 +536,7 @@ export function HistoricalComparison({
 					<LenderSelector
 						lenders={lenders}
 						value={selectedLenderIds}
-						onChange={(ids) => setCompareFilter({ lenderIds: ids })}
+						onChange={(ids) => setChangesFilter({ lenderIds: ids })}
 						multiple
 						placeholder="All Lenders"
 						className="w-[260px]"

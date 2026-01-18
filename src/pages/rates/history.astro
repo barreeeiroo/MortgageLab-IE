@@ -1,7 +1,7 @@
 ---
 import { ArrowLeft, History as HistoryIcon } from "lucide-react";
 import Layout from "@/layouts/Layout.astro";
-import { HistoricalComparisonIsland } from "@/components/rates/history/HistoricalComparisonIsland";
+import { RateChangesIsland } from "@/components/rates/history/RateChangesIsland";
 import { HistoryShareButton } from "@/components/rates/history/HistoryShareButton";
 import { HistoryTabsIsland } from "@/components/rates/history/HistoryTabsIsland";
 import { RatesTrendChartsIsland } from "@/components/rates/history/RatesTrendChartsIsland";
@@ -42,7 +42,7 @@ import { RatesUpdatesTimelineIsland } from "@/components/rates/history/RatesUpda
 
 		<div class="mt-4">
 			<RatesUpdatesTimelineIsland client:idle />
-			<HistoricalComparisonIsland client:idle />
+			<RateChangesIsland client:idle />
 			<RatesTrendChartsIsland client:idle />
 		</div>
 	</div>

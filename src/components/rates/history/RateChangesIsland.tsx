@@ -8,14 +8,14 @@ import {
 	$historyActiveTab,
 	initializeHistoryFilters,
 } from "@/lib/stores/rates/rates-history-filters";
-import { HistoricalComparison } from "./HistoricalComparison";
+import { RateChanges } from "./RateChanges";
 
 /**
- * Island wrapper for Historical Comparison tab.
- * Only renders when the "compare" tab is active and data is loaded.
+ * Island wrapper for Rate Changes tab.
+ * Only renders when the "changes" tab is active and data is loaded.
  * Loading/error states are handled by HistoryTabsIsland.
  */
-export function HistoricalComparisonIsland() {
+export function RateChangesIsland() {
 	// Initialize filters synchronously so the correct tab check works on first render
 	initializeHistoryFilters();
 
@@ -28,9 +28,9 @@ export function HistoricalComparisonIsland() {
 	}, []);
 
 	// Don't render if not active, loading, error, or no data
-	if (activeTab !== "compare" || loading || error || historyData.size === 0) {
+	if (activeTab !== "changes" || loading || error || historyData.size === 0) {
 		return null;
 	}
 
-	return <HistoricalComparison historyData={historyData} lenders={lenders} />;
+	return <RateChanges historyData={historyData} lenders={lenders} />;
 }

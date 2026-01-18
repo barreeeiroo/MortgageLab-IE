@@ -6,8 +6,8 @@ import {
 	type HistoryShareState,
 } from "@/lib/share/rates-history";
 import {
-	$compareFilter,
-	$compareSelectedLender,
+	$changesFilter,
+	$changesSelectedLender,
 	$comparisonDate,
 	$comparisonEndDate,
 	$historyActiveTab,
@@ -25,10 +25,10 @@ export function HistoryShareButton() {
 	const updatesFilter = useStore($updatesFilter);
 	const comparisonDate = useStore($comparisonDate);
 	const comparisonEndDate = useStore($comparisonEndDate);
-	const compareFilter = useStore($compareFilter);
+	const changesFilter = useStore($changesFilter);
 	const trendsFilter = useStore($trendsFilter);
 	const trendsSelectedLenders = useStore($trendsSelectedLenders);
-	const compareSelectedLender = useStore($compareSelectedLender);
+	const changesSelectedLender = useStore($changesSelectedLender);
 
 	const handleShare = useCallback(async () => {
 		const state: HistoryShareState = {
@@ -36,10 +36,10 @@ export function HistoryShareButton() {
 			updatesFilter,
 			comparisonDate,
 			comparisonEndDate,
-			compareFilter,
+			changesFilter,
 			trendsFilter,
 			trendsSelectedLenders,
-			compareSelectedLender,
+			changesSelectedLender,
 		};
 		return generateHistoryShareUrl(state);
 	}, [
@@ -47,10 +47,10 @@ export function HistoryShareButton() {
 		updatesFilter,
 		comparisonDate,
 		comparisonEndDate,
-		compareFilter,
+		changesFilter,
 		trendsFilter,
 		trendsSelectedLenders,
-		compareSelectedLender,
+		changesSelectedLender,
 	]);
 
 	return <ShareButton onShare={handleShare} responsive />;

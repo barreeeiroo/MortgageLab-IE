@@ -1,5 +1,5 @@
 import type {
-	CompareFilter,
+	ChangesFilter,
 	HistoryTab,
 	TrendsFilter,
 	UpdatesFilter,
@@ -27,10 +27,10 @@ export interface HistoryShareState {
 	updatesFilter: UpdatesFilter;
 	comparisonDate: string | null;
 	comparisonEndDate: string | null;
-	compareFilter: CompareFilter;
+	changesFilter: ChangesFilter;
 	trendsFilter: TrendsFilter;
 	trendsSelectedLenders: string[];
-	compareSelectedLender: string;
+	changesSelectedLender: string;
 }
 
 /**
@@ -48,7 +48,7 @@ interface CompressedHistoryShareState {
 	cd: string | null; // comparisonDate
 	ced: string | null; // comparisonEndDate
 	c: {
-		// compareFilter
+		// changesFilter
 		l: string[]; // lenderIds
 		r: string | null; // rateType
 		v: [number, number] | null; // ltvRange
@@ -63,7 +63,7 @@ interface CompressedHistoryShareState {
 		b: string; // buyerCategory
 	};
 	tl: string[]; // trendsSelectedLenders
-	cl: string; // compareSelectedLender
+	cl: string; // changesSelectedLender
 }
 
 /**
@@ -81,10 +81,10 @@ function compressState(state: HistoryShareState): CompressedHistoryShareState {
 		cd: state.comparisonDate,
 		ced: state.comparisonEndDate,
 		c: {
-			l: state.compareFilter.lenderIds,
-			r: state.compareFilter.rateType,
-			v: state.compareFilter.ltvRange,
-			b: state.compareFilter.buyerCategory,
+			l: state.changesFilter.lenderIds,
+			r: state.changesFilter.rateType,
+			v: state.changesFilter.ltvRange,
+			b: state.changesFilter.buyerCategory,
 		},
 		r: {
 			t: state.trendsFilter.rateType,
@@ -94,7 +94,7 @@ function compressState(state: HistoryShareState): CompressedHistoryShareState {
 			b: state.trendsFilter.buyerCategory,
 		},
 		tl: state.trendsSelectedLenders,
-		cl: state.compareSelectedLender,
+		cl: state.changesSelectedLender,
 	};
 }
 
@@ -114,12 +114,12 @@ function decompressState(
 		},
 		comparisonDate: compressed.cd ?? null,
 		comparisonEndDate: compressed.ced ?? null,
-		compareFilter: {
+		changesFilter: {
 			lenderIds: compressed.c.l ?? [],
 			rateType: compressed.c.r ?? null,
 			ltvRange: compressed.c.v ?? null,
 			buyerCategory: (compressed.c.b ??
-				"all") as CompareFilter["buyerCategory"],
+				"all") as ChangesFilter["buyerCategory"],
 		},
 		trendsFilter: {
 			rateType: compressed.r.t ?? "fixed-4",
@@ -129,7 +129,7 @@ function decompressState(
 			buyerCategory: (compressed.r.b ?? "pdh") as TrendsFilter["buyerCategory"],
 		},
 		trendsSelectedLenders: compressed.tl ?? [],
-		compareSelectedLender: compressed.cl ?? "all",
+		changesSelectedLender: compressed.cl ?? "all",
 	};
 }
 
