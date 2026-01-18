@@ -309,7 +309,7 @@ export function RatesTrendCharts({ historyData, lenders }: TrendChartsProps) {
 							setTrendsFilter({ rateType: v === "all" ? null : v })
 						}
 					>
-						<SelectTrigger className="w-[140px] h-8">
+						<SelectTrigger className="w-[140px]">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
@@ -333,7 +333,7 @@ export function RatesTrendCharts({ historyData, lenders }: TrendChartsProps) {
 							})
 						}
 					>
-						<SelectTrigger className="w-[120px] h-8">
+						<SelectTrigger className="w-[120px]">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
@@ -357,7 +357,7 @@ export function RatesTrendCharts({ historyData, lenders }: TrendChartsProps) {
 							})
 						}
 					>
-						<SelectTrigger className="w-[180px] h-8">
+						<SelectTrigger className="w-[180px]">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
@@ -432,7 +432,7 @@ export function RatesTrendCharts({ historyData, lenders }: TrendChartsProps) {
 										<TableRow key={stat.rateId}>
 											<TableCell>
 												<div className="flex items-center gap-2">
-													<LenderLogo lenderId={stat.lenderId} size={20} />
+													<LenderLogo lenderId={stat.lenderId} size={36} />
 													<span className="font-medium">{stat.lenderName}</span>
 												</div>
 											</TableCell>

@@ -194,7 +194,7 @@ export function RatesUpdatesTimeline({
 						})
 					}
 				>
-					<SelectTrigger className="w-[130px] h-8">
+					<SelectTrigger className="w-[130px]">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>

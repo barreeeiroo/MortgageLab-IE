@@ -18,8 +18,9 @@ export interface UpdatesFilter {
 
 export interface CompareFilter {
 	lenderIds: string[]; // Empty = all lenders
-	rateType: "all" | "fixed" | "variable";
+	rateType: string | null; // e.g., "fixed-3" for 3-year fixed, null = all
 	ltvRange: [number, number] | null; // e.g., [0, 80]
+	buyerCategory: "all" | "pdh" | "btl"; // PDH = FTB/Mover, BTL = Buy to Let
 }
 
 export interface TrendsFilter {
@@ -41,8 +42,9 @@ export const DEFAULT_UPDATES_FILTER: UpdatesFilter = {
 
 export const DEFAULT_COMPARE_FILTER: CompareFilter = {
 	lenderIds: [],
-	rateType: "all",
+	rateType: null,
 	ltvRange: null,
+	buyerCategory: "all",
 };
 
 export const DEFAULT_TRENDS_FILTER: TrendsFilter = {
@@ -61,6 +63,7 @@ interface HistoryFiltersPersistedState {
 	activeTab: HistoryTab;
 	updatesFilter: UpdatesFilter;
 	comparisonDate: string | null;
+	comparisonEndDate: string | null;
 	compareFilter: CompareFilter;
 	trendsFilter: TrendsFilter;
 	trendsSelectedLenders: string[];
@@ -89,6 +92,8 @@ export const $updatesFilter = atom<UpdatesFilter>(DEFAULT_UPDATES_FILTER);
 
 export const $comparisonDate = atom<string | null>(null);
 
+export const $comparisonEndDate = atom<string | null>(null); // null = today
+
 export const $compareFilter = atom<CompareFilter>(DEFAULT_COMPARE_FILTER);
 
 export const $compareSelectedLender = atom<string>("all");
@@ -116,6 +121,7 @@ function persistHistoryFilters(): void {
 		activeTab: $historyActiveTab.get(),
 		updatesFilter: $updatesFilter.get(),
 		comparisonDate: $comparisonDate.get(),
+		comparisonEndDate: $comparisonEndDate.get(),
 		compareFilter: $compareFilter.get(),
 		trendsFilter: $trendsFilter.get(),
 		trendsSelectedLenders: $trendsSelectedLenders.get(),
@@ -128,6 +134,7 @@ function persistHistoryFilters(): void {
 $historyActiveTab.listen(persistHistoryFilters);
 $updatesFilter.listen(persistHistoryFilters);
 $comparisonDate.listen(persistHistoryFilters);
+$comparisonEndDate.listen(persistHistoryFilters);
 $compareFilter.listen(persistHistoryFilters);
 $trendsFilter.listen(persistHistoryFilters);
 $trendsSelectedLenders.listen(persistHistoryFilters);
@@ -155,6 +162,7 @@ export function initializeHistoryFilters(): void {
 			$historyActiveTab.set(shareState.activeTab);
 			$updatesFilter.set(shareState.updatesFilter);
 			$comparisonDate.set(shareState.comparisonDate);
+			$comparisonEndDate.set(shareState.comparisonEndDate);
 			$compareFilter.set(shareState.compareFilter);
 			$trendsFilter.set(shareState.trendsFilter);
 			$trendsSelectedLenders.set(shareState.trendsSelectedLenders);
@@ -178,6 +186,8 @@ export function initializeHistoryFilters(): void {
 		if (stored.updatesFilter) $updatesFilter.set(stored.updatesFilter);
 		if (stored.comparisonDate !== undefined)
 			$comparisonDate.set(stored.comparisonDate);
+		if (stored.comparisonEndDate !== undefined)
+			$comparisonEndDate.set(stored.comparisonEndDate);
 		if (stored.compareFilter) $compareFilter.set(stored.compareFilter);
 		if (stored.trendsFilter) $trendsFilter.set(stored.trendsFilter);
 		if (stored.trendsSelectedLenders)
@@ -205,6 +215,10 @@ export function resetUpdatesFilter(): void {
 
 export function setComparisonDate(date: string | null): void {
 	$comparisonDate.set(date);
+}
+
+export function setComparisonEndDate(date: string | null): void {
+	$comparisonEndDate.set(date);
 }
 
 export function setCompareFilter(filter: Partial<CompareFilter>): void {

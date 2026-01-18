@@ -94,11 +94,11 @@ export function LenderSelector({
 			<DropdownMenuTrigger asChild>
 				<Button
 					variant="outline"
-					className={cn("h-8 px-3 text-sm gap-1.5 justify-between", className)}
+					className={cn("h-9 px-3 text-sm gap-1.5 justify-between", className)}
 				>
 					<span className="flex items-center gap-1.5">
 						{singleLenderId && (
-							<LenderLogo lenderId={singleLenderId} size={16} />
+							<LenderLogo lenderId={singleLenderId} size={20} />
 						)}
 						<span className="truncate">{displayText}</span>
 					</span>

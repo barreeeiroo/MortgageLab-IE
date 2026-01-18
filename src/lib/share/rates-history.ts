@@ -26,6 +26,7 @@ export interface HistoryShareState {
 	activeTab: HistoryTab;
 	updatesFilter: UpdatesFilter;
 	comparisonDate: string | null;
+	comparisonEndDate: string | null;
 	compareFilter: CompareFilter;
 	trendsFilter: TrendsFilter;
 	trendsSelectedLenders: string[];
@@ -45,11 +46,13 @@ interface CompressedHistoryShareState {
 		c: string; // changeType
 	};
 	cd: string | null; // comparisonDate
+	ced: string | null; // comparisonEndDate
 	c: {
 		// compareFilter
 		l: string[]; // lenderIds
-		r: string; // rateType
+		r: string | null; // rateType
 		v: [number, number] | null; // ltvRange
+		b: string; // buyerCategory
 	};
 	r: {
 		// trendsFilter
@@ -76,10 +79,12 @@ function compressState(state: HistoryShareState): CompressedHistoryShareState {
 			c: state.updatesFilter.changeType,
 		},
 		cd: state.comparisonDate,
+		ced: state.comparisonEndDate,
 		c: {
 			l: state.compareFilter.lenderIds,
 			r: state.compareFilter.rateType,
 			v: state.compareFilter.ltvRange,
+			b: state.compareFilter.buyerCategory,
 		},
 		r: {
 			t: state.trendsFilter.rateType,
@@ -108,10 +113,13 @@ function decompressState(
 			changeType: (compressed.u.c ?? "all") as UpdatesFilter["changeType"],
 		},
 		comparisonDate: compressed.cd ?? null,
+		comparisonEndDate: compressed.ced ?? null,
 		compareFilter: {
 			lenderIds: compressed.c.l ?? [],
-			rateType: (compressed.c.r ?? "all") as CompareFilter["rateType"],
+			rateType: compressed.c.r ?? null,
 			ltvRange: compressed.c.v ?? null,
+			buyerCategory: (compressed.c.b ??
+				"all") as CompareFilter["buyerCategory"],
 		},
 		trendsFilter: {
 			rateType: compressed.r.t ?? "fixed-4",

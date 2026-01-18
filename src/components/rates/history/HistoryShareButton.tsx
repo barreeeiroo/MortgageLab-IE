@@ -9,6 +9,7 @@ import {
 	$compareFilter,
 	$compareSelectedLender,
 	$comparisonDate,
+	$comparisonEndDate,
 	$historyActiveTab,
 	$trendsFilter,
 	$trendsSelectedLenders,
@@ -23,6 +24,7 @@ export function HistoryShareButton() {
 	const activeTab = useStore($historyActiveTab);
 	const updatesFilter = useStore($updatesFilter);
 	const comparisonDate = useStore($comparisonDate);
+	const comparisonEndDate = useStore($comparisonEndDate);
 	const compareFilter = useStore($compareFilter);
 	const trendsFilter = useStore($trendsFilter);
 	const trendsSelectedLenders = useStore($trendsSelectedLenders);
@@ -33,6 +35,7 @@ export function HistoryShareButton() {
 			activeTab,
 			updatesFilter,
 			comparisonDate,
+			comparisonEndDate,
 			compareFilter,
 			trendsFilter,
 			trendsSelectedLenders,
@@ -43,6 +46,7 @@ export function HistoryShareButton() {
 		activeTab,
 		updatesFilter,
 		comparisonDate,
+		comparisonEndDate,
 		compareFilter,
 		trendsFilter,
 		trendsSelectedLenders,
