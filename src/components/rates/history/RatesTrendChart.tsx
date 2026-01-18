@@ -284,6 +284,7 @@ export function RatesTrendChart({
 						domain={[yMin, yMax]}
 					/>
 					<ChartTooltip
+						wrapperStyle={{ zIndex: 50 }}
 						content={({ active, payload }) => {
 							if (!active || !payload?.length) return null;
 

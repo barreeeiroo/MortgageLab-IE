@@ -131,9 +131,15 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 		});
 	}, [availableRates, selectedLenders, filter]);
 
+	// Create lender map for quick lookup
+	const lenderMap = useMemo(() => {
+		return new Map(lenders.map((l) => [l.id, l]));
+	}, [lenders]);
+
 	// Get time series for filtered rates
 	const timeSeries = useMemo(() => {
 		const series: RateTimeSeries[] = [];
+		const showLenderPrefix = selectedLenders.length > 1;
 
 		for (const rate of filteredRates) {
 			const history = historyData.get(rate.lenderId);
@@ -141,12 +147,22 @@ export function RatesTrends({ historyData, lenders }: RatesTrendsProps) {
 
 			const rateSeries = getRateTimeSeries(history, rate.id);
 			if (rateSeries && rateSeries.dataPoints.length > 1) {
-				series.push(rateSeries);
+				// Prefix rate name with lender short name when multiple lenders selected
+				if (showLenderPrefix) {
+					const lender = lenderMap.get(rate.lenderId);
+					const prefix = lender?.shortName ?? rate.lenderId;
+					series.push({
+						...rateSeries,
+						rateName: `${prefix} ${rateSeries.rateName}`,
+					});
+				} else {
+					series.push(rateSeries);
+				}
 			}
 		}
 
 		return series;
-	}, [filteredRates, historyData]);
+	}, [filteredRates, historyData, selectedLenders.length, lenderMap]);
 
 	// Calculate average time series across all rates
 	const averageSeries = useMemo((): RateTimeSeries | null => {

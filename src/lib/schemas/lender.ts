@@ -17,6 +17,7 @@ export type AprcFees = z.infer<typeof AprcFeesSchema>;
 export const LenderSchema = z.object({
 	id: z.string(),
 	name: z.string(),
+	shortName: z.string(), // Short name for display in charts/tables (e.g., "AIB", "BOI")
 	logo: z.string().optional(),
 	mortgagesUrl: z.url(), // Link to lender's mortgages home page
 	ratesUrl: z.url().optional(), // Link to lender's mortgage rates page

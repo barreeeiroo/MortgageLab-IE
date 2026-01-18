@@ -35,6 +35,7 @@ export function createLender(overrides: Partial<Lender> = {}): Lender {
 	return {
 		id: "test-lender",
 		name: "Test Bank",
+		shortName: "Test",
 		mortgagesUrl: "https://example.com/mortgages",
 		perks: [],
 		...overrides,

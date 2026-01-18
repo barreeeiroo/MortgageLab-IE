@@ -2,6 +2,7 @@
 	{
 		"id": "aib",
 		"name": "Allied Irish Banks",
+		"shortName": "AIB",
 		"mortgagesUrl": "https://aib.ie/our-products/mortgages",
 		"ratesUrl": "https://aib.ie/our-products/mortgages/mortgage-interest-rates",
 		"perks": ["fee-free-banking"],
@@ -15,6 +16,7 @@
 	{
 		"id": "avant",
 		"name": "Avant Money",
+		"shortName": "Avant",
 		"mortgagesUrl": "https://www.avantmoney.ie/mortgages",
 		"ratesUrl": "https://www.avantmoney.ie/mortgages/products-and-rates",
 		"perks": [],
@@ -27,6 +29,7 @@
 	{
 		"id": "boi",
 		"name": "Bank of Ireland",
+		"shortName": "BOI",
 		"mortgagesUrl": "https://www.bankofireland.com/mortgages/",
 		"ratesUrl": "https://personalbanking.bankofireland.com/borrow/mortgages/mortgage-interest-rates/",
 		"perks": [],
@@ -41,6 +44,7 @@
 	{
 		"id": "cu",
 		"name": "Credit Union Mortgages",
+		"shortName": "CU",
 		"mortgagesUrl": "https://creditunionmortgages.com/our-mortgage/",
 		"ratesUrl": "https://creditunionmortgages.com/our-mortgage/",
 		"perks": []
@@ -48,6 +52,7 @@
 	{
 		"id": "ebs",
 		"name": "EBS",
+		"shortName": "EBS",
 		"mortgagesUrl": "https://www.ebs.ie/mortgages",
 		"ratesUrl": "https://www.ebs.ie/mortgages/mortgage-interest-rates",
 		"perks": [],
@@ -57,6 +62,7 @@
 	{
 		"id": "haven",
 		"name": "Haven Mortgages",
+		"shortName": "Haven",
 		"mortgagesUrl": "https://www.havenmortgages.ie",
 		"ratesUrl": "https://www.havenmortgages.ie/mortgage-centre/mortgage-rates",
 		"perks": [],
@@ -65,6 +71,7 @@
 	{
 		"id": "ics",
 		"name": "ICS Mortgages",
+		"shortName": "ICS",
 		"mortgagesUrl": "https://www.icsmortgages.ie",
 		"ratesUrl": "https://www.icsmortgages.ie/mortgages/owner-occupier-rates",
 		"perks": [],
@@ -73,6 +80,7 @@
 	{
 		"id": "moco",
 		"name": "MoCo",
+		"shortName": "MoCo",
 		"mortgagesUrl": "https://www.moco.ie",
 		"ratesUrl": "https://www.moco.ie/moco/our-rates",
 		"perks": [],
@@ -85,6 +93,7 @@
 	{
 		"id": "nua",
 		"name": "Núa Mortgages",
+		"shortName": "Núa",
 		"mortgagesUrl": "https://nuamoney.com",
 		"ratesUrl": "https://nuamoney.com/mortgage-rates",
 		"perks": [],
@@ -94,6 +103,7 @@
 	{
 		"id": "ptsb",
 		"name": "Permanent TSB",
+		"shortName": "PTSB",
 		"mortgagesUrl": "https://www.ptsb.ie/mortgages/",
 		"ratesUrl": "https://www.ptsb.ie/mortgages/mortgage-interest-rates/",
 		"perks": [],

@@ -488,6 +488,7 @@ describe("generateRepeatingRatePeriods", () => {
 		{
 			id: "aib",
 			name: "AIB",
+			shortName: "AIB",
 			logo: "aib.png",
 			mortgagesUrl: "",
 			perks: [],
