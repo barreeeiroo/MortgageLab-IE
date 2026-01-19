@@ -127,6 +127,13 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
 			"Loan-to-Income (LTI) is the ratio of your mortgage amount to your gross annual income. For example, if you earn €80,000 and borrow €320,000, your LTI is 4×. Central Bank of Ireland rules limit LTI to 4× for first-time buyers and 3.5× for other buyers. Lenders can exceed these limits for a small percentage of their lending.",
 		relatedTerms: ["ltv"],
 	},
+	{
+		id: "euribor",
+		term: "Euribor",
+		shortDescription: "Euro Interbank Offered Rate",
+		fullDescription:
+			"Euribor (Euro Interbank Offered Rate) is the benchmark interest rate at which major European banks lend to each other. It is published daily for various tenors (1 month, 3 months, 6 months, and 12 months). Many variable-rate mortgages in Ireland are linked to Euribor, with lenders adding a margin on top. Tracking Euribor rates helps understand broader interest rate trends that influence mortgage pricing.",
+	},
 ];
 
 export const GLOSSARY_TERMS_MAP = Object.fromEntries(

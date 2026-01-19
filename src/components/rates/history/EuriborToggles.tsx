@@ -1,4 +1,5 @@
 import { useStore } from "@nanostores/react";
+import { GlossaryTermTooltip } from "@/components/tooltips/GlossaryTermTooltip";
 import { Button } from "@/components/ui/button";
 import { EURIBOR_TENORS } from "@/lib/schemas/euribor";
 import {
@@ -11,7 +12,10 @@ export function EuriborToggles() {
 
 	return (
 		<div className="flex items-center gap-1">
-			<span className="text-xs text-muted-foreground mr-1">Euribor:</span>
+			<span className="text-xs text-muted-foreground mr-1 inline-flex items-center gap-1">
+				Euribor:
+				<GlossaryTermTooltip termId="euribor" size="sm" showFull={true} />
+			</span>
 			{EURIBOR_TENORS.map((tenor) => (
 				<Button
 					key={tenor}
