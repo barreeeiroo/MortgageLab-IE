@@ -39,7 +39,10 @@ Rate periods don't store startMonth. Position in array determines start:
 
 ### Overpayment Policies
 
-Three types: percentage of balance, percentage of monthly payment, flat amount. Balance-based uses year-start balance, not current. Use `createOverpaymentMaps()` from `mortgage/overpayments.ts` to split applied overpayments by type (one-time vs recurring).
+Three types: percentage of balance, percentage of monthly payment, flat amount. Balance-based uses year-start balance, not current. Key functions in `mortgage/overpayments.ts`:
+
+- `calculateTotalOverpaymentAllowance()` - total allowance over a period (handles decreasing balance for balance-based policies)
+- `createOverpaymentMaps()` - split applied overpayments by type (one-time vs recurring)
 
 ### Self-Build Simulation
 
@@ -71,7 +74,7 @@ Don't overlook these - they contain reusable logic:
 | validation.ts                     | Form validity and error messages (all computed, no atoms) |
 | custom-rates.ts                   | User-created rates with localStorage persistence     |
 | custom-perks.ts                   | User-created perks with localStorage persistence     |
-| breakeven.ts                      | Rent vs Buy and Remortgage breakeven result state    |
+| breakeven.ts                      | Rent vs Buy, Remortgage, and Cashback breakeven result state |
 | persistence.ts                    | Generic localStorage persistence utilities           |
 | simulate/simulate-state.ts        | Simulation inputs and rate periods                   |
 | simulate/simulate-calculations.ts | Computed stores (uses pure functions from mortgage/simulation.ts) |

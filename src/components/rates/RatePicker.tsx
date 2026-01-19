@@ -1,5 +1,13 @@
-import { ExternalLink } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useStore } from "@nanostores/react";
+import {
+	ChevronLeft,
+	ChevronRight,
+	Coins,
+	ExternalLink,
+	Gift,
+	PiggyBank,
+} from "lucide-react";
+import { useEffect, useId, useMemo, useState } from "react";
 import type { BerRating } from "@/lib/constants/ber";
 import { fetchLendersData, getLender } from "@/lib/data/lenders";
 import { fetchAllRates, filterRates } from "@/lib/data/rates";
@@ -7,13 +15,26 @@ import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Lender } from "@/lib/schemas/lender";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import { saveRatesForm } from "@/lib/storage/forms";
+import { $perks, fetchPerks } from "@/lib/stores/perks";
 import { cn } from "@/lib/utils/cn";
 import { parseCurrency } from "@/lib/utils/currency";
 import { LenderLogo } from "../lenders/LenderLogo";
+import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Skeleton } from "../ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+
+// Map perk icon names to components
+const PERK_ICONS: Record<
+	string,
+	React.ComponentType<{ className?: string }>
+> = {
+	Coins,
+	PiggyBank,
+	Gift,
+};
 
 interface RatePickerProps {
 	value: string;
@@ -30,14 +51,18 @@ interface RatePickerProps {
 	label?: string;
 	id?: string;
 	maxRates?: number;
-	// Callback when a rate is selected (returns full rate info including fixedTermMonths)
-	onRateSelect?: (rate: MortgageRate) => void;
+	// Callback when a rate is selected (returns full rate info including lender name)
+	onRateSelect?: (rate: MortgageRate, lenderName: string) => void;
 	// Show "View All Rates" link with prefilled filters
 	showViewAllRates?: boolean;
 	// For generating prefilled rates page link
 	propertyValue?: string;
 	mortgageAmount?: string;
 	mortgageTerm?: string;
+	// Show perk icons with tooltips for rates that have perks
+	withPerks?: boolean;
+	// Enable pagination to browse through more rates
+	paginate?: boolean;
 }
 
 interface RateOption {
@@ -63,6 +88,8 @@ export function RatePicker({
 	propertyValue,
 	mortgageAmount,
 	mortgageTerm,
+	withPerks = false,
+	paginate = false,
 }: RatePickerProps) {
 	const [rates, setRates] = useState<MortgageRate[]>([]);
 	const [lenders, setLenders] = useState<Lender[]>([]);
@@ -70,8 +97,15 @@ export function RatePicker({
 	const [error, setError] = useState<string | null>(null);
 	// Track selected rate ID for unique selection (since multiple rates can have same value)
 	const [selectedRateId, setSelectedRateId] = useState<string | null>(null);
+	// Pagination state
+	const [currentPage, setCurrentPage] = useState(0);
+	// Unique ID for this instance to avoid conflicts when multiple pickers are rendered
+	const instanceId = useId();
 
-	// Fetch rates and lenders on mount
+	// Subscribe to perks store
+	const perks = useStore($perks);
+
+	// Fetch rates, lenders, and perks on mount
 	useEffect(() => {
 		async function loadData() {
 			setIsLoading(true);
@@ -84,6 +118,11 @@ export function RatePicker({
 					const { rates: fetchedRates } = await fetchAllRates(fetchedLenders);
 					setRates(fetchedRates);
 				}
+
+				// Fetch perks only if needed
+				if (withPerks) {
+					fetchPerks();
+				}
 			} catch {
 				setError("Failed to load rates");
 			} finally {
@@ -91,10 +130,10 @@ export function RatePicker({
 			}
 		}
 		loadData();
-	}, []);
+	}, [withPerks]);
 
-	// Filter and sort rates
-	const filteredRates = useCallback((): RateOption[] => {
+	// Filter and sort all rates - memoized to prevent unnecessary re-renders
+	const allFilteredRates = useMemo((): RateOption[] => {
 		if (rates.length === 0) return [];
 
 		const filtered = filterRates(rates, {
@@ -107,11 +146,10 @@ export function RatePicker({
 			currentLender: isRemortgage ? currentLender : undefined,
 		});
 
-		// Sort by rate ascending and take top N
+		// Sort by rate ascending
 		const sorted = [...filtered].sort((a, b) => a.rate - b.rate);
-		const topRates = sorted.slice(0, maxRates);
 
-		return topRates.map((rate) => ({
+		return sorted.map((rate) => ({
 			rate,
 			lender: getLender(lenders, rate.lenderId),
 		}));
@@ -124,14 +162,38 @@ export function RatePicker({
 		berRating,
 		isRemortgage,
 		currentLender,
-		maxRates,
 	]);
 
-	const rateOptions = filteredRates();
+	// Paginated or limited rate options
+	const totalPages = paginate
+		? Math.ceil(allFilteredRates.length / maxRates)
+		: 1;
+	const rateOptions = useMemo(() => {
+		if (paginate) {
+			const start = currentPage * maxRates;
+			return allFilteredRates.slice(start, start + maxRates);
+		}
+		return allFilteredRates.slice(0, maxRates);
+	}, [allFilteredRates, paginate, currentPage, maxRates]);
 
-	// Sync selectedRateId when rates load and there's a pre-existing value
+	// Auto-navigate to the page containing the selected rate on first load
 	useEffect(() => {
-		if (rateOptions.length > 0 && value && !selectedRateId) {
+		if (allFilteredRates.length > 0 && value && !selectedRateId && paginate) {
+			// Find the index of the rate that matches the current value
+			const matchingIndex = allFilteredRates.findIndex(
+				(opt) => opt.rate.rate.toString() === value,
+			);
+			if (matchingIndex >= 0) {
+				const targetPage = Math.floor(matchingIndex / maxRates);
+				setCurrentPage(targetPage);
+				setSelectedRateId(allFilteredRates[matchingIndex].rate.id);
+			}
+		}
+	}, [allFilteredRates, value, selectedRateId, paginate, maxRates]);
+
+	// Sync selectedRateId when rates load and there's a pre-existing value (non-paginated mode)
+	useEffect(() => {
+		if (rateOptions.length > 0 && value && !selectedRateId && !paginate) {
 			// Find a rate that matches the current value
 			const matchingRate = rateOptions.find(
 				(opt) => opt.rate.rate.toString() === value,
@@ -140,7 +202,7 @@ export function RatePicker({
 				setSelectedRateId(matchingRate.rate.id);
 			}
 		}
-	}, [rateOptions, value, selectedRateId]);
+	}, [rateOptions, value, selectedRateId, paginate]);
 
 	const handleRateSelect = (rateId: string) => {
 		// Find the rate by ID and pass its value to onChange
@@ -148,7 +210,10 @@ export function RatePicker({
 		if (selectedRate) {
 			setSelectedRateId(rateId);
 			onChange(selectedRate.rate.rate.toString());
-			onRateSelect?.(selectedRate.rate);
+			// Use shortName for compact display (e.g., "AIB" instead of "Allied Irish Banks")
+			const lenderName =
+				selectedRate.lender?.shortName ?? selectedRate.rate.lenderId;
+			onRateSelect?.(selectedRate.rate, lenderName);
 		}
 	};
 
@@ -248,7 +313,7 @@ export function RatePicker({
 								{rateOptions.map(({ rate, lender }) => (
 									<label
 										key={rate.id}
-										htmlFor={`rate-${rate.id}`}
+										htmlFor={`${instanceId}-rate-${rate.id}`}
 										className={cn(
 											"flex items-center gap-2.5 p-2 border rounded-lg cursor-pointer transition-colors",
 											"hover:bg-muted/50",
@@ -257,7 +322,7 @@ export function RatePicker({
 									>
 										<RadioGroupItem
 											value={rate.id}
-											id={`rate-${rate.id}`}
+											id={`${instanceId}-rate-${rate.id}`}
 											className="shrink-0"
 										/>
 										<LenderLogo lenderId={rate.lenderId} size={32} />
@@ -270,6 +335,34 @@ export function RatePicker({
 												{rate.maxLtv}%
 											</p>
 										</div>
+										{/* Perk icons */}
+										{withPerks && rate.perks && rate.perks.length > 0 && (
+											<div className="flex items-center gap-1 shrink-0">
+												{rate.perks.map((perkId) => {
+													const perk = perks.find((p) => p.id === perkId);
+													if (!perk) return null;
+													const IconComponent = PERK_ICONS[perk.icon];
+													if (!IconComponent) return null;
+													return (
+														<Tooltip key={perkId}>
+															<TooltipTrigger asChild>
+																<div className="p-1 rounded bg-muted/50">
+																	<IconComponent className="h-3.5 w-3.5 text-muted-foreground" />
+																</div>
+															</TooltipTrigger>
+															<TooltipContent>
+																<p className="font-medium">{perk.label}</p>
+																{perk.description && (
+																	<p className="text-xs text-muted-foreground">
+																		{perk.description}
+																	</p>
+																)}
+															</TooltipContent>
+														</Tooltip>
+													);
+												})}
+											</div>
+										)}
 										<div className="text-right shrink-0">
 											<span className="font-semibold text-primary text-sm">
 												{rate.rate.toFixed(2)}%
@@ -281,6 +374,36 @@ export function RatePicker({
 									</label>
 								))}
 							</RadioGroup>
+							{/* Pagination controls */}
+							{paginate && totalPages > 1 && (
+								<div className="flex items-center justify-between mt-2">
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+										disabled={currentPage === 0}
+										className="h-7 px-2"
+									>
+										<ChevronLeft className="h-4 w-4" />
+										<span className="sr-only">Previous</span>
+									</Button>
+									<span className="text-xs text-muted-foreground">
+										Page {currentPage + 1} of {totalPages}
+									</span>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() =>
+											setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
+										}
+										disabled={currentPage >= totalPages - 1}
+										className="h-7 px-2"
+									>
+										<ChevronRight className="h-4 w-4" />
+										<span className="sr-only">Next</span>
+									</Button>
+								</div>
+							)}
 							{showViewAllRates && (
 								<div className="flex justify-end mt-2">
 									<a

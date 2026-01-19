@@ -470,6 +470,7 @@ The Breakeven pages (`/breakeven`) help users analyze financial decisions.
 ### Available Calculators
 
 * **Rent vs Buy** (`/breakeven/rent-vs-buy`) - Compare renting vs buying over time
+* **Cashback Comparison** (`/breakeven/cashback`) - Compare mortgages with different rates and cashback offers
 * **Remortgage Breakeven** (`/breakeven/remortgage`) - Calculate when switching rates pays off
 
 ### How It Works
@@ -486,5 +487,6 @@ The Breakeven pages (`/breakeven`) help users analyze financial decisions.
 | `src/lib/mortgage/breakeven.ts`                       | Breakeven calculations          |
 | `src/lib/stores/breakeven.ts`                         | Result state management         |
 | `src/components/breakeven/RentVsBuyInputsIsland.tsx`  | Rent vs Buy form                |
+| `src/components/breakeven/CashbackInputsIsland.tsx`   | Cashback comparison form        |
 | `src/components/breakeven/RemortgageInputsIsland.tsx` | Remortgage form                 |
 | `src/components/breakeven/BreakevenResultCard.tsx`    | Result display with charts      |

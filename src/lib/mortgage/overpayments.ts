@@ -275,6 +275,55 @@ export function formatPolicyDescription(
 }
 
 /**
+ * Calculate total overpayment allowance over a comparison period.
+ * For balance-based policies, iterates through each year to account for decreasing balance.
+ *
+ * @param policy - The overpayment policy (undefined = breakage fee applies)
+ * @param mortgageAmount - Initial mortgage amount (euros)
+ * @param monthlyPayment - Monthly payment (euros)
+ * @param comparisonYears - Number of years to calculate over
+ * @param yearlyBalances - Array of balances at end of each year for balance-based calculation
+ * @returns Total allowance over the period (euros)
+ */
+export function calculateTotalOverpaymentAllowance(
+	policy: OverpaymentPolicy | undefined,
+	mortgageAmount: number,
+	monthlyPayment: number,
+	comparisonYears: number,
+	yearlyBalances: number[],
+): number {
+	if (!policy) return 0;
+
+	if (policy.allowanceType === "flat") {
+		// Flat amount per year - multiply by comparison years
+		return policy.allowanceValue * comparisonYears;
+	}
+
+	if (policy.allowanceBasis === "monthly") {
+		// Percentage of monthly payment × 12 months × years
+		return (
+			monthlyPayment * (policy.allowanceValue / 100) * 12 * comparisonYears
+		);
+	}
+
+	if (policy.allowanceBasis === "balance") {
+		// Percentage of balance - calculate per year based on balance at start of each year
+		let totalAllowance = 0;
+		for (let year = 1; year <= comparisonYears; year++) {
+			// Year 1 uses mortgage amount, subsequent years use balance at end of previous year
+			const yearStartBalance =
+				year === 1
+					? mortgageAmount
+					: (yearlyBalances[year - 2] ?? mortgageAmount);
+			totalAllowance += yearStartBalance * (policy.allowanceValue / 100);
+		}
+		return totalAllowance;
+	}
+
+	return 0;
+}
+
+/**
  * Create maps of overpayments by month, split by type (one-time vs recurring).
  * Used by chart components to display overpayment breakdown.
  *

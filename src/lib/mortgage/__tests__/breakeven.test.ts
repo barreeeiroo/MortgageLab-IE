@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+	type CashbackBreakevenInputs,
+	calculateCashbackBreakeven,
 	calculateRemortgageBreakeven,
 	calculateRentVsBuyBreakeven,
 	DEFAULT_HOME_APPRECIATION,
@@ -8,6 +10,7 @@ import {
 	DEFAULT_RENT_INFLATION,
 	DEFAULT_SALE_COST_RATE,
 	formatBreakevenPeriod,
+	parseCashbackFromPerkId,
 	type RemortgageInputs,
 	type RentVsBuyInputs,
 } from "../breakeven";
@@ -475,5 +478,644 @@ describe("default values", () => {
 		expect(DEFAULT_MAINTENANCE_RATE).toBe(1);
 		expect(DEFAULT_OPPORTUNITY_COST_RATE).toBe(6);
 		expect(DEFAULT_SALE_COST_RATE).toBe(3);
+	});
+});
+
+describe("calculateCashbackBreakeven", () => {
+	const baseInputs: CashbackBreakevenInputs = {
+		mortgageAmount: 300000,
+		mortgageTermMonths: 300, // 25 years
+		options: [
+			{
+				label: "Option 1",
+				rate: 3.5,
+				cashbackType: "percentage",
+				cashbackValue: 2,
+			},
+			{
+				label: "Option 2",
+				rate: 3.3,
+				cashbackType: "flat",
+				cashbackValue: 3000,
+			},
+		],
+	};
+
+	describe("comparison period", () => {
+		it("uses full term when all options are variable (no fixed period)", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// No fixedPeriodYears specified = variable, so compare over full term
+			expect(result.allVariable).toBe(true);
+			expect(result.comparisonPeriodMonths).toBe(300);
+			expect(result.comparisonPeriodYears).toBe(25);
+		});
+
+		it("uses max fixed period when options have fixed periods", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "3 Year Fixed",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						fixedPeriodYears: 3,
+					},
+					{
+						label: "5 Year Fixed",
+						rate: 3.3,
+						cashbackType: "flat",
+						cashbackValue: 3000,
+						fixedPeriodYears: 5,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			expect(result.allVariable).toBe(false);
+			expect(result.comparisonPeriodMonths).toBe(60); // 5 years * 12
+			expect(result.comparisonPeriodYears).toBe(5);
+		});
+
+		it("uses max fixed period even when mixed with variable", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "Variable",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						fixedPeriodYears: 0, // Explicitly variable
+					},
+					{
+						label: "3 Year Fixed",
+						rate: 3.3,
+						cashbackType: "flat",
+						cashbackValue: 3000,
+						fixedPeriodYears: 3,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			expect(result.allVariable).toBe(false);
+			expect(result.comparisonPeriodMonths).toBe(36); // 3 years * 12
+		});
+
+		it("caps comparison period at mortgage term", () => {
+			const inputs: CashbackBreakevenInputs = {
+				mortgageAmount: 300000,
+				mortgageTermMonths: 24, // 2 year mortgage
+				options: [
+					{
+						label: "5 Year Fixed",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						fixedPeriodYears: 5,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			// Should cap at mortgage term, not 5 years
+			expect(result.comparisonPeriodMonths).toBe(24);
+		});
+	});
+
+	describe("basic calculation", () => {
+		it("calculates results for each option", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			expect(result.options).toHaveLength(2);
+			expect(result.options[0].label).toBe("Option 1");
+			expect(result.options[1].label).toBe("Option 2");
+		});
+
+		it("calculates monthly payment correctly", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// €300k at 3.5% over 25 years ≈ €1,502
+			expect(result.options[0].monthlyPayment).toBeCloseTo(1502, 0);
+			// €300k at 3.3% over 25 years ≈ €1,470
+			expect(result.options[1].monthlyPayment).toBeCloseTo(1470, 0);
+		});
+
+		it("calculates percentage cashback correctly", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// 2% of €300k = €6,000
+			expect(result.options[0].cashbackAmount).toBe(6000);
+		});
+
+		it("calculates flat cashback correctly", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// Flat €3,000
+			expect(result.options[1].cashbackAmount).toBe(3000);
+		});
+
+		it("calculates net cost as interest minus cashback", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// Net cost = interest paid over comparison period - cashback
+			expect(result.options[0].netCost).toBe(
+				result.options[0].interestPaid - result.options[0].cashbackAmount,
+			);
+		});
+
+		it("tracks fixedPeriodYears in results", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "Fixed",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						fixedPeriodYears: 3,
+					},
+					{
+						label: "Variable",
+						rate: 3.3,
+						cashbackType: "flat",
+						cashbackValue: 3000,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			expect(result.options[0].fixedPeriodYears).toBe(3);
+			expect(result.options[1].fixedPeriodYears).toBe(0);
+		});
+	});
+
+	describe("monthly payment diff", () => {
+		it("calculates monthly payment diff vs cheapest", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			const minPayment = Math.min(
+				...result.options.map((o) => o.monthlyPayment),
+			);
+
+			// Option with lowest payment should have 0 diff
+			const cheapestOption = result.options.find(
+				(o) => o.monthlyPayment === minPayment,
+			);
+			expect(cheapestOption?.monthlyPaymentDiff).toBe(0);
+
+			// Other options should have positive diff
+			result.options
+				.filter((o) => o.monthlyPayment !== minPayment)
+				.forEach((opt) => {
+					expect(opt.monthlyPaymentDiff).toBeGreaterThan(0);
+					expect(opt.monthlyPaymentDiff).toBeCloseTo(
+						opt.monthlyPayment - minPayment,
+						2,
+					);
+				});
+		});
+	});
+
+	describe("principal and balance tracking", () => {
+		it("tracks principal paid over comparison period", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// Principal paid should be positive
+			result.options.forEach((opt) => {
+				expect(opt.principalPaid).toBeGreaterThan(0);
+			});
+		});
+
+		it("calculates balance at end of comparison period", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// Balance at end should be less than starting amount
+			result.options.forEach((opt) => {
+				expect(opt.balanceAtEnd).toBeLessThan(baseInputs.mortgageAmount);
+				expect(opt.balanceAtEnd).toBeGreaterThanOrEqual(0);
+			});
+		});
+
+		it("yearly breakdown includes principal and balance", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			const year1 = result.yearlyBreakdown[0];
+			expect(year1.principalPaid).toHaveLength(result.options.length);
+			expect(year1.balances).toHaveLength(result.options.length);
+
+			// Principal paid should increase over time
+			const year5 = result.yearlyBreakdown[4];
+			year1.principalPaid.forEach((_, i) => {
+				expect(year5.principalPaid[i]).toBeGreaterThan(year1.principalPaid[i]);
+			});
+		});
+	});
+
+	describe("cashback caps", () => {
+		it("applies percentage cap correctly", () => {
+			const inputsWithCap: CashbackBreakevenInputs = {
+				...baseInputs,
+				mortgageAmount: 600000, // 2% would be €12,000
+				options: [
+					{
+						label: "Capped Option",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						cashbackCap: 10000, // Cap at €10k
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputsWithCap);
+
+			// 2% of €600k = €12,000, but capped at €10,000
+			expect(result.options[0].cashbackAmount).toBe(10000);
+		});
+
+		it("does not cap when under limit", () => {
+			const inputsWithCap: CashbackBreakevenInputs = {
+				...baseInputs,
+				mortgageAmount: 300000, // 2% = €6,000
+				options: [
+					{
+						label: "Under Cap",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						cashbackCap: 10000, // Cap at €10k, but only €6k earned
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputsWithCap);
+
+			// 2% of €300k = €6,000, under cap
+			expect(result.options[0].cashbackAmount).toBe(6000);
+		});
+	});
+
+	describe("ranking", () => {
+		it("identifies cheapest option by monthly payment", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			const minPayment = Math.min(
+				...result.options.map((o) => o.monthlyPayment),
+			);
+			expect(result.options[result.cheapestMonthlyIndex].monthlyPayment).toBe(
+				minPayment,
+			);
+		});
+
+		it("identifies cheapest option by net cost", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			const minNetCost = Math.min(...result.options.map((o) => o.netCost));
+			expect(result.options[result.cheapestNetCostIndex].netCost).toBe(
+				minNetCost,
+			);
+		});
+
+		it("calculates savings vs worst option", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			const worstNetCost = Math.max(...result.options.map((o) => o.netCost));
+			const bestNetCost = Math.min(...result.options.map((o) => o.netCost));
+
+			expect(result.savingsVsWorst).toBe(worstNetCost - bestNetCost);
+		});
+
+		it("high cashback can beat low rate in short comparison period", () => {
+			const inputs: CashbackBreakevenInputs = {
+				mortgageAmount: 300000,
+				mortgageTermMonths: 300,
+				options: [
+					{
+						label: "High Cashback",
+						rate: 3.5, // Higher rate
+						cashbackType: "percentage",
+						cashbackValue: 3, // 3% = €9,000
+						fixedPeriodYears: 3,
+					},
+					{
+						label: "Low Rate",
+						rate: 3.2, // Lower rate
+						cashbackType: "flat",
+						cashbackValue: 1000, // Only €1,000
+						fixedPeriodYears: 3,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			// With only 3-year comparison, the high cashback may be cheaper
+			// because the interest difference hasn't accumulated enough
+			expect(result.comparisonPeriodYears).toBe(3);
+		});
+	});
+
+	describe("breakdown data", () => {
+		it("provides yearly breakdown up to comparison period", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "5 Year Fixed",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						fixedPeriodYears: 5,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			// Should only have 5 years of data
+			expect(result.yearlyBreakdown.length).toBe(5);
+			expect(result.yearlyBreakdown[0].year).toBe(1);
+			expect(result.yearlyBreakdown[4].year).toBe(5);
+		});
+
+		it("provides monthly breakdown for first 48 months or comparison period", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// For 25 year term (all variable), should have 48 months
+			expect(result.monthlyBreakdown.length).toBe(48);
+			expect(result.monthlyBreakdown[0].month).toBe(1);
+			expect(result.monthlyBreakdown[47].month).toBe(48);
+		});
+
+		it("monthly breakdown respects comparison period", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "2 Year Fixed",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						fixedPeriodYears: 2,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			// Should only have 24 months of data (2 years)
+			expect(result.monthlyBreakdown.length).toBe(24);
+		});
+
+		it("tracks net costs for all options in breakdown", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			const year1 = result.yearlyBreakdown[0];
+			expect(year1.netCosts).toHaveLength(2);
+		});
+
+		it("provides projection year when not at term end", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "3 Year Fixed",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						fixedPeriodYears: 3,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			// Comparison period is 3 years, term is 25 years
+			// Should have projection year for year 4
+			expect(result.projectionYear).not.toBeNull();
+			expect(result.projectionYear?.year).toBe(4);
+			expect(result.projectionYear?.netCosts).toHaveLength(1);
+		});
+
+		it("does not provide projection year when at term end", () => {
+			const inputs: CashbackBreakevenInputs = {
+				mortgageAmount: 300000,
+				mortgageTermMonths: 60, // 5 year mortgage
+				options: [
+					{
+						label: "5 Year Fixed",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+						fixedPeriodYears: 5,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			// Comparison period equals term, no room for projection
+			expect(result.projectionYear).toBeNull();
+		});
+
+		it("does not provide projection year for all variable (full term)", () => {
+			const result = calculateCashbackBreakeven(baseInputs);
+
+			// All variable = full term comparison, no projection needed
+			expect(result.projectionYear).toBeNull();
+		});
+	});
+
+	describe("multiple options", () => {
+		it("handles 3 options", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "A",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+					},
+					{ label: "B", rate: 3.3, cashbackType: "flat", cashbackValue: 3000 },
+					{
+						label: "C",
+						rate: 3.4,
+						cashbackType: "percentage",
+						cashbackValue: 1,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			expect(result.options).toHaveLength(3);
+			expect(result.breakevens.length).toBe(3); // A-B, A-C, B-C
+		});
+
+		it("handles 5 options", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "A",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+					},
+					{ label: "B", rate: 3.3, cashbackType: "flat", cashbackValue: 3000 },
+					{
+						label: "C",
+						rate: 3.4,
+						cashbackType: "percentage",
+						cashbackValue: 1,
+					},
+					{ label: "D", rate: 3.6, cashbackType: "flat", cashbackValue: 5000 },
+					{
+						label: "E",
+						rate: 3.2,
+						cashbackType: "percentage",
+						cashbackValue: 0,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			expect(result.options).toHaveLength(5);
+			// Combinations: A-B, A-C, A-D, A-E, B-C, B-D, B-E, C-D, C-E, D-E = 10
+			expect(result.breakevens.length).toBe(10);
+		});
+	});
+
+	describe("edge cases", () => {
+		it("handles same rate different cashback", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "More Cashback",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 2,
+					},
+					{
+						label: "Less Cashback",
+						rate: 3.5,
+						cashbackType: "percentage",
+						cashbackValue: 1,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			// Same rate, more cashback should always be cheaper
+			expect(result.cheapestNetCostIndex).toBe(0);
+		});
+
+		it("handles same cashback different rates", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "Lower Rate",
+						rate: 3.2,
+						cashbackType: "flat",
+						cashbackValue: 3000,
+					},
+					{
+						label: "Higher Rate",
+						rate: 3.5,
+						cashbackType: "flat",
+						cashbackValue: 3000,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			// Same cashback, lower rate should always be cheaper
+			expect(result.cheapestNetCostIndex).toBe(0);
+		});
+
+		it("handles zero cashback", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				options: [
+					{
+						label: "No Cashback",
+						rate: 3.5,
+						cashbackType: "flat",
+						cashbackValue: 0,
+					},
+				],
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			expect(result.options[0].cashbackAmount).toBe(0);
+			expect(result.options[0].netCost).toBe(result.options[0].interestPaid);
+		});
+
+		it("handles short term", () => {
+			const inputs: CashbackBreakevenInputs = {
+				...baseInputs,
+				mortgageTermMonths: 60, // 5 years
+			};
+
+			const result = calculateCashbackBreakeven(inputs);
+
+			expect(result.yearlyBreakdown.length).toBe(5);
+		});
+	});
+});
+
+describe("parseCashbackFromPerkId", () => {
+	it("parses percentage cashback perks", () => {
+		expect(parseCashbackFromPerkId("cashback-1pct")).toEqual({
+			type: "percentage",
+			value: 1,
+		});
+		expect(parseCashbackFromPerkId("cashback-2pct")).toEqual({
+			type: "percentage",
+			value: 2,
+		});
+	});
+
+	it("parses capped percentage cashback", () => {
+		expect(parseCashbackFromPerkId("cashback-2pct-max10k")).toEqual({
+			type: "percentage",
+			value: 2,
+			cap: 10000,
+		});
+		expect(parseCashbackFromPerkId("cashback-3pct")).toEqual({
+			type: "percentage",
+			value: 3,
+			cap: 15000,
+		});
+	});
+
+	it("parses flat cashback perks", () => {
+		expect(parseCashbackFromPerkId("cashback-5k")).toEqual({
+			type: "flat",
+			value: 5000,
+		});
+		expect(parseCashbackFromPerkId("switcher-3k")).toEqual({
+			type: "flat",
+			value: 3000,
+		});
+	});
+
+	it("returns null for non-cashback perks", () => {
+		expect(parseCashbackFromPerkId("fee-free-banking")).toBeNull();
+		expect(parseCashbackFromPerkId("unknown-perk")).toBeNull();
 	});
 });

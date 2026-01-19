@@ -33,6 +33,7 @@ simulations side-by-side with exportable reports.
 ### Breakeven Calculators
 
 * **Rent vs Buy** - Compare the long-term costs of renting versus buying
+* **Cashback Comparison** - Compare mortgages with different rates and cashback offers
 * **Remortgage Breakeven** - Calculate when switching to a new rate pays off
 
 ### Export & Share

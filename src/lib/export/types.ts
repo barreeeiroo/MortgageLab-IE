@@ -10,6 +10,7 @@ export type ExportPage =
 	| "simulation-compare"
 	| "breakeven-rentvsbuy"
 	| "breakeven-remortgage"
+	| "breakeven-cashback"
 	| "affordability-ftb"
 	| "affordability-mover"
 	| "affordability-btl";

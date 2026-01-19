@@ -575,3 +575,388 @@ export function formatBreakevenPeriod(months: number | null): string {
 
 	return `${years} year${years !== 1 ? "s" : ""} ${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
 }
+
+// --- Cashback Comparison Types ---
+
+export interface CashbackOption {
+	label: string;
+	rate: number; // Annual rate as percentage (e.g., 3.5 for 3.5%)
+	cashbackType: "percentage" | "flat";
+	cashbackValue: number; // Percentage value (e.g., 2 for 2%) or flat amount in euros
+	cashbackCap?: number; // Optional cap in euros (e.g., 10000 for €10k)
+	fixedPeriodYears?: number; // Optional, for context
+}
+
+export interface CashbackBreakevenInputs {
+	mortgageAmount: number;
+	mortgageTermMonths: number;
+	options: CashbackOption[]; // 2-5 options
+}
+
+export interface CashbackOptionResult {
+	label: string;
+	rate: number;
+	fixedPeriodYears: number; // 0 = variable
+	monthlyPayment: number;
+	monthlyPaymentDiff: number; // vs cheapest monthly payment (+/- €)
+	cashbackAmount: number; // Actual cashback received (after cap applied)
+	// Over comparison period only:
+	interestPaid: number;
+	principalPaid: number;
+	balanceAtEnd: number; // Remaining balance after comparison period
+	netCost: number; // interestPaid - cashbackAmount
+}
+
+export interface CashbackBreakevenPoint {
+	optionAIndex: number;
+	optionBIndex: number;
+	optionALabel: string;
+	optionBLabel: string;
+	breakevenMonth: number | null; // null if never crosses
+	description: string; // e.g., "Option 1 becomes cheaper than Option 2"
+}
+
+export interface CashbackMonthlyComparison {
+	month: number;
+	netCosts: number[]; // Net cost for each option at this month
+}
+
+export interface CashbackYearlyComparison {
+	year: number;
+	netCosts: number[]; // Net cost for each option at this year
+	interestPaid: number[]; // Cumulative interest for each option
+	principalPaid: number[]; // Cumulative principal for each option
+	balances: number[]; // Remaining balance for each option
+}
+
+export interface CashbackBreakevenResult {
+	comparisonPeriodMonths: number;
+	comparisonPeriodYears: number;
+	allVariable: boolean;
+	options: CashbackOptionResult[];
+	cheapestMonthlyIndex: number; // Lowest monthly payment
+	cheapestNetCostIndex: number; // Best net cost over comparison period
+	savingsVsWorst: number; // How much the best saves vs the worst over comparison period
+	breakevens: CashbackBreakevenPoint[];
+	monthlyBreakdown: CashbackMonthlyComparison[];
+	yearlyBreakdown: CashbackYearlyComparison[];
+	/** Extra year of projection beyond comparison period for visibility (null if at term end) */
+	projectionYear: CashbackYearlyComparison | null;
+}
+
+// --- Cashback Comparison Calculations ---
+
+/**
+ * Calculate cashback amount with optional cap.
+ */
+function calculateCashbackAmount(
+	mortgageAmount: number,
+	cashbackType: "percentage" | "flat",
+	cashbackValue: number,
+	cashbackCap?: number,
+): number {
+	let amount: number;
+
+	if (cashbackType === "flat") {
+		amount = cashbackValue;
+	} else {
+		// Percentage-based
+		amount = mortgageAmount * (cashbackValue / 100);
+	}
+
+	// Apply cap if specified
+	if (cashbackCap !== undefined && amount > cashbackCap) {
+		amount = cashbackCap;
+	}
+
+	return amount;
+}
+
+/**
+ * Calculate and compare multiple mortgage options with different rates and cashback offers.
+ *
+ * The comparison period is determined by the fixed periods:
+ * - If all options are variable (fixedPeriodYears = 0), compare over the full mortgage term
+ * - Otherwise, compare over the maximum fixed period
+ *
+ * This ensures a fair comparison since fixed rates only apply during their fixed period.
+ */
+export function calculateCashbackBreakeven(
+	inputs: CashbackBreakevenInputs,
+): CashbackBreakevenResult {
+	const { mortgageAmount, mortgageTermMonths, options } = inputs;
+
+	// Determine comparison period based on fixed periods
+	const fixedPeriods = options.map((o) => o.fixedPeriodYears ?? 0);
+	const allVariable = fixedPeriods.every((p) => p === 0);
+	const comparisonPeriodMonths = allVariable
+		? mortgageTermMonths
+		: Math.min(Math.max(...fixedPeriods) * 12, mortgageTermMonths);
+	const comparisonPeriodYears = comparisonPeriodMonths / 12;
+
+	// Calculate results for each option over the comparison period
+	const optionResults: CashbackOptionResult[] = options.map((option) => {
+		const monthlyPayment = calculateMonthlyPayment(
+			mortgageAmount,
+			option.rate,
+			mortgageTermMonths,
+		);
+
+		const cashbackAmount = calculateCashbackAmount(
+			mortgageAmount,
+			option.cashbackType,
+			option.cashbackValue,
+			option.cashbackCap,
+		);
+
+		// Calculate cumulative values over comparison period only
+		const monthlyRate = option.rate / 100 / 12;
+		let balance = mortgageAmount;
+		let cumulativeInterest = 0;
+		let cumulativePrincipal = 0;
+
+		for (let month = 1; month <= comparisonPeriodMonths; month++) {
+			const interestPayment = balance * monthlyRate;
+			const principalPayment = monthlyPayment - interestPayment;
+
+			cumulativeInterest += interestPayment;
+			cumulativePrincipal += principalPayment;
+			balance = Math.max(0, balance - principalPayment);
+		}
+
+		return {
+			label: option.label,
+			rate: option.rate,
+			fixedPeriodYears: option.fixedPeriodYears ?? 0,
+			monthlyPayment: Math.round(monthlyPayment * 100) / 100,
+			monthlyPaymentDiff: 0, // Will be calculated after finding min
+			cashbackAmount: Math.round(cashbackAmount * 100) / 100,
+			interestPaid: Math.round(cumulativeInterest),
+			principalPaid: Math.round(cumulativePrincipal),
+			balanceAtEnd: Math.round(balance),
+			netCost: Math.round(cumulativeInterest - cashbackAmount),
+		};
+	});
+
+	// Calculate monthly payment diff vs cheapest
+	const minMonthlyPayment = Math.min(
+		...optionResults.map((o) => o.monthlyPayment),
+	);
+	for (const opt of optionResults) {
+		opt.monthlyPaymentDiff =
+			Math.round((opt.monthlyPayment - minMonthlyPayment) * 100) / 100;
+	}
+
+	// Find cheapest by monthly payment
+	const cheapestMonthlyIndex = optionResults.reduce(
+		(minIdx, opt, idx, arr) =>
+			opt.monthlyPayment < arr[minIdx].monthlyPayment ? idx : minIdx,
+		0,
+	);
+
+	// Find cheapest by net cost over comparison period
+	const cheapestNetCostIndex = optionResults.reduce(
+		(minIdx, opt, idx, arr) =>
+			opt.netCost < arr[minIdx].netCost ? idx : minIdx,
+		0,
+	);
+
+	// Calculate savings vs worst option
+	const worstNetCost = Math.max(...optionResults.map((o) => o.netCost));
+	const bestNetCost = optionResults[cheapestNetCostIndex].netCost;
+	const savingsVsWorst = worstNetCost - bestNetCost;
+
+	// Calculate monthly and yearly breakdowns for charting
+	const monthlyBreakdown: CashbackMonthlyComparison[] = [];
+	const yearlyBreakdown: CashbackYearlyComparison[] = [];
+
+	// Track cumulative values for each option
+	const balances = options.map(() => mortgageAmount);
+	const cumulativeInterests = options.map(() => 0);
+	const cumulativePrincipals = options.map(() => 0);
+	const cashbackAmounts = optionResults.map((r) => r.cashbackAmount);
+
+	// Calculate how many months to include for projection (1 extra year if not at term end)
+	const projectionEndMonth = Math.min(
+		comparisonPeriodMonths + 12,
+		mortgageTermMonths,
+	);
+	const hasProjectionYear = projectionEndMonth > comparisonPeriodMonths;
+
+	for (let month = 1; month <= projectionEndMonth; month++) {
+		// Update each option
+		for (let i = 0; i < options.length; i++) {
+			const monthlyRate = options[i].rate / 100 / 12;
+			const interestPayment = balances[i] * monthlyRate;
+			const monthlyPayment = optionResults[i].monthlyPayment;
+			const principalPayment = monthlyPayment - interestPayment;
+
+			cumulativeInterests[i] += interestPayment;
+			cumulativePrincipals[i] += principalPayment;
+			balances[i] = Math.max(0, balances[i] - principalPayment);
+		}
+
+		// Store monthly data for first 48 months (within comparison period)
+		if (month <= 48 && month <= comparisonPeriodMonths) {
+			monthlyBreakdown.push({
+				month,
+				netCosts: cumulativeInterests.map((interest, i) =>
+					Math.round(interest - cashbackAmounts[i]),
+				),
+			});
+		}
+
+		// Store yearly data (within comparison period)
+		if (month % 12 === 0 && month <= comparisonPeriodMonths) {
+			yearlyBreakdown.push({
+				year: month / 12,
+				netCosts: cumulativeInterests.map((interest, i) =>
+					Math.round(interest - cashbackAmounts[i]),
+				),
+				interestPaid: cumulativeInterests.map((interest) =>
+					Math.round(interest),
+				),
+				principalPaid: cumulativePrincipals.map((principal) =>
+					Math.round(principal),
+				),
+				balances: balances.map((balance) => Math.round(balance)),
+			});
+		}
+	}
+
+	// Compute projection year if applicable
+	let projectionYear: CashbackYearlyComparison | null = null;
+	if (hasProjectionYear) {
+		projectionYear = {
+			year: Math.floor(projectionEndMonth / 12),
+			netCosts: cumulativeInterests.map((interest, i) =>
+				Math.round(interest - cashbackAmounts[i]),
+			),
+			interestPaid: cumulativeInterests.map((interest) => Math.round(interest)),
+			principalPaid: cumulativePrincipals.map((principal) =>
+				Math.round(principal),
+			),
+			balances: balances.map((balance) => Math.round(balance)),
+		};
+	}
+
+	// Find breakeven points between options
+	const breakevens: CashbackBreakevenPoint[] = [];
+
+	for (let i = 0; i < options.length; i++) {
+		for (let j = i + 1; j < options.length; j++) {
+			// Check if options ever cross
+			const monthlyBreakevenMonth = findBreakevenMonth(
+				monthlyBreakdown,
+				yearlyBreakdown,
+				i,
+				j,
+			);
+
+			breakevens.push({
+				optionAIndex: i,
+				optionBIndex: j,
+				optionALabel: options[i].label,
+				optionBLabel: options[j].label,
+				breakevenMonth: monthlyBreakevenMonth,
+				description:
+					monthlyBreakevenMonth !== null
+						? `${options[i].label} becomes cheaper than ${options[j].label}`
+						: `${options[i].label} is always ${optionResults[i].netCost <= optionResults[j].netCost ? "cheaper" : "more expensive"} than ${options[j].label}`,
+			});
+		}
+	}
+
+	return {
+		comparisonPeriodMonths,
+		comparisonPeriodYears,
+		allVariable,
+		options: optionResults,
+		cheapestMonthlyIndex,
+		cheapestNetCostIndex,
+		savingsVsWorst,
+		breakevens,
+		monthlyBreakdown,
+		yearlyBreakdown,
+		projectionYear,
+	};
+}
+
+/**
+ * Find the month when option A becomes cheaper than option B.
+ */
+function findBreakevenMonth(
+	monthlyBreakdown: CashbackMonthlyComparison[],
+	yearlyBreakdown: CashbackYearlyComparison[],
+	optionAIndex: number,
+	optionBIndex: number,
+): number | null {
+	// Check monthly data first (first 48 months)
+	for (const data of monthlyBreakdown) {
+		const costA = data.netCosts[optionAIndex];
+		const costB = data.netCosts[optionBIndex];
+
+		// Skip month 1 - can't determine crossover without previous data
+		if (data.month === 1) {
+			continue;
+		}
+
+		const prevData = monthlyBreakdown[data.month - 2];
+		const prevCostA = prevData.netCosts[optionAIndex];
+		const prevCostB = prevData.netCosts[optionBIndex];
+
+		// A just became cheaper than B
+		if (costA < costB && prevCostA >= prevCostB) {
+			return data.month;
+		}
+		// B just became cheaper than A
+		if (costB < costA && prevCostB >= prevCostA) {
+			return data.month;
+		}
+	}
+
+	// Check yearly data for longer terms
+	for (let i = 1; i < yearlyBreakdown.length; i++) {
+		const prevData = yearlyBreakdown[i - 1];
+		const data = yearlyBreakdown[i];
+
+		const prevCostA = prevData.netCosts[optionAIndex];
+		const prevCostB = prevData.netCosts[optionBIndex];
+		const costA = data.netCosts[optionAIndex];
+		const costB = data.netCosts[optionBIndex];
+
+		// A just became cheaper than B
+		if (costA < costB && prevCostA >= prevCostB) {
+			// Approximate month within the year
+			return (data.year - 1) * 12 + 6;
+		}
+		// B just became cheaper than A
+		if (costB < costA && prevCostB >= prevCostA) {
+			return (data.year - 1) * 12 + 6;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Parse cashback configuration from a perk ID.
+ * Returns null if perk is not a cashback perk.
+ */
+export function parseCashbackFromPerkId(
+	perkId: string,
+): { type: "percentage" | "flat"; value: number; cap?: number } | null {
+	const mapping: Record<
+		string,
+		{ type: "percentage" | "flat"; value: number; cap?: number }
+	> = {
+		"cashback-1pct": { type: "percentage", value: 1 },
+		"cashback-2pct": { type: "percentage", value: 2 },
+		"cashback-2pct-max10k": { type: "percentage", value: 2, cap: 10000 },
+		"cashback-3pct": { type: "percentage", value: 3, cap: 15000 },
+		"cashback-5k": { type: "flat", value: 5000 },
+		"switcher-3k": { type: "flat", value: 3000 },
+	};
+
+	return mapping[perkId] ?? null;
+}

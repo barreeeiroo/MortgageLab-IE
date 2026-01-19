@@ -4,6 +4,7 @@
  */
 
 import type {
+	CashbackBreakevenResult,
 	RemortgageResult,
 	RentVsBuyResult,
 } from "@/lib/mortgage/breakeven";
@@ -23,6 +24,7 @@ import {
 	formatCurrencyForExport,
 	formatPercentForExport,
 	formatTermForExport,
+	sanitizeForPDF,
 } from "./formatters";
 import type { TableExportData } from "./types";
 
@@ -401,6 +403,145 @@ function prepareRemortgageTableData(
 		formatCurrencyForExport(year.remainingBalanceCurrent, true),
 		formatCurrencyForExport(year.remainingBalanceNew, true),
 	]);
+
+	return { headers, rows };
+}
+
+// --- Cashback Comparison Export ---
+
+interface CashbackExportContext {
+	result: CashbackBreakevenResult;
+	mortgageAmount: number;
+	mortgageTermMonths: number;
+	/** Share URL to include in PDF export as "View Online" link */
+	shareUrl?: string;
+}
+
+/**
+ * Exports Cashback comparison analysis to PDF.
+ */
+export async function exportCashbackToPDF(
+	context: CashbackExportContext,
+): Promise<void> {
+	const { result, mortgageAmount, mortgageTermMonths } = context;
+	const doc = await createPDFDocument();
+
+	const cheapestOption = result.options[result.cheapestNetCostIndex];
+	const comparisonYears = Math.floor(result.comparisonPeriodYears);
+
+	// Branded header with logo
+	let y = await addBrandedHeader(doc, "Cashback Comparison");
+
+	// Winner summary row
+	y = addMetricRow(
+		doc,
+		[
+			{
+				label: "Best Option",
+				value: sanitizeForPDF(cheapestOption.label),
+				variant: "success",
+			},
+			{
+				label: "Savings vs Worst",
+				value: formatCurrencyForExport(result.savingsVsWorst, true),
+				variant: "success",
+			},
+			{
+				label: `Net Cost (${comparisonYears}y)`,
+				value: formatCurrencyForExport(cheapestOption.netCost, true),
+				variant: "default",
+			},
+		],
+		y,
+	);
+
+	// Mortgage Details Section
+	y = addStyledSectionHeader(doc, "Mortgage Details", y, { divider: true });
+	y = addKeyValue(
+		doc,
+		"Mortgage Amount",
+		formatCurrencyForExport(mortgageAmount, true),
+		y,
+	);
+	y = addKeyValue(doc, "Term", formatTermForExport(mortgageTermMonths), y);
+	y += 4;
+
+	// Comparison period info
+	y = addKeyValue(
+		doc,
+		"Comparison Period",
+		result.allVariable
+			? `Full term (${comparisonYears} years)`
+			: `${comparisonYears} years (max fixed period)`,
+		y,
+	);
+	y += 4;
+
+	// Options Comparison Table
+	y = addStyledSectionHeader(doc, "Option Details", y, { divider: true });
+	const optionsTableData = prepareCashbackOptionsTableData(result.options);
+	y = await addTable(doc, optionsTableData, y);
+	y += 4;
+
+	// Time Horizon Comparison Table
+	if (result.yearlyBreakdown.length > 0) {
+		y = addStyledSectionHeader(doc, "Net Cost by Year", y, {
+			divider: true,
+		});
+		const horizonTableData = prepareCashbackHorizonTableData(result);
+		y = await addTable(doc, horizonTableData, y);
+	}
+
+	// Add "View Online" link if share URL provided
+	if (context.shareUrl) {
+		addViewOnlineLink(doc, context.shareUrl);
+	}
+
+	addFooter(doc);
+	downloadPDF(doc, "breakeven-cashback");
+}
+
+function prepareCashbackOptionsTableData(
+	options: CashbackBreakevenResult["options"],
+): TableExportData {
+	const headers = [
+		"Option",
+		"Rate",
+		"Monthly",
+		"Interest",
+		"Principal",
+		"Cashback",
+		"Net Cost",
+	];
+
+	const rows = options.map((opt) => [
+		sanitizeForPDF(opt.label),
+		formatPercentForExport(opt.rate / 100, 2),
+		formatCurrencyForExport(opt.monthlyPayment, true),
+		formatCurrencyForExport(opt.interestPaid, true),
+		formatCurrencyForExport(opt.principalPaid, true),
+		formatCurrencyForExport(opt.cashbackAmount, true),
+		formatCurrencyForExport(opt.netCost, true),
+	]);
+
+	return { headers, rows };
+}
+
+function prepareCashbackHorizonTableData(
+	result: CashbackBreakevenResult,
+): TableExportData {
+	const headers = ["Option"];
+	for (const year of result.yearlyBreakdown) {
+		headers.push(`Year ${year.year}`);
+	}
+
+	const rows = result.options.map((opt, index) => {
+		const row: (string | number)[] = [sanitizeForPDF(opt.label)];
+		for (const yearData of result.yearlyBreakdown) {
+			row.push(formatCurrencyForExport(yearData.netCosts[index], true));
+		}
+		return row;
+	});
 
 	return { headers, rows };
 }

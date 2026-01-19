@@ -10,6 +10,7 @@ export const STORAGE_KEYS = {
 	RATES_CALCULATOR: "rates-calculator",
 	RENT_VS_BUY_CALCULATOR: "rent-vs-buy-calculator",
 	REMORTGAGE_BREAKEVEN_CALCULATOR: "remortgage-breakeven-calculator",
+	CASHBACK_BREAKEVEN_CALCULATOR: "cashback-breakeven-calculator",
 	WHATS_NEW_VERSION: "whats-new-version",
 	THEME: "theme",
 } as const;
@@ -159,4 +160,38 @@ export function saveRemortgageBreakevenForm(
 	state: RemortgageBreakevenFormState,
 ): void {
 	saveToStorage(STORAGE_KEYS.REMORTGAGE_BREAKEVEN_CALCULATOR, state);
+}
+
+// Cashback Breakeven Calculator form state
+export interface CashbackOptionFormState {
+	id: string;
+	label: string;
+	rate: string;
+	rateInputMode: "picker" | "manual";
+	cashbackType: "percentage" | "flat";
+	cashbackValue: string;
+	cashbackCap: string;
+	fixedPeriodYears: string;
+	/** Perk ID that provided the cashback (when using picker mode) */
+	selectedPerkId?: string;
+	/** Overpayment policy ID */
+	overpaymentPolicyId?: string;
+}
+
+export interface CashbackBreakevenFormState {
+	mortgageAmount: string;
+	mortgageTerm: string;
+	options: CashbackOptionFormState[];
+}
+
+export function loadCashbackBreakevenForm(): Partial<CashbackBreakevenFormState> {
+	return loadFromStorage<CashbackBreakevenFormState>(
+		STORAGE_KEYS.CASHBACK_BREAKEVEN_CALCULATOR,
+	);
+}
+
+export function saveCashbackBreakevenForm(
+	state: CashbackBreakevenFormState,
+): void {
+	saveToStorage(STORAGE_KEYS.CASHBACK_BREAKEVEN_CALCULATOR, state);
 }

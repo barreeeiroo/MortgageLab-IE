@@ -1,5 +1,5 @@
 ---
-import { Scale, RefreshCcw, ArrowRight } from "lucide-react";
+import { Scale, RefreshCcw, Coins, ArrowRight } from "lucide-react";
 import Layout from "@/layouts/Layout.astro";
 import {
 	Card,
@@ -17,6 +17,13 @@ const calculators = [
 			"Compare the long-term costs of renting versus buying. Factor in rent increases, home appreciation, and building equity.",
 		href: "/breakeven/rent-vs-buy",
 		Icon: Scale,
+	},
+	{
+		title: "Cashback Comparison",
+		description:
+			"Compare mortgages with different rates and cashback offers to find the cheapest option over time.",
+		href: "/breakeven/cashback",
+		Icon: Coins,
 	},
 	{
 		title: "Remortgage",

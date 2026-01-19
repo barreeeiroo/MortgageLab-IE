@@ -14,7 +14,7 @@ import {
 export const BREAKEVEN_SHARE_PARAM = "be";
 
 // Calculator types
-export type BreakevenCalculatorType = "rvb" | "rmb"; // rent-vs-buy, remortgage-breakeven
+export type BreakevenCalculatorType = "rvb" | "rmb" | "cb"; // rent-vs-buy, remortgage-breakeven, cashback
 
 // Rent vs Buy share state
 export interface RentVsBuyShareState {
@@ -57,10 +57,29 @@ export interface RemortgageBreakevenShareState {
 	erc?: string;
 }
 
+// Cashback Breakeven share state
+export interface CashbackOptionShareState {
+	label: string;
+	rate: string;
+	rateInputMode: "picker" | "manual";
+	cashbackType: "percentage" | "flat";
+	cashbackValue: string;
+	cashbackCap: string;
+	fixedPeriodYears: string;
+}
+
+export interface CashbackBreakevenShareState {
+	type: "cb";
+	mortgageAmount: string;
+	mortgageTerm: string;
+	options: CashbackOptionShareState[];
+}
+
 // Union type for all breakeven calculator states
 export type BreakevenShareState =
 	| RentVsBuyShareState
-	| RemortgageBreakevenShareState;
+	| RemortgageBreakevenShareState
+	| CashbackBreakevenShareState;
 
 // Compressed format (abbreviated keys for smaller URLs)
 interface CompressedRentVsBuy {
@@ -101,7 +120,27 @@ interface CompressedRemortgageBreakeven {
 	er?: string; // erc (early repayment charge)
 }
 
-type CompressedState = CompressedRentVsBuy | CompressedRemortgageBreakeven;
+interface CompressedCashbackOption {
+	l: string; // label
+	r: string; // rate
+	m: "p" | "m"; // rateInputMode: picker/manual
+	ct: "p" | "f"; // cashbackType: percentage/flat
+	cv: string; // cashbackValue
+	cc: string; // cashbackCap
+	fp: string; // fixedPeriodYears
+}
+
+interface CompressedCashbackBreakeven {
+	t: "c"; // type: cashback
+	ma: string; // mortgageAmount
+	mt: string; // mortgageTerm
+	o: CompressedCashbackOption[]; // options
+}
+
+type CompressedState =
+	| CompressedRentVsBuy
+	| CompressedRemortgageBreakeven
+	| CompressedCashbackBreakeven;
 
 function compressPropertyType(
 	pt: PropertyType | undefined,
@@ -144,6 +183,28 @@ function compressState(state: BreakevenShareState): CompressedState {
 		}
 
 		return compressed;
+	}
+
+	if (state.type === "cb") {
+		// Cashback comparison
+		const compressedOptions: CompressedCashbackOption[] = state.options.map(
+			(opt) => ({
+				l: opt.label,
+				r: opt.rate,
+				m: opt.rateInputMode === "picker" ? "p" : "m",
+				ct: opt.cashbackType === "percentage" ? "p" : "f",
+				cv: opt.cashbackValue,
+				cc: opt.cashbackCap,
+				fp: opt.fixedPeriodYears,
+			}),
+		);
+
+		return {
+			t: "c",
+			ma: state.mortgageAmount,
+			mt: state.mortgageTerm,
+			o: compressedOptions,
+		};
 	}
 
 	// Remortgage breakeven
@@ -194,6 +255,28 @@ function decompressState(compressed: CompressedState): BreakevenShareState {
 		}
 
 		return state;
+	}
+
+	if (compressed.t === "c") {
+		// Cashback comparison
+		const decompressedOptions: CashbackOptionShareState[] = compressed.o.map(
+			(opt) => ({
+				label: opt.l,
+				rate: opt.r,
+				rateInputMode: opt.m === "p" ? "picker" : "manual",
+				cashbackType: opt.ct === "p" ? "percentage" : "flat",
+				cashbackValue: opt.cv,
+				cashbackCap: opt.cc,
+				fixedPeriodYears: opt.fp,
+			}),
+		);
+
+		return {
+			type: "cb",
+			mortgageAmount: compressed.ma,
+			mortgageTerm: compressed.mt,
+			options: decompressedOptions,
+		};
 	}
 
 	// Remortgage breakeven

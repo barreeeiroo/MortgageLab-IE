@@ -38,6 +38,11 @@ export const NAV_ITEMS = [
 				icon: "Scale",
 			},
 			{
+				label: "Cashback Comparison",
+				href: "/breakeven/cashback",
+				icon: "Coins",
+			},
+			{
 				label: "Remortgage",
 				href: "/breakeven/remortgage",
 				icon: "RefreshCcw",

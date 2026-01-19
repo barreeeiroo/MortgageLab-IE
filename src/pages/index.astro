@@ -17,6 +17,7 @@ import {
 	// Breakeven
 	Scale,
 	RefreshCcw,
+	Coins,
 	// UI
 	ArrowRight,
 } from "lucide-react";
@@ -124,6 +125,13 @@ const breakevenCalculators = [
 			"Calculate when buying becomes cheaper than renting, accounting for all costs and equity buildup.",
 		href: "/breakeven/rent-vs-buy",
 		Icon: Scale,
+	},
+	{
+		title: "Cashback Comparison",
+		description:
+			"Compare mortgages with different rates and cashback offers to find the cheapest option over time.",
+		href: "/breakeven/cashback",
+		Icon: Coins,
 	},
 	{
 		title: "Remortgage Breakeven",
@@ -322,7 +330,7 @@ const tools = [
 				</p>
 			</div>
 
-			<div class="grid gap-6 md:grid-cols-2">
+			<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 				{
 					breakevenCalculators.map((calc) => (
 						<a href={getPath(calc.href)} class="block group">
