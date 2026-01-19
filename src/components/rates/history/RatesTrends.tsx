@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
 import { TrendingUp } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
+import { BER_GROUP_LIST } from "@/lib/constants/ber";
 import { getEuriborTimeSeries } from "@/lib/data/euribor";
 import type { EuriborFile } from "@/lib/schemas/euribor";
 import type { Lender } from "@/lib/schemas/lender";
@@ -18,7 +19,11 @@ import {
 } from "@/lib/stores/rates/rates-history-filters";
 import { EuriborToggles } from "./EuriborToggles";
 import { type MarketDataPoint, RatesTrendChart } from "./RatesTrendChart";
-import { TrendsFilters } from "./TrendsFilters";
+import {
+	MarketOverviewOptions,
+	TrendsFilters,
+	TrendsViewControls,
+} from "./TrendsFilters";
 import {
 	type MarketOverviewStats,
 	type RateStat,
@@ -98,6 +103,57 @@ function getBuyerTypeLabel(key: string): string {
 	if (key === "buyer-btl") return "Buy to Let";
 	if (key === "buyer-both") return "All Buyers";
 	return key;
+}
+
+/**
+ * Check if a rate matches a BER group filter.
+ * Returns true if the rate is available for properties with the given BER group.
+ */
+function matchesBerFilter(
+	berEligible: string[] | undefined,
+	berFilter: string,
+): boolean {
+	// "all" matches any rate
+	if (berFilter === "all") return true;
+
+	// If berEligible is undefined or empty, the rate is available for all BER ratings
+	if (!berEligible || berEligible.length === 0) return true;
+
+	// Check if any rating in berEligible starts with the filter group letter
+	// e.g., berFilter "A" matches "A1", "A2", "A3"
+	// Special case for "Exempt" which matches exactly
+	if (berFilter === "Exempt") {
+		return berEligible.includes("Exempt");
+	}
+
+	return berEligible.some((ber) => ber.startsWith(berFilter));
+}
+
+/**
+ * Get BER group keys for a rate (for grouping purposes)
+ * Returns all BER groups the rate is available for.
+ * Rates with no BER restriction return ALL groups.
+ */
+function getBerKeys(berEligible: string[] | undefined): string[] {
+	// If berEligible is undefined or empty, rate is available for ALL BER groups
+	if (!berEligible || berEligible.length === 0) {
+		return BER_GROUP_LIST.map((g) => `ber-${g}`);
+	}
+
+	// Get unique groups from the eligible ratings
+	const groups = berEligible.map((ber) =>
+		ber === "Exempt" ? "Exempt" : ber.charAt(0),
+	);
+	const uniqueGroups = [...new Set(groups)];
+	return uniqueGroups.map((g) => `ber-${g}`);
+}
+
+/**
+ * Get display label for BER key
+ */
+function getBerLabel(key: string): string {
+	const group = key.replace("ber-", "");
+	return `BER ${group}`;
 }
 
 /**
@@ -259,6 +315,7 @@ export function RatesTrends({
 			fixedTerm?: number;
 			maxLtv: number;
 			buyerTypes: string[];
+			berEligible?: string[];
 		}> = [];
 
 		for (const [lenderId, history] of historyData) {
@@ -272,6 +329,7 @@ export function RatesTrends({
 					fixedTerm: rate.fixedTerm,
 					maxLtv: rate.maxLtv,
 					buyerTypes: rate.buyerTypes,
+					berEligible: rate.berEligible,
 				});
 			}
 
@@ -287,6 +345,7 @@ export function RatesTrends({
 							fixedTerm: op.rate.fixedTerm,
 							maxLtv: op.rate.maxLtv,
 							buyerTypes: op.rate.buyerTypes,
+							berEligible: op.rate.berEligible,
 						});
 					}
 				}
@@ -330,6 +389,9 @@ export function RatesTrends({
 				);
 				if (!hasAllowedType) return false;
 			}
+
+			// Filter by BER group
+			if (!matchesBerFilter(rate.berEligible, filter.berFilter)) return false;
 
 			return true;
 		});
@@ -530,23 +592,46 @@ export function RatesTrends({
 	const breakdownSeries = useMemo((): RateTimeSeries[] => {
 		if (!isMarketOverview || filter.marketChartStyle !== "grouped") return [];
 
-		// Build compound group key for a rate based on selected dimensions
-		const getGroupKey = (rate: {
+		// Build compound group keys for a rate based on selected dimensions
+		// Returns multiple keys when BER dimension is used and rate has no BER restriction
+		const getGroupKeys = (rate: {
 			lenderId: string;
 			type: string;
 			fixedTerm?: number;
 			maxLtv: number;
 			buyerTypes: string[];
-		}): string => {
-			const parts: string[] = [];
+			berEligible?: string[];
+		}): string[] => {
+			// Start with a single empty key
+			let keys: string[] = [""];
+
 			for (const dim of filter.breakdownBy) {
-				if (dim === "lender") parts.push(rate.lenderId);
-				else if (dim === "rate-type") parts.push(getRateTypeKey(rate));
-				else if (dim === "ltv") parts.push(getLtvKey(rate.maxLtv));
-				else if (dim === "buyer-type")
-					parts.push(getBuyerTypeKey(rate.buyerTypes));
+				if (dim === "ber") {
+					// BER can produce multiple keys (rate available for multiple BER groups)
+					const berKeys = getBerKeys(rate.berEligible);
+					// Expand keys: for each existing key, create variants for each BER key
+					keys = keys.flatMap((existingKey) =>
+						berKeys.map((berKey) =>
+							existingKey ? `${existingKey}|${berKey}` : berKey,
+						),
+					);
+				} else {
+					// Other dimensions produce a single value
+					let part: string;
+					if (dim === "lender") part = rate.lenderId;
+					else if (dim === "rate-type") part = getRateTypeKey(rate);
+					else if (dim === "ltv") part = getLtvKey(rate.maxLtv);
+					else if (dim === "buyer-type")
+						part = getBuyerTypeKey(rate.buyerTypes);
+					else part = "";
+
+					keys = keys.map((existingKey) =>
+						existingKey ? `${existingKey}|${part}` : part,
+					);
+				}
 			}
-			return parts.join("|");
+
+			return keys;
 		};
 
 		// Build display label from compound key
@@ -560,6 +645,7 @@ export function RatesTrends({
 				else if (dim === "rate-type") labels.push(getRateTypeLabel(part));
 				else if (dim === "ltv") labels.push(getLtvLabel(part));
 				else if (dim === "buyer-type") labels.push(getBuyerTypeLabel(part));
+				else if (dim === "ber") labels.push(getBerLabel(part));
 			}
 			return labels.join(" · ");
 		};
@@ -581,15 +667,18 @@ export function RatesTrends({
 				fixedTerm?: number;
 				maxLtv: number;
 				buyerTypes: string[];
+				berEligible?: string[];
 			}>
 		>();
 
 		for (const rate of filteredRates) {
-			const key = getGroupKey(rate);
-			if (!groups.has(key)) {
-				groups.set(key, []);
+			const keys = getGroupKeys(rate);
+			for (const key of keys) {
+				if (!groups.has(key)) {
+					groups.set(key, []);
+				}
+				groups.get(key)?.push(rate);
 			}
-			groups.get(key)?.push(rate);
 		}
 
 		// For each group, calculate average time series
@@ -833,6 +922,9 @@ export function RatesTrends({
 			{/* Filters */}
 			<TrendsFilters lenders={lenders} />
 
+			{/* View Mode and Time Range Controls */}
+			<TrendsViewControls />
+
 			{/* Chart */}
 			{timeSeries.length === 0 ? (
 				<div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
@@ -893,8 +985,12 @@ export function RatesTrends({
 							endDate={timeRange.endDate}
 							euriborSeries={euriborTimeSeries}
 						/>
-						{/* Euribor toggles positioned at bottom-right of chart */}
-						<div className="flex justify-end mt-2">
+					</div>
+
+					{/* Chart controls row: Euribor + Market Overview Options */}
+					<div className="flex flex-wrap-reverse items-center gap-x-6 gap-y-2 mt-2">
+						{isMarketOverview && <MarketOverviewOptions />}
+						<div className="ml-auto">
 							<EuriborToggles />
 						</div>
 					</div>

@@ -1,4 +1,5 @@
 import type {
+	BerFilter,
 	ChangesFilter,
 	HistoryTab,
 	MarketChartStyle,
@@ -65,6 +66,7 @@ interface CompressedHistoryShareState {
 		v: [number, number] | null; // ltvRange
 		l: string[]; // lenderIds
 		b: string; // buyerCategory
+		e?: string; // berCategory
 		d?: string; // displayMode
 		m?: string; // marketChartStyle
 		g?: string[]; // breakdownBy (array of dimensions)
@@ -100,6 +102,7 @@ function compressState(state: HistoryShareState): CompressedHistoryShareState {
 			v: state.trendsFilter.ltvRange,
 			l: state.trendsFilter.lenderIds,
 			b: state.trendsFilter.buyerCategory,
+			e: state.trendsFilter.berFilter,
 			d: state.trendsFilter.displayMode,
 			m: state.trendsFilter.marketChartStyle,
 			g: state.trendsFilter.breakdownBy,
@@ -139,6 +142,7 @@ function decompressState(
 			ltvRange: compressed.r.v ?? [0, 80],
 			lenderIds: compressed.r.l ?? [],
 			buyerCategory: (compressed.r.b ?? "pdh") as TrendsFilter["buyerCategory"],
+			berFilter: (compressed.r.e ?? "all") as BerFilter,
 			displayMode: (compressed.r.d ?? "individual") as TrendsDisplayMode,
 			marketChartStyle: (compressed.r.m ?? "average") as MarketChartStyle,
 			breakdownBy: (compressed.r.g ?? ["lender"]) as TrendsBreakdownDimension[],

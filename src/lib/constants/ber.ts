@@ -46,6 +46,18 @@ export const BER_GROUPS = {
 
 export type BerGroup = keyof typeof BER_GROUPS;
 
+// All BER groups in order (for group mode selectors)
+export const BER_GROUP_LIST: BerGroup[] = [
+	"A",
+	"B",
+	"C",
+	"D",
+	"E",
+	"F",
+	"G",
+	"Exempt",
+];
+
 // "Green" BER ratings (B3 or better) - typically qualify for green mortgage rates
 export const GREEN_BER_RATINGS: BerRating[] = [...BER_GROUP_A, ...BER_GROUP_B];
 export const GREEN_BER_GROUPS: BerGroup[] = ["A", "B"];

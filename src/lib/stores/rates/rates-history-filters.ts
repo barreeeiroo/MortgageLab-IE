@@ -1,4 +1,5 @@
 import { atom, computed } from "nanostores";
+import type { BerGroup } from "@/lib/constants/ber";
 import type { EuriborTenor } from "@/lib/schemas/euribor";
 import {
 	clearHistoryShareParam,
@@ -36,7 +37,9 @@ export type TrendsBreakdownDimension =
 	| "lender"
 	| "rate-type"
 	| "ltv"
-	| "buyer-type";
+	| "buyer-type"
+	| "ber";
+export type BerFilter = BerGroup | "all";
 /**
  * Time range for trends chart. Supports multiple formats:
  * - "all" - Show all historical data
@@ -53,6 +56,7 @@ export interface TrendsFilter {
 	ltvRange: [number, number] | null;
 	lenderIds: string[]; // Empty = all lenders
 	buyerCategory: "all" | "pdh" | "btl"; // PDH = FTB/Mover, BTL = Buy to Let (mutually exclusive)
+	berFilter: BerFilter; // "all" = any, or specific BER group (A, B, C, etc.)
 	displayMode: TrendsDisplayMode;
 	marketChartStyle: MarketChartStyle;
 	breakdownBy: TrendsBreakdownDimension[]; // Empty = overall, multiple = compound grouping
@@ -90,6 +94,7 @@ export const DEFAULT_TRENDS_FILTER: TrendsFilter = {
 	ltvRange: null, // All LTV
 	lenderIds: [],
 	buyerCategory: "pdh",
+	berFilter: "all",
 	displayMode: "market-overview",
 	marketChartStyle: "grouped",
 	breakdownBy: ["lender"],
@@ -343,7 +348,8 @@ export const $hasTrendsFilter = computed($trendsFilter, (filter) => {
 		(filter.ltvRange !== null &&
 			(filter.ltvRange[0] !== 0 || filter.ltvRange[1] !== 80)) ||
 		filter.lenderIds.length > 0 ||
-		filter.buyerCategory !== "pdh"
+		filter.buyerCategory !== "pdh" ||
+		filter.berFilter !== "all"
 	);
 });
 

@@ -20,6 +20,7 @@ interface TimeRangeCommandProps {
 	value: string;
 	onChange: (value: string) => void;
 	className?: string;
+	size?: "default" | "sm";
 }
 
 interface TimeRangeOption {
@@ -191,6 +192,7 @@ export function TimeRangeCommand({
 	value,
 	onChange,
 	className,
+	size = "default",
 }: TimeRangeCommandProps) {
 	const [open, setOpen] = useState(false);
 	const [inputValue, setInputValue] = useState("");
@@ -260,7 +262,11 @@ export function TimeRangeCommand({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
-					className={cn("h-9 justify-start gap-2 font-normal", className)}
+					className={cn(
+						"justify-start gap-2 font-normal",
+						size === "sm" ? "h-8 text-xs" : "h-9",
+						className,
+					)}
 				>
 					<Clock className="h-3.5 w-3.5 shrink-0 opacity-50" />
 					<span className="truncate">{displayLabel}</span>
