@@ -18,14 +18,16 @@
 		"allowanceBasis": "balance"
 	},
 	{
-		"id": "fixed-10pct-balance-2pct-cap",
-		"label": "10% of Balance (2% Cap)",
-		"description": "Up to 10% of balance per year, early redemption fee capped at 2%",
+		"id": "fixed-10pct-balance-2pct-cap-max2yr",
+		"label": "10% of Balance (2% Cap, Max 2/Year)",
+		"description": "Up to 10% of balance per year. Max 2 overpayments per calendar year. Early redemption fee capped at 2%.",
 		"icon": "Shield",
 		"allowanceType": "percentage",
 		"allowanceValue": 10,
 		"allowanceBasis": "balance",
-		"chargeCap": 2
+		"chargeCap": 2,
+		"maxTransactions": 2,
+		"maxTransactionsPeriod": "year"
 	},
 	{
 		"id": "fixed-10pct-monthly",

@@ -24,7 +24,7 @@
 			"valuationFee": 185,
 			"securityReleaseFee": 40
 		},
-		"overpaymentPolicy": "fixed-10pct-balance-2pct-cap"
+		"overpaymentPolicy": "fixed-10pct-balance-2pct-cap-max2yr"
 	},
 	{
 		"id": "boi",

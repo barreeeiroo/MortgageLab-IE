@@ -17,7 +17,10 @@ import {
 	validateDrawdownTotal,
 } from "@/lib/mortgage/self-build";
 import type { Lender } from "@/lib/schemas/lender";
-import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
+import type {
+	MaxTransactionsPeriod,
+	OverpaymentPolicy,
+} from "@/lib/schemas/overpayment-policy";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type {
 	AmortizationMonth,
@@ -39,6 +42,7 @@ import type { CustomRate } from "@/lib/stores/custom-rates";
 import { formatNumber } from "@/lib/utils/currency";
 import {
 	addMonthsToDateString,
+	getCalendarDate,
 	getCalendarYearForMonth,
 	isFirstMonthOfCalendarYear,
 } from "@/lib/utils/date";
@@ -167,6 +171,49 @@ export function calculateAllowance(
 	}
 
 	return allowance;
+}
+
+/**
+ * Get a unique key for tracking transaction counts within a period.
+ * Used to enforce limits like "max 2 overpayments per year".
+ *
+ * @param ratePeriodId - The ID of the current rate period
+ * @param month - The mortgage month number (1-indexed)
+ * @param startDate - Optional mortgage start date for calendar-based periods
+ * @param period - The period type for the limit
+ */
+export function getTransactionPeriodKey(
+	ratePeriodId: string,
+	month: number,
+	startDate: string | undefined,
+	period: MaxTransactionsPeriod,
+): string {
+	if (period === "fixed_period") {
+		// Limit applies for the entire fixed rate period
+		return ratePeriodId;
+	}
+
+	if (!startDate) {
+		// Fallback to mortgage-relative periods when no start date
+		if (period === "month") return `${ratePeriodId}-m${month}`;
+		if (period === "quarter") return `${ratePeriodId}-q${Math.ceil(month / 3)}`;
+		return `${ratePeriodId}-y${Math.ceil(month / 12)}`;
+	}
+
+	// Calendar-based periods
+	const date = getCalendarDate(startDate, month - 1);
+	const year = date.getFullYear();
+	const calendarMonth = date.getMonth(); // 0-indexed
+
+	if (period === "month") {
+		return `${ratePeriodId}-${year}-${calendarMonth}`;
+	}
+	if (period === "quarter") {
+		const quarter = Math.floor(calendarMonth / 3);
+		return `${ratePeriodId}-${year}-Q${quarter}`;
+	}
+	// year
+	return `${ratePeriodId}-${year}`;
 }
 
 // Helper: Get overpayments for a specific month
@@ -342,6 +389,9 @@ export function calculateAmortization(
 	// Track balance at start of each period-year for allowance calculation
 	// (For balance-based policies, allowance should be based on balance at start of year)
 	const yearStartBalanceByPeriod = new Map<string, number>();
+
+	// Track transaction counts per period for policies with maxTransactions limit
+	const transactionCountByPeriod = new Map<string, number>();
 
 	// Pre-resolve all rate periods (stack-based: compute startMonth from position)
 	const resolvedPeriods = new Map<string, ResolvedRatePeriod>();
@@ -531,6 +581,49 @@ export function calculateAmortization(
 					configId: applied.configId,
 					overpaymentLabel,
 				});
+			}
+		}
+
+		// Check transaction count limits (e.g., Avant's max 2 per year)
+		if (overpaymentResult.applied.length > 0 && resolved.overpaymentPolicyId) {
+			const policy = policies.find(
+				(p) => p.id === resolved.overpaymentPolicyId,
+			);
+			if (policy?.maxTransactions && policy?.maxTransactionsPeriod) {
+				const periodKey = getTransactionPeriodKey(
+					ratePeriod.id,
+					month,
+					input.startDate,
+					policy.maxTransactionsPeriod,
+				);
+				const currentCount = transactionCountByPeriod.get(periodKey) ?? 0;
+
+				// Check each applied overpayment for this month
+				for (const applied of overpaymentResult.applied) {
+					const newCount = currentCount + 1;
+					transactionCountByPeriod.set(periodKey, newCount);
+
+					if (newCount > policy.maxTransactions) {
+						const config = overpaymentConfigs.find(
+							(c) => c.id === applied.configId,
+						);
+						const overpaymentLabel =
+							config?.label ||
+							(config?.type === "one_time" ? "One-time" : "Recurring");
+						const periodLabel =
+							policy.maxTransactionsPeriod === "fixed_period"
+								? "fixed period"
+								: policy.maxTransactionsPeriod;
+						warnings.push({
+							type: "transaction_limit_exceeded",
+							month,
+							message: `Exceeds ${policy.maxTransactions} overpayments per ${periodLabel} limit`,
+							severity: "warning",
+							configId: applied.configId,
+							overpaymentLabel,
+						});
+					}
+				}
 			}
 		}
 

@@ -604,6 +604,322 @@ describe("calculateAmortization", () => {
 		});
 	});
 
+	describe("transaction limit warnings", () => {
+		it("warns when overpayments exceed maxTransactions per year", () => {
+			// Simulate Avant's policy: max 2 overpayments per year
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000, // €200k
+					mortgageTermMonths: 60,
+					propertyValue: 25000000,
+					ber: "B2",
+					startDate: "2025-01-01",
+				},
+				ratePeriods: [
+					createRatePeriod({
+						rateId: "fixed-rate",
+						durationMonths: 36,
+					}),
+				],
+				overpaymentConfigs: [
+					// 3 overpayments in same year - should trigger warning on 3rd
+					createOverpaymentConfig({
+						id: "op-1",
+						type: "one_time",
+						amount: 500000, // €5k - within allowance
+						startMonth: 3,
+					}),
+					createOverpaymentConfig({
+						id: "op-2",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 6,
+					}),
+					createOverpaymentConfig({
+						id: "op-3",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 9,
+					}),
+				],
+			});
+			const rates = [
+				createRate({
+					id: "fixed-rate",
+					rate: 3.5,
+					type: "fixed",
+					fixedTerm: 3,
+				}),
+			];
+			const lenders = [createLender({ overpaymentPolicy: "max2-policy" })];
+			const policies = [
+				createPolicy({
+					id: "max2-policy",
+					maxTransactions: 2,
+					maxTransactionsPeriod: "year",
+				}),
+			];
+
+			const result = calculateAmortization(state, rates, [], lenders, policies);
+
+			const txLimitWarnings = result.warnings.filter(
+				(w) => w.type === "transaction_limit_exceeded",
+			);
+			// 3rd overpayment should trigger warning
+			expect(txLimitWarnings.length).toBe(1);
+			expect(txLimitWarnings[0].month).toBe(9);
+			expect(txLimitWarnings[0].configId).toBe("op-3");
+		});
+
+		it("resets transaction count at new calendar year", () => {
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000,
+					mortgageTermMonths: 60,
+					propertyValue: 25000000,
+					ber: "B2",
+					startDate: "2025-01-01",
+				},
+				ratePeriods: [
+					createRatePeriod({
+						rateId: "fixed-rate",
+						durationMonths: 36,
+					}),
+				],
+				overpaymentConfigs: [
+					// 2 overpayments in 2025
+					createOverpaymentConfig({
+						id: "op-1",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 3, // Mar 2025
+					}),
+					createOverpaymentConfig({
+						id: "op-2",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 6, // Jun 2025
+					}),
+					// 2 more in 2026 - should NOT trigger warning (new year)
+					createOverpaymentConfig({
+						id: "op-3",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 15, // Mar 2026
+					}),
+					createOverpaymentConfig({
+						id: "op-4",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 18, // Jun 2026
+					}),
+				],
+			});
+			const rates = [
+				createRate({
+					id: "fixed-rate",
+					rate: 3.5,
+					type: "fixed",
+					fixedTerm: 3,
+				}),
+			];
+			const lenders = [createLender({ overpaymentPolicy: "max2-policy" })];
+			const policies = [
+				createPolicy({
+					id: "max2-policy",
+					maxTransactions: 2,
+					maxTransactionsPeriod: "year",
+				}),
+			];
+
+			const result = calculateAmortization(state, rates, [], lenders, policies);
+
+			const txLimitWarnings = result.warnings.filter(
+				(w) => w.type === "transaction_limit_exceeded",
+			);
+			// No warnings - 2 per year in both years
+			expect(txLimitWarnings.length).toBe(0);
+		});
+
+		it("tracks transaction limit per fixed_period", () => {
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000,
+					mortgageTermMonths: 60,
+					propertyValue: 25000000,
+					ber: "B2",
+					startDate: "2025-01-01",
+				},
+				ratePeriods: [
+					createRatePeriod({
+						rateId: "fixed-rate",
+						durationMonths: 36,
+					}),
+				],
+				overpaymentConfigs: [
+					// 3 overpayments across different years, but same fixed period
+					createOverpaymentConfig({
+						id: "op-1",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 6, // Jun 2025
+					}),
+					createOverpaymentConfig({
+						id: "op-2",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 18, // Jun 2026
+					}),
+					createOverpaymentConfig({
+						id: "op-3",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 30, // Jun 2027
+					}),
+				],
+			});
+			const rates = [
+				createRate({
+					id: "fixed-rate",
+					rate: 3.5,
+					type: "fixed",
+					fixedTerm: 3,
+				}),
+			];
+			const lenders = [createLender({ overpaymentPolicy: "max2-period" })];
+			const policies = [
+				createPolicy({
+					id: "max2-period",
+					maxTransactions: 2,
+					maxTransactionsPeriod: "fixed_period",
+				}),
+			];
+
+			const result = calculateAmortization(state, rates, [], lenders, policies);
+
+			const txLimitWarnings = result.warnings.filter(
+				(w) => w.type === "transaction_limit_exceeded",
+			);
+			// 3rd overpayment should trigger warning (limit is 2 per fixed period)
+			expect(txLimitWarnings.length).toBe(1);
+			expect(txLimitWarnings[0].month).toBe(30);
+		});
+
+		it("no transaction limit warnings for variable rate periods", () => {
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000,
+					mortgageTermMonths: 60,
+					propertyValue: 25000000,
+					ber: "B2",
+					startDate: "2025-01-01",
+				},
+				overpaymentConfigs: [
+					// Multiple overpayments on variable rate
+					createOverpaymentConfig({
+						id: "op-1",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 3,
+					}),
+					createOverpaymentConfig({
+						id: "op-2",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 6,
+					}),
+					createOverpaymentConfig({
+						id: "op-3",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 9,
+					}),
+				],
+			});
+			const rates = [createRate({ rate: 4.0, type: "variable" })];
+			const lenders = [createLender({ overpaymentPolicy: "max2-policy" })];
+			const policies = [
+				createPolicy({
+					id: "max2-policy",
+					maxTransactions: 2,
+					maxTransactionsPeriod: "year",
+				}),
+			];
+
+			const result = calculateAmortization(state, rates, [], lenders, policies);
+
+			// Variable rates don't have overpayment policies applied
+			const txLimitWarnings = result.warnings.filter(
+				(w) => w.type === "transaction_limit_exceeded",
+			);
+			expect(txLimitWarnings.length).toBe(0);
+		});
+
+		it("works without startDate using mortgage-relative years", () => {
+			const state = createSimulationState({
+				input: {
+					mortgageAmount: 20000000,
+					mortgageTermMonths: 60,
+					propertyValue: 25000000,
+					ber: "B2",
+					// No startDate
+				},
+				ratePeriods: [
+					createRatePeriod({
+						rateId: "fixed-rate",
+						durationMonths: 36,
+					}),
+				],
+				overpaymentConfigs: [
+					// 3 overpayments in first mortgage year (months 1-12)
+					createOverpaymentConfig({
+						id: "op-1",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 3,
+					}),
+					createOverpaymentConfig({
+						id: "op-2",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 6,
+					}),
+					createOverpaymentConfig({
+						id: "op-3",
+						type: "one_time",
+						amount: 500000,
+						startMonth: 9,
+					}),
+				],
+			});
+			const rates = [
+				createRate({
+					id: "fixed-rate",
+					rate: 3.5,
+					type: "fixed",
+					fixedTerm: 3,
+				}),
+			];
+			const lenders = [createLender({ overpaymentPolicy: "max2-policy" })];
+			const policies = [
+				createPolicy({
+					id: "max2-policy",
+					maxTransactions: 2,
+					maxTransactionsPeriod: "year",
+				}),
+			];
+
+			const result = calculateAmortization(state, rates, [], lenders, policies);
+
+			const txLimitWarnings = result.warnings.filter(
+				(w) => w.type === "transaction_limit_exceeded",
+			);
+			// 3rd overpayment should trigger warning
+			expect(txLimitWarnings.length).toBe(1);
+			expect(txLimitWarnings[0].month).toBe(9);
+		});
+	});
+
 	describe("early redemption warnings", () => {
 		it("warns when mortgage paid off during fixed period", () => {
 			const state = createSimulationState({
