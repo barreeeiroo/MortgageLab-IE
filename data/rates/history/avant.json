@@ -2,7 +2,7 @@
 	"lenderId": "avant",
 	"baseline": {
 		"timestamp": "2024-02-22T07:40:56Z",
-		"ratesHash": "3f8d0ceece3641831e91dae06949b86b718e97af648daea444d2601a7b4c344a",
+		"ratesHash": "16fc2b5f647541e55cd4ea3dbd7aa483e15901bc2dc0b9d78626194c8d2e5825",
 		"rates": [
 			{
 				"id": "avant-one-15yr-60",
@@ -341,7 +341,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -361,7 +361,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -381,7 +381,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -401,7 +401,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -421,7 +421,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -441,7 +441,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -461,7 +461,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -481,7 +481,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -501,7 +501,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -521,7 +521,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -541,7 +541,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -561,7 +561,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -581,7 +581,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -601,7 +601,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -621,7 +621,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -641,7 +641,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -661,7 +661,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -681,7 +681,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -701,7 +701,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			},
 			{
@@ -721,7 +721,7 @@
 				],
 				"newBusiness": true,
 				"perks": [
-					"cashback-1pct"
+					"cashback-2pct"
 				]
 			}
 		]
@@ -1372,36 +1372,6 @@
 			]
 		},
 		{
-			"timestamp": "2026-01-09T17:13:28.000Z",
-			"afterHash": "553775f95444e12f3ef76c529f02cb3bd8f0d451e8b019f7d8dc34e831b03b64",
-			"operations": [
-				{
-					"op": "update",
-					"id": "avant-follow-on-variable-70",
-					"changes": {
-						"id": "avant-follow-on-variable-70",
-						"buyerTypes": [
-							"ftb",
-							"mover",
-							"switcher-pdh"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-follow-on-variable-90",
-					"changes": {
-						"id": "avant-follow-on-variable-90",
-						"buyerTypes": [
-							"ftb",
-							"mover",
-							"switcher-pdh"
-						]
-					}
-				}
-			]
-		},
-		{
 			"timestamp": "2026-01-10T08:06:46.000Z",
 			"afterHash": "3d81ae61cb55cf52a8546404be4a4329f689c4687623c1c165e7ef2c5e870cfe",
 			"operations": [
@@ -1596,232 +1566,6 @@
 						"id": "avant-fixed-5yr-90",
 						"rate": 3.7,
 						"apr": 3.92
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-follow-on-variable-70",
-					"changes": {
-						"id": "avant-follow-on-variable-70",
-						"buyerTypes": [
-							"switcher-pdh"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-follow-on-variable-90",
-					"changes": {
-						"id": "avant-follow-on-variable-90",
-						"buyerTypes": [
-							"switcher-pdh"
-						]
-					}
-				}
-			]
-		},
-		{
-			"timestamp": "2026-01-19T19:42:17.541Z",
-			"afterHash": "0790e0416dbed29cf983643484f1e41f59d0027bac4f5e0abd1d594c29e18a37",
-			"operations": [
-				{
-					"op": "update",
-					"id": "avant-fixed-3yr-60",
-					"changes": {
-						"id": "avant-fixed-3yr-60",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-3yr-70",
-					"changes": {
-						"id": "avant-fixed-3yr-70",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-3yr-80",
-					"changes": {
-						"id": "avant-fixed-3yr-80",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-3yr-90",
-					"changes": {
-						"id": "avant-fixed-3yr-90",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-4yr-60",
-					"changes": {
-						"id": "avant-fixed-4yr-60",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-4yr-70",
-					"changes": {
-						"id": "avant-fixed-4yr-70",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-4yr-80",
-					"changes": {
-						"id": "avant-fixed-4yr-80",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-4yr-90",
-					"changes": {
-						"id": "avant-fixed-4yr-90",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-5yr-60",
-					"changes": {
-						"id": "avant-fixed-5yr-60",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-5yr-70",
-					"changes": {
-						"id": "avant-fixed-5yr-70",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-5yr-80",
-					"changes": {
-						"id": "avant-fixed-5yr-80",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-5yr-90",
-					"changes": {
-						"id": "avant-fixed-5yr-90",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-7yr-60",
-					"changes": {
-						"id": "avant-fixed-7yr-60",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-7yr-70",
-					"changes": {
-						"id": "avant-fixed-7yr-70",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-7yr-80",
-					"changes": {
-						"id": "avant-fixed-7yr-80",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-7yr-90",
-					"changes": {
-						"id": "avant-fixed-7yr-90",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-10yr-60",
-					"changes": {
-						"id": "avant-fixed-10yr-60",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-10yr-70",
-					"changes": {
-						"id": "avant-fixed-10yr-70",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-10yr-80",
-					"changes": {
-						"id": "avant-fixed-10yr-80",
-						"perks": [
-							"cashback-2pct"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "avant-fixed-10yr-90",
-					"changes": {
-						"id": "avant-fixed-10yr-90",
-						"perks": [
-							"cashback-2pct"
-						]
 					}
 				}
 			]

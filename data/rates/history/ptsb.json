@@ -2,7 +2,7 @@
 	"lenderId": "ptsb",
 	"baseline": {
 		"timestamp": "2022-10-05T14:36:32Z",
-		"ratesHash": "99fb44c3f6c1d90a6e44f4173857571714a25879d41572c1d8ad308a2b56e584",
+		"ratesHash": "1ea60316a35b8b07640f61142f241dad1e7daea1ef79a94d0199b6b731d1d52d",
 		"rates": [
 			{
 				"id": "ptsb-fixed-2yr-60",
@@ -20,7 +20,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -40,7 +40,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -60,7 +60,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -80,7 +80,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -100,7 +100,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -120,7 +120,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -194,7 +194,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -214,7 +214,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -234,7 +234,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -332,7 +332,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -352,7 +352,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -372,7 +372,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -393,7 +393,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -414,7 +414,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -435,7 +435,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -456,7 +456,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -477,7 +477,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -498,7 +498,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct"
+					"cashback-2pct-max10k"
 				],
 				"newBusiness": true
 			},
@@ -3925,192 +3925,6 @@
 						"id": "ptsb-existing-hv-green-fixed-5yr-90",
 						"rate": 3.7,
 						"apr": 4.31
-					}
-				}
-			]
-		},
-		{
-			"timestamp": "2026-01-19T19:44:50.351Z",
-			"afterHash": "631efe9a3e8c63ca6c9c19cd0ae451c877deba65775e5c86914fb3675beb7a09",
-			"operations": [
-				{
-					"op": "update",
-					"id": "ptsb-fixed-2yr-60",
-					"changes": {
-						"id": "ptsb-fixed-2yr-60",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-2yr-80",
-					"changes": {
-						"id": "ptsb-fixed-2yr-80",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-2yr-90",
-					"changes": {
-						"id": "ptsb-fixed-2yr-90",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-3yr-60",
-					"changes": {
-						"id": "ptsb-fixed-3yr-60",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-3yr-80",
-					"changes": {
-						"id": "ptsb-fixed-3yr-80",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-3yr-90",
-					"changes": {
-						"id": "ptsb-fixed-3yr-90",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-5yr-60",
-					"changes": {
-						"id": "ptsb-fixed-5yr-60",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-5yr-80",
-					"changes": {
-						"id": "ptsb-fixed-5yr-80",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-5yr-90",
-					"changes": {
-						"id": "ptsb-fixed-5yr-90",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-7yr-60",
-					"changes": {
-						"id": "ptsb-fixed-7yr-60",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-7yr-80",
-					"changes": {
-						"id": "ptsb-fixed-7yr-80",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-fixed-7yr-90",
-					"changes": {
-						"id": "ptsb-fixed-7yr-90",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-hv-fixed-3yr-60",
-					"changes": {
-						"id": "ptsb-hv-fixed-3yr-60",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-hv-fixed-3yr-80",
-					"changes": {
-						"id": "ptsb-hv-fixed-3yr-80",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-hv-fixed-3yr-90",
-					"changes": {
-						"id": "ptsb-hv-fixed-3yr-90",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-hv-fixed-5yr-60",
-					"changes": {
-						"id": "ptsb-hv-fixed-5yr-60",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-hv-fixed-5yr-80",
-					"changes": {
-						"id": "ptsb-hv-fixed-5yr-80",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
-					}
-				},
-				{
-					"op": "update",
-					"id": "ptsb-hv-fixed-5yr-90",
-					"changes": {
-						"id": "ptsb-hv-fixed-5yr-90",
-						"perks": [
-							"cashback-2pct-max10k"
-						]
 					}
 				}
 			]

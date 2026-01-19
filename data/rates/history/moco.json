@@ -2,11 +2,11 @@
 	"lenderId": "moco",
 	"baseline": {
 		"timestamp": "2024-07-18T01:35:19Z",
-		"ratesHash": "7127fd57ba66408e775b76d3804dd271a6a96f6c79cc3204928939b91ec36169",
+		"ratesHash": "cd6ab64a45a79410426778a8edacecda976f563984b0e73a5ecf8a094643226e",
 		"rates": [
 			{
 				"id": "moco-fixed-3yr-50",
-				"name": "3 Year Fixed",
+				"name": "3 Year Fixed - LTV ≤50%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.6,
@@ -23,7 +23,7 @@
 			},
 			{
 				"id": "moco-fixed-3yr-60",
-				"name": "3 Year Fixed",
+				"name": "3 Year Fixed - LTV ≤60%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.6,
@@ -40,7 +40,7 @@
 			},
 			{
 				"id": "moco-fixed-3yr-70",
-				"name": "3 Year Fixed",
+				"name": "3 Year Fixed - LTV ≤70%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.6,
@@ -57,7 +57,7 @@
 			},
 			{
 				"id": "moco-fixed-3yr-80",
-				"name": "3 Year Fixed",
+				"name": "3 Year Fixed - LTV ≤80%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.6,
@@ -74,7 +74,7 @@
 			},
 			{
 				"id": "moco-fixed-3yr-90",
-				"name": "3 Year Fixed",
+				"name": "3 Year Fixed - LTV ≤90%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.75,
@@ -91,7 +91,7 @@
 			},
 			{
 				"id": "moco-fixed-5yr-50",
-				"name": "5 Year Fixed",
+				"name": "5 Year Fixed - LTV ≤50%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.5,
@@ -108,7 +108,7 @@
 			},
 			{
 				"id": "moco-fixed-5yr-60",
-				"name": "5 Year Fixed",
+				"name": "5 Year Fixed - LTV ≤60%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.5,
@@ -125,7 +125,7 @@
 			},
 			{
 				"id": "moco-fixed-5yr-70",
-				"name": "5 Year Fixed",
+				"name": "5 Year Fixed - LTV ≤70%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.5,
@@ -142,7 +142,7 @@
 			},
 			{
 				"id": "moco-fixed-5yr-80",
-				"name": "5 Year Fixed",
+				"name": "5 Year Fixed - LTV ≤80%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.5,
@@ -159,7 +159,7 @@
 			},
 			{
 				"id": "moco-fixed-5yr-90",
-				"name": "5 Year Fixed",
+				"name": "5 Year Fixed - LTV ≤90%",
 				"lenderId": "moco",
 				"type": "fixed",
 				"rate": 4.65,
@@ -609,92 +609,6 @@
 						"id": "moco-variable-svr",
 						"rate": 3.96,
 						"apr": 4.04
-					}
-				}
-			]
-		},
-		{
-			"timestamp": "2026-01-19T19:56:27.719Z",
-			"afterHash": "a4aaf4aaa3cf260ed3ad139008e7359149a3880b4c98a7ea1c46196bf094b724",
-			"operations": [
-				{
-					"op": "update",
-					"id": "moco-fixed-3yr-50",
-					"changes": {
-						"id": "moco-fixed-3yr-50",
-						"name": "3 Year Fixed - LTV ≤50%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-3yr-60",
-					"changes": {
-						"id": "moco-fixed-3yr-60",
-						"name": "3 Year Fixed - LTV ≤60%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-3yr-70",
-					"changes": {
-						"id": "moco-fixed-3yr-70",
-						"name": "3 Year Fixed - LTV ≤70%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-3yr-80",
-					"changes": {
-						"id": "moco-fixed-3yr-80",
-						"name": "3 Year Fixed - LTV ≤80%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-3yr-90",
-					"changes": {
-						"id": "moco-fixed-3yr-90",
-						"name": "3 Year Fixed - LTV ≤90%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-5yr-50",
-					"changes": {
-						"id": "moco-fixed-5yr-50",
-						"name": "5 Year Fixed - LTV ≤50%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-5yr-60",
-					"changes": {
-						"id": "moco-fixed-5yr-60",
-						"name": "5 Year Fixed - LTV ≤60%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-5yr-70",
-					"changes": {
-						"id": "moco-fixed-5yr-70",
-						"name": "5 Year Fixed - LTV ≤70%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-5yr-80",
-					"changes": {
-						"id": "moco-fixed-5yr-80",
-						"name": "5 Year Fixed - LTV ≤80%"
-					}
-				},
-				{
-					"op": "update",
-					"id": "moco-fixed-5yr-90",
-					"changes": {
-						"id": "moco-fixed-5yr-90",
-						"name": "5 Year Fixed - LTV ≤90%"
 					}
 				}
 			]
