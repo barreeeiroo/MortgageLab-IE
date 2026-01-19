@@ -8,6 +8,7 @@ import type { MortgageRate, RatesFile } from "@/lib/schemas/rate";
 
 const RATES_DIR = join(import.meta.dir, "../../data/rates");
 const LENDERS_FILE = join(import.meta.dir, "../../data/lenders.json");
+const PERKS_FILE = join(import.meta.dir, "../../data/perks.json");
 
 interface DuplicateIdError {
 	lenderId: string;
@@ -57,12 +58,21 @@ interface FollowOnRateWarning {
 	matchingVariableRates: string[];
 }
 
+interface InvalidPerkIdError {
+	lenderId: string;
+	type: "invalid-perk-id";
+	message: string;
+	rateId: string;
+	invalidPerkId: string;
+}
+
 type ValidationError =
 	| DuplicateIdError
 	| BtlLtvError
 	| MixedBuyerTypesError
 	| FollowOnRateError
-	| ExistingCustomerBuyerTypeError;
+	| ExistingCustomerBuyerTypeError
+	| InvalidPerkIdError;
 
 type ValidationWarning = FollowOnRateWarning;
 
@@ -77,6 +87,7 @@ interface ValidationResult {
 async function validateLenderRates(
 	lenderId: string,
 	rates: MortgageRate[],
+	validPerkIds: Set<string>,
 ): Promise<ValidationResult> {
 	const errors: ValidationError[] = [];
 	const warnings: ValidationWarning[] = [];
@@ -151,6 +162,21 @@ async function validateLenderRates(
 					message: `Existing customer rate "${rate.id}" has non-switcher buyer types: [${nonSwitcherTypes.join(", ")}]`,
 					rateId: rate.id,
 					buyerTypes: [...rate.buyerTypes],
+				});
+			}
+		}
+	}
+
+	// Check all perk IDs exist in perks.json
+	for (const rate of rates) {
+		for (const perkId of rate.perks) {
+			if (!validPerkIds.has(perkId)) {
+				errors.push({
+					lenderId,
+					type: "invalid-perk-id",
+					message: `Rate "${rate.id}" references unknown perk ID: "${perkId}"`,
+					rateId: rate.id,
+					invalidPerkId: perkId,
 				});
 			}
 		}
@@ -261,6 +287,11 @@ async function main() {
 	const lenders = JSON.parse(lendersContent) as { id: string }[];
 	const lenderIds = lenders.map((l) => l.id);
 
+	// Load valid perk IDs
+	const perksContent = await readFile(PERKS_FILE, "utf-8");
+	const perks = JSON.parse(perksContent) as { id: string }[];
+	const validPerkIds = new Set(perks.map((p) => p.id));
+
 	const files = await readdir(RATES_DIR);
 	const jsonFiles = files
 		.filter((f) => f.endsWith(".json"))
@@ -286,7 +317,7 @@ async function main() {
 				? parsed
 				: (parsed as RatesFile).rates;
 
-			const result = await validateLenderRates(lenderId, rates);
+			const result = await validateLenderRates(lenderId, rates, validPerkIds);
 			results.push(result);
 
 			if (!result.isValid) {

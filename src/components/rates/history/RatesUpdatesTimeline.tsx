@@ -22,7 +22,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { BUYER_TYPE_LABELS } from "@/lib/constants/buyer";
+import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Lender } from "@/lib/schemas/lender";
+import type { Perk } from "@/lib/schemas/perk";
 import type { RateChange, RatesHistoryFile } from "@/lib/schemas/rate-history";
 import { getRateChanges } from "@/lib/stores/rates/rates-history";
 import {
@@ -37,6 +40,7 @@ import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 interface UpdatesTimelineProps {
 	historyData: Map<string, RatesHistoryFile>;
 	lenders: Lender[];
+	perks: Perk[];
 }
 
 interface GroupedChanges {
@@ -108,44 +112,26 @@ function formatFieldName(field: string): string {
 	return names[field] ?? field;
 }
 
-/** Buyer type labels for display */
-const BUYER_TYPE_LABELS: Record<string, string> = {
-	ftb: "First Time Buyer",
-	mover: "Mover",
-	btl: "Buy to Let",
-	"switcher-pdh": "Switcher (Home)",
-	"switcher-btl": "Switcher (BTL)",
-};
-
-/**
- * Format a perk ID to a readable label
- */
-function formatPerkId(perkId: string): string {
-	// Convert "cashback-2pct" to "Cashback 2%", "fee-free-banking" to "Fee Free Banking"
-	return perkId
-		.split("-")
-		.map((word) => {
-			if (word === "pct") return "%";
-			return word.charAt(0).toUpperCase() + word.slice(1);
-		})
-		.join(" ")
-		.replace(" %", "%");
-}
-
 /**
  * Format a field value for display
  */
-function formatFieldValue(field: string, value: unknown): string {
+function formatFieldValue(
+	field: string,
+	value: unknown,
+	perkMap?: Map<string, Perk>,
+): string {
 	if (value === undefined || value === null) return "—";
 
 	// Handle arrays based on field type
 	if (Array.isArray(value)) {
 		if (value.length === 0) return "None";
 		if (field === "buyerTypes") {
-			return value.map((v) => BUYER_TYPE_LABELS[v] ?? v).join(", ");
+			return value
+				.map((v) => BUYER_TYPE_LABELS[v as BuyerType] ?? v)
+				.join(", ");
 		}
 		if (field === "perks") {
-			return value.map((v) => formatPerkId(v)).join(", ");
+			return value.map((v) => perkMap?.get(v)?.label ?? v).join(", ");
 		}
 		// berEligible and others - show as-is
 		return value.join(", ");
@@ -169,6 +155,7 @@ function formatFieldValue(field: string, value: unknown): string {
 export function RatesUpdatesTimeline({
 	historyData,
 	lenders,
+	perks,
 }: UpdatesTimelineProps) {
 	const filter = useStore($updatesFilter);
 	const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
@@ -184,6 +171,15 @@ export function RatesUpdatesTimeline({
 		}
 		return map;
 	}, [lenders]);
+
+	// Create perk lookup map
+	const perkMap = useMemo(() => {
+		const map = new Map<string, Perk>();
+		for (const perk of perks) {
+			map.set(perk.id, perk);
+		}
+		return map;
+	}, [perks]);
 
 	// Get all changes from all lenders
 	const allChanges = useMemo(() => {
@@ -624,6 +620,7 @@ export function RatesUpdatesTimeline({
 																					{formatFieldValue(
 																						fc.field,
 																						fc.previousValue,
+																						perkMap,
 																					)}
 																				</span>
 																				<span>→</span>
@@ -631,6 +628,7 @@ export function RatesUpdatesTimeline({
 																					{formatFieldValue(
 																						fc.field,
 																						fc.newValue,
+																						perkMap,
 																					)}
 																				</span>
 																			</div>

@@ -1272,6 +1272,7 @@ export function RatesTable({
 				lender={
 					selectedRate ? getLender(lenders, selectedRate.lenderId) : undefined
 				}
+				perks={perks}
 				open={selectedRate !== null && historyOpen}
 				onOpenChange={(open) => {
 					if (!open) {

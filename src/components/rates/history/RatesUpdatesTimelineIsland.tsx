@@ -20,7 +20,8 @@ export function RatesUpdatesTimelineIsland() {
 	initializeHistoryFilters();
 
 	const activeTab = useStore($historyActiveTab);
-	const { loading, error, historyData, lenders } = useStore($historyDataState);
+	const { loading, error, historyData, lenders, perks } =
+		useStore($historyDataState);
 
 	// Load data on mount
 	useEffect(() => {
@@ -32,5 +33,11 @@ export function RatesUpdatesTimelineIsland() {
 		return null;
 	}
 
-	return <RatesUpdatesTimeline historyData={historyData} lenders={lenders} />;
+	return (
+		<RatesUpdatesTimeline
+			historyData={historyData}
+			lenders={lenders}
+			perks={perks}
+		/>
+	);
 }

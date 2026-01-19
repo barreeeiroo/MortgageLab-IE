@@ -26,8 +26,11 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { BUYER_TYPE_LABELS } from "@/lib/constants/buyer";
 import { getIncorrectRateUrl } from "@/lib/constants/contact";
+import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Lender } from "@/lib/schemas/lender";
+import type { Perk } from "@/lib/schemas/perk";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type { RateChange, RateTimeSeries } from "@/lib/schemas/rate-history";
 import {
@@ -47,6 +50,7 @@ import { RatesTrendChart } from "./history/RatesTrendChart";
 interface RateHistoryModalProps {
 	rate: MortgageRate | null;
 	lender: Lender | undefined;
+	perks: Perk[];
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onBack: () => void;
@@ -113,43 +117,26 @@ function formatFieldName(field: string): string {
 	return names[field] ?? field;
 }
 
-/** Buyer type labels for display */
-const BUYER_TYPE_LABELS: Record<string, string> = {
-	ftb: "First Time Buyer",
-	mover: "Mover",
-	btl: "Buy to Let",
-	"switcher-pdh": "Switcher (Home)",
-	"switcher-btl": "Switcher (BTL)",
-};
-
-/**
- * Format a perk ID to a readable label
- */
-function formatPerkId(perkId: string): string {
-	return perkId
-		.split("-")
-		.map((word) => {
-			if (word === "pct") return "%";
-			return word.charAt(0).toUpperCase() + word.slice(1);
-		})
-		.join(" ")
-		.replace(" %", "%");
-}
-
 /**
  * Format a field value for display
  */
-function formatFieldValue(field: string, value: unknown): string {
+function formatFieldValue(
+	field: string,
+	value: unknown,
+	perkMap?: Map<string, Perk>,
+): string {
 	if (value === undefined || value === null) return "—";
 
 	// Handle arrays based on field type
 	if (Array.isArray(value)) {
 		if (value.length === 0) return "None";
 		if (field === "buyerTypes") {
-			return value.map((v) => BUYER_TYPE_LABELS[v] ?? v).join(", ");
+			return value
+				.map((v) => BUYER_TYPE_LABELS[v as BuyerType] ?? v)
+				.join(", ");
 		}
 		if (field === "perks") {
-			return value.map((v) => formatPerkId(v)).join(", ");
+			return value.map((v) => perkMap?.get(v)?.label ?? v).join(", ");
 		}
 		return value.join(", ");
 	}
@@ -172,6 +159,7 @@ function formatFieldValue(field: string, value: unknown): string {
 export function RateHistoryModal({
 	rate,
 	lender,
+	perks,
 	open,
 	onOpenChange,
 	onBack,
@@ -184,6 +172,12 @@ export function RateHistoryModal({
 	const [expandedChanges, setExpandedChanges] = useState<Set<string>>(
 		new Set(),
 	);
+
+	// Create perk lookup map
+	const perkMap = new Map<string, Perk>();
+	for (const perk of perks) {
+		perkMap.set(perk.id, perk);
+	}
 
 	const isCustom = rate ? (rate as { isCustom?: boolean }).isCustom : false;
 	const customLenderName =
@@ -587,11 +581,19 @@ export function RateHistoryModal({
 															</span>
 															<div className="flex items-center gap-1 mt-0.5 text-muted-foreground">
 																<span className="line-through">
-																	{formatFieldValue(fc.field, fc.previousValue)}
+																	{formatFieldValue(
+																		fc.field,
+																		fc.previousValue,
+																		perkMap,
+																	)}
 																</span>
 																<span>→</span>
 																<span className="text-foreground">
-																	{formatFieldValue(fc.field, fc.newValue)}
+																	{formatFieldValue(
+																		fc.field,
+																		fc.newValue,
+																		perkMap,
+																	)}
 																</span>
 															</div>
 														</div>

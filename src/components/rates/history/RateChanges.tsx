@@ -28,8 +28,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { BUYER_TYPE_LABELS } from "@/lib/constants/buyer";
 import { fetchAllRates } from "@/lib/data/rates";
+import type { BuyerType } from "@/lib/schemas/buyer";
 import type { Lender } from "@/lib/schemas/lender";
+import type { Perk } from "@/lib/schemas/perk";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type { RatesHistoryFile } from "@/lib/schemas/rate-history";
 import {
@@ -50,6 +53,7 @@ import { SHORT_MONTH_NAMES } from "@/lib/utils/date";
 interface RateChangesProps {
 	historyData: Map<string, RatesHistoryFile>;
 	lenders: Lender[];
+	perks: Perk[];
 }
 
 interface FieldChange {
@@ -206,10 +210,22 @@ function formatFieldName(field: string): string {
 /**
  * Format a field value for display
  */
-function formatFieldValue(field: string, value: unknown): string {
+function formatFieldValue(
+	field: string,
+	value: unknown,
+	perkMap?: Map<string, Perk>,
+): string {
 	if (value === undefined || value === null) return "—";
 	if (Array.isArray(value)) {
 		if (value.length === 0) return "None";
+		if (field === "buyerTypes") {
+			return value
+				.map((v) => BUYER_TYPE_LABELS[v as BuyerType] ?? v)
+				.join(", ");
+		}
+		if (field === "perks") {
+			return value.map((v) => perkMap?.get(v)?.label ?? v).join(", ");
+		}
 		return value.join(", ");
 	}
 	if (typeof value === "boolean") return value ? "Yes" : "No";
@@ -237,7 +253,7 @@ function getEarliestDate(historyData: Map<string, RatesHistoryFile>): Date {
 	return earliest;
 }
 
-export function RateChanges({ historyData, lenders }: RateChangesProps) {
+export function RateChanges({ historyData, lenders, perks }: RateChangesProps) {
 	const comparisonDateStr = useStore($comparisonDate);
 	const comparisonEndDateStr = useStore($comparisonEndDate);
 	const changesFilter = useStore($changesFilter);
@@ -289,6 +305,15 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 		}
 		return map;
 	}, [lenders]);
+
+	// Create perk lookup map
+	const perkMap = useMemo(() => {
+		const map = new Map<string, Perk>();
+		for (const perk of perks) {
+			map.set(perk.id, perk);
+		}
+		return map;
+	}, [perks]);
 
 	// Calculate earliest available date
 	const earliestDate = useMemo(
@@ -1009,11 +1034,16 @@ export function RateChanges({ historyData, lenders }: RateChangesProps) {
 																			{formatFieldValue(
 																				fc.field,
 																				fc.previousValue,
+																				perkMap,
 																			)}
 																		</span>
 																		<span>→</span>
 																		<span className="text-foreground">
-																			{formatFieldValue(fc.field, fc.newValue)}
+																			{formatFieldValue(
+																				fc.field,
+																				fc.newValue,
+																				perkMap,
+																			)}
 																		</span>
 																	</div>
 																</div>
