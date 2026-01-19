@@ -3928,6 +3928,192 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-01-19T19:44:50.351Z",
+			"afterHash": "631efe9a3e8c63ca6c9c19cd0ae451c877deba65775e5c86914fb3675beb7a09",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-fixed-2yr-60",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-80",
+					"changes": {
+						"id": "ptsb-fixed-2yr-80",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-90",
+					"changes": {
+						"id": "ptsb-fixed-2yr-90",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-fixed-3yr-60",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-fixed-3yr-80",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-fixed-3yr-90",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-fixed-5yr-60",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-fixed-5yr-80",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-fixed-5yr-90",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-fixed-7yr-60",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-fixed-7yr-80",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-fixed-7yr-90",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-60",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-80",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-90",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-60",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-80",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-90",
+						"perks": [
+							"cashback-2pct-max10k"
+						]
+					}
+				}
+			]
 		}
 	]
 }

@@ -229,7 +229,8 @@ function parseRatesFromHtml(html: string): MortgageRate[] {
 					minLoan: isHighValue ? 250000 : undefined,
 					buyerTypes,
 					berEligible: parsed.isGreen ? GREEN_BER_RATINGS : undefined,
-					perks: hasCashback || hasHighValueCashback ? ["cashback-2pct"] : [],
+					perks:
+						hasCashback || hasHighValueCashback ? ["cashback-2pct-max10k"] : [],
 					newBusiness: isNewBusiness,
 				};
 

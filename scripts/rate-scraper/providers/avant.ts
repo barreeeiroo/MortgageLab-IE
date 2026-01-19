@@ -177,7 +177,7 @@ function parseFixedTermTable(
 						buyerTypes: BUYER_TYPES,
 						newBusiness: true,
 						// High Value mortgages don't have cashback
-						perks: isHighValue ? [] : ["cashback-1pct"],
+						perks: isHighValue ? [] : ["cashback-2pct"],
 						// High Value mortgages require €300k minimum loan
 						...(isHighValue && { minLoan: 300000 }),
 					});

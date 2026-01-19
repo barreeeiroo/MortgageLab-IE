@@ -1619,6 +1619,212 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-01-19T19:42:17.541Z",
+			"afterHash": "0790e0416dbed29cf983643484f1e41f59d0027bac4f5e0abd1d594c29e18a37",
+			"operations": [
+				{
+					"op": "update",
+					"id": "avant-fixed-3yr-60",
+					"changes": {
+						"id": "avant-fixed-3yr-60",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-3yr-70",
+					"changes": {
+						"id": "avant-fixed-3yr-70",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-3yr-80",
+					"changes": {
+						"id": "avant-fixed-3yr-80",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-3yr-90",
+					"changes": {
+						"id": "avant-fixed-3yr-90",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-4yr-60",
+					"changes": {
+						"id": "avant-fixed-4yr-60",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-4yr-70",
+					"changes": {
+						"id": "avant-fixed-4yr-70",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-4yr-80",
+					"changes": {
+						"id": "avant-fixed-4yr-80",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-4yr-90",
+					"changes": {
+						"id": "avant-fixed-4yr-90",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-5yr-60",
+					"changes": {
+						"id": "avant-fixed-5yr-60",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-5yr-70",
+					"changes": {
+						"id": "avant-fixed-5yr-70",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-5yr-80",
+					"changes": {
+						"id": "avant-fixed-5yr-80",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-5yr-90",
+					"changes": {
+						"id": "avant-fixed-5yr-90",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-7yr-60",
+					"changes": {
+						"id": "avant-fixed-7yr-60",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-7yr-70",
+					"changes": {
+						"id": "avant-fixed-7yr-70",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-7yr-80",
+					"changes": {
+						"id": "avant-fixed-7yr-80",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-7yr-90",
+					"changes": {
+						"id": "avant-fixed-7yr-90",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-10yr-60",
+					"changes": {
+						"id": "avant-fixed-10yr-60",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-10yr-70",
+					"changes": {
+						"id": "avant-fixed-10yr-70",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-10yr-80",
+					"changes": {
+						"id": "avant-fixed-10yr-80",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-fixed-10yr-90",
+					"changes": {
+						"id": "avant-fixed-10yr-90",
+						"perks": [
+							"cashback-2pct"
+						]
+					}
+				}
+			]
 		}
 	]
 }

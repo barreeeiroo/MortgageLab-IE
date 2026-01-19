@@ -1,8 +1,8 @@
 {
 	"lenderId": "ptsb",
-	"lastScrapedAt": "2026-01-19T08:08:07.598Z",
-	"lastUpdatedAt": "2026-01-09T12:18:29.068Z",
-	"ratesHash": "9923f559e7ac746974528900f95c7446ff8b5a10bf38d6f6968343c2f81575e6",
+	"lastScrapedAt": "2026-01-19T19:44:50.351Z",
+	"lastUpdatedAt": "2026-01-19T19:44:50.351Z",
+	"ratesHash": "631efe9a3e8c63ca6c9c19cd0ae451c877deba65775e5c86914fb3675beb7a09",
 	"rates": [
 		{
 			"id": "ptsb-fixed-2yr-60",
@@ -20,7 +20,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -40,7 +40,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -60,7 +60,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -80,7 +80,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -100,7 +100,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -120,7 +120,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -194,7 +194,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -214,7 +214,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -234,7 +234,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -410,7 +410,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -430,7 +430,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -450,7 +450,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -471,7 +471,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -492,7 +492,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -513,7 +513,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -534,7 +534,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -555,7 +555,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
@@ -576,7 +576,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct"
+				"cashback-2pct-max10k"
 			],
 			"newBusiness": true
 		},
