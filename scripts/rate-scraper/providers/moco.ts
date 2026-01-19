@@ -91,7 +91,7 @@ function parseRatesFromHtml(html: string): MortgageRate[] {
 
 				const mortgageRate: MortgageRate = {
 					id,
-					name: `${parsed.term} Year Fixed`,
+					name: `${parsed.term} Year Fixed - LTV ≤${parsed.maxLtv}%`,
 					lenderId: LENDER_ID,
 					type: "fixed",
 					rate: parsed.rate,

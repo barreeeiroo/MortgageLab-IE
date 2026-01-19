@@ -612,6 +612,92 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-01-19T19:56:27.719Z",
+			"afterHash": "a4aaf4aaa3cf260ed3ad139008e7359149a3880b4c98a7ea1c46196bf094b724",
+			"operations": [
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-50",
+					"changes": {
+						"id": "moco-fixed-3yr-50",
+						"name": "3 Year Fixed - LTV ≤50%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-60",
+					"changes": {
+						"id": "moco-fixed-3yr-60",
+						"name": "3 Year Fixed - LTV ≤60%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-70",
+					"changes": {
+						"id": "moco-fixed-3yr-70",
+						"name": "3 Year Fixed - LTV ≤70%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-80",
+					"changes": {
+						"id": "moco-fixed-3yr-80",
+						"name": "3 Year Fixed - LTV ≤80%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-90",
+					"changes": {
+						"id": "moco-fixed-3yr-90",
+						"name": "3 Year Fixed - LTV ≤90%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-50",
+					"changes": {
+						"id": "moco-fixed-5yr-50",
+						"name": "5 Year Fixed - LTV ≤50%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-60",
+					"changes": {
+						"id": "moco-fixed-5yr-60",
+						"name": "5 Year Fixed - LTV ≤60%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-70",
+					"changes": {
+						"id": "moco-fixed-5yr-70",
+						"name": "5 Year Fixed - LTV ≤70%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-80",
+					"changes": {
+						"id": "moco-fixed-5yr-80",
+						"name": "5 Year Fixed - LTV ≤80%"
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-90",
+					"changes": {
+						"id": "moco-fixed-5yr-90",
+						"name": "5 Year Fixed - LTV ≤90%"
+					}
+				}
+			]
 		}
 	]
 }
