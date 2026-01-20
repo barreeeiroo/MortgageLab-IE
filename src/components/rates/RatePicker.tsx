@@ -315,61 +315,64 @@ export function RatePicker({
 										key={rate.id}
 										htmlFor={`${instanceId}-rate-${rate.id}`}
 										className={cn(
-											"flex items-center gap-2.5 p-2 border rounded-lg cursor-pointer transition-colors",
+											"flex flex-col sm:flex-row sm:items-center gap-2 p-2 border rounded-lg cursor-pointer transition-colors",
 											"hover:bg-muted/50",
 											isRateSelected(rate) && "border-primary bg-primary/5",
 										)}
 									>
-										<RadioGroupItem
-											value={rate.id}
-											id={`${instanceId}-rate-${rate.id}`}
-											className="shrink-0"
-										/>
-										<LenderLogo lenderId={rate.lenderId} size={32} />
-										<div className="flex-1 min-w-0">
-											<span className="font-medium text-sm truncate block">
-												{rate.name}
-											</span>
-											<p className="text-xs text-muted-foreground truncate">
-												{lender?.name ?? rate.lenderId} · LTV {rate.minLtv}-
-												{rate.maxLtv}%
-											</p>
-										</div>
-										{/* Perk icons */}
-										{withPerks && rate.perks && rate.perks.length > 0 && (
-											<div className="flex items-center gap-1 shrink-0">
-												{rate.perks.map((perkId) => {
-													const perk = perks.find((p) => p.id === perkId);
-													if (!perk) return null;
-													const IconComponent = PERK_ICONS[perk.icon];
-													if (!IconComponent) return null;
-													return (
-														<Tooltip key={perkId}>
-															<TooltipTrigger asChild>
-																<div className="p-1 rounded bg-muted/50">
-																	<IconComponent className="h-3.5 w-3.5 text-muted-foreground" />
-																</div>
-															</TooltipTrigger>
-															<TooltipContent>
-																<p className="font-medium">{perk.label}</p>
-																{perk.description && (
-																	<p className="text-xs text-muted-foreground">
-																		{perk.description}
-																	</p>
-																)}
-															</TooltipContent>
-														</Tooltip>
-													);
-												})}
+										<div className="flex items-center gap-2.5 min-w-0">
+											<RadioGroupItem
+												value={rate.id}
+												id={`${instanceId}-rate-${rate.id}`}
+												className="shrink-0"
+											/>
+											<LenderLogo lenderId={rate.lenderId} size={24} />
+											<div className="min-w-0">
+												<span className="font-medium text-sm truncate block">
+													{lender?.name ?? rate.lenderId}
+												</span>
+												<p className="text-xs text-muted-foreground">
+													{rate.name}
+												</p>
 											</div>
-										)}
-										<div className="text-right shrink-0">
-											<span className="font-semibold text-primary text-sm">
-												{rate.rate.toFixed(2)}%
-											</span>
-											<p className="text-xs text-muted-foreground">
-												{formatFixedTerm(rate)}
-											</p>
+										</div>
+										<div className="flex items-center justify-between gap-2 pl-8 sm:pl-0 sm:ml-auto">
+											{/* Perk icons */}
+											{withPerks && rate.perks && rate.perks.length > 0 && (
+												<div className="flex items-center gap-1 shrink-0">
+													{rate.perks.map((perkId) => {
+														const perk = perks.find((p) => p.id === perkId);
+														if (!perk) return null;
+														const IconComponent = PERK_ICONS[perk.icon];
+														if (!IconComponent) return null;
+														return (
+															<Tooltip key={perkId}>
+																<TooltipTrigger asChild>
+																	<div className="p-1 rounded bg-muted/50">
+																		<IconComponent className="h-3.5 w-3.5 text-muted-foreground" />
+																	</div>
+																</TooltipTrigger>
+																<TooltipContent>
+																	<p className="font-medium">{perk.label}</p>
+																	{perk.description && (
+																		<p className="text-xs text-muted-foreground">
+																			{perk.description}
+																		</p>
+																	)}
+																</TooltipContent>
+															</Tooltip>
+														);
+													})}
+												</div>
+											)}
+											<div className="text-right shrink-0">
+												<span className="font-semibold text-primary text-sm">
+													{rate.rate.toFixed(2)}%
+												</span>
+												<p className="text-xs text-muted-foreground">
+													{formatFixedTerm(rate)}
+												</p>
+											</div>
 										</div>
 									</label>
 								))}
