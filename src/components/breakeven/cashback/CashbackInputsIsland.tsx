@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
 import { Plus, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { FIXED_PERIOD_OPTIONS } from "@/lib/constants/rates";
 import { getOverpaymentPolicy } from "@/lib/data/overpayment-policies";
 import {
 	type CashbackOption,
@@ -66,7 +67,6 @@ function createOption(label: string): CashbackOptionFormState {
 		cashbackType: "percentage",
 		cashbackValue: "",
 		cashbackCap: "",
-		fixedPeriodYears: "0",
 	};
 }
 
@@ -77,6 +77,7 @@ export function CashbackInputsIsland() {
 	// Shared form state
 	const [mortgageAmount, setMortgageAmount] = useState("");
 	const [mortgageTerm, setMortgageTerm] = useState("300"); // 25 years in months
+	const [fixedPeriod, setFixedPeriod] = useState("0"); // Shared fixed period for comparison
 
 	// Options state
 	const [options, setOptions] = useState<CashbackOptionFormState[]>(() => [
@@ -114,8 +115,6 @@ export function CashbackInputsIsland() {
 				cashbackType: opt.cashbackType ?? "percentage",
 				cashbackValue: opt.cashbackValue ?? "",
 				cashbackCap: opt.cashbackCap ?? "",
-				fixedPeriodYears: opt.fixedPeriodYears ?? "0",
-				selectedPerkId: opt.selectedPerkId,
 				overpaymentPolicyId: opt.overpaymentPolicyId,
 			}));
 
@@ -125,6 +124,7 @@ export function CashbackInputsIsland() {
 			if (shared && shared.type === "cb") {
 				setMortgageAmount(shared.mortgageAmount);
 				setMortgageTerm(shared.mortgageTerm);
+				setFixedPeriod(shared.fixedPeriod);
 				setOptions(ensureIds(shared.options));
 				clearBreakevenShareParam();
 				setShouldAutoCalculate(true);
@@ -136,6 +136,7 @@ export function CashbackInputsIsland() {
 		const saved = loadCashbackBreakevenForm();
 		if (saved.mortgageAmount) setMortgageAmount(saved.mortgageAmount);
 		if (saved.mortgageTerm) setMortgageTerm(saved.mortgageTerm);
+		if (saved.fixedPeriod) setFixedPeriod(saved.fixedPeriod);
 		if (saved.options && saved.options.length >= MIN_OPTIONS) {
 			setOptions(ensureIds(saved.options));
 		}
@@ -146,9 +147,10 @@ export function CashbackInputsIsland() {
 		saveCashbackBreakevenForm({
 			mortgageAmount,
 			mortgageTerm,
+			fixedPeriod,
 			options,
 		});
-	}, [mortgageAmount, mortgageTerm, options]);
+	}, [mortgageAmount, mortgageTerm, fixedPeriod, options]);
 
 	// Update a single option
 	const updateOption = useCallback(
@@ -182,12 +184,12 @@ export function CashbackInputsIsland() {
 			const lender = lenders.find((l) => l.id === rate.lenderId);
 			const overpaymentPolicyId = lender?.overpaymentPolicy;
 
+			const rateFixedPeriod =
+				rate.type === "variable" ? 0 : (rate.fixedTerm ?? 0);
+
 			const updates: Partial<CashbackOptionFormState> = {
 				rate: rate.rate.toString(),
 				label: `${lenderName} ${rate.name}`,
-				fixedPeriodYears:
-					rate.type === "variable" ? "0" : (rate.fixedTerm?.toString() ?? "0"),
-				selectedPerkId: undefined, // Reset perk selection
 				overpaymentPolicyId, // Auto-select overpayment policy from lender
 			};
 
@@ -199,15 +201,20 @@ export function CashbackInputsIsland() {
 						updates.cashbackType = cashbackConfig.type;
 						updates.cashbackValue = cashbackConfig.value.toString();
 						updates.cashbackCap = cashbackConfig.cap?.toString() ?? "";
-						updates.selectedPerkId = perkId;
 						break;
 					}
 				}
 			}
 
 			updateOption(index, updates);
+
+			// Auto-update shared fixed period if this rate's period is longer
+			const currentFixedPeriod = Number.parseInt(fixedPeriod, 10) || 0;
+			if (rateFixedPeriod > currentFixedPeriod) {
+				setFixedPeriod(rateFixedPeriod.toString());
+			}
 		},
-		[updateOption, lenders],
+		[updateOption, lenders, fixedPeriod],
 	);
 
 	// Validation
@@ -226,13 +233,16 @@ export function CashbackInputsIsland() {
 	const calculate = useCallback(() => {
 		if (!isFormComplete) return;
 
+		// Use the shared fixed period for all options
+		const sharedFixedPeriod = Number.parseInt(fixedPeriod, 10) || undefined;
+
 		const cashbackOptions: CashbackOption[] = options.map((opt, index) => ({
 			label: opt.label || `Option ${index + 1}`,
 			rate: Number.parseFloat(opt.rate),
 			cashbackType: opt.cashbackType,
 			cashbackValue: Number.parseFloat(opt.cashbackValue) || 0,
 			cashbackCap: opt.cashbackCap ? parseCurrency(opt.cashbackCap) : undefined,
-			fixedPeriodYears: Number.parseInt(opt.fixedPeriodYears, 10) || undefined,
+			fixedPeriodYears: sharedFixedPeriod,
 		}));
 
 		const result = calculateCashbackBreakeven({
@@ -276,7 +286,6 @@ export function CashbackInputsIsland() {
 			cashbackType: opt.cashbackType,
 			cashbackValue: opt.cashbackValue,
 			cashbackCap: opt.cashbackCap,
-			fixedPeriodYears: opt.fixedPeriodYears,
 		}));
 
 		showCashbackResult({
@@ -287,6 +296,7 @@ export function CashbackInputsIsland() {
 				type: "cb",
 				mortgageAmount,
 				mortgageTerm,
+				fixedPeriod,
 				options: shareOptions,
 			},
 			overpaymentAllowances,
@@ -297,6 +307,7 @@ export function CashbackInputsIsland() {
 		mortgageAmountNum,
 		mortgageTerm,
 		mortgageAmount,
+		fixedPeriod,
 		overpaymentPolicies,
 	]);
 
@@ -323,7 +334,7 @@ export function CashbackInputsIsland() {
 
 				<div className="space-y-6">
 					{/* Shared Mortgage Details */}
-					<div className="grid gap-4 sm:grid-cols-2">
+					<div className="grid gap-4 sm:grid-cols-3">
 						<div className="space-y-2">
 							<Label htmlFor="mortgageAmount">Mortgage Amount</Label>
 							<Input
@@ -342,6 +353,21 @@ export function CashbackInputsIsland() {
 							onChange={setMortgageTerm}
 							label="Mortgage Term"
 						/>
+						<div className="space-y-2">
+							<Label htmlFor="fixedPeriod">Fixed Period</Label>
+							<Select value={fixedPeriod} onValueChange={setFixedPeriod}>
+								<SelectTrigger id="fixedPeriod" className="w-full">
+									<SelectValue placeholder="Select fixed period" />
+								</SelectTrigger>
+								<SelectContent>
+									{FIXED_PERIOD_OPTIONS.map((opt) => (
+										<SelectItem key={opt.value} value={opt.value}>
+											{opt.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
 					</div>
 
 					{/* Options */}
@@ -454,15 +480,9 @@ function OptionCard({
 				<Label>Interest Rate</Label>
 				<Tabs
 					value={option.rateInputMode}
-					onValueChange={(v) => {
-						const newMode = v as "picker" | "manual";
-						// Clear selectedPerkId when switching to manual mode
-						if (newMode === "manual") {
-							onUpdate({ rateInputMode: newMode, selectedPerkId: undefined });
-						} else {
-							onUpdate({ rateInputMode: newMode });
-						}
-					}}
+					onValueChange={(v) =>
+						onUpdate({ rateInputMode: v as "picker" | "manual" })
+					}
 				>
 					<TabsList>
 						<TabsTrigger value="picker">Choose from rates</TabsTrigger>

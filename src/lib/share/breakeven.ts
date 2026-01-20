@@ -65,13 +65,14 @@ export interface CashbackOptionShareState {
 	cashbackType: "percentage" | "flat";
 	cashbackValue: string;
 	cashbackCap: string;
-	fixedPeriodYears: string;
 }
 
 export interface CashbackBreakevenShareState {
 	type: "cb";
 	mortgageAmount: string;
 	mortgageTerm: string;
+	/** Shared fixed period for comparison (in years, "0" = variable/full term) */
+	fixedPeriod: string;
 	options: CashbackOptionShareState[];
 }
 
@@ -127,13 +128,13 @@ interface CompressedCashbackOption {
 	ct: "p" | "f"; // cashbackType: percentage/flat
 	cv: string; // cashbackValue
 	cc: string; // cashbackCap
-	fp: string; // fixedPeriodYears
 }
 
 interface CompressedCashbackBreakeven {
 	t: "c"; // type: cashback
 	ma: string; // mortgageAmount
 	mt: string; // mortgageTerm
+	fp: string; // fixedPeriod (shared)
 	o: CompressedCashbackOption[]; // options
 }
 
@@ -195,7 +196,6 @@ function compressState(state: BreakevenShareState): CompressedState {
 				ct: opt.cashbackType === "percentage" ? "p" : "f",
 				cv: opt.cashbackValue,
 				cc: opt.cashbackCap,
-				fp: opt.fixedPeriodYears,
 			}),
 		);
 
@@ -203,6 +203,7 @@ function compressState(state: BreakevenShareState): CompressedState {
 			t: "c",
 			ma: state.mortgageAmount,
 			mt: state.mortgageTerm,
+			fp: state.fixedPeriod,
 			o: compressedOptions,
 		};
 	}
@@ -267,7 +268,6 @@ function decompressState(compressed: CompressedState): BreakevenShareState {
 				cashbackType: opt.ct === "p" ? "percentage" : "flat",
 				cashbackValue: opt.cv,
 				cashbackCap: opt.cc,
-				fixedPeriodYears: opt.fp,
 			}),
 		);
 
@@ -275,6 +275,7 @@ function decompressState(compressed: CompressedState): BreakevenShareState {
 			type: "cb",
 			mortgageAmount: compressed.ma,
 			mortgageTerm: compressed.mt,
+			fixedPeriod: compressed.fp ?? "0", // Default to variable for old URLs
 			options: decompressedOptions,
 		};
 	}

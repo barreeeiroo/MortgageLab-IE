@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type BerRating, DEFAULT_BER } from "@/lib/constants/ber";
+import { FIXED_PERIOD_OPTIONS } from "@/lib/constants/rates";
 import { calculateRemortgageBreakeven } from "@/lib/mortgage/breakeven";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
@@ -35,18 +36,6 @@ import {
 	SelectValue,
 } from "../../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
-
-// Fixed period options for manual mode (in years, 0 = variable)
-const FIXED_PERIOD_OPTIONS = [
-	{ value: "0", label: "Variable" },
-	{ value: "1", label: "1 Year Fixed" },
-	{ value: "2", label: "2 Years Fixed" },
-	{ value: "3", label: "3 Years Fixed" },
-	{ value: "4", label: "4 Years Fixed" },
-	{ value: "5", label: "5 Years Fixed" },
-	{ value: "7", label: "7 Years Fixed" },
-	{ value: "10", label: "10 Years Fixed" },
-];
 
 export function RemortgageInputsIsland() {
 	// Form state

@@ -171,9 +171,6 @@ export interface CashbackOptionFormState {
 	cashbackType: "percentage" | "flat";
 	cashbackValue: string;
 	cashbackCap: string;
-	fixedPeriodYears: string;
-	/** Perk ID that provided the cashback (when using picker mode) */
-	selectedPerkId?: string;
 	/** Overpayment policy ID */
 	overpaymentPolicyId?: string;
 }
@@ -181,6 +178,8 @@ export interface CashbackOptionFormState {
 export interface CashbackBreakevenFormState {
 	mortgageAmount: string;
 	mortgageTerm: string;
+	/** Shared fixed period for comparison (in years, "0" = variable/full term) */
+	fixedPeriod: string;
 	options: CashbackOptionFormState[];
 }
 
