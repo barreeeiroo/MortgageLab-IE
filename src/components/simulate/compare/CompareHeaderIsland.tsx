@@ -25,6 +25,7 @@ import {
 } from "@/lib/stores/simulate/simulate-compare-calculations";
 import { requestCompareChartCapture } from "@/lib/stores/simulate/simulate-compare-chart-capture";
 import { initializeSavedSimulations } from "@/lib/stores/simulate/simulate-saves";
+import { initializeSimulation } from "@/lib/stores/simulate/simulate-state";
 import { SimulateCompareHeader } from "./SimulateCompareHeader";
 
 /**
@@ -44,9 +45,10 @@ export function CompareHeaderIsland() {
 	// Initialize on mount
 	useEffect(() => {
 		async function initialize() {
-			// Initialize custom rates and saved simulations
+			// Initialize custom rates, saved simulations, and current simulation state
 			initializeCustomRates();
 			initializeSavedSimulations();
+			initializeSimulation(); // Must be before initializeCompareState to load current simulation
 			initializeCompareState();
 
 			// Wait for rate data to load (needed for calculations)
