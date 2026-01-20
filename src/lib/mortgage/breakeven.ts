@@ -1,5 +1,10 @@
 /**
- * Breakeven calculations for rent vs buy and remortgage scenarios
+ * Breakeven calculations for mortgage comparisons.
+ *
+ * Includes:
+ * - Rent vs Buy analysis
+ * - Remortgage breakeven calculations
+ * - Cashback comparison calculations
  */
 
 import {
@@ -11,7 +16,11 @@ import {
 } from "@/lib/utils/fees";
 import { calculateMonthlyPayment } from "./calculations";
 
-// Default values for advanced options
+// =============================================================================
+// Constants
+// =============================================================================
+
+// Default values for rent vs buy advanced options
 export const DEFAULT_RENT_INFLATION = 2; // 2% per year
 export const DEFAULT_HOME_APPRECIATION = 4; // 4% per year (Irish long-term avg ~2.6%, recent ~7%)
 export const DEFAULT_MAINTENANCE_RATE = 1; // 1% of property value per year
@@ -20,7 +29,59 @@ export const DEFAULT_SALE_COST_RATE = 3; // 3% of sale price (agent fees, etc.)
 export const DEFAULT_SERVICE_CHARGE = 0; // Monthly service charge (apartments)
 export const DEFAULT_SERVICE_CHARGE_INCREASE = 0; // Annual increase in service charge
 
-// --- Rent vs Buy Types ---
+// =============================================================================
+// Utility Functions
+// =============================================================================
+
+/**
+ * Format breakeven months as a human-readable string.
+ * e.g., "3 months", "1 year 6 months", "Never"
+ */
+export function formatBreakevenPeriod(months: number | null): string {
+	if (months === null || !Number.isFinite(months)) {
+		return "Never";
+	}
+
+	const roundedMonths = Math.ceil(months);
+	const years = Math.floor(roundedMonths / 12);
+	const remainingMonths = roundedMonths % 12;
+
+	if (years === 0) {
+		return `${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
+	}
+
+	if (remainingMonths === 0) {
+		return `${years} year${years !== 1 ? "s" : ""}`;
+	}
+
+	return `${years} year${years !== 1 ? "s" : ""} ${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
+}
+
+/**
+ * Parse cashback configuration from a perk ID.
+ * Returns null if perk is not a cashback perk.
+ */
+export function parseCashbackFromPerkId(
+	perkId: string,
+): { type: "percentage" | "flat"; value: number; cap?: number } | null {
+	const mapping: Record<
+		string,
+		{ type: "percentage" | "flat"; value: number; cap?: number }
+	> = {
+		"cashback-1pct": { type: "percentage", value: 1 },
+		"cashback-2pct": { type: "percentage", value: 2 },
+		"cashback-2pct-max10k": { type: "percentage", value: 2, cap: 10000 },
+		"cashback-3pct": { type: "percentage", value: 3, cap: 15000 },
+		"cashback-5k": { type: "flat", value: 5000 },
+		"switcher-3k": { type: "flat", value: 3000 },
+	};
+
+	return mapping[perkId] ?? null;
+}
+
+// =============================================================================
+// Rent vs Buy Types
+// =============================================================================
 
 export interface RentVsBuyInputs {
 	propertyValue: number;
@@ -105,77 +166,9 @@ export interface RentVsBuyResult {
 	monthlyBreakdown: MonthlyComparison[]; // First 24 months for detailed view
 }
 
-// --- Remortgage Types ---
-
-export interface RemortgageInputs {
-	outstandingBalance: number;
-	currentRate: number; // Annual rate as percentage
-	newRate: number; // Annual rate as percentage
-	remainingTermMonths: number; // Remaining term in months
-	legalFees?: number; // Default €1,350, user-editable
-	// Advanced options
-	cashback?: number; // Default €0
-	erc?: number; // Early Repayment Charge, default €0
-}
-
-export interface RemortgageYearlyComparison {
-	year: number;
-	cumulativeSavings: number; // Monthly savings accumulated (gross)
-	netSavings: number; // cumulativeSavings - switchingCosts
-	remainingBalanceCurrent: number; // If stayed with current rate
-	remainingBalanceNew: number; // With new rate
-	interestPaidCurrent: number; // Cumulative interest (current path)
-	interestPaidNew: number; // Cumulative interest (new path)
-	interestSaved: number; // Difference
-}
-
-export interface RemortgageMonthlyComparison {
-	month: number;
-	cumulativeSavings: number;
-	netSavings: number;
-	remainingBalanceCurrent: number;
-	remainingBalanceNew: number;
-	interestPaidCurrent: number;
-	interestPaidNew: number;
-	interestSaved: number;
-}
-
-// Details at breakeven point for "Why" explanations
-export interface RemortgageBreakevenDetails {
-	monthlySavings: number;
-	breakevenMonths: number;
-	switchingCosts: number;
-	cumulativeSavingsAtBreakeven: number;
-}
-
-// Details for total interest saved card
-export interface InterestSavingsDetails {
-	totalInterestCurrent: number; // Total interest if staying
-	totalInterestNew: number; // Total interest if switching
-	interestSaved: number; // Difference
-	switchingCosts: number; // For net calculation
-	netBenefit: number; // interestSaved - switchingCosts
-}
-
-export interface RemortgageResult {
-	breakevenMonths: number;
-	breakevenDetails: RemortgageBreakevenDetails | null;
-	currentMonthlyPayment: number;
-	newMonthlyPayment: number;
-	monthlySavings: number;
-	legalFees: number;
-	cashback: number;
-	erc: number;
-	switchingCosts: number; // legalFees - cashback + erc
-	totalSavingsOverTerm: number;
-	yearOneSavings: number;
-	// New fields for enhanced display
-	interestSavingsDetails: InterestSavingsDetails;
-	yearlyBreakdown: RemortgageYearlyComparison[];
-	monthlyBreakdown: RemortgageMonthlyComparison[]; // First 48 months for detailed view
-}
-
-// --- Rent vs Buy Calculations ---
+// =============================================================================
+// Rent vs Buy Calculations
+// =============================================================================
 
 /**
  * Calculate the breakeven point and comparison metrics for rent vs buy decision.
@@ -390,7 +383,81 @@ export function calculateRentVsBuyBreakeven(
 	};
 }
 
-// --- Remortgage Calculations ---
+// =============================================================================
+// Remortgage Types
+// =============================================================================
+
+export interface RemortgageInputs {
+	outstandingBalance: number;
+	currentRate: number; // Annual rate as percentage
+	newRate: number; // Annual rate as percentage
+	remainingTermMonths: number; // Remaining term in months
+	legalFees?: number; // Default €1,350, user-editable
+	// Advanced options
+	cashback?: number; // Default €0
+	erc?: number; // Early Repayment Charge, default €0
+}
+
+export interface RemortgageYearlyComparison {
+	year: number;
+	cumulativeSavings: number; // Monthly savings accumulated (gross)
+	netSavings: number; // cumulativeSavings - switchingCosts
+	remainingBalanceCurrent: number; // If stayed with current rate
+	remainingBalanceNew: number; // With new rate
+	interestPaidCurrent: number; // Cumulative interest (current path)
+	interestPaidNew: number; // Cumulative interest (new path)
+	interestSaved: number; // Difference
+}
+
+export interface RemortgageMonthlyComparison {
+	month: number;
+	cumulativeSavings: number;
+	netSavings: number;
+	remainingBalanceCurrent: number;
+	remainingBalanceNew: number;
+	interestPaidCurrent: number;
+	interestPaidNew: number;
+	interestSaved: number;
+}
+
+// Details at breakeven point for "Why" explanations
+export interface RemortgageBreakevenDetails {
+	monthlySavings: number;
+	breakevenMonths: number;
+	switchingCosts: number;
+	cumulativeSavingsAtBreakeven: number;
+}
+
+// Details for total interest saved card
+export interface InterestSavingsDetails {
+	totalInterestCurrent: number; // Total interest if staying
+	totalInterestNew: number; // Total interest if switching
+	interestSaved: number; // Difference
+	switchingCosts: number; // For net calculation
+	netBenefit: number; // interestSaved - switchingCosts
+}
+
+export interface RemortgageResult {
+	breakevenMonths: number;
+	breakevenDetails: RemortgageBreakevenDetails | null;
+	currentMonthlyPayment: number;
+	newMonthlyPayment: number;
+	monthlySavings: number;
+	legalFees: number;
+	cashback: number;
+	erc: number;
+	switchingCosts: number; // legalFees - cashback + erc
+	totalSavingsOverTerm: number;
+	yearOneSavings: number;
+	// New fields for enhanced display
+	interestSavingsDetails: InterestSavingsDetails;
+	yearlyBreakdown: RemortgageYearlyComparison[];
+	monthlyBreakdown: RemortgageMonthlyComparison[]; // First 48 months for detailed view
+}
+
+// =============================================================================
+// Remortgage Calculations
+// =============================================================================
 
 /**
  * Calculate the breakeven point and savings for remortgaging/switching.
@@ -552,31 +619,9 @@ export function calculateRemortgageBreakeven(
 	};
 }
 
-/**
- * Format breakeven months as a human-readable string.
- * e.g., "3 months", "1 year 6 months", "Never"
- */
-export function formatBreakevenPeriod(months: number | null): string {
-	if (months === null || !Number.isFinite(months)) {
-		return "Never";
-	}
-
-	const roundedMonths = Math.ceil(months);
-	const years = Math.floor(roundedMonths / 12);
-	const remainingMonths = roundedMonths % 12;
-
-	if (years === 0) {
-		return `${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
-	}
-
-	if (remainingMonths === 0) {
-		return `${years} year${years !== 1 ? "s" : ""}`;
-	}
-
-	return `${years} year${years !== 1 ? "s" : ""} ${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
-}
-
-// --- Cashback Comparison Types ---
+// =============================================================================
+// Cashback Comparison Types
+// =============================================================================
 
 export interface CashbackOption {
 	label: string;
@@ -644,7 +689,9 @@ export interface CashbackBreakevenResult {
 	projectionYear: CashbackYearlyComparison | null;
 }
 
-// --- Cashback Comparison Calculations ---
+// =============================================================================
+// Cashback Comparison Calculations
+// =============================================================================
 
 /**
  * Calculate cashback amount with optional cap.
@@ -937,26 +984,4 @@ function findBreakevenMonth(
 	}
 
 	return null;
-}
-
-/**
- * Parse cashback configuration from a perk ID.
- * Returns null if perk is not a cashback perk.
- */
-export function parseCashbackFromPerkId(
-	perkId: string,
-): { type: "percentage" | "flat"; value: number; cap?: number } | null {
-	const mapping: Record<
-		string,
-		{ type: "percentage" | "flat"; value: number; cap?: number }
-	> = {
-		"cashback-1pct": { type: "percentage", value: 1 },
-		"cashback-2pct": { type: "percentage", value: 2 },
-		"cashback-2pct-max10k": { type: "percentage", value: 2, cap: 10000 },
-		"cashback-3pct": { type: "percentage", value: 3, cap: 15000 },
-		"cashback-5k": { type: "flat", value: 5000 },
-		"switcher-3k": { type: "flat", value: 3000 },
-	};
-
-	return mapping[perkId] ?? null;
 }

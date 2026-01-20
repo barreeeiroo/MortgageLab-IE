@@ -35,3 +35,4 @@ React components (src/components/) should be thin presentation layers. Extract p
 
 - src/lib/ - Business logic (see @src/lib/CLAUDE.md)
 - scripts/rate-scraper/ - Rate scrapers (see @scripts/rate-scraper/CLAUDE.md)
+- src/components/breakeven/ - Breakeven calculators with shared components (ChartLegend, ChartTooltip, BreakevenResultDialog)

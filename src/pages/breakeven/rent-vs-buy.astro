@@ -1,7 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { RentVsBuyInputsIsland } from "@/components/breakeven/RentVsBuyInputsIsland";
-import { BreakevenResultIsland } from "@/components/breakeven/BreakevenResultIsland";
+import { RentVsBuyInputsIsland } from "@/components/breakeven/rent-vs-buy/RentVsBuyInputsIsland";
+import { RentVsBuyResultIsland } from "@/components/breakeven/rent-vs-buy/RentVsBuyResultIsland";
 ---
 
 <Layout
@@ -19,7 +19,7 @@ import { BreakevenResultIsland } from "@/components/breakeven/BreakevenResultIsl
 			</div>
 
 			<RentVsBuyInputsIsland client:load />
-			<BreakevenResultIsland client:idle />
+			<RentVsBuyResultIsland client:idle />
 		</div>
 	</div>
 </Layout>

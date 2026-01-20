@@ -15,26 +15,26 @@ import {
 import { showRemortgageResult } from "@/lib/stores/breakeven";
 import { formatCurrencyInput, parseCurrency } from "@/lib/utils/currency";
 import { ESTIMATED_REMORTGAGE_LEGAL_FEES } from "@/lib/utils/fees";
-import { RatePicker } from "../rates/RatePicker";
-import { BerSelector } from "../selectors/BerSelector";
-import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import { RatePicker } from "../../rates/RatePicker";
+import { BerSelector } from "../../selectors/BerSelector";
+import { MortgageTermSelector } from "../../selectors/MortgageTermSelector";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardTitle } from "../../ui/card";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
-} from "../ui/collapsible";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+} from "../../ui/collapsible";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+} from "../../ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 
 // Fixed period options for manual mode (in years, 0 = variable)
 const FIXED_PERIOD_OPTIONS = [

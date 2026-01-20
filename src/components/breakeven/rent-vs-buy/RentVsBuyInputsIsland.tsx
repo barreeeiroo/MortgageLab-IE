@@ -30,20 +30,20 @@ import {
 	ESTIMATED_LEGAL_FEES,
 	type PropertyType,
 } from "@/lib/utils/fees";
-import { RatePicker } from "../rates/RatePicker";
-import { BerSelector } from "../selectors/BerSelector";
-import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
-import { PropertyTypeSelector } from "../selectors/PropertyTypeSelector";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import { RatePicker } from "../../rates/RatePicker";
+import { BerSelector } from "../../selectors/BerSelector";
+import { MortgageTermSelector } from "../../selectors/MortgageTermSelector";
+import { PropertyTypeSelector } from "../../selectors/PropertyTypeSelector";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardTitle } from "../../ui/card";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
-} from "../ui/collapsible";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+} from "../../ui/collapsible";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 
 export function RentVsBuyInputsIsland() {
 	// Form state

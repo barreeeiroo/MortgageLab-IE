@@ -8,7 +8,14 @@ import type {
 	CashbackOptionResult,
 	CashbackYearlyComparison,
 } from "@/lib/mortgage/breakeven";
-import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
+import { formatCurrencyShort } from "@/lib/utils/currency";
+import { ChartLegend } from "../../ChartLegend";
+import {
+	TooltipHeader,
+	TooltipMetricRow,
+	TooltipSection,
+	TooltipWrapper,
+} from "../../ChartTooltip";
 
 interface CashbackComparisonChartProps {
 	yearlyData: CashbackYearlyComparison[];
@@ -90,43 +97,24 @@ export function CashbackComparisonChart({
 							const isProjection = dataPoint.isProjection as boolean;
 
 							return (
-								<div className="border-border/50 bg-background rounded-lg border px-3 py-2 shadow-xl">
-									<div className="font-medium mb-2">
+								<TooltipWrapper>
+									<TooltipHeader isProjection={isProjection}>
 										Year {year}
-										{isProjection && (
-											<span className="ml-1 text-xs text-muted-foreground font-normal">
-												(projection)
-											</span>
-										)}
-									</div>
-									<div className="space-y-1.5 text-sm">
+									</TooltipHeader>
+									<TooltipSection>
 										{options.map((opt, index) => {
 											const value = dataPoint[`option${index}`] as number;
 											return (
-												<div
+												<TooltipMetricRow
 													key={opt.label}
-													className="flex items-center justify-between gap-4"
-												>
-													<div className="flex items-center gap-1.5">
-														<div
-															className="h-2.5 w-2.5 rounded-sm shrink-0"
-															style={{
-																backgroundColor:
-																	OPTION_COLORS[index] ?? OPTION_COLORS[0],
-															}}
-														/>
-														<span className="text-muted-foreground">
-															{opt.label}
-														</span>
-													</div>
-													<span className="font-mono">
-														{formatCurrency(value)}
-													</span>
-												</div>
+													color={OPTION_COLORS[index] ?? OPTION_COLORS[0]}
+													label={opt.label}
+													value={value}
+												/>
 											);
 										})}
-									</div>
-								</div>
+									</TooltipSection>
+								</TooltipWrapper>
 							);
 						}}
 					/>
@@ -143,20 +131,12 @@ export function CashbackComparisonChart({
 					))}
 				</LineChart>
 			</ChartContainer>
-			{/* Legend */}
-			<div className="flex flex-wrap items-center justify-center gap-4 mt-2 text-xs">
-				{options.map((opt, index) => (
-					<div key={opt.label} className="flex items-center gap-1.5">
-						<div
-							className="h-2 w-2 rounded-sm"
-							style={{
-								backgroundColor: OPTION_COLORS[index] ?? OPTION_COLORS[0],
-							}}
-						/>
-						<span className="text-muted-foreground">{opt.label}</span>
-					</div>
-				))}
-			</div>
+			<ChartLegend
+				items={options.map((opt, index) => ({
+					color: OPTION_COLORS[index] ?? OPTION_COLORS[0],
+					label: opt.label,
+				}))}
+			/>
 		</div>
 	);
 }

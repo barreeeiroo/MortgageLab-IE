@@ -35,21 +35,21 @@ import {
 	formatCurrencyInput,
 	parseCurrency,
 } from "@/lib/utils/currency";
-import { RatePicker } from "../rates/RatePicker";
-import { MortgageTermSelector } from "../selectors/MortgageTermSelector";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { RatePicker } from "../../rates/RatePicker";
+import { MortgageTermSelector } from "../../selectors/MortgageTermSelector";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardTitle } from "../../ui/card";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+} from "../../ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
 
 // Generate unique ID for options
 let optionIdCounter = 0;

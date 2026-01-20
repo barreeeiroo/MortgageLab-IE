@@ -484,9 +484,51 @@ The Breakeven pages (`/breakeven`) help users analyze financial decisions.
 
 | File                                                  | Purpose                         |
 |-------------------------------------------------------|---------------------------------|
-| `src/lib/mortgage/breakeven.ts`                       | Breakeven calculations          |
+| `src/lib/mortgage/breakeven.ts`                       | All breakeven calculations      |
 | `src/lib/stores/breakeven.ts`                         | Result state management         |
-| `src/components/breakeven/RentVsBuyInputsIsland.tsx`  | Rent vs Buy form                |
-| `src/components/breakeven/CashbackInputsIsland.tsx`   | Cashback comparison form        |
-| `src/components/breakeven/RemortgageInputsIsland.tsx` | Remortgage form                 |
-| `src/components/breakeven/BreakevenResultCard.tsx`    | Result display with charts      |
+| `src/components/breakeven/BreakevenResultDialog.tsx`  | Shared dialog wrapper           |
+| `src/components/breakeven/ChartLegend.tsx`            | Shared chart legend component   |
+| `src/components/breakeven/ChartTooltip.tsx`           | Shared tooltip components       |
+| `src/components/breakeven/chart-utils.ts`             | Chart data limiting utilities   |
+
+### Component Structure
+
+Each calculator type has its own subdirectory:
+
+```
+src/components/breakeven/
+├── BreakevenResultDialog.tsx    # Shared: dialog with export/share buttons
+├── ChartLegend.tsx              # Shared: consistent legend styling
+├── ChartTooltip.tsx             # Shared: tooltip wrapper and row components
+├── chart-utils.ts               # Shared: limitChartData(), formatPeriodLabel()
+├── rent-vs-buy/
+│   ├── RentVsBuyInputsIsland.tsx
+│   ├── RentVsBuyResultIsland.tsx
+│   ├── RentVsBuyResultCard.tsx
+│   └── chart/
+│       ├── NetWorthBreakevenChart.tsx
+│       ├── EquityRecoveryChart.tsx
+│       └── SaleBreakevenChart.tsx
+├── remortgage/
+│   ├── RemortgageInputsIsland.tsx
+│   ├── RemortgageResultIsland.tsx
+│   ├── RemortgageResultCard.tsx
+│   └── chart/
+│       ├── SavingsBreakevenChart.tsx
+│       └── InterestComparisonChart.tsx
+└── cashback/
+    ├── CashbackInputsIsland.tsx
+    ├── CashbackResultIsland.tsx
+    ├── CashbackResultCard.tsx
+    └── chart/
+        └── CashbackComparisonChart.tsx
+```
+
+### Shared Components
+
+The breakeven calculators share common UI patterns extracted into reusable components:
+
+- **BreakevenResultDialog**: Wraps AlertDialog with export PDF button and ShareButton
+- **ChartLegend**: Renders consistent legend with solid/dashed color indicators
+- **ChartTooltip**: Provides `TooltipWrapper`, `TooltipHeader`, `TooltipMetricRow`, `TooltipDifferenceRow`, `TooltipSection`
+- **chart-utils.ts**: `limitChartData()` switches between monthly/yearly views based on breakeven timing

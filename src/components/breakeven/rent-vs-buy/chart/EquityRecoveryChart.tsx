@@ -16,6 +16,15 @@ import type {
 	YearlyComparison,
 } from "@/lib/mortgage/breakeven";
 import { formatCurrency, formatCurrencyShort } from "@/lib/utils/currency";
+import { ChartLegend } from "../../ChartLegend";
+import {
+	TooltipDifferenceRow,
+	TooltipHeader,
+	TooltipMetricRow,
+	TooltipSection,
+	TooltipWrapper,
+} from "../../ChartTooltip";
+import { formatPeriodLabel, limitChartData } from "../../chart-utils";
 
 interface EquityRecoveryChartProps {
 	data: YearlyComparison[];
@@ -43,25 +52,13 @@ export function EquityRecoveryChart({
 	breakevenYear,
 	breakevenMonth,
 }: EquityRecoveryChartProps) {
-	// Use monthly view if breakeven is under 2 years
-	const useMonthlyView =
-		breakevenMonth !== undefined &&
-		breakevenMonth !== null &&
-		breakevenMonth < 24 &&
-		monthlyData &&
-		monthlyData.length > 0;
-
-	// Limit data to 2x breakeven point if breakeven exists
-	const chartData = useMonthlyView
-		? breakevenMonth * 2 < monthlyData.length
-			? monthlyData.slice(0, breakevenMonth * 2 + 1)
-			: monthlyData
-		: breakevenYear && breakevenYear * 2 < data.length
-			? data.slice(0, breakevenYear * 2 + 1)
-			: data;
-
-	const referenceLineValue = useMonthlyView ? breakevenMonth : breakevenYear;
-	const dataKey = useMonthlyView ? "month" : "year";
+	const { chartData, useMonthlyView, referenceLineValue, dataKey } =
+		limitChartData({
+			yearlyData: data,
+			monthlyData,
+			breakevenYear,
+			breakevenMonth,
+		});
 
 	return (
 		<div className="mt-3">
@@ -100,43 +97,22 @@ export function EquityRecoveryChart({
 								| YearlyComparison
 								| MonthlyComparison;
 							const aboveUpfront = point.equity > upfrontCosts;
-							const periodLabel = useMonthlyView
-								? `Month ${"month" in point ? point.month : ""}`
-								: `Year ${"year" in point ? point.year : ""}`;
+							const periodLabel = formatPeriodLabel(point, useMonthlyView);
 							const difference = point.equity - upfrontCosts;
 							return (
-								<div className="border-border/50 bg-background rounded-lg border px-3 py-2 shadow-xl">
-									<div className="font-medium mb-2">{periodLabel}</div>
-									<div className="space-y-1.5 text-sm">
-										{/* Primary metric: Equity with color indicator */}
-										<div className="flex items-center justify-between gap-4">
-											<div className="flex items-center gap-1.5">
-												<div
-													className="h-2.5 w-2.5 rounded-sm shrink-0"
-													style={{ backgroundColor: COLORS.equity }}
-												/>
-												<span className="text-muted-foreground">
-													Your Equity
-												</span>
-											</div>
-											<span
-												className={`font-mono font-semibold ${aboveUpfront ? "text-green-600" : ""}`}
-											>
-												{formatCurrency(point.equity)}
-											</span>
-										</div>
-										{/* Comparison to upfront costs */}
-										<div className="flex items-center justify-between gap-4 pt-1.5 border-t border-border/50">
-											<span className="text-muted-foreground pl-4">
-												vs Upfront Costs
-											</span>
-											<span
-												className={`font-mono font-semibold ${aboveUpfront ? "text-green-600" : "text-amber-600"}`}
-											>
-												{difference > 0 ? "+" : ""}
-												{formatCurrency(difference)}
-											</span>
-										</div>
+								<TooltipWrapper>
+									<TooltipHeader>{periodLabel}</TooltipHeader>
+									<TooltipSection>
+										<TooltipMetricRow
+											color={COLORS.equity}
+											label="Your Equity"
+											value={point.equity}
+											highlight={aboveUpfront ? "positive" : "none"}
+										/>
+										<TooltipDifferenceRow
+											label="vs Upfront Costs"
+											value={difference}
+										/>
 										{/* Breakdown explanation */}
 										<div className="pt-1.5 border-t border-border/50 text-xs text-muted-foreground space-y-0.5">
 											<div className="flex justify-between">
@@ -152,8 +128,8 @@ export function EquityRecoveryChart({
 												</span>
 											</div>
 										</div>
-									</div>
-								</div>
+									</TooltipSection>
+								</TooltipWrapper>
 							);
 						}}
 					/>
@@ -189,20 +165,16 @@ export function EquityRecoveryChart({
 					/>
 				</AreaChart>
 			</ChartContainer>
-			{/* Legend */}
-			<div className="flex items-center justify-center gap-4 mt-2 text-xs">
-				<div className="flex items-center gap-1.5">
-					<div
-						className="h-2 w-2 rounded-sm"
-						style={{ backgroundColor: COLORS.equity }}
-					/>
-					<span className="text-muted-foreground">Equity Built</span>
-				</div>
-				<div className="flex items-center gap-1.5">
-					<div className="h-0.5 w-3 border-t border-dashed border-muted-foreground" />
-					<span className="text-muted-foreground">Upfront Costs</span>
-				</div>
-			</div>
+			<ChartLegend
+				items={[
+					{ color: COLORS.equity, label: "Equity Built" },
+					{
+						color: "var(--muted-foreground)",
+						label: "Upfront Costs",
+						dashed: true,
+					},
+				]}
+			/>
 		</div>
 	);
 }
