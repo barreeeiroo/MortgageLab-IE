@@ -290,6 +290,7 @@ export function CashbackInputsIsland() {
 			cashbackType: opt.cashbackType,
 			cashbackValue: opt.cashbackValue,
 			cashbackCap: opt.cashbackCap,
+			overpaymentPolicyId: opt.overpaymentPolicyId,
 		}));
 
 		showCashbackResult({
@@ -317,11 +318,21 @@ export function CashbackInputsIsland() {
 
 	// Auto-calculate when loaded from shared URL
 	useEffect(() => {
-		if (shouldAutoCalculate && isFormComplete) {
-			calculate();
-			setShouldAutoCalculate(false);
-		}
-	}, [shouldAutoCalculate, isFormComplete, calculate]);
+		if (!shouldAutoCalculate || !isFormComplete) return;
+
+		// If any option has an overpayment policy, wait for policies to load
+		const needsPolicies = options.some((opt) => opt.overpaymentPolicyId);
+		if (needsPolicies && overpaymentPolicies.length === 0) return;
+
+		calculate();
+		setShouldAutoCalculate(false);
+	}, [
+		shouldAutoCalculate,
+		isFormComplete,
+		calculate,
+		options,
+		overpaymentPolicies,
+	]);
 
 	return (
 		<Card>

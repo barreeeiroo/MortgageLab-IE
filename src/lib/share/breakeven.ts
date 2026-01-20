@@ -65,6 +65,7 @@ export interface CashbackOptionShareState {
 	cashbackType: "percentage" | "flat";
 	cashbackValue: string;
 	cashbackCap: string;
+	overpaymentPolicyId?: string;
 }
 
 export interface CashbackBreakevenShareState {
@@ -128,6 +129,7 @@ interface CompressedCashbackOption {
 	ct: "p" | "f"; // cashbackType: percentage/flat
 	cv: string; // cashbackValue
 	cc: string; // cashbackCap
+	op?: string; // overpaymentPolicyId
 }
 
 interface CompressedCashbackBreakeven {
@@ -189,14 +191,20 @@ function compressState(state: BreakevenShareState): CompressedState {
 	if (state.type === "cb") {
 		// Cashback comparison
 		const compressedOptions: CompressedCashbackOption[] = state.options.map(
-			(opt) => ({
-				l: opt.label,
-				r: opt.rate,
-				m: opt.rateInputMode === "picker" ? "p" : "m",
-				ct: opt.cashbackType === "percentage" ? "p" : "f",
-				cv: opt.cashbackValue,
-				cc: opt.cashbackCap,
-			}),
+			(opt) => {
+				const compressed: CompressedCashbackOption = {
+					l: opt.label,
+					r: opt.rate,
+					m: opt.rateInputMode === "picker" ? "p" : "m",
+					ct: opt.cashbackType === "percentage" ? "p" : "f",
+					cv: opt.cashbackValue,
+					cc: opt.cashbackCap,
+				};
+				if (opt.overpaymentPolicyId) {
+					compressed.op = opt.overpaymentPolicyId;
+				}
+				return compressed;
+			},
 		);
 
 		return {
@@ -268,6 +276,7 @@ function decompressState(compressed: CompressedState): BreakevenShareState {
 				cashbackType: opt.ct === "p" ? "percentage" : "flat",
 				cashbackValue: opt.cv,
 				cashbackCap: opt.cc,
+				overpaymentPolicyId: opt.op,
 			}),
 		);
 
