@@ -1,4 +1,11 @@
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import {
+	CartesianGrid,
+	Line,
+	LineChart,
+	ReferenceLine,
+	XAxis,
+	YAxis,
+} from "recharts";
 import {
 	type ChartConfig,
 	ChartContainer,
@@ -43,6 +50,10 @@ export function CashbackComparisonChart({
 	const allYearlyData = projectionYear
 		? [...yearlyData, projectionYear]
 		: yearlyData;
+
+	// End of comparison period (last year before projection)
+	const comparisonEndYear =
+		yearlyData.length > 0 ? yearlyData[yearlyData.length - 1].year : null;
 
 	const chartData = allYearlyData.map((year) => {
 		const dataPoint: Record<string, number | string | boolean> = {
@@ -129,6 +140,14 @@ export function CashbackComparisonChart({
 							activeDot={{ r: 4 }}
 						/>
 					))}
+					{projectionYear && comparisonEndYear && (
+						<ReferenceLine
+							x={comparisonEndYear}
+							stroke="var(--muted-foreground)"
+							strokeDasharray="4 4"
+							strokeWidth={1}
+						/>
+					)}
 				</LineChart>
 			</ChartContainer>
 			<ChartLegend
