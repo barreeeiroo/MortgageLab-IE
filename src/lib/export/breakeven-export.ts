@@ -409,10 +409,18 @@ function prepareRemortgageTableData(
 
 // --- Cashback Comparison Export ---
 
+interface OverpaymentAllowanceExport {
+	label: string;
+	policyLabel?: string;
+	totalAllowance: number;
+}
+
 interface CashbackExportContext {
 	result: CashbackBreakevenResult;
 	mortgageAmount: number;
 	mortgageTermMonths: number;
+	/** Overpayment allowances for each option */
+	overpaymentAllowances?: OverpaymentAllowanceExport[];
 	/** Share URL to include in PDF export as "View Online" link */
 	shareUrl?: string;
 }
@@ -423,11 +431,16 @@ interface CashbackExportContext {
 export async function exportCashbackToPDF(
 	context: CashbackExportContext,
 ): Promise<void> {
-	const { result, mortgageAmount, mortgageTermMonths } = context;
+	const { result, mortgageAmount, mortgageTermMonths, overpaymentAllowances } =
+		context;
 	const doc = await createPDFDocument();
 
 	const cheapestOption = result.options[result.cheapestNetCostIndex];
 	const comparisonYears = Math.floor(result.comparisonPeriodYears);
+
+	// Truncate long option labels for the metric box
+	const truncateLabel = (label: string, maxLen = 20) =>
+		label.length > maxLen ? `${label.slice(0, maxLen - 1)}…` : label;
 
 	// Branded header with logo
 	let y = await addBrandedHeader(doc, "Cashback Comparison");
@@ -438,7 +451,7 @@ export async function exportCashbackToPDF(
 		[
 			{
 				label: "Best Option",
-				value: sanitizeForPDF(cheapestOption.label),
+				value: truncateLabel(sanitizeForPDF(cheapestOption.label)),
 				variant: "success",
 			},
 			{
@@ -492,6 +505,20 @@ export async function exportCashbackToPDF(
 		y = await addTable(doc, horizonTableData, y);
 	}
 
+	// Overpayment Allowances Table
+	if (overpaymentAllowances && overpaymentAllowances.length > 0) {
+		y = addStyledSectionHeader(
+			doc,
+			`Overpayment Allowances (${comparisonYears}y)`,
+			y,
+			{ divider: true },
+		);
+		const overpaymentTableData = prepareCashbackOverpaymentTableData(
+			overpaymentAllowances,
+		);
+		y = await addTable(doc, overpaymentTableData, y);
+	}
+
 	// Add "View Online" link if share URL provided
 	if (context.shareUrl) {
 		addViewOnlineLink(doc, context.shareUrl);
@@ -542,6 +569,21 @@ function prepareCashbackHorizonTableData(
 		}
 		return row;
 	});
+
+	return { headers, rows };
+}
+
+function prepareCashbackOverpaymentTableData(
+	allowances: OverpaymentAllowanceExport[],
+): TableExportData {
+	const headers = ["Option", "Total Allowance"];
+
+	const rows = allowances.map((allowance) => [
+		sanitizeForPDF(allowance.label),
+		allowance.policyLabel
+			? formatCurrencyForExport(allowance.totalAllowance, true)
+			: "Breakage fee applies",
+	]);
 
 	return { headers, rows };
 }

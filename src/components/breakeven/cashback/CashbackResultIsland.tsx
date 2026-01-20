@@ -21,10 +21,19 @@ export function CashbackResultIsland() {
 		setIsExporting(true);
 		try {
 			const shareUrl = generateBreakevenShareUrl(cashbackResult.shareState);
+			// Map overpayment allowances to export format
+			const overpaymentAllowances = cashbackResult.overpaymentAllowances?.map(
+				(allowance, index) => ({
+					label: cashbackResult.result.options[index].label,
+					policyLabel: allowance.policy?.label,
+					totalAllowance: allowance.totalAllowance,
+				}),
+			);
 			await exportCashbackToPDF({
 				result: cashbackResult.result,
 				mortgageAmount: cashbackResult.mortgageAmount,
 				mortgageTermMonths: cashbackResult.mortgageTermMonths,
+				overpaymentAllowances,
 				shareUrl,
 			});
 		} finally {
