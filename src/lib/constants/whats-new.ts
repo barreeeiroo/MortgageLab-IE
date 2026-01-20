@@ -1,12 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import {
-	ChartLine,
-	FileDown,
-	GitCompare,
-	HardHat,
-	History,
-	Scale,
-} from "lucide-react";
+import { FileDown, GitCompare, HardHat, History, Scale } from "lucide-react";
 
 export interface WhatsNewItem {
 	id: string;
@@ -19,7 +12,10 @@ export interface WhatsNewItem {
 // Bump this when adding new items
 export const WHATS_NEW_VERSION = 2;
 
-// Most recent items first (carousel shows up to 3)
+// Maximum items shown in the carousel
+export const MAX_WHATS_NEW_DISPLAY_ITEMS = 5;
+
+// Most recent items first
 export const WHATS_NEW_ITEMS: WhatsNewItem[] = [
 	{
 		id: "rate-history",

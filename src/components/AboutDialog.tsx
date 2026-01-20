@@ -15,7 +15,11 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { WHATS_NEW_ITEMS, WHATS_NEW_VERSION } from "@/lib/constants/whats-new";
+import {
+	MAX_WHATS_NEW_DISPLAY_ITEMS,
+	WHATS_NEW_ITEMS,
+	WHATS_NEW_VERSION,
+} from "@/lib/constants/whats-new";
 import { getStoredVersion, setStoredVersion } from "@/lib/storage/whats-new";
 import { cn } from "@/lib/utils/cn";
 import { formatTimestamp } from "@/lib/utils/date";
@@ -25,7 +29,7 @@ export function AboutDialog() {
 	const [current, setCurrent] = useState(0);
 	const [api, setApi] = useState<CarouselApi>();
 
-	const itemsToShow = WHATS_NEW_ITEMS.slice(0, 5);
+	const itemsToShow = WHATS_NEW_ITEMS.slice(0, MAX_WHATS_NEW_DISPLAY_ITEMS);
 
 	useEffect(() => {
 		const storedVersion = getStoredVersion();
