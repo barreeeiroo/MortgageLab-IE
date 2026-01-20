@@ -1688,38 +1688,83 @@ describe("aggregateByYear", () => {
 });
 
 describe("calculateSummary", () => {
-	function createMonthsForSummary(
+	// Creates months where mortgage is paid off (closingBalance reaches 0 on last month)
+	function createCompletedMortgageMonths(
+		count: number,
+		mortgageAmount: number,
+		cumulativeInterest: number,
+	): AmortizationMonth[] {
+		const months: AmortizationMonth[] = [];
+		const principalPerMonth = mortgageAmount / count;
+		for (let i = 1; i <= count; i++) {
+			const openingBalance = mortgageAmount - (i - 1) * principalPerMonth;
+			// Last month closes at 0 (paid off)
+			const closingBalance =
+				i === count ? 0 : mortgageAmount - i * principalPerMonth;
+			months.push({
+				month: i,
+				year: Math.ceil(i / 12),
+				monthOfYear: ((i - 1) % 12) + 1,
+				date: "",
+				openingBalance,
+				closingBalance,
+				scheduledPayment: 134713,
+				interestPortion: 10000,
+				principalPortion: principalPerMonth,
+				overpayment: 0,
+				totalPayment: 134713,
+				rate: 3.5,
+				ratePeriodId: "period-1",
+				cumulativeInterest: i === count ? cumulativeInterest : i * 10000,
+				cumulativePrincipal: i * principalPerMonth,
+				cumulativeOverpayments: 0,
+				cumulativeTotal:
+					i === count
+						? cumulativeInterest + i * principalPerMonth
+						: i * 10000 + i * principalPerMonth,
+			});
+		}
+		return months;
+	}
+
+	// Creates months where simulation is incomplete (closingBalance > 0)
+	function createIncompleteMortgageMonths(
 		count: number,
 		cumulativeInterest: number,
 	): AmortizationMonth[] {
 		const months: AmortizationMonth[] = [];
+		const mortgageAmount = 30000000; // €300k
+		const principalPerMonth = 50000; // €500 - won't pay off €300k in 120 months
 		for (let i = 1; i <= count; i++) {
 			months.push({
 				month: i,
 				year: Math.ceil(i / 12),
 				monthOfYear: ((i - 1) % 12) + 1,
 				date: "",
-				openingBalance: 30000000 - (i - 1) * 50000,
-				closingBalance: 30000000 - i * 50000,
+				openingBalance: mortgageAmount - (i - 1) * principalPerMonth,
+				closingBalance: mortgageAmount - i * principalPerMonth,
 				scheduledPayment: 134713,
 				interestPortion: 10000,
-				principalPortion: 50000,
+				principalPortion: principalPerMonth,
 				overpayment: 0,
 				totalPayment: 134713,
 				rate: 3.5,
 				ratePeriodId: "period-1",
 				cumulativeInterest: i === count ? cumulativeInterest : i * 10000,
-				cumulativePrincipal: i * 50000,
+				cumulativePrincipal: i * principalPerMonth,
 				cumulativeOverpayments: 0,
 				cumulativeTotal:
-					i === count ? cumulativeInterest + i * 50000 : i * 10000 + i * 50000,
+					i === count
+						? cumulativeInterest + i * principalPerMonth
+						: i * 10000 + i * principalPerMonth,
 			});
 		}
 		return months;
 	}
 
-	it("calculates correct summary stats", () => {
-		const months = createMonthsForSummary(120, 5000000); // €50k interest
+	it("calculates correct summary stats when mortgage is paid off early", () => {
+		// Mortgage of €300k paid off in 120 months (10 years) instead of 360 (30 years)
+		const months = createCompletedMortgageMonths(120, 30000000, 5000000); // €50k interest
 		const baselineInterest = 6000000; // €60k baseline
 
 		const summary = calculateSummary(months, baselineInterest, 360);
@@ -1728,6 +1773,19 @@ describe("calculateSummary", () => {
 		expect(summary.actualTermMonths).toBe(120);
 		expect(summary.interestSaved).toBe(1000000); // €60k - €50k = €10k saved
 		expect(summary.monthsSaved).toBe(240); // 360 - 120 = 240 months saved
+	});
+
+	it("returns zero monthsSaved when simulation is incomplete", () => {
+		// Simulation stops at 120 months but mortgage isn't paid off (missing rate periods)
+		const months = createIncompleteMortgageMonths(120, 5000000); // €50k interest, but €240k still owed
+		const baselineInterest = 6000000; // €60k baseline
+
+		const summary = calculateSummary(months, baselineInterest, 360);
+
+		expect(summary.totalInterest).toBe(5000000);
+		expect(summary.actualTermMonths).toBe(120);
+		expect(summary.interestSaved).toBe(1000000); // Interest saved still reported
+		expect(summary.monthsSaved).toBe(0); // But no months saved since mortgage isn't paid off
 	});
 
 	it("returns zero values for empty months", () => {
@@ -1741,7 +1799,7 @@ describe("calculateSummary", () => {
 	});
 
 	it("handles case where actual interest exceeds baseline", () => {
-		const months = createMonthsForSummary(120, 7000000); // €70k interest
+		const months = createIncompleteMortgageMonths(120, 7000000); // €70k interest
 		const baselineInterest = 6000000; // €60k baseline (unlikely but possible edge case)
 
 		const summary = calculateSummary(months, baselineInterest, 360);

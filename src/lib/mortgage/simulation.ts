@@ -974,12 +974,19 @@ export function calculateSummary(
 		}
 	}
 
+	// Only report months saved if the mortgage was actually paid off (balance reached 0)
+	// If simulation is incomplete (no rate defined for remaining months), don't report months saved
+	const isMortgagePaidOff = lastMonth.closingBalance <= 0.01;
+	const monthsSaved = isMortgagePaidOff
+		? mortgageTermMonths - actualTermMonths
+		: 0;
+
 	return {
 		totalInterest: actualInterest,
 		totalPaid: lastMonth.cumulativeTotal,
 		actualTermMonths,
 		interestSaved,
-		monthsSaved: mortgageTermMonths - actualTermMonths,
+		monthsSaved,
 		extraInterestFromSelfBuild,
 	};
 }
