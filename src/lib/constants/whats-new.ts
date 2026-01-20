@@ -76,15 +76,4 @@ export const WHATS_NEW_ITEMS: WhatsNewItem[] = [
 			"Remortgage: Calculate when switching pays off",
 		],
 	},
-	{
-		id: "multi-chart-system",
-		icon: ChartLine,
-		title: "Interactive Charts",
-		description: "Visualize your mortgage with multiple chart types",
-		highlights: [
-			"Balance, Payments, Cumulative views",
-			"Rate timeline visualization",
-			"Overpayment impact analysis",
-		],
-	},
 ];
