@@ -1,4 +1,10 @@
+import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type {
 	CompareSimulationData,
 	CompareSummaryMetric,
@@ -114,6 +120,16 @@ function SimulationCard({
 		return `${years}y ${remainingMonths}m`;
 	};
 
+	// Check if simulation is incomplete (rate periods don't cover full term)
+	const isIncomplete =
+		simulation.amortizationSchedule.length <
+		simulation.input.mortgageTermMonths;
+
+	// Get the remaining balance at the end of the simulation
+	const remainingBalance =
+		simulation.amortizationSchedule[simulation.amortizationSchedule.length - 1]
+			?.closingBalance ?? 0;
+
 	return (
 		<Button
 			variant="outline"
@@ -139,6 +155,19 @@ function SimulationCard({
 						<span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">
 							Current
 						</span>
+					)}
+					{isIncomplete && (
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="flex-shrink-0">
+									<AlertTriangle className="h-4 w-4 text-amber-500" />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent>
+								Incomplete simulation: {formatCurrency(remainingBalance)}{" "}
+								balance remaining
+							</TooltipContent>
+						</Tooltip>
 					)}
 				</div>
 

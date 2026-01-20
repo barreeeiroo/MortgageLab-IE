@@ -201,10 +201,9 @@ export const $compareYearlyChartData = computed(
 	(simulations): CompareChartDataPoint[] => {
 		if (simulations.length === 0) return [];
 
-		// Find max years (including baseline for impact chart)
+		// Find max years across all simulations
 		const maxYears = Math.max(
 			...simulations.map((s) => s.yearlySchedule.length),
-			...simulations.map((s) => Math.ceil(s.baselineSchedule.length / 12)),
 		);
 
 		// Find the longest simulation (most years) to use as reference for dates
@@ -335,10 +334,9 @@ export const $compareMonthlyChartData = computed(
 	(simulations): CompareChartDataPoint[] => {
 		if (simulations.length === 0) return [];
 
-		// Find max months (including baseline for impact chart)
+		// Find max months across all simulations
 		const maxMonths = Math.max(
 			...simulations.map((s) => s.amortizationSchedule.length),
-			...simulations.map((s) => s.baselineSchedule.length),
 		);
 
 		// Find the longest simulation (most months) to use as reference for dates
@@ -452,10 +450,9 @@ export const $compareQuarterlyChartData = computed(
 	(simulations): CompareChartDataPoint[] => {
 		if (simulations.length === 0) return [];
 
-		// Find max months (including baseline), then calculate max quarters
+		// Find max months across all simulations, then calculate max quarters
 		const maxMonths = Math.max(
 			...simulations.map((s) => s.amortizationSchedule.length),
-			...simulations.map((s) => s.baselineSchedule.length),
 		);
 		const maxQuarters = Math.ceil(maxMonths / 3);
 
