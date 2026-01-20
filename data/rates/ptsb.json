@@ -2,7 +2,7 @@
 	"lenderId": "ptsb",
 	"lastScrapedAt": "2026-01-20T08:07:54.547Z",
 	"lastUpdatedAt": "2026-01-19T19:44:50.351Z",
-	"ratesHash": "631efe9a3e8c63ca6c9c19cd0ae451c877deba65775e5c86914fb3675beb7a09",
+	"ratesHash": "e81c8b584e25de92f15e8aa28848842f51afc1f96e13a757b7ada6dee7417e64",
 	"rates": [
 		{
 			"id": "ptsb-fixed-2yr-60",
@@ -20,7 +20,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -40,7 +40,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -60,7 +60,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -80,7 +80,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -100,7 +100,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -120,7 +120,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -194,7 +194,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -214,7 +214,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -234,7 +234,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -261,7 +261,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -287,7 +289,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -313,7 +317,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -339,7 +345,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -365,7 +373,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -391,7 +401,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -410,7 +422,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -430,7 +442,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -450,7 +462,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -471,7 +483,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -492,7 +504,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -513,7 +525,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -534,7 +546,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -555,7 +567,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -576,7 +588,7 @@
 				"switcher-pdh"
 			],
 			"perks": [
-				"cashback-2pct-max10k"
+				"cashback-2pct"
 			],
 			"newBusiness": true
 		},
@@ -604,7 +616,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -631,7 +645,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -658,7 +674,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -685,7 +703,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -712,7 +732,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{
@@ -739,7 +761,9 @@
 				"B2",
 				"B3"
 			],
-			"perks": [],
+			"perks": [
+				"cashback-2pct"
+			],
 			"newBusiness": true
 		},
 		{

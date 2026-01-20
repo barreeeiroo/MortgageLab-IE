@@ -69,11 +69,8 @@ function parseTableRow($: cheerio.CheerioAPI, row: Element): ParsedRow | null {
 			maxLtv,
 			isGreen: lowerName.includes("green"),
 			isVariable: lowerName.includes("variable"),
-			// 4 Year Fixed and Green rates exclude cashback
-			excludesCashback:
-				lowerName.includes("4 year") ||
-				lowerName.includes("green") ||
-				lowerName.includes("*"),
+			// Only 4 Year Fixed rates exclude cashback (Green rates DO get cashback)
+			excludesCashback: lowerName.includes("4 year"),
 		};
 	} catch {
 		return null;
@@ -204,7 +201,7 @@ function parseRatesFromHtml(html: string): MortgageRate[] {
 				nameParts.push(`- LTV ≤${parsed.maxLtv}%`);
 
 				// Determine perks (cashback)
-				// PTSB: 2% cashback for PDH new business only, excludes 4 Year Fixed and Green
+				// PTSB: 2% cashback (no cap) for PDH new business only, excludes 4 Year Fixed
 				const hasCashback =
 					isNewBusiness &&
 					!parsed.excludesCashback &&
@@ -212,9 +209,12 @@ function parseRatesFromHtml(html: string): MortgageRate[] {
 					!isBtl &&
 					!isHighValue;
 
-				// High Value non-green new business rates get cashback
+				// High Value new business rates get cashback (including green, excluding 4 year)
 				const hasHighValueCashback =
-					isNewBusiness && isHighValue && !parsed.isGreen && !isVariable;
+					isNewBusiness &&
+					isHighValue &&
+					!isVariable &&
+					!parsed.excludesCashback;
 
 				const mortgageRate: MortgageRate = {
 					id: idParts.join("-"),
@@ -229,8 +229,7 @@ function parseRatesFromHtml(html: string): MortgageRate[] {
 					minLoan: isHighValue ? 250000 : undefined,
 					buyerTypes,
 					berEligible: parsed.isGreen ? GREEN_BER_RATINGS : undefined,
-					perks:
-						hasCashback || hasHighValueCashback ? ["cashback-2pct-max10k"] : [],
+					perks: hasCashback || hasHighValueCashback ? ["cashback-2pct"] : [],
 					newBusiness: isNewBusiness,
 				};
 

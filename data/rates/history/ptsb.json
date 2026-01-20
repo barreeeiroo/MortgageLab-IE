@@ -2,7 +2,7 @@
 	"lenderId": "ptsb",
 	"baseline": {
 		"timestamp": "2022-10-05T14:36:32Z",
-		"ratesHash": "1ea60316a35b8b07640f61142f241dad1e7daea1ef79a94d0199b6b731d1d52d",
+		"ratesHash": "8d1227c301c6af210e75bb9dc57ad8c3cae7700f78a8b9e8f1c58124d03237d9",
 		"rates": [
 			{
 				"id": "ptsb-fixed-2yr-60",
@@ -20,7 +20,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -40,7 +40,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -60,7 +60,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -80,7 +80,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -100,7 +100,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -120,7 +120,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -194,7 +194,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -214,7 +214,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -234,7 +234,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -261,7 +261,9 @@
 					"B2",
 					"B3"
 				],
-				"perks": [],
+				"perks": [
+					"cashback-2pct"
+				],
 				"newBusiness": true
 			},
 			{
@@ -287,7 +289,9 @@
 					"B2",
 					"B3"
 				],
-				"perks": [],
+				"perks": [
+					"cashback-2pct"
+				],
 				"newBusiness": true
 			},
 			{
@@ -313,7 +317,9 @@
 					"B2",
 					"B3"
 				],
-				"perks": [],
+				"perks": [
+					"cashback-2pct"
+				],
 				"newBusiness": true
 			},
 			{
@@ -332,7 +338,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -352,7 +358,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -372,7 +378,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -393,7 +399,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -414,7 +420,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -435,7 +441,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -456,7 +462,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -477,7 +483,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -498,7 +504,7 @@
 					"switcher-pdh"
 				],
 				"perks": [
-					"cashback-2pct-max10k"
+					"cashback-2pct"
 				],
 				"newBusiness": true
 			},
@@ -526,7 +532,9 @@
 					"B2",
 					"B3"
 				],
-				"perks": [],
+				"perks": [
+					"cashback-2pct"
+				],
 				"newBusiness": true
 			},
 			{
@@ -553,7 +561,9 @@
 					"B2",
 					"B3"
 				],
-				"perks": [],
+				"perks": [
+					"cashback-2pct"
+				],
 				"newBusiness": true
 			},
 			{
@@ -580,7 +590,9 @@
 					"B2",
 					"B3"
 				],
-				"perks": [],
+				"perks": [
+					"cashback-2pct"
+				],
 				"newBusiness": true
 			},
 			{
@@ -918,7 +930,7 @@
 	"changesets": [
 		{
 			"timestamp": "2023-06-08T14:30:19Z",
-			"afterHash": "60d4299477573e81d0ccdd6a2c72013a82b490870c56665c98a1c66d83b3668f",
+			"afterHash": "6e39276579ad24876d2fbe382230be892b7a78c4696afc7c9b263963a27e2851",
 			"operations": [
 				{
 					"op": "update",
@@ -1671,7 +1683,7 @@
 		},
 		{
 			"timestamp": "2024-03-05T10:08:13Z",
-			"afterHash": "d45bbd3a264629c61736d8c163314b217146535eeee8577d5957b32ab17ea774",
+			"afterHash": "0e3e6d91157e33634344e7a78f20777e2b0d6b8c07708d2230a75482d8c0c812",
 			"operations": [
 				{
 					"op": "update",
@@ -2349,7 +2361,7 @@
 		},
 		{
 			"timestamp": "2024-05-08T19:39:28Z",
-			"afterHash": "8fca5a2086bb549d89f00a209db9fe9058e0f617e7de6816573bd02528421006",
+			"afterHash": "7f0a6895803e9ccbb0d977544e81d1a7f2a8801564f2edfa2e9049f1bac62993",
 			"operations": [
 				{
 					"op": "update",
@@ -2403,7 +2415,9 @@
 							"B2",
 							"B3"
 						],
-						"perks": [],
+						"perks": [
+							"cashback-2pct"
+						],
 						"newBusiness": true
 					}
 				},
@@ -2432,7 +2446,9 @@
 							"B2",
 							"B3"
 						],
-						"perks": [],
+						"perks": [
+							"cashback-2pct"
+						],
 						"newBusiness": true
 					}
 				},
@@ -2461,7 +2477,9 @@
 							"B2",
 							"B3"
 						],
-						"perks": [],
+						"perks": [
+							"cashback-2pct"
+						],
 						"newBusiness": true
 					}
 				},
@@ -2491,7 +2509,9 @@
 							"B2",
 							"B3"
 						],
-						"perks": [],
+						"perks": [
+							"cashback-2pct"
+						],
 						"newBusiness": true
 					}
 				},
@@ -2521,7 +2541,9 @@
 							"B2",
 							"B3"
 						],
-						"perks": [],
+						"perks": [
+							"cashback-2pct"
+						],
 						"newBusiness": true
 					}
 				},
@@ -2551,7 +2573,9 @@
 							"B2",
 							"B3"
 						],
-						"perks": [],
+						"perks": [
+							"cashback-2pct"
+						],
 						"newBusiness": true
 					}
 				}
@@ -2559,7 +2583,7 @@
 		},
 		{
 			"timestamp": "2024-06-14T19:27:26Z",
-			"afterHash": "7162fa5b26baca46ae011198126050bd480dd4ca04b0eaafe9b79dc31a6db1b8",
+			"afterHash": "db6d52b6210338720a3c334397fa619b018792ab3f9a4589f40fdc0e622d00f4",
 			"operations": [
 				{
 					"op": "update",
@@ -2970,7 +2994,7 @@
 		},
 		{
 			"timestamp": "2024-10-05T15:09:48Z",
-			"afterHash": "70de9d1b5d8da4901196304c21d62da0ea972c0ecc6a82b16e1e0c33f157c2da",
+			"afterHash": "84b973ead9526385f4158ab7a292bdd92529315170621a128edccaf40d146d5c",
 			"operations": [
 				{
 					"op": "update",
@@ -3165,7 +3189,7 @@
 		},
 		{
 			"timestamp": "2025-01-21T01:03:49Z",
-			"afterHash": "158bd823fb8421f737b5a999b7015689a32bdd20710b6ead5a31ef68414f99e4",
+			"afterHash": "f309ad758c61a81beedcd27a7d4e3d31d0447789cce8dfdebd6d49f843e8a68d",
 			"operations": [
 				{
 					"op": "update",
@@ -3727,7 +3751,7 @@
 		},
 		{
 			"timestamp": "2025-10-06T19:52:52Z",
-			"afterHash": "9923f559e7ac746974528900f95c7446ff8b5a10bf38d6f6968343c2f81575e6",
+			"afterHash": "e81c8b584e25de92f15e8aa28848842f51afc1f96e13a757b7ada6dee7417e64",
 			"operations": [
 				{
 					"op": "update",
