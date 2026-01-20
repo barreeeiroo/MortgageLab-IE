@@ -16,10 +16,17 @@ import {
 	exportCompareRatesToExcel,
 	exportCompareRatesToPDF,
 } from "@/lib/export/rates-compare-export";
+import { parseCashbackFromPerkId } from "@/lib/mortgage/breakeven";
 import type { Lender } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
+import {
+	type CashbackBreakevenFormState,
+	type CashbackOptionFormState,
+	saveCashbackBreakevenForm,
+} from "@/lib/storage/forms";
 import { cn } from "@/lib/utils/cn";
 import { formatCurrency } from "@/lib/utils/currency";
+import { getPath } from "@/lib/utils/path";
 import { formatTermDisplay } from "@/lib/utils/term";
 import { LenderLogo } from "../lenders/LenderLogo";
 import { ShareButton } from "../ShareButton";
@@ -228,6 +235,86 @@ export function CompareRatesModal({
 		}),
 		[rates, lenders, perks, mortgageAmount, mortgageTerm],
 	);
+
+	// Build cashback comparison state when there's meaningful variation in cashback
+	const cashbackComparisonState = useMemo(() => {
+		if (rates.length < 2) {
+			return null;
+		}
+
+		// Extract cashback config for each rate (null if no cashback)
+		const cashbackConfigs = rates.map((rate) => {
+			for (const perkId of rate.combinedPerks) {
+				const parsed = parseCashbackFromPerkId(perkId);
+				if (parsed) {
+					return parsed;
+				}
+			}
+			return null;
+		});
+
+		// Check if there's any variation in cashback across rates
+		// Create a key for each config to compare: "type|value|cap" or "none"
+		const configKeys = cashbackConfigs.map((config) =>
+			config ? `${config.type}|${config.value}|${config.cap ?? ""}` : "none",
+		);
+		const uniqueKeys = new Set(configKeys);
+
+		// If all rates have the same cashback (or all have none), nothing to compare
+		if (uniqueKeys.size === 1) {
+			return null;
+		}
+
+		// Find max fixed period for comparison
+		const maxFixedPeriod = Math.max(
+			...rates.map((r) =>
+				r.type === "fixed" && r.fixedTerm ? r.fixedTerm : 0,
+			),
+		);
+
+		// Build options for ALL rates (including those without cashback as 0%)
+		const options: CashbackOptionFormState[] = rates.map((rate, index) => {
+			const lender = getLender(lenders, rate.lenderId);
+			const displayName =
+				rate.isCustom && rate.customLenderName
+					? rate.customLenderName
+					: (lender?.name ?? rate.lenderId);
+
+			const cashbackConfig = cashbackConfigs[index] ?? {
+				type: "percentage" as const,
+				value: 0,
+				cap: undefined,
+			};
+
+			return {
+				id: `compare-${rate.id}-${index}`,
+				label: `${displayName} ${rate.name}`,
+				rate: rate.rate.toString(),
+				rateInputMode: "manual" as const,
+				cashbackType: cashbackConfig.type,
+				cashbackValue: cashbackConfig.value.toString(),
+				cashbackCap: cashbackConfig.cap?.toString() ?? "",
+				overpaymentPolicyId: lender?.overpaymentPolicy,
+			};
+		});
+
+		return {
+			mortgageAmount: mortgageAmount.toString(),
+			mortgageTerm: mortgageTerm.toString(),
+			fixedPeriod: maxFixedPeriod.toString(),
+			options,
+		} satisfies CashbackBreakevenFormState;
+	}, [rates, lenders, mortgageAmount, mortgageTerm]);
+
+	const handleCompareCashback = useCallback(() => {
+		if (!cashbackComparisonState) return;
+
+		// Save to localStorage - the cashback page loads from here on mount
+		saveCashbackBreakevenForm(cashbackComparisonState);
+
+		// Navigate to cashback comparison page
+		window.location.href = getPath("/breakeven/cashback");
+	}, [cashbackComparisonState]);
 
 	const handleExportCSV = useCallback(() => {
 		exportCompareRatesToCSV(exportContext);
@@ -505,6 +592,28 @@ export function CompareRatesModal({
 							})}
 						</TableBody>
 					</Table>
+
+					{/* Compare Cashback button - bottom right of content */}
+					{cashbackComparisonState && (
+						<div className="flex justify-end mt-4">
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Button
+										variant="ghost"
+										size="sm"
+										className="h-8 gap-1.5"
+										onClick={handleCompareCashback}
+									>
+										<Coins className="h-4 w-4" />
+										<span>Compare Cashback</span>
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent>
+									<p>Compare cashback offers in the Cashback Calculator</p>
+								</TooltipContent>
+							</Tooltip>
+						</div>
+					)}
 				</div>
 
 				{/* Sticky Footer */}
