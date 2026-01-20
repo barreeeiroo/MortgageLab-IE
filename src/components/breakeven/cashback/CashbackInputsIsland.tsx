@@ -542,8 +542,15 @@ function OptionCard({
 
 			{/* Cashback Input - always editable */}
 			<div className="space-y-3">
-				<Label>Cashback</Label>
-				<div className="grid gap-3 sm:grid-cols-3">
+				<div className="flex items-center gap-2">
+					<Label>Cashback</Label>
+					{actualCashback > 0 && (
+						<span className="text-sm text-green-600 font-medium">
+							{formatCurrency(actualCashback)}
+						</span>
+					)}
+				</div>
+				<div className="grid gap-3 sm:grid-cols-3 sm:items-end">
 					<div className="space-y-2">
 						<ToggleGroup
 							type="single"
@@ -579,34 +586,24 @@ function OptionCard({
 								{option.cashbackType === "percentage" ? "%" : "€"}
 							</span>
 						</div>
-						{actualCashback > 0 && (
-							<p className="text-xs text-muted-foreground">
-								Cashback:{" "}
-								<span className="text-green-600 font-medium">
-									{formatCurrency(actualCashback)}
-								</span>
-							</p>
-						)}
 					</div>
 					<div className="space-y-2">
 						<Label className="text-sm text-muted-foreground">
 							Cap (optional)
 						</Label>
-						<div className="flex items-center gap-2">
-							<Input
-								type="text"
-								inputMode="numeric"
-								value={formatCurrencyInput(option.cashbackCap)}
-								onChange={(e) =>
-									onUpdate({
-										cashbackCap: e.target.value.replace(/[^0-9]/g, ""),
-									})
-								}
-								placeholder="€10,000"
-								className="max-w-[140px]"
-								disabled={option.cashbackType === "flat"}
-							/>
-						</div>
+						<Input
+							type="text"
+							inputMode="numeric"
+							value={formatCurrencyInput(option.cashbackCap)}
+							onChange={(e) =>
+								onUpdate({
+									cashbackCap: e.target.value.replace(/[^0-9]/g, ""),
+								})
+							}
+							placeholder="€10,000"
+							className="max-w-[140px]"
+							disabled={option.cashbackType === "flat"}
+						/>
 					</div>
 					<div className="space-y-2">
 						<Label className="text-sm text-muted-foreground">
