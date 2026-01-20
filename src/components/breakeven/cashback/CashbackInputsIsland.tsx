@@ -65,7 +65,7 @@ function createOption(label: string): CashbackOptionFormState {
 		rate: "",
 		rateInputMode: "manual",
 		cashbackType: "percentage",
-		cashbackValue: "",
+		cashbackValue: "0",
 		cashbackCap: "",
 	};
 }
@@ -113,7 +113,7 @@ export function CashbackInputsIsland() {
 				rate: opt.rate ?? "",
 				rateInputMode: opt.rateInputMode ?? "manual",
 				cashbackType: opt.cashbackType ?? "percentage",
-				cashbackValue: opt.cashbackValue ?? "",
+				cashbackValue: opt.cashbackValue ?? "0",
 				cashbackCap: opt.cashbackCap ?? "",
 				overpaymentPolicyId: opt.overpaymentPolicyId,
 			}));
@@ -187,10 +187,14 @@ export function CashbackInputsIsland() {
 			const rateFixedPeriod =
 				rate.type === "variable" ? 0 : (rate.fixedTerm ?? 0);
 
+			// Default to 0% cashback, will be overwritten if rate has cashback perk
 			const updates: Partial<CashbackOptionFormState> = {
 				rate: rate.rate.toString(),
 				label: `${lenderName} ${rate.name}`,
 				overpaymentPolicyId, // Auto-select overpayment policy from lender
+				cashbackType: "percentage",
+				cashbackValue: "0",
+				cashbackCap: "",
 			};
 
 			// Try to auto-populate cashback from perks
