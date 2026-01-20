@@ -441,9 +441,17 @@ export function SimulateOverpaymentEvent({
 			? "Once"
 			: frequency === "yearly"
 				? "Yearly"
-				: "Monthly";
+				: frequency === "quarterly"
+					? "Quarterly"
+					: "Monthly";
 	const frequencySuffix =
-		config.type === "recurring" ? (frequency === "yearly" ? "/yr" : "/mo") : "";
+		config.type === "recurring"
+			? frequency === "yearly"
+				? "/yr"
+				: frequency === "quarterly"
+					? "/qtr"
+					: "/mo"
+			: "";
 
 	return (
 		<Popover>
@@ -506,7 +514,11 @@ export function SimulateOverpaymentEvent({
 							<h4 className="font-medium text-sm">
 								{formatCurrency(config.amount / 100)}
 								{config.type === "recurring" &&
-									(frequency === "yearly" ? " /year" : " /month")}
+									(frequency === "yearly"
+										? " /year"
+										: frequency === "quarterly"
+											? " /quarter"
+											: " /month")}
 							</h4>
 							<p className="text-xs text-muted-foreground">
 								{config.type === "one_time"
