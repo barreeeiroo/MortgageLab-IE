@@ -782,13 +782,19 @@ describe("calculateCashbackBreakeven", () => {
 			);
 		});
 
-		it("calculates savings vs worst option", () => {
+		it("calculates savings vs worst option (by adjusted balance)", () => {
 			const result = calculateCashbackBreakeven(baseInputs);
 
-			const worstNetCost = Math.max(...result.options.map((o) => o.netCost));
-			const bestNetCost = Math.min(...result.options.map((o) => o.netCost));
+			const worstAdjustedBalance = Math.max(
+				...result.options.map((o) => o.adjustedBalance),
+			);
+			const bestAdjustedBalance = Math.min(
+				...result.options.map((o) => o.adjustedBalance),
+			);
 
-			expect(result.savingsVsWorst).toBe(worstNetCost - bestNetCost);
+			expect(result.savingsVsWorst).toBe(
+				worstAdjustedBalance - bestAdjustedBalance,
+			);
 		});
 
 		it("high cashback can beat low rate in short comparison period", () => {

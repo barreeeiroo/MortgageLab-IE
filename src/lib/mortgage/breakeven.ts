@@ -629,6 +629,7 @@ export interface CashbackOptionResult {
 	principalPaid: number;
 	balanceAtEnd: number; // Remaining balance after comparison period
 	netCost: number; // interestPaid - cashbackAmount
+	adjustedBalance: number; // Balance if cashback was applied to principal at start
 }
 
 export interface CashbackBreakevenPoint {
@@ -643,14 +644,16 @@ export interface CashbackBreakevenPoint {
 export interface CashbackMonthlyComparison {
 	month: number;
 	netCosts: number[]; // Net cost for each option at this month
+	adjustedBalances: number[]; // Adjusted balance for each option at this month
 }
 
 export interface CashbackYearlyComparison {
 	year: number;
 	netCosts: number[]; // Net cost for each option at this year
+	adjustedBalances: number[]; // Adjusted balance for each option at this year
 	interestPaid: number[]; // Cumulative interest for each option
 	principalPaid: number[]; // Cumulative principal for each option
-	balances: number[]; // Remaining balance for each option
+	balances: number[]; // Remaining balance for each option (without cashback applied)
 }
 
 export interface CashbackBreakevenResult {
@@ -660,7 +663,8 @@ export interface CashbackBreakevenResult {
 	options: CashbackOptionResult[];
 	cheapestMonthlyIndex: number; // Lowest monthly payment
 	cheapestNetCostIndex: number; // Best net cost over comparison period
-	savingsVsWorst: number; // How much the best saves vs the worst over comparison period
+	cheapestAdjustedBalanceIndex: number; // Best adjusted balance over comparison period
+	savingsVsWorst: number; // How much the best saves vs the worst over comparison period (by adjusted balance)
 	breakevens: CashbackBreakevenPoint[];
 	monthlyBreakdown: CashbackMonthlyComparison[];
 	yearlyBreakdown: CashbackYearlyComparison[];
@@ -723,6 +727,16 @@ export function calculateCashbackBreakeven(
 			balance = Math.max(0, balance - principalPayment);
 		}
 
+		// Calculate adjusted balance: simulate cashback applied at start
+		// This shows the balance if cashback was used as a lump-sum overpayment at month 1
+		let adjustedBalance = mortgageAmount - cashbackAmount;
+		for (let month = 1; month <= comparisonPeriodMonths; month++) {
+			const interestPayment = adjustedBalance * monthlyRate;
+			// Same monthly payment, but applied to reduced balance = more principal paid
+			const principalPayment = monthlyPayment - interestPayment;
+			adjustedBalance = Math.max(0, adjustedBalance - principalPayment);
+		}
+
 		return {
 			label: option.label,
 			rate: option.rate,
@@ -734,6 +748,7 @@ export function calculateCashbackBreakeven(
 			principalPaid: Math.round(cumulativePrincipal),
 			balanceAtEnd: Math.round(balance),
 			netCost: Math.round(cumulativeInterest - cashbackAmount),
+			adjustedBalance: Math.round(adjustedBalance),
 		};
 	});
 
@@ -760,20 +775,35 @@ export function calculateCashbackBreakeven(
 		0,
 	);
 
-	// Calculate savings vs worst option
-	const worstNetCost = Math.max(...optionResults.map((o) => o.netCost));
-	const bestNetCost = optionResults[cheapestNetCostIndex].netCost;
-	const savingsVsWorst = worstNetCost - bestNetCost;
+	// Find cheapest by adjusted balance over comparison period
+	const cheapestAdjustedBalanceIndex = optionResults.reduce(
+		(minIdx, opt, idx, arr) =>
+			opt.adjustedBalance < arr[minIdx].adjustedBalance ? idx : minIdx,
+		0,
+	);
+
+	// Calculate savings vs worst option (by adjusted balance)
+	const worstAdjustedBalance = Math.max(
+		...optionResults.map((o) => o.adjustedBalance),
+	);
+	const bestAdjustedBalance =
+		optionResults[cheapestAdjustedBalanceIndex].adjustedBalance;
+	const savingsVsWorst = worstAdjustedBalance - bestAdjustedBalance;
 
 	// Calculate monthly and yearly breakdowns for charting
 	const monthlyBreakdown: CashbackMonthlyComparison[] = [];
 	const yearlyBreakdown: CashbackYearlyComparison[] = [];
 
-	// Track cumulative values for each option
+	// Track cumulative values for each option (regular balances)
 	const balances = options.map(() => mortgageAmount);
 	const cumulativeInterests = options.map(() => 0);
 	const cumulativePrincipals = options.map(() => 0);
 	const cashbackAmounts = optionResults.map((r) => r.cashbackAmount);
+
+	// Track adjusted balances (simulating cashback applied at start)
+	const adjustedBalances = options.map(
+		(_, i) => mortgageAmount - cashbackAmounts[i],
+	);
 
 	// Calculate how many months to include for projection (1 extra year if not at term end)
 	const projectionEndMonth = Math.min(
@@ -786,13 +816,22 @@ export function calculateCashbackBreakeven(
 		// Update each option
 		for (let i = 0; i < options.length; i++) {
 			const monthlyRate = options[i].rate / 100 / 12;
-			const interestPayment = balances[i] * monthlyRate;
 			const monthlyPayment = optionResults[i].monthlyPayment;
-			const principalPayment = monthlyPayment - interestPayment;
 
+			// Regular balance tracking
+			const interestPayment = balances[i] * monthlyRate;
+			const principalPayment = monthlyPayment - interestPayment;
 			cumulativeInterests[i] += interestPayment;
 			cumulativePrincipals[i] += principalPayment;
 			balances[i] = Math.max(0, balances[i] - principalPayment);
+
+			// Adjusted balance tracking (same payment applied to reduced balance)
+			const adjustedInterestPayment = adjustedBalances[i] * monthlyRate;
+			const adjustedPrincipalPayment = monthlyPayment - adjustedInterestPayment;
+			adjustedBalances[i] = Math.max(
+				0,
+				adjustedBalances[i] - adjustedPrincipalPayment,
+			);
 		}
 
 		// Store monthly data for first 48 months (within comparison period)
@@ -801,6 +840,9 @@ export function calculateCashbackBreakeven(
 				month,
 				netCosts: cumulativeInterests.map((interest, i) =>
 					Math.round(interest - cashbackAmounts[i]),
+				),
+				adjustedBalances: adjustedBalances.map((balance) =>
+					Math.round(balance),
 				),
 			});
 		}
@@ -811,6 +853,9 @@ export function calculateCashbackBreakeven(
 				year: month / 12,
 				netCosts: cumulativeInterests.map((interest, i) =>
 					Math.round(interest - cashbackAmounts[i]),
+				),
+				adjustedBalances: adjustedBalances.map((balance) =>
+					Math.round(balance),
 				),
 				interestPaid: cumulativeInterests.map((interest) =>
 					Math.round(interest),
@@ -831,6 +876,7 @@ export function calculateCashbackBreakeven(
 			netCosts: cumulativeInterests.map((interest, i) =>
 				Math.round(interest - cashbackAmounts[i]),
 			),
+			adjustedBalances: adjustedBalances.map((balance) => Math.round(balance)),
 			interestPaid: cumulativeInterests.map((interest) => Math.round(interest)),
 			principalPaid: cumulativePrincipals.map((principal) =>
 				Math.round(principal),
@@ -873,6 +919,7 @@ export function calculateCashbackBreakeven(
 		options: optionResults,
 		cheapestMonthlyIndex,
 		cheapestNetCostIndex,
+		cheapestAdjustedBalanceIndex,
 		savingsVsWorst,
 		breakevens,
 		monthlyBreakdown,

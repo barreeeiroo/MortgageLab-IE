@@ -24,11 +24,15 @@ import {
 	TooltipWrapper,
 } from "../../ChartTooltip";
 
+export type CashbackChartMetric = "netCosts" | "balances" | "adjustedBalances";
+
 interface CashbackComparisonChartProps {
 	yearlyData: CashbackYearlyComparison[];
 	options: CashbackOptionResult[];
 	/** Optional projection year to show beyond comparison period */
 	projectionYear?: CashbackYearlyComparison | null;
+	/** Which metric to display. Defaults to netCosts */
+	metric?: CashbackChartMetric;
 }
 
 // Colors for up to 5 options
@@ -44,6 +48,7 @@ export function CashbackComparisonChart({
 	yearlyData,
 	options,
 	projectionYear,
+	metric = "netCosts",
 }: CashbackComparisonChartProps) {
 	// Use yearly data for better visualization of long-term trends
 	// Include projection year if provided
@@ -60,8 +65,10 @@ export function CashbackComparisonChart({
 			year: year.year,
 			isProjection: projectionYear?.year === year.year,
 		};
+		// Use the specified metric
+		const metricData = year[metric];
 		options.forEach((_, index) => {
-			dataPoint[`option${index}`] = year.netCosts[index];
+			dataPoint[`option${index}`] = metricData[index];
 		});
 		return dataPoint;
 	});

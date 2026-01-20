@@ -16,6 +16,7 @@ import {
 	addMetricRow,
 	addStyledSectionHeader,
 	addTable,
+	addText,
 	addViewOnlineLink,
 	createPDFDocument,
 	downloadPDF,
@@ -435,7 +436,7 @@ export async function exportCashbackToPDF(
 		context;
 	const doc = await createPDFDocument();
 
-	const cheapestOption = result.options[result.cheapestNetCostIndex];
+	const cheapestOption = result.options[result.cheapestAdjustedBalanceIndex];
 	const comparisonYears = Math.floor(result.comparisonPeriodYears);
 
 	// Truncate long option labels for the metric box
@@ -460,8 +461,8 @@ export async function exportCashbackToPDF(
 				variant: "success",
 			},
 			{
-				label: `Net Cost (${comparisonYears}y)`,
-				value: formatCurrencyForExport(cheapestOption.netCost, true),
+				label: `Adjusted Balance (${comparisonYears}y)`,
+				value: formatCurrencyForExport(cheapestOption.adjustedBalance, true),
 				variant: "default",
 			},
 		],
@@ -490,7 +491,21 @@ export async function exportCashbackToPDF(
 	);
 	y += 4;
 
-	// Options Comparison Table
+	// Key Metrics Table (Effective Position, Net Cost, Balance After)
+	y = addStyledSectionHeader(doc, "Key Metrics", y, { divider: true });
+	const keyMetricsTableData = prepareCashbackKeyMetricsTableData(
+		result.options,
+	);
+	y = await addTable(doc, keyMetricsTableData, y);
+	y = addText(
+		doc,
+		"Adjusted Balance = Balance if cashback applied to principal at start. Net Cost = Interest - Cashback.",
+		y,
+		{ fontSize: 8 },
+	);
+	y += 2;
+
+	// Options Comparison Table (transposed: metrics as rows, options as columns)
 	y = addStyledSectionHeader(doc, "Option Details", y, { divider: true });
 	const optionsTableData = prepareCashbackOptionsTableData(result.options);
 	y = await addTable(doc, optionsTableData, y);
@@ -507,6 +522,11 @@ export async function exportCashbackToPDF(
 
 	// Overpayment Allowances Table
 	if (overpaymentAllowances && overpaymentAllowances.length > 0) {
+		// Check if we need a new page (A4 height is 297mm, leave 40mm for content + footer)
+		if (y > 257) {
+			doc.addPage();
+			y = 20;
+		}
 		y = addStyledSectionHeader(
 			doc,
 			`Overpayment Allowances (${comparisonYears}y)`,
@@ -528,28 +548,65 @@ export async function exportCashbackToPDF(
 	downloadPDF(doc, "breakeven-cashback");
 }
 
+function prepareCashbackKeyMetricsTableData(
+	options: CashbackBreakevenResult["options"],
+): TableExportData {
+	// Headers: empty first cell + option labels
+	const headers = ["", ...options.map((opt) => sanitizeForPDF(opt.label))];
+
+	// Rows: metric name + values for each option
+	const rows = [
+		[
+			"Adjusted Balance",
+			...options.map((opt) =>
+				formatCurrencyForExport(opt.adjustedBalance, true),
+			),
+		],
+		[
+			"Net Cost",
+			...options.map((opt) => formatCurrencyForExport(opt.netCost, true)),
+		],
+		[
+			"Balance After",
+			...options.map((opt) => formatCurrencyForExport(opt.balanceAtEnd, true)),
+		],
+	];
+
+	return { headers, rows };
+}
+
 function prepareCashbackOptionsTableData(
 	options: CashbackBreakevenResult["options"],
 ): TableExportData {
-	const headers = [
-		"Option",
-		"Rate",
-		"Monthly",
-		"Interest",
-		"Principal",
-		"Cashback",
-		"Net Cost",
-	];
+	// Transposed: metrics as rows, options as columns
+	const headers = ["", ...options.map((opt) => sanitizeForPDF(opt.label))];
 
-	const rows = options.map((opt) => [
-		sanitizeForPDF(opt.label),
-		formatPercentForExport(opt.rate / 100, 2),
-		formatCurrencyForExport(opt.monthlyPayment, true),
-		formatCurrencyForExport(opt.interestPaid, true),
-		formatCurrencyForExport(opt.principalPaid, true),
-		formatCurrencyForExport(opt.cashbackAmount, true),
-		formatCurrencyForExport(opt.netCost, true),
-	]);
+	const rows = [
+		[
+			"Rate",
+			...options.map((opt) => formatPercentForExport(opt.rate / 100, 2)),
+		],
+		[
+			"Monthly Payment",
+			...options.map((opt) =>
+				formatCurrencyForExport(opt.monthlyPayment, true),
+			),
+		],
+		[
+			"Cashback",
+			...options.map((opt) =>
+				formatCurrencyForExport(opt.cashbackAmount, true),
+			),
+		],
+		[
+			"Interest",
+			...options.map((opt) => formatCurrencyForExport(opt.interestPaid, true)),
+		],
+		[
+			"Principal",
+			...options.map((opt) => formatCurrencyForExport(opt.principalPaid, true)),
+		],
+	];
 
 	return { headers, rows };
 }
@@ -578,12 +635,19 @@ function prepareCashbackOverpaymentTableData(
 ): TableExportData {
 	const headers = ["Option", "Total Allowance"];
 
-	const rows = allowances.map((allowance) => [
-		sanitizeForPDF(allowance.label),
-		allowance.policyLabel
-			? formatCurrencyForExport(allowance.totalAllowance, true)
-			: "Breakage fee applies",
-	]);
+	const rows = allowances.map((allowance) => {
+		// Include policy label below option name if available
+		const optionCell = allowance.policyLabel
+			? `${sanitizeForPDF(allowance.label)}\n${allowance.policyLabel}`
+			: sanitizeForPDF(allowance.label);
+
+		return [
+			optionCell,
+			allowance.policyLabel
+				? formatCurrencyForExport(allowance.totalAllowance, true)
+				: "Breakage fee applies",
+		];
+	});
 
 	return { headers, rows };
 }
