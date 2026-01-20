@@ -43,10 +43,6 @@ import type {
 	SimulationSummary,
 } from "@/lib/schemas/simulate";
 import { requestChartCapture } from "@/lib/stores/simulate/simulate-chart-capture";
-import {
-	$hasValidComparison,
-	navigateToCompare,
-} from "@/lib/stores/simulate/simulate-compare";
 import { $savedSimulations } from "@/lib/stores/simulate/simulate-saves";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatTermDisplay } from "@/lib/utils/term";
@@ -93,19 +89,13 @@ export function SimulateHeader({
 	const [isExporting, setIsExporting] = useState(false);
 	const [compareDialogOpen, setCompareDialogOpen] = useState(false);
 	const savedSimulations = useStore($savedSimulations);
-	const hasValidComparison = useStore($hasValidComparison);
 
 	// Can compare if there's at least 1 saved simulation (current counts as the other one)
 	const canCompare = savedSimulations.length >= 1;
 
 	const handleCompare = () => {
-		if (hasValidComparison) {
-			// Already have selections, navigate directly
-			navigateToCompare();
-		} else {
-			// Open dialog for selection
-			setCompareDialogOpen(true);
-		}
+		// Always open dialog to let user review/modify selection
+		setCompareDialogOpen(true);
 	};
 
 	// Calculate LTV
