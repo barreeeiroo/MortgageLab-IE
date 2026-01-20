@@ -6,9 +6,9 @@ import { getOverpaymentPolicy } from "@/lib/data/overpayment-policies";
 import {
 	type CashbackOption,
 	calculateCashbackBreakeven,
-	parseCashbackFromPerkId,
 } from "@/lib/mortgage/breakeven";
 import { calculateTotalOverpaymentAllowance } from "@/lib/mortgage/overpayments";
+import { getCashbackConfig } from "@/lib/mortgage/perks";
 import type { OverpaymentPolicy } from "@/lib/schemas/overpayment-policy";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
@@ -31,6 +31,7 @@ import {
 	$overpaymentPolicies,
 	fetchOverpaymentPolicies,
 } from "@/lib/stores/overpayment-policies";
+import { $perks, fetchPerks } from "@/lib/stores/perks";
 import {
 	formatCurrency,
 	formatCurrencyInput,
@@ -88,13 +89,15 @@ export function CashbackInputsIsland() {
 	// Auto-calculate flag
 	const [shouldAutoCalculate, setShouldAutoCalculate] = useState(false);
 
-	// Subscribe to lenders and overpayment policies for allowance calculation
+	// Subscribe to lenders, perks, and overpayment policies for allowance calculation
 	const lenders = useStore($lenders);
+	const perks = useStore($perks);
 	const overpaymentPolicies = useStore($overpaymentPolicies);
 
-	// Fetch lenders and policies on mount
+	// Fetch lenders, perks, and policies on mount
 	useEffect(() => {
 		fetchLenders();
+		fetchPerks();
 		fetchOverpaymentPolicies();
 	}, []);
 
@@ -200,7 +203,7 @@ export function CashbackInputsIsland() {
 			// Try to auto-populate cashback from perks
 			if (rate.perks && rate.perks.length > 0) {
 				for (const perkId of rate.perks) {
-					const cashbackConfig = parseCashbackFromPerkId(perkId);
+					const cashbackConfig = getCashbackConfig(perkId, perks);
 					if (cashbackConfig) {
 						updates.cashbackType = cashbackConfig.type;
 						updates.cashbackValue = cashbackConfig.value.toString();
@@ -218,7 +221,7 @@ export function CashbackInputsIsland() {
 				setFixedPeriod(rateFixedPeriod.toString());
 			}
 		},
-		[updateOption, lenders, fixedPeriod],
+		[updateOption, lenders, perks, fixedPeriod],
 	);
 
 	// Validation

@@ -15,6 +15,7 @@ import {
 	type PropertyType,
 } from "@/lib/utils/fees";
 import { calculateMonthlyPayment } from "./calculations";
+import { calculateCashbackAmount } from "./perks";
 
 // =============================================================================
 // Constants
@@ -55,28 +56,6 @@ export function formatBreakevenPeriod(months: number | null): string {
 	}
 
 	return `${years} year${years !== 1 ? "s" : ""} ${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
-}
-
-/**
- * Parse cashback configuration from a perk ID.
- * Returns null if perk is not a cashback perk.
- */
-export function parseCashbackFromPerkId(
-	perkId: string,
-): { type: "percentage" | "flat"; value: number; cap?: number } | null {
-	const mapping: Record<
-		string,
-		{ type: "percentage" | "flat"; value: number; cap?: number }
-	> = {
-		"cashback-1pct": { type: "percentage", value: 1 },
-		"cashback-2pct": { type: "percentage", value: 2 },
-		"cashback-2pct-max10k": { type: "percentage", value: 2, cap: 10000 },
-		"cashback-3pct": { type: "percentage", value: 3, cap: 15000 },
-		"cashback-5k": { type: "flat", value: 5000 },
-		"switcher-3k": { type: "flat", value: 3000 },
-	};
-
-	return mapping[perkId] ?? null;
 }
 
 // =============================================================================
@@ -694,32 +673,6 @@ export interface CashbackBreakevenResult {
 // =============================================================================
 
 /**
- * Calculate cashback amount with optional cap.
- */
-function calculateCashbackAmount(
-	mortgageAmount: number,
-	cashbackType: "percentage" | "flat",
-	cashbackValue: number,
-	cashbackCap?: number,
-): number {
-	let amount: number;
-
-	if (cashbackType === "flat") {
-		amount = cashbackValue;
-	} else {
-		// Percentage-based
-		amount = mortgageAmount * (cashbackValue / 100);
-	}
-
-	// Apply cap if specified
-	if (cashbackCap !== undefined && amount > cashbackCap) {
-		amount = cashbackCap;
-	}
-
-	return amount;
-}
-
-/**
  * Calculate and compare multiple mortgage options with different rates and cashback offers.
  *
  * The comparison period is determined by the fixed periods:
@@ -749,12 +702,11 @@ export function calculateCashbackBreakeven(
 			mortgageTermMonths,
 		);
 
-		const cashbackAmount = calculateCashbackAmount(
-			mortgageAmount,
-			option.cashbackType,
-			option.cashbackValue,
-			option.cashbackCap,
-		);
+		const cashbackAmount = calculateCashbackAmount(mortgageAmount, {
+			type: option.cashbackType,
+			value: option.cashbackValue,
+			cap: option.cashbackCap,
+		});
 
 		// Calculate cumulative values over comparison period only
 		const monthlyRate = option.rate / 100 / 12;

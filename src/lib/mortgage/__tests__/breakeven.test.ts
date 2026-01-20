@@ -10,7 +10,6 @@ import {
 	DEFAULT_RENT_INFLATION,
 	DEFAULT_SALE_COST_RATE,
 	formatBreakevenPeriod,
-	parseCashbackFromPerkId,
 	type RemortgageInputs,
 	type RentVsBuyInputs,
 } from "../breakeven";
@@ -1075,47 +1074,5 @@ describe("calculateCashbackBreakeven", () => {
 
 			expect(result.yearlyBreakdown.length).toBe(5);
 		});
-	});
-});
-
-describe("parseCashbackFromPerkId", () => {
-	it("parses percentage cashback perks", () => {
-		expect(parseCashbackFromPerkId("cashback-1pct")).toEqual({
-			type: "percentage",
-			value: 1,
-		});
-		expect(parseCashbackFromPerkId("cashback-2pct")).toEqual({
-			type: "percentage",
-			value: 2,
-		});
-	});
-
-	it("parses capped percentage cashback", () => {
-		expect(parseCashbackFromPerkId("cashback-2pct-max10k")).toEqual({
-			type: "percentage",
-			value: 2,
-			cap: 10000,
-		});
-		expect(parseCashbackFromPerkId("cashback-3pct")).toEqual({
-			type: "percentage",
-			value: 3,
-			cap: 15000,
-		});
-	});
-
-	it("parses flat cashback perks", () => {
-		expect(parseCashbackFromPerkId("cashback-5k")).toEqual({
-			type: "flat",
-			value: 5000,
-		});
-		expect(parseCashbackFromPerkId("switcher-3k")).toEqual({
-			type: "flat",
-			value: 3000,
-		});
-	});
-
-	it("returns null for non-cashback perks", () => {
-		expect(parseCashbackFromPerkId("fee-free-banking")).toBeNull();
-		expect(parseCashbackFromPerkId("unknown-perk")).toBeNull();
 	});
 });

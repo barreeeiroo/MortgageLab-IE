@@ -16,7 +16,7 @@ import {
 	exportCompareRatesToExcel,
 	exportCompareRatesToPDF,
 } from "@/lib/export/rates-compare-export";
-import { parseCashbackFromPerkId } from "@/lib/mortgage/breakeven";
+import { getCashbackConfig } from "@/lib/mortgage/perks";
 import type { Lender } from "@/lib/schemas/lender";
 import type { Perk } from "@/lib/schemas/perk";
 import {
@@ -245,9 +245,9 @@ export function CompareRatesModal({
 		// Extract cashback config for each rate (null if no cashback)
 		const cashbackConfigs = rates.map((rate) => {
 			for (const perkId of rate.combinedPerks) {
-				const parsed = parseCashbackFromPerkId(perkId);
-				if (parsed) {
-					return parsed;
+				const config = getCashbackConfig(perkId, perks);
+				if (config) {
+					return config;
 				}
 			}
 			return null;
@@ -304,7 +304,7 @@ export function CompareRatesModal({
 			fixedPeriod: maxFixedPeriod.toString(),
 			options,
 		} satisfies CashbackBreakevenFormState;
-	}, [rates, lenders, mortgageAmount, mortgageTerm]);
+	}, [rates, lenders, perks, mortgageAmount, mortgageTerm]);
 
 	const handleCompareCashback = useCallback(() => {
 		if (!cashbackComparisonState) return;
