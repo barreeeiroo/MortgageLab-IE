@@ -18,6 +18,7 @@ import {
 	$simulationSummary,
 	$yearlySchedule,
 } from "@/lib/stores/simulate/simulate-calculations";
+import { initializeCompareState } from "@/lib/stores/simulate/simulate-compare";
 import { initializeSavedSimulations } from "@/lib/stores/simulate/simulate-saves";
 import {
 	$hasRequiredData,
@@ -42,6 +43,7 @@ export function SimulateHeaderIsland() {
 	useEffect(() => {
 		initializeCustomRates();
 		initializeSavedSimulations();
+		initializeCompareState();
 		fetchRatesData();
 
 		// Check for share URL first
