@@ -898,7 +898,7 @@ export function RatesTrendChart({
 						? [
 								<Line
 									key="rate"
-									type="monotone"
+									type="stepAfter"
 									dataKey="rate"
 									name="rate"
 									stroke="var(--chart-interest)"
@@ -911,7 +911,7 @@ export function RatesTrendChart({
 								showApr ? (
 									<Line
 										key="apr"
-										type="monotone"
+										type="stepAfter"
 										dataKey="apr"
 										name="apr"
 										stroke="var(--chart-principal)"
@@ -928,7 +928,7 @@ export function RatesTrendChart({
 								...seriesArray.map((series, i) => (
 									<Line
 										key={series.rateId}
-										type="monotone"
+										type={hasAverage ? "stepAfter" : "monotone"}
 										dataKey={`rate_${i}`}
 										name={series.rateName}
 										stroke={SERIES_COLORS[i % SERIES_COLORS.length]}
@@ -944,7 +944,7 @@ export function RatesTrendChart({
 								hasAverage ? (
 									<Line
 										key="average"
-										type="monotone"
+										type="stepAfter"
 										dataKey="average"
 										name="Average"
 										stroke="var(--primary)"
