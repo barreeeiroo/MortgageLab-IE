@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 import {
 	downloadChartWithBranding,
-	elementToPngDataUrl,
+	elementToJpegDataUrl,
 } from "@/lib/export/format/chart-image";
 import {
 	$compareChartSettings,
@@ -115,8 +115,7 @@ export function SimulateCompareCharts({
 					// Check if element exists and has rendered content (SVG)
 					if (element?.querySelector("svg")) {
 						try {
-							const imageDataUrl = await elementToPngDataUrl(element, {
-								pixelRatio: 2,
+							const imageDataUrl = await elementToJpegDataUrl(element, {
 								backgroundColor: "#ffffff",
 							});
 							images.push({

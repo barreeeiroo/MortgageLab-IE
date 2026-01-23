@@ -22,7 +22,7 @@ export interface ChartImageOptions {
 
 /**
  * Converts a DOM element to a PNG data URL.
- * Use this when you need the image data for embedding in PDFs.
+ * Use this for standalone image downloads where lossless quality is preferred.
  *
  * @param element The DOM element to capture (should include chart and legend)
  * @param options Configuration options
@@ -38,6 +38,28 @@ export async function elementToPngDataUrl(
 		pixelRatio: options?.pixelRatio ?? 2,
 		backgroundColor: options?.backgroundColor ?? "#ffffff",
 		quality: options?.quality ?? 0.95,
+	});
+}
+
+/**
+ * Converts a DOM element to a JPEG data URL.
+ * Use this for PDF embedding where smaller file sizes are important.
+ * JPEG produces significantly smaller files than PNG for charts.
+ *
+ * @param element The DOM element to capture (should include chart and legend)
+ * @param options Configuration options
+ * @returns Base64 data URL of the JPEG image
+ */
+export async function elementToJpegDataUrl(
+	element: HTMLElement,
+	options?: ChartImageOptions,
+): Promise<string> {
+	const htmlToImage = await getHtmlToImage();
+
+	return htmlToImage.toJpeg(element, {
+		pixelRatio: options?.pixelRatio ?? 1.5,
+		backgroundColor: options?.backgroundColor ?? "#ffffff",
+		quality: options?.quality ?? 0.92,
 	});
 }
 

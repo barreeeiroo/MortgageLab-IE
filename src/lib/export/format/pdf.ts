@@ -399,7 +399,9 @@ export function addImage(
 	const height = options?.height ?? 100;
 	const x = options?.x ?? 14;
 
-	doc.addImage(imageData, "PNG", x, y, width, height);
+	// Auto-detect image format from data URL
+	const format = imageData.includes("image/jpeg") ? "JPEG" : "PNG";
+	doc.addImage(imageData, format, x, y, width, height);
 
 	return y + height + 10;
 }

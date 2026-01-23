@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 import {
 	downloadChartWithBranding,
-	elementToPngDataUrl,
+	elementToJpegDataUrl,
 } from "@/lib/export/format/chart-image";
 import type { Milestone } from "@/lib/schemas/simulate";
 import {
@@ -175,8 +175,7 @@ export function SimulateChartsContainer({
 					const element = captureRefs.current[chartType];
 					if (element) {
 						try {
-							const imageDataUrl = await elementToPngDataUrl(element, {
-								pixelRatio: 2,
+							const imageDataUrl = await elementToJpegDataUrl(element, {
 								backgroundColor: "#ffffff",
 							});
 							images.push({
