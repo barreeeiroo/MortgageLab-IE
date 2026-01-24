@@ -532,7 +532,7 @@ export async function exportSimulationToPDF(
 			if (context.selfBuildConfig.interestOnlyMonths > 0) {
 				y = addKeyValue(
 					doc,
-					"Post-Construction Interest Only",
+					"Post-Build Interest Only",
 					`${context.selfBuildConfig.interestOnlyMonths} months`,
 					y,
 				);
@@ -560,11 +560,11 @@ export async function exportSimulationToPDF(
 		divider: true,
 	});
 	const scheduleData = prepareScheduleDataForPDF(context.yearlySchedule);
-	await addTable(doc, scheduleData, y);
+	y = await addTable(doc, scheduleData, y);
 
 	// Add "View Online" link if share URL provided
 	if (context.shareUrl) {
-		addViewOnlineLink(doc, context.shareUrl);
+		addViewOnlineLink(doc, context.shareUrl, y);
 	}
 
 	addFooter(doc);

@@ -118,7 +118,7 @@ export async function exportAffordabilityToPDF(
 
 	y = addKeyValue(
 		doc,
-		"Maximum Property Value",
+		"Max Property Value",
 		formatCurrencyForExport(result.propertyValue),
 		y,
 	);
@@ -206,7 +206,7 @@ export async function exportAffordabilityToPDF(
 		});
 		y = addKeyValue(
 			doc,
-			"Maximum Mortgage (by income)",
+			"Max Mortgage (Income)",
 			formatCurrencyForExport(context.maxMortgageByIncome),
 			y,
 		);
@@ -226,7 +226,7 @@ export async function exportAffordabilityToPDF(
 		y = addStyledSectionHeader(doc, "Current Property", y, { divider: true });
 		y = addKeyValue(
 			doc,
-			"Current Property Value",
+			"Current Property",
 			formatCurrencyForExport(context.currentPropertyValue),
 			y,
 		);
@@ -278,7 +278,7 @@ export async function exportAffordabilityToPDF(
 
 	// Add "View Online" link if share URL provided
 	if (context.shareUrl) {
-		addViewOnlineLink(doc, context.shareUrl);
+		addViewOnlineLink(doc, context.shareUrl, y);
 	}
 
 	addFooter(doc);

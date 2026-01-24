@@ -513,7 +513,7 @@ export async function exportRatesToPDF(
 	const logos = await preloadAllLenderLogos(24);
 
 	// Add table with logos
-	await addTableWithLogos(doc, data, logos, y, {
+	const finalY = await addTableWithLogos(doc, data, logos, y, {
 		logoColumn: 0,
 		logoSize: 4,
 		lenderNameToId,
@@ -521,7 +521,7 @@ export async function exportRatesToPDF(
 
 	// Add "View Online" link if share URL provided
 	if (context.shareUrl) {
-		addViewOnlineLink(doc, context.shareUrl);
+		addViewOnlineLink(doc, context.shareUrl, finalY);
 	}
 
 	// Add footer

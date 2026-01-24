@@ -418,11 +418,11 @@ export async function exportCompareToPDF(
 		divider: true,
 	});
 	const scheduleData = prepareCombinedScheduleForPDF(simulations);
-	await addTable(doc, scheduleData, y);
+	y = await addTable(doc, scheduleData, y);
 
 	// Add "View Online" link if share URL provided
 	if (shareUrl) {
-		addViewOnlineLink(doc, shareUrl);
+		addViewOnlineLink(doc, shareUrl, y);
 	}
 
 	addFooter(doc);

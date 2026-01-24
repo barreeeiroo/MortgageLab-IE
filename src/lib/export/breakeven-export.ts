@@ -89,7 +89,7 @@ export async function exportRentVsBuyToPDF(
 	);
 	y = addKeyValue(
 		doc,
-		"Monthly Mortgage Payment",
+		"Monthly Payment",
 		formatCurrencyForExport(result.monthlyMortgagePayment, true),
 		y,
 	);
@@ -171,7 +171,7 @@ export async function exportRentVsBuyToPDF(
 
 	// Add "View Online" link if share URL provided
 	if (context.shareUrl) {
-		addViewOnlineLink(doc, context.shareUrl);
+		addViewOnlineLink(doc, context.shareUrl, y);
 	}
 
 	addFooter(doc);
@@ -321,7 +321,7 @@ export async function exportRemortgageToPDF(
 	);
 	y = addKeyValue(
 		doc,
-		`Total Savings (${formatTermForExport(remainingTermMonths)})`,
+		`Savings (${formatTermForExport(remainingTermMonths)})`,
 		formatCurrencyForExport(result.totalSavingsOverTerm, true),
 		y,
 	);
@@ -379,7 +379,7 @@ export async function exportRemortgageToPDF(
 
 	// Add "View Online" link if share URL provided
 	if (context.shareUrl) {
-		addViewOnlineLink(doc, context.shareUrl);
+		addViewOnlineLink(doc, context.shareUrl, y);
 	}
 
 	addFooter(doc);
@@ -541,7 +541,7 @@ export async function exportCashbackToPDF(
 
 	// Add "View Online" link if share URL provided
 	if (context.shareUrl) {
-		addViewOnlineLink(doc, context.shareUrl);
+		addViewOnlineLink(doc, context.shareUrl, y);
 	}
 
 	addFooter(doc);

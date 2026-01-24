@@ -139,7 +139,7 @@ export function addKeyValue(
 	doc.setFont("helvetica", "bold");
 	doc.text(`${key}:`, 14, y);
 	doc.setFont("helvetica", "normal");
-	doc.text(value, 60, y);
+	doc.text(value, 70, y);
 	return y + 6;
 }
 
@@ -680,16 +680,26 @@ export function addStyledSectionHeader(
 /**
  * Adds a "View Online" link section at the end of the document.
  * Should be called before addFooter().
+ *
+ * @param currentY - Optional Y position of the last content. If content would
+ *   overlap with the link area, a new page is added first.
  */
 export function addViewOnlineLink(
 	doc: Awaited<ReturnType<typeof createPDFDocument>>,
 	shareUrl: string,
+	currentY?: number,
 ): void {
+	const pageHeight = doc.internal.pageSize.getHeight();
+	const linkAreaStart = pageHeight - 22; // Where divider starts
+
+	// If content would overlap link area, add a new page
+	if (currentY !== undefined && currentY > linkAreaStart - 8) {
+		doc.addPage();
+	}
+
 	const pageCount = doc.getNumberOfPages();
 	doc.setPage(pageCount);
 
-	// Get page dimensions
-	const pageHeight = doc.internal.pageSize.getHeight();
 	const footerY = pageHeight - 10; // Footer position
 	const linkY = footerY - 8; // Position above footer
 
