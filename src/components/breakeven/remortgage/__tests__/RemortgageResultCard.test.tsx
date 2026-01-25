@@ -36,6 +36,7 @@ const createMockResult = (
 	breakevenMonths: 10,
 	breakevenDetails: {
 		monthlySavings: 200,
+		breakevenMonths: 10,
 		switchingCosts: 2000,
 		cumulativeSavingsAtBreakeven: 2000,
 	},
@@ -45,6 +46,7 @@ const createMockResult = (
 		totalInterestCurrent: 120000,
 		totalInterestNew: 95000,
 		interestSaved: 25000,
+		switchingCosts: 2000,
 		netBenefit: 23000,
 	},
 	yearlyBreakdown: [
@@ -55,6 +57,8 @@ const createMockResult = (
 			interestSaved: 3000,
 			remainingBalanceCurrent: 340000,
 			remainingBalanceNew: 338000,
+			interestPaidCurrent: 13000,
+			interestPaidNew: 10000,
 		},
 		{
 			year: 5,
@@ -63,6 +67,8 @@ const createMockResult = (
 			interestSaved: 15000,
 			remainingBalanceCurrent: 300000,
 			remainingBalanceNew: 290000,
+			interestPaidCurrent: 60000,
+			interestPaidNew: 45000,
 		},
 		{
 			year: 10,
@@ -71,6 +77,8 @@ const createMockResult = (
 			interestSaved: 25000,
 			remainingBalanceCurrent: 240000,
 			remainingBalanceNew: 220000,
+			interestPaidCurrent: 120000,
+			interestPaidNew: 95000,
 		},
 	],
 	monthlyBreakdown: [],

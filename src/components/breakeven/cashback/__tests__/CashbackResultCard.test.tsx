@@ -30,9 +30,8 @@ const createMockResult = (
 		{
 			label: "Option A",
 			rate: 3.5,
-			fixedTerm: 3,
+			fixedPeriodYears: 3,
 			cashbackAmount: 7200,
-			cashbackPercent: 2,
 			monthlyPayment: 1650,
 			monthlyPaymentDiff: 0,
 			interestPaid: 35000,
@@ -44,9 +43,8 @@ const createMockResult = (
 		{
 			label: "Option B",
 			rate: 3.25,
-			fixedTerm: 3,
+			fixedPeriodYears: 3,
 			cashbackAmount: 0,
-			cashbackPercent: 0,
 			monthlyPayment: 1580,
 			monthlyPaymentDiff: -70,
 			interestPaid: 32000,
@@ -57,10 +55,13 @@ const createMockResult = (
 		},
 	],
 	cheapestAdjustedBalanceIndex: 0,
+	cheapestNetCostIndex: 0,
 	cheapestMonthlyIndex: 1,
 	savingsVsWorst: 5200,
+	comparisonPeriodMonths: 36,
 	comparisonPeriodYears: 3,
 	allVariable: false,
+	monthlyBreakdown: [],
 	breakevens: [
 		{
 			optionAIndex: 0,
@@ -68,6 +69,7 @@ const createMockResult = (
 			optionALabel: "Option A",
 			optionBLabel: "Option B",
 			breakevenMonth: 18,
+			description: "Option A becomes cheaper than Option B",
 		},
 	],
 	yearlyBreakdown: [
@@ -76,18 +78,24 @@ const createMockResult = (
 			balances: [350000, 348000],
 			netCosts: [10000, 11000],
 			adjustedBalances: [342800, 348000],
+			interestPaid: [10000, 11000],
+			principalPaid: [10000, 12000],
 		},
 		{
 			year: 2,
 			balances: [342000, 340000],
 			netCosts: [18000, 21000],
 			adjustedBalances: [334800, 340000],
+			interestPaid: [18000, 21000],
+			principalPaid: [18000, 20000],
 		},
 		{
 			year: 3,
 			balances: [335000, 333000],
 			netCosts: [27800, 32000],
 			adjustedBalances: [327800, 333000],
+			interestPaid: [27800, 32000],
+			principalPaid: [25000, 27000],
 		},
 	],
 	projectionYear: null,
@@ -269,11 +277,18 @@ describe("CashbackResultCard", () => {
 		it("displays overpayment allowances when provided", () => {
 			const overpaymentAllowances = [
 				{
-					policy: { label: "10% per year", description: "10% of balance" },
+					policy: {
+						id: "test-policy",
+						label: "10% per year",
+						description: "10% of balance",
+						icon: "Percent",
+						allowanceType: "percentage" as const,
+						allowanceValue: 10,
+						allowanceBasis: "balance" as const,
+					},
 					totalAllowance: 35000,
 				},
 				{
-					policy: null,
 					totalAllowance: 0,
 				},
 			];
@@ -292,8 +307,8 @@ describe("CashbackResultCard", () => {
 
 		it("shows breakage fee warning for options without policy", () => {
 			const overpaymentAllowances = [
-				{ policy: null, totalAllowance: 0 },
-				{ policy: null, totalAllowance: 0 },
+				{ totalAllowance: 0 },
+				{ totalAllowance: 0 },
 			];
 			// Use default result which has two options
 			render(
@@ -315,9 +330,8 @@ describe("CashbackResultCard", () => {
 					{
 						label: "Option C",
 						rate: 3.0,
-						fixedTerm: 5,
+						fixedPeriodYears: 5,
 						cashbackAmount: 0,
-						cashbackPercent: 0,
 						monthlyPayment: 1520,
 						monthlyPaymentDiff: -130,
 						interestPaid: 28000,
@@ -334,6 +348,7 @@ describe("CashbackResultCard", () => {
 						optionALabel: "Option A",
 						optionBLabel: "Option B",
 						breakevenMonth: 18,
+						description: "Option A becomes cheaper than Option B",
 					},
 					{
 						optionAIndex: 0,
@@ -341,6 +356,7 @@ describe("CashbackResultCard", () => {
 						optionALabel: "Option A",
 						optionBLabel: "Option C",
 						breakevenMonth: 24,
+						description: "Option A becomes cheaper than Option C",
 					},
 				],
 			});

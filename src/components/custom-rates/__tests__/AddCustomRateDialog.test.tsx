@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMockLender } from "@/test/utils/mock-data";
 import { AddCustomRateDialog } from "../AddCustomRateDialog";
@@ -114,7 +114,12 @@ describe("AddCustomRateDialog", () => {
 
 		it("includes custom perks in the form", () => {
 			const customPerks = [
-				{ id: "custom-perk", label: "My Perk", description: "Custom perk" },
+				{
+					id: "custom-perk",
+					label: "My Perk",
+					description: "Custom perk",
+					icon: "Gift",
+				},
 			];
 			render(
 				<AddCustomRateDialog {...defaultProps} customPerks={customPerks} />,

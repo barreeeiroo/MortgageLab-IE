@@ -141,6 +141,7 @@ describe("SimulateRatePeriodEvent", () => {
 					type: "allowance_exceeded",
 					month: 5,
 					message: "Exceeds allowance",
+					severity: "warning",
 					configId: "config-1",
 					overpaymentLabel: "Monthly €500",
 				},
@@ -156,7 +157,7 @@ describe("SimulateRatePeriodEvent", () => {
 		it("shows error styling for error warnings", () => {
 			const warnings: SimulationWarning[] = [
 				{
-					type: "rate_missing",
+					type: "early_redemption",
 					month: 5,
 					message: "Rate not found",
 					severity: "error",
@@ -177,6 +178,7 @@ describe("SimulateRatePeriodEvent", () => {
 					type: "allowance_exceeded",
 					month: 5,
 					message: "Exceeds 10% allowance",
+					severity: "warning",
 					configId: "config-1",
 					overpaymentLabel: "Monthly €500",
 				},
@@ -234,6 +236,7 @@ describe("SimulateOverpaymentEvent", () => {
 		overrides: Partial<OverpaymentConfig> = {},
 	): OverpaymentConfig => ({
 		id: "overpayment-1",
+		ratePeriodId: "rate-period-1",
 		type: "recurring",
 		amount: 50000, // €500 in cents
 		startMonth: 1,
@@ -366,6 +369,7 @@ describe("SimulateOverpaymentEvent", () => {
 					type: "allowance_exceeded",
 					month: 5,
 					message: "Exceeds allowance",
+					severity: "warning",
 					configId: "overpayment-1",
 					overpaymentLabel: "Monthly €500",
 				},
@@ -386,6 +390,7 @@ describe("SimulateMilestoneEvent", () => {
 			const milestone: Milestone = {
 				type: "principal_25_percent",
 				month: 60,
+				date: "2024-01-01",
 				label: "25% Principal Paid",
 				value: 27000000, // €270,000 in cents
 			};
@@ -398,6 +403,7 @@ describe("SimulateMilestoneEvent", () => {
 			const milestone: Milestone = {
 				type: "principal_50_percent",
 				month: 120,
+				date: "2024-01-01",
 				label: "50% Principal Paid",
 				value: 18000000, // €180,000
 			};
@@ -424,6 +430,7 @@ describe("SimulateMilestoneEvent", () => {
 			const milestone: Milestone = {
 				type: "ltv_80_percent",
 				month: 73,
+				date: "",
 				label: "LTV Below 80%",
 			};
 			render(<SimulateMilestoneEvent milestone={milestone} />);
@@ -435,6 +442,7 @@ describe("SimulateMilestoneEvent", () => {
 			const milestone: Milestone = {
 				type: "mortgage_complete",
 				month: 360,
+				date: "2024-01-01",
 				label: "Mortgage Complete",
 				value: 0,
 			};
@@ -450,6 +458,7 @@ describe("SimulateMilestoneEvent", () => {
 			const milestone: Milestone = {
 				type: "mortgage_start",
 				month: 1,
+				date: "2024-01-01",
 				label: "Mortgage Start",
 				value: 36000000,
 			};
@@ -462,6 +471,7 @@ describe("SimulateMilestoneEvent", () => {
 			const milestone: Milestone = {
 				type: "construction_complete",
 				month: 24,
+				date: "2024-01-01",
 				label: "Construction Complete",
 			};
 			render(<SimulateMilestoneEvent milestone={milestone} />);
@@ -473,6 +483,7 @@ describe("SimulateMilestoneEvent", () => {
 			const milestone: Milestone = {
 				type: "full_payments_start",
 				month: 25,
+				date: "2024-01-01",
 				label: "Full Payments Start",
 			};
 			render(<SimulateMilestoneEvent milestone={milestone} />);

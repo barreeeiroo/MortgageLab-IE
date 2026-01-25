@@ -19,7 +19,14 @@ describe("ManageCustomRatesDialog", () => {
 		fixedTerm: 3,
 		minLtv: 0,
 		maxLtv: 80,
-		buyerTypes: ["ftb", "mover"] as const,
+		buyerTypes: ["ftb", "mover"] as (
+			| "ftb"
+			| "mover"
+			| "btl"
+			| "switcher-pdh"
+			| "switcher-btl"
+		)[],
+		perks: [],
 		createdAt: "2024-01-15T10:00:00.000Z",
 		lastUpdatedAt: "2024-01-20T14:00:00.000Z",
 	};

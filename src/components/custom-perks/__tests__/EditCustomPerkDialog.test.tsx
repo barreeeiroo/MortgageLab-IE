@@ -117,7 +117,7 @@ describe("EditCustomPerkDialog", () => {
 		});
 
 		it("has Gift icon selected", () => {
-			const { container } = render(<EditCustomPerkDialog {...defaultProps} />);
+			render(<EditCustomPerkDialog {...defaultProps} />);
 
 			// The Gift icon button inside the form should have the selected style
 			// Dialog renders in portal, so use document

@@ -19,7 +19,14 @@ describe("EditCustomRateDialog", () => {
 		fixedTerm: 3,
 		minLtv: 0,
 		maxLtv: 80,
-		buyerTypes: ["ftb", "mover"] as const,
+		buyerTypes: ["ftb", "mover"] as (
+			| "ftb"
+			| "mover"
+			| "btl"
+			| "switcher-pdh"
+			| "switcher-btl"
+		)[],
+		perks: [],
 	};
 
 	const defaultProps = {
@@ -205,7 +212,12 @@ describe("EditCustomRateDialog", () => {
 
 		it("includes custom perks in the form", () => {
 			const customPerks = [
-				{ id: "custom-perk", label: "My Perk", description: "Custom perk" },
+				{
+					id: "custom-perk",
+					label: "My Perk",
+					description: "Custom perk",
+					icon: "Gift",
+				},
 			];
 			render(
 				<EditCustomRateDialog {...defaultProps} customPerks={customPerks} />,

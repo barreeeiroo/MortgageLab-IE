@@ -29,6 +29,7 @@ describe("CompareRatesModal", () => {
 		monthlyPayment: 1402,
 		indicativeAprc: 3.52,
 		combinedPerks: [],
+		followOnLtv: 80,
 	};
 
 	const mockRate2 = {
@@ -44,6 +45,7 @@ describe("CompareRatesModal", () => {
 		monthlyPayment: 1435,
 		indicativeAprc: 3.72,
 		combinedPerks: [],
+		followOnLtv: 80,
 	};
 
 	const defaultProps = {
@@ -228,6 +230,7 @@ describe("CompareRatesModal", () => {
 				}),
 				monthlyPayment: 1520,
 				combinedPerks: [],
+				followOnLtv: 80,
 			};
 
 			render(
@@ -251,6 +254,7 @@ describe("CompareRatesModal", () => {
 				}),
 				monthlyPayment: 1520,
 				combinedPerks: [],
+				followOnLtv: 80,
 			};
 
 			render(

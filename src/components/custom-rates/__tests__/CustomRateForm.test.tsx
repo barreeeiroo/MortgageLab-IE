@@ -227,7 +227,12 @@ describe("CustomRateForm", () => {
 	describe("perks", () => {
 		it("shows perks section when perks are available", () => {
 			const perks = [
-				{ id: "cashback", label: "2% Cashback", description: "Get 2% back" },
+				{
+					id: "cashback",
+					label: "2% Cashback",
+					description: "Get 2% back",
+					icon: "Percent",
+				},
 			];
 			render(<CustomRateForm {...defaultProps} perks={perks} />);
 

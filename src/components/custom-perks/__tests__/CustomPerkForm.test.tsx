@@ -125,7 +125,9 @@ describe("CustomPerkForm", () => {
 
 			const giftButton = container.querySelector('button[title="Gift"]');
 			expect(giftButton).toBeInTheDocument();
-			await user.click(giftButton!);
+			if (giftButton) {
+				await user.click(giftButton);
+			}
 
 			expect(giftButton?.className).toContain("border-primary");
 		});

@@ -85,11 +85,7 @@ describe("createDataStore", () => {
 		});
 		const store = createDataStore(fetchFn);
 
-		const _results = await Promise.all([
-			store.fetch(),
-			store.fetch(),
-			store.fetch(),
-		]);
+		await Promise.all([store.fetch(), store.fetch(), store.fetch()]);
 
 		// All concurrent calls should resolve together
 		expect(fetchFn).toHaveBeenCalledTimes(1);

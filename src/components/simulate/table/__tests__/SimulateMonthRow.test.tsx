@@ -20,14 +20,22 @@ const createMockMonth = (
 	overrides: Partial<AmortizationMonth> = {},
 ): AmortizationMonth => ({
 	month: 1,
+	year: 1,
 	monthOfYear: 1,
 	date: "2024-01-01",
 	openingBalance: 36000000, // €360,000 in cents
 	closingBalance: 35850000, // €358,500 in cents
+	scheduledPayment: 150000,
 	interestPortion: 105000, // €1,050 in cents
 	principalPortion: 45000, // €450 in cents
 	overpayment: 0,
 	totalPayment: 150000, // €1,500 in cents
+	rate: 3.5,
+	ratePeriodId: "period-1",
+	cumulativeInterest: 105000,
+	cumulativePrincipal: 45000,
+	cumulativeOverpayments: 0,
+	cumulativeTotal: 150000,
 	...overrides,
 });
 
@@ -111,6 +119,7 @@ describe("SimulateMonthRow", () => {
 				{
 					type: "mortgage_start",
 					month: 1,
+					date: "2024-01-01",
 					label: "Mortgage Start",
 					value: 36000000,
 				},
@@ -128,12 +137,14 @@ describe("SimulateMonthRow", () => {
 				{
 					type: "principal_25_percent",
 					month: 1,
+					date: "2024-01-01",
 					label: "25% Principal Paid",
 					value: 27000000,
 				},
 				{
 					type: "ltv_80_percent",
 					month: 1,
+					date: "2024-01-01",
 					label: "LTV Below 80%",
 				},
 			];
@@ -153,6 +164,7 @@ describe("SimulateMonthRow", () => {
 					type: "allowance_exceeded",
 					month: 1,
 					message: "Exceeds 10% allowance",
+					severity: "warning",
 					configId: "config-1",
 					overpaymentLabel: "Monthly €500",
 				},
@@ -178,6 +190,7 @@ describe("SimulateMonthRow", () => {
 					type: "allowance_exceeded",
 					month: 1,
 					message: "Exceeds 10% allowance by €100",
+					severity: "warning",
 					configId: "config-1",
 					overpaymentLabel: "Monthly €500",
 				},

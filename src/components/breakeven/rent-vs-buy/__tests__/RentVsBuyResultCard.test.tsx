@@ -25,7 +25,6 @@ vi.mock("recharts", () => ({
 const createMockResult = (
 	overrides: Partial<RentVsBuyResult> = {},
 ): RentVsBuyResult => ({
-	propertyValue: 400000,
 	deposit: 40000,
 	mortgageAmount: 360000,
 	monthlyMortgagePayment: 1650,
