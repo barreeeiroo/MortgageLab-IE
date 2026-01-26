@@ -12,18 +12,17 @@ import { SavingsBreakevenChart } from "./chart/SavingsBreakevenChart";
 
 interface RemortgageResultCardProps {
 	result: RemortgageResult;
-	remainingTermMonths: number;
-	fixedPeriodMonths: number | null; // null = variable rate
+	fixedPeriodMonths: number | null; // null = variable rate (new rate)
+	currentRateRemainingFixedMonths: number | null; // null = not on fixed or unknown
 }
 
 export function RemortgageResultCard({
 	result,
-	remainingTermMonths,
 	fixedPeriodMonths,
+	currentRateRemainingFixedMonths,
 }: RemortgageResultCardProps) {
 	const hasBreakeven =
 		Number.isFinite(result.breakevenMonths) && result.breakevenMonths > 0;
-	const isWorthSwitching = hasBreakeven && result.totalSavingsOverTerm > 0;
 	const breakevenText = formatBreakevenPeriod(
 		hasBreakeven ? result.breakevenMonths : null,
 	);
@@ -33,23 +32,54 @@ export function RemortgageResultCard({
 		? Math.ceil(result.breakevenMonths / 12)
 		: null;
 
-	// Fixed period vs variable rate warnings
-	const isVariableRate = fixedPeriodMonths === null;
-	const breakevenExceedsFixedPeriod =
+	// New rate: fixed period vs variable rate warnings
+	const isNewRateVariable = fixedPeriodMonths === null;
+	const breakevenExceedsNewFixedPeriod =
 		hasBreakeven &&
 		fixedPeriodMonths !== null &&
 		result.breakevenMonths > fixedPeriodMonths;
-	const fixedPeriodYears = fixedPeriodMonths
+	const newRateFixedPeriodYears = fixedPeriodMonths
 		? Math.round(fixedPeriodMonths / 12)
 		: null;
+
+	// Current rate: check if breakeven exceeds remaining fixed term
+	const breakevenExceedsCurrentFixed =
+		hasBreakeven &&
+		currentRateRemainingFixedMonths !== null &&
+		currentRateRemainingFixedMonths > 0 &&
+		result.breakevenMonths > currentRateRemainingFixedMonths;
+
+	// Not worth switching NOW if breakeven exceeds current rate's remaining fixed term
+	// (better to wait until fixed period ends to avoid ERC)
+	const isWorthSwitching =
+		hasBreakeven &&
+		result.totalSavingsOverTerm > 0 &&
+		!breakevenExceedsCurrentFixed;
 
 	// Check if interest is actually saved
 	const hasInterestSaved = result.interestSavingsDetails.interestSaved > 0;
 
-	// Get key yearly snapshots
-	const year1 = result.yearlyBreakdown.find((y) => y.year === 1);
-	const year5 = result.yearlyBreakdown.find((y) => y.year === 5);
-	const year10 = result.yearlyBreakdown.find((y) => y.year === 10);
+	// Comparison period in years (for display)
+	const comparisonPeriodYears = Math.ceil(result.comparisonPeriodMonths / 12);
+
+	// Filter yearly breakdown to comparison period for charts
+	const filteredYearlyBreakdown = result.yearlyBreakdown.filter(
+		(y) => y.year <= comparisonPeriodYears,
+	);
+
+	// Get key yearly snapshots - only show years within comparison period
+	const year1 =
+		comparisonPeriodYears >= 1
+			? result.yearlyBreakdown.find((y) => y.year === 1)
+			: undefined;
+	const year5 =
+		comparisonPeriodYears >= 5
+			? result.yearlyBreakdown.find((y) => y.year === 5)
+			: undefined;
+	const year10 =
+		comparisonPeriodYears >= 10
+			? result.yearlyBreakdown.find((y) => y.year === 10)
+			: undefined;
 
 	const cardStyles = isWorthSwitching
 		? "bg-primary/5 border-primary/20"
@@ -106,10 +136,12 @@ export function RemortgageResultCard({
 											, exceeding your switching costs.
 										</p>
 									</div>
-									{result.yearlyBreakdown.length > 0 && (
+									{filteredYearlyBreakdown.length > 0 && (
 										<SavingsBreakevenChart
-											data={result.yearlyBreakdown}
-											monthlyData={result.monthlyBreakdown}
+											data={filteredYearlyBreakdown}
+											monthlyData={result.monthlyBreakdown.filter(
+												(m) => m.month <= result.comparisonPeriodMonths,
+											)}
 											switchingCosts={result.switchingCosts}
 											breakevenYear={breakevenYear}
 											breakevenMonth={result.breakevenMonths}
@@ -123,17 +155,28 @@ export function RemortgageResultCard({
 									rate.
 								</p>
 							)}
-							{breakevenExceedsFixedPeriod && (
+							{breakevenExceedsCurrentFixed && (
 								<div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/30">
 									<p className="text-xs text-amber-700 dark:text-amber-400">
-										<strong>Warning:</strong> Breakeven ({breakevenText})
-										exceeds your {fixedPeriodYears}-year fixed period. After the
-										fixed period ends, your rate may change, affecting your
-										actual savings.
+										<strong>Consider waiting:</strong> Breakeven (
+										{breakevenText}) exceeds your current rate's remaining{" "}
+										{formatBreakevenPeriod(currentRateRemainingFixedMonths)}{" "}
+										fixed period. You could wait until it ends to avoid any
+										early repayment charges.
 									</p>
 								</div>
 							)}
-							{isVariableRate && hasBreakeven && (
+							{breakevenExceedsNewFixedPeriod && (
+								<div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/30">
+									<p className="text-xs text-amber-700 dark:text-amber-400">
+										<strong>Warning:</strong> Breakeven ({breakevenText})
+										exceeds the new rate's {newRateFixedPeriodYears}-year fixed
+										period. After the fixed period ends, your rate may change,
+										affecting your actual savings.
+									</p>
+								</div>
+							)}
+							{isNewRateVariable && hasBreakeven && (
 								<div className="mt-2 p-2 rounded bg-blue-500/10 border border-blue-500/30">
 									<p className="text-xs text-blue-700 dark:text-blue-400">
 										<strong>Note:</strong> Variable rates can change at any time
@@ -161,7 +204,7 @@ export function RemortgageResultCard({
 									{formatCurrency(result.interestSavingsDetails.interestSaved)}
 								</p>
 							</div>
-							{result.yearlyBreakdown.length > 0 && (
+							{filteredYearlyBreakdown.length > 0 && (
 								<details className="mt-2 group">
 									<summary className="text-xs text-muted-foreground cursor-pointer flex items-center gap-1 hover:text-foreground">
 										<ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
@@ -210,7 +253,7 @@ export function RemortgageResultCard({
 											</strong>
 										</p>
 									</div>
-									<InterestComparisonChart data={result.yearlyBreakdown} />
+									<InterestComparisonChart data={filteredYearlyBreakdown} />
 								</details>
 							)}
 						</div>
@@ -295,7 +338,8 @@ export function RemortgageResultCard({
 						</div>
 						<div className="p-3 rounded-lg bg-background border">
 							<p className="text-muted-foreground mb-1">
-								Total Savings ({formatTermDisplay(remainingTermMonths)})
+								Total Savings (
+								{formatTermDisplay(result.comparisonPeriodMonths)})
 							</p>
 							<p
 								className={`text-lg font-bold ${result.totalSavingsOverTerm > 0 ? "text-green-600" : "text-amber-600"}`}
@@ -304,7 +348,7 @@ export function RemortgageResultCard({
 								{formatCurrency(result.totalSavingsOverTerm)}
 							</p>
 							<p className="text-xs text-muted-foreground">
-								Over the remaining mortgage term
+								Over the comparison period
 							</p>
 						</div>
 					</div>

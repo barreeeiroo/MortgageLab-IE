@@ -201,7 +201,6 @@ function prepareRentVsBuyTableData(
 
 interface RemortgageExportContext {
 	result: RemortgageResult;
-	remainingTermMonths: number;
 	fixedPeriodMonths: number | null;
 	// Input parameters for context
 	outstandingBalance?: number;
@@ -217,7 +216,7 @@ interface RemortgageExportContext {
 export async function exportRemortgageToPDF(
 	context: RemortgageExportContext,
 ): Promise<void> {
-	const { result, remainingTermMonths, fixedPeriodMonths } = context;
+	const { result, fixedPeriodMonths } = context;
 	const doc = await createPDFDocument();
 
 	const hasBreakeven =
@@ -321,16 +320,20 @@ export async function exportRemortgageToPDF(
 	);
 	y = addKeyValue(
 		doc,
-		`Savings (${formatTermForExport(remainingTermMonths)})`,
+		`Savings (${formatTermForExport(result.comparisonPeriodMonths)})`,
 		formatCurrencyForExport(result.totalSavingsOverTerm, true),
 		y,
 	);
 	y += 4;
 
-	// Yearly Breakdown Table
-	if (result.yearlyBreakdown.length > 0) {
+	// Yearly Breakdown Table (filtered to comparison period)
+	const comparisonPeriodYears = Math.ceil(result.comparisonPeriodMonths / 12);
+	const filteredYearlyBreakdown = result.yearlyBreakdown.filter(
+		(y) => y.year <= comparisonPeriodYears,
+	);
+	if (filteredYearlyBreakdown.length > 0) {
 		y = addStyledSectionHeader(doc, "Yearly Breakdown", y, { divider: true });
-		const tableData = prepareRemortgageTableData(result.yearlyBreakdown);
+		const tableData = prepareRemortgageTableData(filteredYearlyBreakdown);
 		y = await addTable(doc, tableData, y);
 	}
 
@@ -338,8 +341,8 @@ export async function exportRemortgageToPDF(
 	y = addStyledSectionHeader(doc, "Mortgage Details", y, { divider: true });
 	y = addKeyValue(
 		doc,
-		"Remaining Term",
-		formatTermForExport(remainingTermMonths),
+		"Comparison Period",
+		formatTermForExport(result.comparisonPeriodMonths),
 		y,
 	);
 	if (fixedPeriodMonths !== null) {

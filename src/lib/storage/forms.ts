@@ -148,6 +148,8 @@ export interface RemortgageBreakevenFormState {
 	// Advanced options
 	cashback: string;
 	erc?: string;
+	// Remaining fixed term on current mortgage (for breaking a fixed rate)
+	remainingFixedMonths?: string;
 }
 
 export function loadRemortgageBreakevenForm(): Partial<RemortgageBreakevenFormState> {

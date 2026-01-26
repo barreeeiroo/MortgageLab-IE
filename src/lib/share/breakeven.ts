@@ -55,6 +55,8 @@ export interface RemortgageBreakevenShareState {
 	// Advanced options
 	cashback?: string;
 	erc?: string;
+	// Remaining fixed term on current mortgage (for breaking a fixed rate)
+	remainingFixedMonths?: string;
 }
 
 // Cashback Breakeven share state
@@ -120,6 +122,7 @@ interface CompressedRemortgageBreakeven {
 	// Advanced (optional)
 	cb?: string; // cashback
 	er?: string; // erc (early repayment charge)
+	rf?: string; // remainingFixedMonths (remaining fixed term on current mortgage)
 }
 
 interface CompressedCashbackOption {
@@ -232,6 +235,7 @@ function compressState(state: BreakevenShareState): CompressedState {
 
 	if (state.cashback) compressed.cb = state.cashback;
 	if (state.erc) compressed.er = state.erc;
+	if (state.remainingFixedMonths) compressed.rf = state.remainingFixedMonths;
 
 	return compressed;
 }
@@ -305,6 +309,7 @@ function decompressState(compressed: CompressedState): BreakevenShareState {
 
 	if (compressed.cb) state.cashback = compressed.cb;
 	if (compressed.er) state.erc = compressed.er;
+	if (compressed.rf) state.remainingFixedMonths = compressed.rf;
 
 	return state;
 }

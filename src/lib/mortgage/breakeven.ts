@@ -375,6 +375,8 @@ export interface RemortgageInputs {
 	// Advanced options
 	cashback?: number; // Default €0
 	erc?: number; // Early Repayment Charge, default €0
+	// Comparison period for savings calculations (defaults to remainingTermMonths)
+	comparisonPeriodMonths?: number;
 }
 
 export interface RemortgageYearlyComparison {
@@ -428,6 +430,8 @@ export interface RemortgageResult {
 	switchingCosts: number; // legalFees - cashback + erc
 	totalSavingsOverTerm: number;
 	yearOneSavings: number;
+	// Comparison period used for savings calculations
+	comparisonPeriodMonths: number;
 	// New fields for enhanced display
 	interestSavingsDetails: InterestSavingsDetails;
 	yearlyBreakdown: RemortgageYearlyComparison[];
@@ -455,9 +459,15 @@ export function calculateRemortgageBreakeven(
 		legalFees = ESTIMATED_REMORTGAGE_LEGAL_FEES,
 		cashback = 0,
 		erc = 0,
+		comparisonPeriodMonths: inputComparisonPeriod,
 	} = inputs;
 
 	const remainingMonths = remainingTermMonths;
+	// Use provided comparison period, but cap at remaining term
+	const comparisonPeriodMonths = Math.min(
+		inputComparisonPeriod ?? remainingMonths,
+		remainingMonths,
+	);
 
 	const currentMonthlyPayment = calculateMonthlyPayment(
 		outstandingBalance,
@@ -484,6 +494,11 @@ export function calculateRemortgageBreakeven(
 	let cumulativeSavings = 0;
 	let cumulativeInterestCurrent = 0;
 	let cumulativeInterestNew = 0;
+
+	// Track values at comparison period end
+	let interestCurrentAtComparison = 0;
+	let interestNewAtComparison = 0;
+	let savingsAtComparison = 0;
 
 	// Breakeven tracking
 	let breakevenMonths: number = Number.POSITIVE_INFINITY;
@@ -513,6 +528,13 @@ export function calculateRemortgageBreakeven(
 
 		// Accumulate monthly savings
 		cumulativeSavings += monthlySavings;
+
+		// Capture values at comparison period end
+		if (month === comparisonPeriodMonths) {
+			interestCurrentAtComparison = cumulativeInterestCurrent;
+			interestNewAtComparison = cumulativeInterestNew;
+			savingsAtComparison = cumulativeSavings;
+		}
 
 		// Check for breakeven (when cumulative savings exceed switching costs)
 		if (
@@ -562,23 +584,20 @@ export function calculateRemortgageBreakeven(
 		}
 	}
 
-	// Calculate total interest saved
-	const totalInterestCurrent = cumulativeInterestCurrent;
-	const totalInterestNew = cumulativeInterestNew;
-	const interestSaved = totalInterestCurrent - totalInterestNew;
+	// Calculate interest saved over comparison period (not full term)
+	const interestSaved = interestCurrentAtComparison - interestNewAtComparison;
 
 	const interestSavingsDetails: InterestSavingsDetails = {
-		totalInterestCurrent: Math.round(totalInterestCurrent),
-		totalInterestNew: Math.round(totalInterestNew),
+		totalInterestCurrent: Math.round(interestCurrentAtComparison),
+		totalInterestNew: Math.round(interestNewAtComparison),
 		interestSaved: Math.round(interestSaved),
 		switchingCosts,
 		netBenefit: Math.round(interestSaved - switchingCosts),
 	};
 
 	const yearOneSavings =
-		monthlySavings * Math.min(12, remainingMonths) - switchingCosts;
-	const totalSavingsOverTerm =
-		monthlySavings * remainingMonths - switchingCosts;
+		monthlySavings * Math.min(12, comparisonPeriodMonths) - switchingCosts;
+	const totalSavingsOverTerm = savingsAtComparison - switchingCosts;
 
 	return {
 		breakevenMonths: Math.ceil(breakevenMonths),
@@ -592,6 +611,7 @@ export function calculateRemortgageBreakeven(
 		switchingCosts,
 		yearOneSavings: Math.round(yearOneSavings),
 		totalSavingsOverTerm: Math.round(totalSavingsOverTerm),
+		comparisonPeriodMonths,
 		interestSavingsDetails,
 		yearlyBreakdown,
 		monthlyBreakdown,

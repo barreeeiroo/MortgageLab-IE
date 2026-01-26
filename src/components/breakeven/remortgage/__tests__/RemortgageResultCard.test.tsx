@@ -42,6 +42,7 @@ const createMockResult = (
 	},
 	yearOneSavings: 400,
 	totalSavingsOverTerm: 45000,
+	comparisonPeriodMonths: 240, // 20 years
 	interestSavingsDetails: {
 		totalInterestCurrent: 120000,
 		totalInterestNew: 95000,
@@ -88,8 +89,8 @@ const createMockResult = (
 describe("RemortgageResultCard", () => {
 	const defaultProps = {
 		result: createMockResult(),
-		remainingTermMonths: 240, // 20 years
-		fixedPeriodMonths: 36, // 3 years fixed
+		fixedPeriodMonths: 36, // 3 years fixed (new rate)
+		currentRateRemainingFixedMonths: null, // not on a fixed rate
 	};
 
 	describe("breakeven display", () => {
@@ -244,8 +245,8 @@ describe("RemortgageResultCard", () => {
 	});
 
 	describe("warnings and notes", () => {
-		it("shows warning when breakeven exceeds fixed period", () => {
-			// Breakeven 48 months > fixed period 36 months
+		it("shows warning when breakeven exceeds new rate fixed period", () => {
+			// Breakeven 48 months > new rate fixed period 36 months
 			const longBreakeven = createMockResult({ breakevenMonths: 48 });
 			render(
 				<RemortgageResultCard
@@ -257,11 +258,28 @@ describe("RemortgageResultCard", () => {
 
 			expect(screen.getByText(/Warning/i)).toBeInTheDocument();
 			expect(
-				screen.getByText(/exceeds your 3-year fixed period/i),
+				screen.getByText(/exceeds the new rate's 3-year fixed period/i),
 			).toBeInTheDocument();
 		});
 
-		it("shows variable rate note when rate is variable", () => {
+		it("shows warning when breakeven exceeds current rate remaining fixed term", () => {
+			// Breakeven 15 months > current rate remaining 12 months
+			const result = createMockResult({ breakevenMonths: 15 });
+			render(
+				<RemortgageResultCard
+					{...defaultProps}
+					result={result}
+					currentRateRemainingFixedMonths={12}
+				/>,
+			);
+
+			expect(screen.getByText(/Consider waiting/i)).toBeInTheDocument();
+			expect(
+				screen.getByText(/exceeds your current rate's remaining/i),
+			).toBeInTheDocument();
+		});
+
+		it("shows variable rate note when new rate is variable", () => {
 			render(
 				<RemortgageResultCard {...defaultProps} fixedPeriodMonths={null} />,
 			);

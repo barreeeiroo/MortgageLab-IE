@@ -24,7 +24,6 @@ export function RemortgageResultIsland() {
 			const shareUrl = generateBreakevenShareUrl(remortgageResult.shareState);
 			await exportRemortgageToPDF({
 				result: remortgageResult.result,
-				remainingTermMonths: remortgageResult.remainingTermMonths,
 				fixedPeriodMonths: remortgageResult.fixedPeriodMonths,
 				outstandingBalance: parseCurrency(
 					remortgageResult.shareState.outstandingBalance,
@@ -59,8 +58,10 @@ export function RemortgageResultIsland() {
 			{remortgageResult && (
 				<RemortgageResultCard
 					result={remortgageResult.result}
-					remainingTermMonths={remortgageResult.remainingTermMonths}
 					fixedPeriodMonths={remortgageResult.fixedPeriodMonths}
+					currentRateRemainingFixedMonths={
+						remortgageResult.currentRateRemainingFixedMonths
+					}
 				/>
 			)}
 		</BreakevenResultDialog>

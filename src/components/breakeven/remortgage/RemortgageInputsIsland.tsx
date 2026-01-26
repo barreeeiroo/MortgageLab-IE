@@ -52,19 +52,24 @@ export function RemortgageInputsIsland() {
 		ESTIMATED_REMORTGAGE_LEGAL_FEES.toString(),
 	);
 
-	// Fixed period tracking (in years, 0 = variable, null = unknown)
-	const [fixedPeriodYears, setFixedPeriodYears] = useState<string>("5"); // Default to 5 years
+	// Fixed period tracking
+	// New rate fixed period (in years, 0 = variable)
+	const [newRateFixedPeriodYears, setNewRateFixedPeriodYears] =
+		useState<string>("5");
+	// Current rate remaining fixed term (in months, empty = not on fixed/unknown)
+	const [currentRateRemainingMonths, setCurrentRateRemainingMonths] =
+		useState("");
 
-	// Advanced options (always visible now)
+	// Advanced options
 	const [cashback, setCashback] = useState("0");
 	const [erc, setErc] = useState("0");
 
 	// Handle rate selection from picker (captures fixed term)
 	const handleRateSelect = useCallback((rate: MortgageRate) => {
 		if (rate.type === "variable") {
-			setFixedPeriodYears("0");
+			setNewRateFixedPeriodYears("0");
 		} else {
-			setFixedPeriodYears(rate.fixedTerm?.toString() ?? "5");
+			setNewRateFixedPeriodYears(rate.fixedTerm?.toString() ?? "5");
 		}
 	}, []);
 
@@ -94,7 +99,9 @@ export function RemortgageInputsIsland() {
 				if (shared.cashback) setCashback(shared.cashback);
 				if (shared.erc) setErc(shared.erc);
 				if (shared.fixedPeriodYears)
-					setFixedPeriodYears(shared.fixedPeriodYears);
+					setNewRateFixedPeriodYears(shared.fixedPeriodYears);
+				if (shared.remainingFixedMonths)
+					setCurrentRateRemainingMonths(shared.remainingFixedMonths);
 				clearBreakevenShareParam();
 				setShouldAutoCalculate(true);
 				return;
@@ -111,10 +118,13 @@ export function RemortgageInputsIsland() {
 		if (saved.newRate) setNewRate(saved.newRate);
 		if (saved.rateInputMode) setRateInputMode(saved.rateInputMode);
 		if (saved.berRating) setBerRating(saved.berRating as BerRating);
-		if (saved.legalFees) setLegalFees(saved.legalFees);
+		if (saved.legalFees !== undefined) setLegalFees(saved.legalFees);
 		if (saved.cashback) setCashback(saved.cashback);
 		if (saved.erc) setErc(saved.erc);
-		if (saved.fixedPeriodYears) setFixedPeriodYears(saved.fixedPeriodYears);
+		if (saved.fixedPeriodYears)
+			setNewRateFixedPeriodYears(saved.fixedPeriodYears);
+		if (saved.remainingFixedMonths)
+			setCurrentRateRemainingMonths(saved.remainingFixedMonths);
 	}, []);
 
 	// Save to localStorage when form changes
@@ -128,9 +138,10 @@ export function RemortgageInputsIsland() {
 			rateInputMode,
 			berRating,
 			legalFees,
-			fixedPeriodYears,
+			fixedPeriodYears: newRateFixedPeriodYears,
 			cashback,
 			erc,
+			remainingFixedMonths: currentRateRemainingMonths,
 		});
 	}, [
 		outstandingBalance,
@@ -143,7 +154,8 @@ export function RemortgageInputsIsland() {
 		legalFees,
 		cashback,
 		erc,
-		fixedPeriodYears,
+		newRateFixedPeriodYears,
+		currentRateRemainingMonths,
 	]);
 
 	// Validation
@@ -164,26 +176,47 @@ export function RemortgageInputsIsland() {
 	const calculate = useCallback(() => {
 		if (!isFormComplete) return;
 
+		// Parse legal fees - use default only if field is empty, allow explicit 0
+		const parsedLegalFees = Number.parseFloat(legalFees);
+		const effectiveLegalFees = Number.isNaN(parsedLegalFees)
+			? ESTIMATED_REMORTGAGE_LEGAL_FEES
+			: parsedLegalFees;
+
+		// Convert fixed period years to months (0 = variable)
+		const fixedYears = Number.parseInt(newRateFixedPeriodYears, 10);
+		const fixedPeriodMonths = fixedYears === 0 ? null : fixedYears * 12;
+
+		// Parse current rate remaining fixed months
+		const currentRateRemainingParsed = Number.parseInt(
+			currentRateRemainingMonths,
+			10,
+		);
+		const currentRateRemainingFixedMonths = Number.isNaN(
+			currentRateRemainingParsed,
+		)
+			? null
+			: currentRateRemainingParsed;
+
+		// Determine comparison period: current rate remaining > new rate fixed > full term
+		const comparisonPeriodMonths =
+			currentRateRemainingFixedMonths ?? fixedPeriodMonths ?? undefined;
+
 		const result = calculateRemortgageBreakeven({
 			outstandingBalance: outstandingBalanceNum,
 			currentRate: Number.parseFloat(currentRate),
 			newRate: Number.parseFloat(newRate),
 			remainingTermMonths: Number.parseInt(remainingTerm, 10),
-			legalFees:
-				Number.parseFloat(legalFees) || ESTIMATED_REMORTGAGE_LEGAL_FEES,
+			legalFees: effectiveLegalFees,
 			cashback: parseCurrency(cashback),
 			erc: parseCurrency(erc),
+			comparisonPeriodMonths,
 		});
-
-		// Convert fixed period years to months (0 = variable)
-		const fixedYears = Number.parseInt(fixedPeriodYears, 10);
-		const fixedPeriodMonths = fixedYears === 0 ? null : fixedYears * 12;
 
 		// Store the result and open the dialog via the shared store
 		showRemortgageResult({
 			result,
-			remainingTermMonths: Number.parseInt(remainingTerm, 10),
 			fixedPeriodMonths,
+			currentRateRemainingFixedMonths,
 			shareState: {
 				type: "rmb",
 				outstandingBalance,
@@ -196,7 +229,8 @@ export function RemortgageInputsIsland() {
 				legalFees,
 				cashback,
 				erc,
-				fixedPeriodYears,
+				fixedPeriodYears: newRateFixedPeriodYears,
+				remainingFixedMonths: currentRateRemainingMonths || undefined,
 			},
 		});
 	}, [
@@ -212,7 +246,8 @@ export function RemortgageInputsIsland() {
 		propertyValue,
 		rateInputMode,
 		berRating,
-		fixedPeriodYears,
+		newRateFixedPeriodYears,
+		currentRateRemainingMonths,
 	]);
 
 	// Auto-calculate when loaded from shared URL
@@ -302,7 +337,7 @@ export function RemortgageInputsIsland() {
 								type="text"
 								inputMode="numeric"
 								placeholder="€1,350"
-								value={formatCurrencyInput(legalFees)}
+								value={formatCurrencyInput(legalFees, { allowZero: true })}
 								onChange={(e) =>
 									setLegalFees(e.target.value.replace(/[^0-9]/g, ""))
 								}
@@ -376,31 +411,40 @@ export function RemortgageInputsIsland() {
 										</div>
 									</div>
 								</div>
-								<div className="grid gap-4 sm:grid-cols-2">
-									<div className="space-y-2 sm:col-span-2">
-										<Label htmlFor="fixedPeriod">Rate Type</Label>
-										<Select
-											value={fixedPeriodYears}
-											onValueChange={setFixedPeriodYears}
-										>
-											<SelectTrigger id="fixedPeriod">
-												<SelectValue placeholder="Select rate type" />
-											</SelectTrigger>
-											<SelectContent>
-												{FIXED_PERIOD_OPTIONS.map((opt) => (
-													<SelectItem key={opt.value} value={opt.value}>
-														{opt.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										<p className="text-xs text-muted-foreground">
-											Used to warn if breakeven exceeds fixed period
-										</p>
-									</div>
-								</div>
 							</TabsContent>
 						</Tabs>
+					</div>
+
+					{/* Fixed Period Details */}
+					<div className="grid gap-4 sm:grid-cols-2">
+						<MortgageTermSelector
+							value={currentRateRemainingMonths}
+							onChange={setCurrentRateRemainingMonths}
+							id="currentRateRemainingMonths"
+							label="Current Rate Remaining"
+							minTermMonths={1}
+						/>
+						<div className="space-y-2">
+							<Label htmlFor="newRateFixedPeriod">New Rate Period</Label>
+							<Select
+								value={newRateFixedPeriodYears}
+								onValueChange={setNewRateFixedPeriodYears}
+							>
+								<SelectTrigger id="newRateFixedPeriod" className="w-full">
+									<SelectValue placeholder="Select rate type" />
+								</SelectTrigger>
+								<SelectContent>
+									{FIXED_PERIOD_OPTIONS.map((opt) => (
+										<SelectItem key={opt.value} value={opt.value}>
+											{opt.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							<p className="text-xs text-muted-foreground">
+								Warns if breakeven exceeds this period
+							</p>
+						</div>
 					</div>
 
 					{/* Advanced Options - collapsible */}
@@ -425,7 +469,7 @@ export function RemortgageInputsIsland() {
 											type="text"
 											inputMode="numeric"
 											placeholder="€0"
-											value={formatCurrencyInput(cashback)}
+											value={formatCurrencyInput(cashback, { allowZero: true })}
 											onChange={(e) =>
 												setCashback(e.target.value.replace(/[^0-9]/g, ""))
 											}
@@ -441,7 +485,7 @@ export function RemortgageInputsIsland() {
 											type="text"
 											inputMode="numeric"
 											placeholder="€0"
-											value={formatCurrencyInput(erc)}
+											value={formatCurrencyInput(erc, { allowZero: true })}
 											onChange={(e) =>
 												setErc(e.target.value.replace(/[^0-9]/g, ""))
 											}

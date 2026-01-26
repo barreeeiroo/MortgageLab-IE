@@ -53,8 +53,8 @@ export function showRentVsBuyResult(state: RentVsBuyResultState): void {
 
 export interface RemortgageResultState {
 	result: RemortgageResult;
-	remainingTermMonths: number;
-	fixedPeriodMonths: number | null; // null = variable rate
+	fixedPeriodMonths: number | null; // null = variable rate (new rate)
+	currentRateRemainingFixedMonths: number | null; // null = not on fixed rate or unknown
 	shareState: RemortgageBreakevenShareState;
 }
 
