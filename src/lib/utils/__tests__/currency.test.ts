@@ -131,6 +131,28 @@ describe("formatCurrencyInput", () => {
 			expect(formatCurrencyInput("€1,234.56")).toBe("€123,456");
 		});
 	});
+
+	describe("allowZero option", () => {
+		it("returns €0 when allowZero is true and input is 0", () => {
+			expect(formatCurrencyInput("0", { allowZero: true })).toBe("€0");
+		});
+
+		it("still returns empty for empty input even with allowZero", () => {
+			expect(formatCurrencyInput("", { allowZero: true })).toBe("");
+		});
+
+		it("still returns empty for non-numeric with allowZero", () => {
+			expect(formatCurrencyInput("abc", { allowZero: true })).toBe("");
+		});
+
+		it("formats non-zero values normally with allowZero", () => {
+			expect(formatCurrencyInput("1000", { allowZero: true })).toBe("€1,000");
+		});
+
+		it("returns empty for zero without allowZero option (default)", () => {
+			expect(formatCurrencyInput("0")).toBe("");
+		});
+	});
 });
 
 describe("parseCurrency", () => {

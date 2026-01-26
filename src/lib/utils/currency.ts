@@ -12,9 +12,13 @@ export function formatCurrency(
 	}).format(value);
 }
 
-export function formatCurrencyInput(value: string): string {
+export function formatCurrencyInput(
+	value: string,
+	options?: { allowZero?: boolean },
+): string {
 	const num = Number.parseInt(value.replace(/[^0-9]/g, ""), 10);
-	if (Number.isNaN(num) || num === 0) return "";
+	if (Number.isNaN(num)) return "";
+	if (num === 0 && !options?.allowZero) return "";
 	return new Intl.NumberFormat(LOCALE, {
 		style: "currency",
 		currency: "EUR",
