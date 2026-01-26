@@ -23,6 +23,8 @@ interface MortgageTermSelectorProps {
 	id?: string;
 	label?: string;
 	compact?: boolean;
+	/** Minimum term in months (default: MIN_TERM_YEARS * 12) */
+	minTermMonths?: number;
 }
 
 export function MortgageTermSelector({
@@ -31,11 +33,16 @@ export function MortgageTermSelector({
 	id = "mortgageTerm",
 	label = "Mortgage Term",
 	compact = false,
+	minTermMonths = MIN_TERM_YEARS * 12,
 }: MortgageTermSelectorProps) {
 	const [open, setOpen] = useState(false);
 	const [customYears, setCustomYears] = useState("");
 	const [customMonths, setCustomMonths] = useState("");
 	const [withMonths, setWithMonths] = useState(false);
+
+	// Calculate minimum years from minTermMonths (for custom input validation)
+	// Use floor so that minTermMonths < 12 allows 0 years (months-only)
+	const minYears = Math.max(0, Math.floor(minTermMonths / 12));
 
 	// Parse value (total months) into years and months
 	const totalMonths = Number.parseInt(value, 10) || 360;
@@ -76,7 +83,7 @@ export function MortgageTermSelector({
 	const handleCustomYearsSubmit = () => {
 		if (!customYears) return;
 		const num = Number.parseInt(customYears, 10);
-		if (isValidTermYears(num)) {
+		if (isValidTermYears(num, minYears)) {
 			const newMonths = effectiveWithMonths ? months : 0;
 			onChange(combineTerm(num, newMonths).toString());
 			setOpen(false);
@@ -250,7 +257,10 @@ export function MortgageTermSelector({
 									onClick={handleCustomYearsSubmit}
 									disabled={
 										!customYears ||
-										!isValidTermYears(Number.parseInt(customYears, 10))
+										!isValidTermYears(
+											Number.parseInt(customYears, 10),
+											minYears,
+										)
 									}
 								>
 									Go

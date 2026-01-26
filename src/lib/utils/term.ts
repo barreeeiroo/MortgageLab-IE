@@ -61,7 +61,12 @@ export function isValidTerm(totalMonths: number): boolean {
 
 /**
  * Validate years value is within allowed bounds
+ * @param years - The number of years to validate
+ * @param minYears - Optional minimum years (defaults to MIN_TERM_YEARS)
  */
-export function isValidTermYears(years: number): boolean {
-	return years >= MIN_TERM_YEARS && years <= MAX_TERM_YEARS;
+export function isValidTermYears(
+	years: number,
+	minYears: number = MIN_TERM_YEARS,
+): boolean {
+	return years >= minYears && years <= MAX_TERM_YEARS;
 }
