@@ -25,6 +25,8 @@ interface MortgageTermSelectorProps {
 	compact?: boolean;
 	/** Minimum term in months (default: MIN_TERM_YEARS * 12) */
 	minTermMonths?: number;
+	/** Allow clearing the selection (shows "None" option) */
+	optional?: boolean;
 }
 
 export function MortgageTermSelector({
@@ -34,6 +36,7 @@ export function MortgageTermSelector({
 	label = "Mortgage Term",
 	compact = false,
 	minTermMonths = MIN_TERM_YEARS * 12,
+	optional = false,
 }: MortgageTermSelectorProps) {
 	const [open, setOpen] = useState(false);
 	const [customYears, setCustomYears] = useState("");
@@ -226,6 +229,21 @@ export function MortgageTermSelector({
 					{/* Years Section */}
 					<div className={cn("flex-1", effectiveWithMonths && "md:order-1")}>
 						<div className="p-1">
+							{optional && (
+								<button
+									type="button"
+									onClick={() => {
+										onChange("");
+										setOpen(false);
+									}}
+									className={cn(
+										"relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+									)}
+								>
+									None
+									{!value && <Check className="ml-auto h-4 w-4" />}
+								</button>
+							)}
 							{MORTGAGE_TERMS.map((term) => (
 								<button
 									key={term}
@@ -236,7 +254,9 @@ export function MortgageTermSelector({
 									)}
 								>
 									{term} years
-									{years === term && <Check className="ml-auto h-4 w-4" />}
+									{years === term && value && (
+										<Check className="ml-auto h-4 w-4" />
+									)}
 								</button>
 							))}
 						</div>

@@ -184,4 +184,55 @@ describe("MortgageTermSelector", () => {
 			expect(onChange).toHaveBeenCalledWith("360"); // 30*12 = 360, months reset to 0
 		});
 	});
+
+	describe("optional mode", () => {
+		it("does not show None option by default", async () => {
+			const user = userEvent.setup();
+			render(<MortgageTermSelector value="360" onChange={vi.fn()} />);
+
+			await user.click(screen.getByRole("combobox"));
+
+			expect(
+				screen.queryByRole("button", { name: "None" }),
+			).not.toBeInTheDocument();
+		});
+
+		it("shows None option when optional is true", async () => {
+			const user = userEvent.setup();
+			render(<MortgageTermSelector value="360" onChange={vi.fn()} optional />);
+
+			await user.click(screen.getByRole("combobox"));
+
+			expect(screen.getByRole("button", { name: "None" })).toBeInTheDocument();
+		});
+
+		it("calls onChange with empty string when None is selected", async () => {
+			const user = userEvent.setup();
+			const onChange = vi.fn();
+			render(<MortgageTermSelector value="360" onChange={onChange} optional />);
+
+			await user.click(screen.getByRole("combobox"));
+			await user.click(screen.getByRole("button", { name: "None" }));
+
+			expect(onChange).toHaveBeenCalledWith("");
+		});
+
+		it("displays Select term when value is empty", () => {
+			render(<MortgageTermSelector value="" onChange={vi.fn()} optional />);
+
+			expect(screen.getByRole("combobox")).toHaveTextContent("Select term");
+		});
+
+		it("closes popover after selecting None", async () => {
+			const user = userEvent.setup();
+			render(<MortgageTermSelector value="360" onChange={vi.fn()} optional />);
+
+			await user.click(screen.getByRole("combobox"));
+			await user.click(screen.getByRole("button", { name: "None" }));
+
+			expect(
+				screen.queryByRole("button", { name: "None" }),
+			).not.toBeInTheDocument();
+		});
+	});
 });

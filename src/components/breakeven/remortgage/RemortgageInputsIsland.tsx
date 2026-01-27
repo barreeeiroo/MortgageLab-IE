@@ -417,13 +417,19 @@ export function RemortgageInputsIsland() {
 
 					{/* Fixed Period Details */}
 					<div className="grid gap-4 sm:grid-cols-2">
-						<MortgageTermSelector
-							value={currentRateRemainingMonths}
-							onChange={setCurrentRateRemainingMonths}
-							id="currentRateRemainingMonths"
-							label="Current Rate Remaining"
-							minTermMonths={1}
-						/>
+						<div className="space-y-2">
+							<MortgageTermSelector
+								value={currentRateRemainingMonths}
+								onChange={setCurrentRateRemainingMonths}
+								id="currentRateRemainingMonths"
+								label="Current Rate Remaining"
+								minTermMonths={1}
+								optional
+							/>
+							<p className="text-xs text-muted-foreground">
+								Time left on your current fixed rate, if any
+							</p>
+						</div>
 						<div className="space-y-2">
 							<Label htmlFor="newRateFixedPeriod">New Rate Period</Label>
 							<Select
