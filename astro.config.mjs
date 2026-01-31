@@ -13,63 +13,63 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @returns {import('vite').Plugin} */
 function serveDataFolder() {
-	return {
-		name: "serve-data-folder",
-		configureServer(server) {
-			// Serve /data from the data folder during development
-			server.middlewares.use("/data", (req, res, next) => {
-				const filePath = path.join(__dirname, "data", req.url || "");
-				if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-					res.setHeader("Content-Type", "application/json");
-					fs.createReadStream(filePath).pipe(res);
-				} else {
-					next();
-				}
-			});
-		},
-	};
+    return {
+        name: "serve-data-folder",
+        configureServer(server) {
+            // Serve /data from the data folder during development
+            server.middlewares.use("/data", (req, res, next) => {
+                const filePath = path.join(__dirname, "data", req.url || "");
+                if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+                    res.setHeader("Content-Type", "application/json");
+                    fs.createReadStream(filePath).pipe(res);
+                } else {
+                    next();
+                }
+            });
+        },
+    };
 }
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://www.mortgagelab.ie",
-	base: "/",
+    site: "https://www.mortgagelab.ie",
+    base: "/",
 
-	integrations: [react(), sitemap()],
+    integrations: [react(), sitemap()],
 
-	vite: {
-		define: {
-			__BUILD_TIME__: Date.now(),
-			__BUILD_COMMIT__: JSON.stringify(
-				execSync("git rev-parse --short HEAD").toString().trim(),
-			),
-		},
-		plugins: [tailwindcss(), serveDataFolder()],
-		build: {
-			rollupOptions: {
-				output: {
-					// Consolidate small chunks into logical groups
-					manualChunks: (id) => {
-						// Node modules - group by package
-						if (id.includes("/node_modules/")) {
-							// Lucide icons - bundle all icons together
-							if (id.includes("lucide-react")) {
-								return "icons";
-							}
+    vite: {
+        define: {
+            __BUILD_TIME__: Date.now(),
+            __BUILD_COMMIT__: JSON.stringify(
+                execSync("git rev-parse --short HEAD").toString().trim(),
+            ),
+        },
+        plugins: [tailwindcss(), serveDataFolder()],
+        build: {
+            rollupOptions: {
+                output: {
+                    // Consolidate small chunks into logical groups
+                    manualChunks: (id) => {
+                        // Node modules - group by package
+                        if (id.includes("/node_modules/")) {
+                            // Lucide icons - bundle all icons together
+                            if (id.includes("lucide-react")) {
+                                return "icons";
+                            }
 
-							// Radix UI primitives
-							if (id.includes("@radix-ui")) {
-								return "radix";
-							}
-						}
+                            // Radix UI primitives
+                            if (id.includes("@radix-ui")) {
+                                return "radix";
+                            }
+                        }
 
-						// Core library
-						if (id.includes("/lib/")) {
-							return "lib";
-						}
-					},
-				},
-			},
-		},
-	},
+                        // Core library
+                        if (id.includes("/lib/")) {
+                            return "lib";
+                        }
+                    },
+                },
+            },
+        },
+    },
 });

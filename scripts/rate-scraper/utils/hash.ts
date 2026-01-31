@@ -8,22 +8,22 @@ import type { MortgageRate } from "@/lib/schemas/rate";
  * - Arrays sorted alphabetically
  */
 function normalizeRate(rate: MortgageRate): object {
-	return {
-		id: rate.id,
-		name: rate.name,
-		lenderId: rate.lenderId,
-		type: rate.type,
-		rate: rate.rate,
-		apr: rate.apr ?? null,
-		fixedTerm: rate.fixedTerm ?? null,
-		minLtv: rate.minLtv,
-		maxLtv: rate.maxLtv,
-		minLoan: rate.minLoan ?? null,
-		buyerTypes: [...rate.buyerTypes].sort(),
-		berEligible: rate.berEligible ? [...rate.berEligible].sort() : null,
-		newBusiness: rate.newBusiness ?? null,
-		perks: [...rate.perks].sort(),
-	};
+    return {
+        id: rate.id,
+        name: rate.name,
+        lenderId: rate.lenderId,
+        type: rate.type,
+        rate: rate.rate,
+        apr: rate.apr ?? null,
+        fixedTerm: rate.fixedTerm ?? null,
+        minLtv: rate.minLtv,
+        maxLtv: rate.maxLtv,
+        minLoan: rate.minLoan ?? null,
+        buyerTypes: [...rate.buyerTypes].sort(),
+        berEligible: rate.berEligible ? [...rate.berEligible].sort() : null,
+        newBusiness: rate.newBusiness ?? null,
+        perks: [...rate.perks].sort(),
+    };
 }
 
 /**
@@ -31,13 +31,13 @@ function normalizeRate(rate: MortgageRate): object {
  * Rates are normalized and sorted by ID before hashing.
  */
 export function computeRatesHash(rates: MortgageRate[]): string {
-	const normalized = rates
-		.map((rate) => normalizeRate(rate))
-		.sort((a, b) =>
-			(a as { id: string }).id.localeCompare((b as { id: string }).id),
-		)
-		.map((rate) => JSON.stringify(rate))
-		.join("\n");
+    const normalized = rates
+        .map((rate) => normalizeRate(rate))
+        .sort((a, b) =>
+            (a as { id: string }).id.localeCompare((b as { id: string }).id),
+        )
+        .map((rate) => JSON.stringify(rate))
+        .join("\n");
 
-	return createHash("sha256").update(normalized).digest("hex");
+    return createHash("sha256").update(normalized).digest("hex");
 }

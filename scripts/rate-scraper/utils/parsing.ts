@@ -14,9 +14,9 @@
  * parsePercentage("N/A") // null
  */
 export function parsePercentage(text: string): number | null {
-	const match = text.replace(/\s/g, "").match(/(\d+\.?\d*)/);
-	if (!match) return null;
-	return Number.parseFloat(match[1]);
+    const match = text.replace(/\s/g, "").match(/(\d+\.?\d*)/);
+    if (!match) return null;
+    return Number.parseFloat(match[1]);
 }
 
 /**
@@ -27,11 +27,11 @@ export function parsePercentage(text: string): number | null {
  * @throws Error if no percentage found
  */
 export function parsePercentageOrThrow(text: string): number {
-	const result = parsePercentage(text);
-	if (result === null) {
-		throw new Error(`Could not parse percentage: ${text}`);
-	}
-	return result;
+    const result = parsePercentage(text);
+    if (result === null) {
+        throw new Error(`Could not parse percentage: ${text}`);
+    }
+    return result;
 }
 
 /**
@@ -46,9 +46,9 @@ export function parsePercentageOrThrow(text: string): number {
  * parseTermFromText("Variable Rate") // null
  */
 export function parseTermFromText(text: string): number | null {
-	const match = text.match(/(\d+)\s*(?:year|yr)/i);
-	if (!match) return null;
-	return Number.parseInt(match[1], 10);
+    const match = text.match(/(\d+)\s*(?:year|yr)/i);
+    if (!match) return null;
+    return Number.parseInt(match[1], 10);
 }
 
 /**
@@ -59,19 +59,19 @@ export function parseTermFromText(text: string): number | null {
  * @throws Error if no term found
  */
 export function parseTermOrThrow(text: string): number {
-	const result = parseTermFromText(text);
-	if (result === null) {
-		throw new Error(`Could not parse term: ${text}`);
-	}
-	return result;
+    const result = parseTermFromText(text);
+    if (result === null) {
+        throw new Error(`Could not parse term: ${text}`);
+    }
+    return result;
 }
 
 /**
  * LTV band result
  */
 export interface LtvBand {
-	minLtv: number;
-	maxLtv: number;
+    minLtv: number;
+    maxLtv: number;
 }
 
 /**
@@ -86,54 +86,54 @@ export interface LtvBand {
  * @returns LTV band or null if not parseable
  */
 export function parseLtvBand(text: string): LtvBand | null {
-	const cleanText = text.replace(/\s/g, "").toLowerCase();
+    const cleanText = text.replace(/\s/g, "").toLowerCase();
 
-	// ≤50% or <=50%
-	if (cleanText.includes("≤50%") || cleanText.includes("<=50%")) {
-		return { minLtv: 0, maxLtv: 50 };
-	}
+    // ≤50% or <=50%
+    if (cleanText.includes("≤50%") || cleanText.includes("<=50%")) {
+        return { minLtv: 0, maxLtv: 50 };
+    }
 
-	// >50% ≤60% or >50% & ≤60%
-	if (cleanText.includes(">50%") && cleanText.includes("60%")) {
-		return { minLtv: 50, maxLtv: 60 };
-	}
+    // >50% ≤60% or >50% & ≤60%
+    if (cleanText.includes(">50%") && cleanText.includes("60%")) {
+        return { minLtv: 50, maxLtv: 60 };
+    }
 
-	// >60% ≤70%
-	if (cleanText.includes(">60%") && cleanText.includes("70%")) {
-		return { minLtv: 60, maxLtv: 70 };
-	}
+    // >60% ≤70%
+    if (cleanText.includes(">60%") && cleanText.includes("70%")) {
+        return { minLtv: 60, maxLtv: 70 };
+    }
 
-	// >70% ≤80%
-	if (cleanText.includes(">70%") && cleanText.includes("80%")) {
-		return { minLtv: 70, maxLtv: 80 };
-	}
+    // >70% ≤80%
+    if (cleanText.includes(">70%") && cleanText.includes("80%")) {
+        return { minLtv: 70, maxLtv: 80 };
+    }
 
-	// >80% ≤90% or just >80%
-	if (cleanText.includes(">80%")) {
-		return { minLtv: 80, maxLtv: 90 };
-	}
+    // >80% ≤90% or just >80%
+    if (cleanText.includes(">80%")) {
+        return { minLtv: 80, maxLtv: 90 };
+    }
 
-	// ≤60% (without lower bound)
-	if (cleanText.includes("≤60%") || cleanText.includes("<=60%")) {
-		return { minLtv: 0, maxLtv: 60 };
-	}
+    // ≤60% (without lower bound)
+    if (cleanText.includes("≤60%") || cleanText.includes("<=60%")) {
+        return { minLtv: 0, maxLtv: 60 };
+    }
 
-	// ≤70%
-	if (cleanText.includes("≤70%") || cleanText.includes("<=70%")) {
-		return { minLtv: 0, maxLtv: 70 };
-	}
+    // ≤70%
+    if (cleanText.includes("≤70%") || cleanText.includes("<=70%")) {
+        return { minLtv: 0, maxLtv: 70 };
+    }
 
-	// ≤80%
-	if (cleanText.includes("≤80%") || cleanText.includes("<=80%")) {
-		return { minLtv: 0, maxLtv: 80 };
-	}
+    // ≤80%
+    if (cleanText.includes("≤80%") || cleanText.includes("<=80%")) {
+        return { minLtv: 0, maxLtv: 80 };
+    }
 
-	// ≤90%
-	if (cleanText.includes("≤90%") || cleanText.includes("<=90%")) {
-		return { minLtv: 0, maxLtv: 90 };
-	}
+    // ≤90%
+    if (cleanText.includes("≤90%") || cleanText.includes("<=90%")) {
+        return { minLtv: 0, maxLtv: 90 };
+    }
 
-	return null;
+    return null;
 }
 
 /**
@@ -144,11 +144,11 @@ export function parseLtvBand(text: string): LtvBand | null {
  * @throws Error if not parseable
  */
 export function parseLtvBandOrThrow(text: string): LtvBand {
-	const result = parseLtvBand(text);
-	if (result === null) {
-		throw new Error(`Could not parse LTV: ${text}`);
-	}
-	return result;
+    const result = parseLtvBand(text);
+    if (result === null) {
+        throw new Error(`Could not parse LTV: ${text}`);
+    }
+    return result;
 }
 
 /**
@@ -167,117 +167,117 @@ export function parseLtvBandOrThrow(text: string): LtvBand {
  * @returns LTV band (defaults to 0-90 if not specified)
  */
 export function parseLtvFromName(name: string): LtvBand {
-	// Normalize: lowercase and remove spaces for consistent matching
-	const lowerName = name.toLowerCase().replace(/\s/g, "");
+    // Normalize: lowercase and remove spaces for consistent matching
+    const lowerName = name.toLowerCase().replace(/\s/g, "");
 
-	// Check for explicit LTV bands - symbol patterns first
-	if (
-		lowerName.includes("≤50%") ||
-		lowerName.includes("<=50%") ||
-		lowerName.includes("<50%") ||
-		lowerName.includes("lessthanorequalto50%") ||
-		lowerName.includes("upto50%")
-	) {
-		return { minLtv: 0, maxLtv: 50 };
-	}
+    // Check for explicit LTV bands - symbol patterns first
+    if (
+        lowerName.includes("≤50%") ||
+        lowerName.includes("<=50%") ||
+        lowerName.includes("<50%") ||
+        lowerName.includes("lessthanorequalto50%") ||
+        lowerName.includes("upto50%")
+    ) {
+        return { minLtv: 0, maxLtv: 50 };
+    }
 
-	// >50% to 60%
-	if (
-		(lowerName.includes(">50%") || lowerName.includes("greaterthan50%")) &&
-		(lowerName.includes("60%") || lowerName.includes("≤60%"))
-	) {
-		return { minLtv: 50, maxLtv: 60 };
-	}
+    // >50% to 60%
+    if (
+        (lowerName.includes(">50%") || lowerName.includes("greaterthan50%")) &&
+        (lowerName.includes("60%") || lowerName.includes("≤60%"))
+    ) {
+        return { minLtv: 50, maxLtv: 60 };
+    }
 
-	// ≤60% (without lower bound)
-	if (
-		lowerName.includes("≤60%") ||
-		lowerName.includes("<=60%") ||
-		lowerName.includes("<60%") ||
-		lowerName.includes("lessthanorequalto60%")
-	) {
-		return { minLtv: 0, maxLtv: 60 };
-	}
+    // ≤60% (without lower bound)
+    if (
+        lowerName.includes("≤60%") ||
+        lowerName.includes("<=60%") ||
+        lowerName.includes("<60%") ||
+        lowerName.includes("lessthanorequalto60%")
+    ) {
+        return { minLtv: 0, maxLtv: 60 };
+    }
 
-	// >60% to 70%
-	if (
-		(lowerName.includes(">60%") || lowerName.includes("greaterthan60%")) &&
-		(lowerName.includes("70%") || lowerName.includes("≤70%"))
-	) {
-		return { minLtv: 60, maxLtv: 70 };
-	}
+    // >60% to 70%
+    if (
+        (lowerName.includes(">60%") || lowerName.includes("greaterthan60%")) &&
+        (lowerName.includes("70%") || lowerName.includes("≤70%"))
+    ) {
+        return { minLtv: 60, maxLtv: 70 };
+    }
 
-	// >60% to 80%
-	if (
-		(lowerName.includes(">60%") || lowerName.includes("greaterthan60%")) &&
-		(lowerName.includes("80%") || lowerName.includes("≤80%"))
-	) {
-		return { minLtv: 60, maxLtv: 80 };
-	}
+    // >60% to 80%
+    if (
+        (lowerName.includes(">60%") || lowerName.includes("greaterthan60%")) &&
+        (lowerName.includes("80%") || lowerName.includes("≤80%"))
+    ) {
+        return { minLtv: 60, maxLtv: 80 };
+    }
 
-	// ≤70% (without lower bound)
-	if (
-		lowerName.includes("≤70%") ||
-		lowerName.includes("<=70%") ||
-		lowerName.includes("<70%") ||
-		lowerName.includes("lessthanorequalto70%")
-	) {
-		return { minLtv: 0, maxLtv: 70 };
-	}
+    // ≤70% (without lower bound)
+    if (
+        lowerName.includes("≤70%") ||
+        lowerName.includes("<=70%") ||
+        lowerName.includes("<70%") ||
+        lowerName.includes("lessthanorequalto70%")
+    ) {
+        return { minLtv: 0, maxLtv: 70 };
+    }
 
-	// >70% to 80%
-	if (
-		(lowerName.includes(">70%") || lowerName.includes("greaterthan70%")) &&
-		(lowerName.includes("80%") || lowerName.includes("≤80%"))
-	) {
-		return { minLtv: 70, maxLtv: 80 };
-	}
+    // >70% to 80%
+    if (
+        (lowerName.includes(">70%") || lowerName.includes("greaterthan70%")) &&
+        (lowerName.includes("80%") || lowerName.includes("≤80%"))
+    ) {
+        return { minLtv: 70, maxLtv: 80 };
+    }
 
-	// >50% to 80% (must come before ≤80% check)
-	if (
-		(lowerName.includes(">50%") || lowerName.includes("greaterthan50%")) &&
-		lowerName.includes("80%")
-	) {
-		return { minLtv: 50, maxLtv: 80 };
-	}
+    // >50% to 80% (must come before ≤80% check)
+    if (
+        (lowerName.includes(">50%") || lowerName.includes("greaterthan50%")) &&
+        lowerName.includes("80%")
+    ) {
+        return { minLtv: 50, maxLtv: 80 };
+    }
 
-	// ≤80% (without lower bound)
-	if (
-		lowerName.includes("≤80%") ||
-		lowerName.includes("<=80%") ||
-		lowerName.includes("<80%") ||
-		lowerName.includes("lessthanorequalto80%")
-	) {
-		return { minLtv: 0, maxLtv: 80 };
-	}
+    // ≤80% (without lower bound)
+    if (
+        lowerName.includes("≤80%") ||
+        lowerName.includes("<=80%") ||
+        lowerName.includes("<80%") ||
+        lowerName.includes("lessthanorequalto80%")
+    ) {
+        return { minLtv: 0, maxLtv: 80 };
+    }
 
-	// >70% (without upper bound) - typically means 70-90%
-	if (
-		lowerName.includes(">70%") ||
-		lowerName.includes("&gt;70%") ||
-		lowerName.includes("greaterthan70%")
-	) {
-		return { minLtv: 70, maxLtv: 90 };
-	}
+    // >70% (without upper bound) - typically means 70-90%
+    if (
+        lowerName.includes(">70%") ||
+        lowerName.includes("&gt;70%") ||
+        lowerName.includes("greaterthan70%")
+    ) {
+        return { minLtv: 70, maxLtv: 90 };
+    }
 
-	// >90% (existing customers only - very rare)
-	if (
-		lowerName.includes(">90%") ||
-		lowerName.includes("&gt;90%") ||
-		lowerName.includes("greaterthan90%")
-	) {
-		return { minLtv: 90, maxLtv: 100 };
-	}
+    // >90% (existing customers only - very rare)
+    if (
+        lowerName.includes(">90%") ||
+        lowerName.includes("&gt;90%") ||
+        lowerName.includes("greaterthan90%")
+    ) {
+        return { minLtv: 90, maxLtv: 100 };
+    }
 
-	// >80% to 90%
-	if (
-		lowerName.includes(">80%") ||
-		lowerName.includes("&gt;80%") ||
-		lowerName.includes("greaterthan80%")
-	) {
-		return { minLtv: 80, maxLtv: 90 };
-	}
+    // >80% to 90%
+    if (
+        lowerName.includes(">80%") ||
+        lowerName.includes("&gt;80%") ||
+        lowerName.includes("greaterthan80%")
+    ) {
+        return { minLtv: 80, maxLtv: 90 };
+    }
 
-	// Default: all LTV ranges
-	return { minLtv: 0, maxLtv: 90 };
+    // Default: all LTV ranges
+    return { minLtv: 0, maxLtv: 90 };
 }
