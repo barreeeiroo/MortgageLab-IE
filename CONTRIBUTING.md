@@ -77,7 +77,6 @@ bun run build
 | `bun run preview`          | Preview production build         |
 | `bun run lint`             | Check code with Biome            |
 | `bun run lint:fix`         | Auto-fix linting issues          |
-| `bun run format`           | Format code with Biome           |
 | `bun run test`             | Run tests (watch mode)           |
 | `bun run test:unit`        | Run unit tests once              |
 | `bun run test:integration` | Run integration tests            |

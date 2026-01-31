@@ -11,7 +11,6 @@
         "typecheck": "astro check",
         "lint": "biome check .",
         "lint:fix": "biome check --write .",
-        "format": "biome format --write .",
         "test": "vitest",
         "test:unit": "vitest run src",
         "test:integration": "vitest run tests/integration",
