@@ -11,29 +11,29 @@ import { getPath } from "@/lib/utils/path";
  * @returns Array of lenders, or empty array on error
  */
 export async function fetchLendersData(): Promise<Lender[]> {
-	try {
-		const res = await fetch(getPath("data/lenders.json"));
-		if (!res.ok) return [];
-		const json = await res.json();
-		return LendersFileSchema.parse(json);
-	} catch {
-		return [];
-	}
+    try {
+        const res = await fetch(getPath("data/lenders.json"));
+        if (!res.ok) return [];
+        const json = await res.json();
+        return LendersFileSchema.parse(json);
+    } catch {
+        return [];
+    }
 }
 
 /**
  * Get a lender by ID from an array of lenders
  */
 export function getLender(lenders: Lender[], id: string): Lender | undefined {
-	return lenders.find((l) => l.id === id);
+    return lenders.find((l) => l.id === id);
 }
 
 /**
  * Get the lender for a given rate
  */
 export function getLenderForRate(
-	lenders: Lender[],
-	rate: MortgageRate,
+    lenders: Lender[],
+    rate: MortgageRate,
 ): Lender | undefined {
-	return getLender(lenders, rate.lenderId);
+    return getLender(lenders, rate.lenderId);
 }

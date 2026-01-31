@@ -15,21 +15,21 @@ import nuaLogo from "@/assets/logos/lenders/nua.webp";
 import ptsbLogo from "@/assets/logos/lenders/ptsb.webp";
 
 export const LENDER_LOGOS: Record<string, ImageMetadata> = {
-	aib: aibLogo,
-	avant: avantLogo,
-	boi: boiLogo,
-	cu: cuLogo,
-	ebs: ebsLogo,
-	haven: havenLogo,
-	ics: icsLogo,
-	moco: mocoLogo,
-	nua: nuaLogo,
-	ptsb: ptsbLogo,
+    aib: aibLogo,
+    avant: avantLogo,
+    boi: boiLogo,
+    cu: cuLogo,
+    ebs: ebsLogo,
+    haven: havenLogo,
+    ics: icsLogo,
+    moco: mocoLogo,
+    nua: nuaLogo,
+    ptsb: ptsbLogo,
 };
 
 /**
  * Gets all known lender IDs.
  */
 export function getKnownLenderIds(): string[] {
-	return Object.keys(LENDER_LOGOS);
+    return Object.keys(LENDER_LOGOS);
 }

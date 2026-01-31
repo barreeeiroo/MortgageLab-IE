@@ -8,11 +8,11 @@
  */
 
 import {
-	calculatePropertyVAT,
-	calculateStampDuty,
-	ESTIMATED_LEGAL_FEES,
-	ESTIMATED_REMORTGAGE_LEGAL_FEES,
-	type PropertyType,
+    calculatePropertyVAT,
+    calculateStampDuty,
+    ESTIMATED_LEGAL_FEES,
+    ESTIMATED_REMORTGAGE_LEGAL_FEES,
+    type PropertyType,
 } from "@/lib/utils/fees";
 import { calculateMonthlyPayment } from "./calculations";
 import { calculateCashbackAmount } from "./perks";
@@ -39,23 +39,23 @@ export const DEFAULT_SERVICE_CHARGE_INCREASE = 0; // Annual increase in service 
  * e.g., "3 months", "1 year 6 months", "Never"
  */
 export function formatBreakevenPeriod(months: number | null): string {
-	if (months === null || !Number.isFinite(months)) {
-		return "Never";
-	}
+    if (months === null || !Number.isFinite(months)) {
+        return "Never";
+    }
 
-	const roundedMonths = Math.ceil(months);
-	const years = Math.floor(roundedMonths / 12);
-	const remainingMonths = roundedMonths % 12;
+    const roundedMonths = Math.ceil(months);
+    const years = Math.floor(roundedMonths / 12);
+    const remainingMonths = roundedMonths % 12;
 
-	if (years === 0) {
-		return `${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
-	}
+    if (years === 0) {
+        return `${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
+    }
 
-	if (remainingMonths === 0) {
-		return `${years} year${years !== 1 ? "s" : ""}`;
-	}
+    if (remainingMonths === 0) {
+        return `${years} year${years !== 1 ? "s" : ""}`;
+    }
 
-	return `${years} year${years !== 1 ? "s" : ""} ${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
+    return `${years} year${years !== 1 ? "s" : ""} ${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`;
 }
 
 // =============================================================================
@@ -63,86 +63,86 @@ export function formatBreakevenPeriod(months: number | null): string {
 // =============================================================================
 
 export interface RentVsBuyInputs {
-	propertyValue: number;
-	deposit: number;
-	mortgageTermMonths: number; // Mortgage term in months
-	mortgageRate: number; // Annual rate as percentage (e.g., 3.5 for 3.5%)
-	currentMonthlyRent: number;
-	legalFees?: number; // Default ESTIMATED_LEGAL_FEES, user-editable
-	// Property VAT fields
-	propertyType?: PropertyType; // Default "existing"
-	priceIncludesVAT?: boolean; // Default true
-	// Advanced options
-	rentInflationRate?: number; // Default 2%
-	homeAppreciationRate?: number; // Default 2%
-	maintenanceRate?: number; // Default 1% of property value per year
-	opportunityCostRate?: number; // Default 6%
-	saleCostRate?: number; // Default 3% of sale price
-	serviceCharge?: number; // Monthly service charge (apartments), default 0
-	serviceChargeIncrease?: number; // Annual increase in service charge, default 0%
+    propertyValue: number;
+    deposit: number;
+    mortgageTermMonths: number; // Mortgage term in months
+    mortgageRate: number; // Annual rate as percentage (e.g., 3.5 for 3.5%)
+    currentMonthlyRent: number;
+    legalFees?: number; // Default ESTIMATED_LEGAL_FEES, user-editable
+    // Property VAT fields
+    propertyType?: PropertyType; // Default "existing"
+    priceIncludesVAT?: boolean; // Default true
+    // Advanced options
+    rentInflationRate?: number; // Default 2%
+    homeAppreciationRate?: number; // Default 2%
+    maintenanceRate?: number; // Default 1% of property value per year
+    opportunityCostRate?: number; // Default 6%
+    saleCostRate?: number; // Default 3% of sale price
+    serviceCharge?: number; // Monthly service charge (apartments), default 0
+    serviceChargeIncrease?: number; // Annual increase in service charge, default 0%
 }
 
 export interface YearlyComparison {
-	year: number;
-	cumulativeRent: number;
-	cumulativeOwnership: number;
-	homeValue: number;
-	mortgageBalance: number;
-	equity: number;
-	netOwnershipCost: number; // ownership cost - equity built
+    year: number;
+    cumulativeRent: number;
+    cumulativeOwnership: number;
+    homeValue: number;
+    mortgageBalance: number;
+    equity: number;
+    netOwnershipCost: number; // ownership cost - equity built
 }
 
 export interface MonthlyComparison {
-	month: number;
-	cumulativeRent: number;
-	cumulativeOwnership: number;
-	homeValue: number;
-	mortgageBalance: number;
-	equity: number;
-	netOwnershipCost: number;
+    month: number;
+    cumulativeRent: number;
+    cumulativeOwnership: number;
+    homeValue: number;
+    mortgageBalance: number;
+    equity: number;
+    netOwnershipCost: number;
 }
 
 // Details at each breakeven point for "Why" explanations
 export interface NetWorthBreakevenDetails {
-	cumulativeRent: number;
-	netOwnershipCost: number;
-	cumulativeOwnership: number;
-	equity: number;
+    cumulativeRent: number;
+    netOwnershipCost: number;
+    cumulativeOwnership: number;
+    equity: number;
 }
 
 export interface SaleBreakevenDetails {
-	homeValue: number;
-	saleCosts: number;
-	mortgageBalance: number;
-	saleProceeds: number;
-	upfrontCosts: number;
+    homeValue: number;
+    saleCosts: number;
+    mortgageBalance: number;
+    saleProceeds: number;
+    upfrontCosts: number;
 }
 
 export interface EquityBreakevenDetails {
-	homeValue: number;
-	mortgageBalance: number;
-	equity: number;
-	upfrontCosts: number;
+    homeValue: number;
+    mortgageBalance: number;
+    equity: number;
+    upfrontCosts: number;
 }
 
 export interface RentVsBuyResult {
-	// Multiple breakeven metrics
-	breakevenMonth: number | null; // Net worth breakeven - null if never
-	breakevenDetails: NetWorthBreakevenDetails | null;
-	breakEvenOnSaleMonth: number | null; // When sale proceeds > upfront costs - null if never
-	breakEvenOnSaleDetails: SaleBreakevenDetails | null;
-	equityRecoveryMonth: number | null; // When equity > upfront costs - null if never
-	equityRecoveryDetails: EquityBreakevenDetails | null;
-	// Financial details
-	monthlyMortgagePayment: number;
-	mortgageAmount: number;
-	deposit: number;
-	stampDuty: number;
-	legalFees: number;
-	purchaseCosts: number; // stamp duty + legal fees
-	upfrontCosts: number; // deposit + stamp duty + legal fees
-	yearlyBreakdown: YearlyComparison[];
-	monthlyBreakdown: MonthlyComparison[]; // First 24 months for detailed view
+    // Multiple breakeven metrics
+    breakevenMonth: number | null; // Net worth breakeven - null if never
+    breakevenDetails: NetWorthBreakevenDetails | null;
+    breakEvenOnSaleMonth: number | null; // When sale proceeds > upfront costs - null if never
+    breakEvenOnSaleDetails: SaleBreakevenDetails | null;
+    equityRecoveryMonth: number | null; // When equity > upfront costs - null if never
+    equityRecoveryDetails: EquityBreakevenDetails | null;
+    // Financial details
+    monthlyMortgagePayment: number;
+    mortgageAmount: number;
+    deposit: number;
+    stampDuty: number;
+    legalFees: number;
+    purchaseCosts: number; // stamp duty + legal fees
+    upfrontCosts: number; // deposit + stamp duty + legal fees
+    yearlyBreakdown: YearlyComparison[];
+    monthlyBreakdown: MonthlyComparison[]; // First 24 months for detailed view
 }
 
 // =============================================================================
@@ -156,210 +156,210 @@ export interface RentVsBuyResult {
  * becomes less than cumulative rent paid.
  */
 export function calculateRentVsBuyBreakeven(
-	inputs: RentVsBuyInputs,
+    inputs: RentVsBuyInputs,
 ): RentVsBuyResult {
-	const {
-		propertyValue,
-		deposit,
-		mortgageTermMonths,
-		mortgageRate,
-		currentMonthlyRent,
-		legalFees = ESTIMATED_LEGAL_FEES,
-		propertyType = "existing",
-		priceIncludesVAT = true,
-		rentInflationRate = DEFAULT_RENT_INFLATION,
-		homeAppreciationRate = DEFAULT_HOME_APPRECIATION,
-		maintenanceRate = DEFAULT_MAINTENANCE_RATE,
-		opportunityCostRate = DEFAULT_OPPORTUNITY_COST_RATE,
-		saleCostRate = DEFAULT_SALE_COST_RATE,
-		serviceCharge = DEFAULT_SERVICE_CHARGE,
-		serviceChargeIncrease = DEFAULT_SERVICE_CHARGE_INCREASE,
-	} = inputs;
+    const {
+        propertyValue,
+        deposit,
+        mortgageTermMonths,
+        mortgageRate,
+        currentMonthlyRent,
+        legalFees = ESTIMATED_LEGAL_FEES,
+        propertyType = "existing",
+        priceIncludesVAT = true,
+        rentInflationRate = DEFAULT_RENT_INFLATION,
+        homeAppreciationRate = DEFAULT_HOME_APPRECIATION,
+        maintenanceRate = DEFAULT_MAINTENANCE_RATE,
+        opportunityCostRate = DEFAULT_OPPORTUNITY_COST_RATE,
+        saleCostRate = DEFAULT_SALE_COST_RATE,
+        serviceCharge = DEFAULT_SERVICE_CHARGE,
+        serviceChargeIncrease = DEFAULT_SERVICE_CHARGE_INCREASE,
+    } = inputs;
 
-	// Calculate VAT to get net price for stamp duty
-	const vatResult = calculatePropertyVAT(
-		propertyValue,
-		propertyType,
-		priceIncludesVAT,
-	);
-	const hasVAT = vatResult.vatRate > 0;
-	const vatAddedToTotal = hasVAT && !priceIncludesVAT;
+    // Calculate VAT to get net price for stamp duty
+    const vatResult = calculatePropertyVAT(
+        propertyValue,
+        propertyType,
+        priceIncludesVAT,
+    );
+    const hasVAT = vatResult.vatRate > 0;
+    const vatAddedToTotal = hasVAT && !priceIncludesVAT;
 
-	const mortgageAmount = propertyValue - deposit;
-	// Stamp duty is calculated on the net (VAT-exclusive) price
-	const stampDuty = calculateStampDuty(vatResult.netPrice);
-	// If VAT is exclusive, it's an additional upfront cost
-	const purchaseCosts =
-		stampDuty + legalFees + (vatAddedToTotal ? vatResult.vatAmount : 0);
-	const upfrontCosts = deposit + purchaseCosts;
+    const mortgageAmount = propertyValue - deposit;
+    // Stamp duty is calculated on the net (VAT-exclusive) price
+    const stampDuty = calculateStampDuty(vatResult.netPrice);
+    // If VAT is exclusive, it's an additional upfront cost
+    const purchaseCosts =
+        stampDuty + legalFees + (vatAddedToTotal ? vatResult.vatAmount : 0);
+    const upfrontCosts = deposit + purchaseCosts;
 
-	const totalMonths = mortgageTermMonths;
-	const monthlyMortgagePayment = calculateMonthlyPayment(
-		mortgageAmount,
-		mortgageRate,
-		totalMonths,
-	);
+    const totalMonths = mortgageTermMonths;
+    const monthlyMortgagePayment = calculateMonthlyPayment(
+        mortgageAmount,
+        mortgageRate,
+        totalMonths,
+    );
 
-	// Monthly rate for appreciation (converts annual to monthly compounding)
-	const monthlyAppreciationRate =
-		(1 + homeAppreciationRate / 100) ** (1 / 12) - 1;
-	const monthlyOpportunityRate =
-		(1 + opportunityCostRate / 100) ** (1 / 12) - 1;
+    // Monthly rate for appreciation (converts annual to monthly compounding)
+    const monthlyAppreciationRate =
+        (1 + homeAppreciationRate / 100) ** (1 / 12) - 1;
+    const monthlyOpportunityRate =
+        (1 + opportunityCostRate / 100) ** (1 / 12) - 1;
 
-	let cumulativeRent = 0;
-	let cumulativeOwnership = upfrontCosts; // Start with upfront costs
-	// Home value starts at gross price (actual property value including VAT if applicable)
-	let homeValue = vatAddedToTotal ? vatResult.grossPrice : propertyValue;
-	let mortgageBalance = mortgageAmount;
-	let breakevenMonth: number | null = null;
-	let breakevenDetails: NetWorthBreakevenDetails | null = null;
-	let breakEvenOnSaleMonth: number | null = null;
-	let breakEvenOnSaleDetails: SaleBreakevenDetails | null = null;
-	let equityRecoveryMonth: number | null = null;
-	let equityRecoveryDetails: EquityBreakevenDetails | null = null;
-	const yearlyBreakdown: YearlyComparison[] = [];
-	const monthlyBreakdown: MonthlyComparison[] = [];
+    let cumulativeRent = 0;
+    let cumulativeOwnership = upfrontCosts; // Start with upfront costs
+    // Home value starts at gross price (actual property value including VAT if applicable)
+    let homeValue = vatAddedToTotal ? vatResult.grossPrice : propertyValue;
+    let mortgageBalance = mortgageAmount;
+    let breakevenMonth: number | null = null;
+    let breakevenDetails: NetWorthBreakevenDetails | null = null;
+    let breakEvenOnSaleMonth: number | null = null;
+    let breakEvenOnSaleDetails: SaleBreakevenDetails | null = null;
+    let equityRecoveryMonth: number | null = null;
+    let equityRecoveryDetails: EquityBreakevenDetails | null = null;
+    const yearlyBreakdown: YearlyComparison[] = [];
+    const monthlyBreakdown: MonthlyComparison[] = [];
 
-	// Track what the renter's money could have grown to if invested instead
-	// This includes: upfront costs + any monthly savings (when rent < ownership costs)
-	let renterInvestmentValue = upfrontCosts;
+    // Track what the renter's money could have grown to if invested instead
+    // This includes: upfront costs + any monthly savings (when rent < ownership costs)
+    let renterInvestmentValue = upfrontCosts;
 
-	// Monthly interest rate for balance calculation
-	const monthlyRate = mortgageRate / 100 / 12;
+    // Monthly interest rate for balance calculation
+    const monthlyRate = mortgageRate / 100 / 12;
 
-	// Current rent (increases annually)
-	let currentRent = currentMonthlyRent;
+    // Current rent (increases annually)
+    let currentRent = currentMonthlyRent;
 
-	// Current service charge (increases annually)
-	let currentServiceCharge = serviceCharge;
+    // Current service charge (increases annually)
+    let currentServiceCharge = serviceCharge;
 
-	for (let month = 1; month <= totalMonths; month++) {
-		// Rent and service charge increase annually at the start of each new year (month 13, 25, 37, etc.)
-		if (month > 1 && (month - 1) % 12 === 0) {
-			currentRent = currentRent * (1 + rentInflationRate / 100);
-			currentServiceCharge =
-				currentServiceCharge * (1 + serviceChargeIncrease / 100);
-		}
-		cumulativeRent += currentRent;
+    for (let month = 1; month <= totalMonths; month++) {
+        // Rent and service charge increase annually at the start of each new year (month 13, 25, 37, etc.)
+        if (month > 1 && (month - 1) % 12 === 0) {
+            currentRent = currentRent * (1 + rentInflationRate / 100);
+            currentServiceCharge =
+                currentServiceCharge * (1 + serviceChargeIncrease / 100);
+        }
+        cumulativeRent += currentRent;
 
-		// Home appreciation (monthly compounding)
-		homeValue = homeValue * (1 + monthlyAppreciationRate);
+        // Home appreciation (monthly compounding)
+        homeValue = homeValue * (1 + monthlyAppreciationRate);
 
-		// Maintenance cost: based on current home value, prorated monthly
-		const maintenanceCost = (homeValue * (maintenanceRate / 100)) / 12;
+        // Maintenance cost: based on current home value, prorated monthly
+        const maintenanceCost = (homeValue * (maintenanceRate / 100)) / 12;
 
-		// Monthly ownership cost (excluding upfront, just recurring)
-		const monthlyOwnershipCost =
-			monthlyMortgagePayment + maintenanceCost + currentServiceCharge;
+        // Monthly ownership cost (excluding upfront, just recurring)
+        const monthlyOwnershipCost =
+            monthlyMortgagePayment + maintenanceCost + currentServiceCharge;
 
-		// Renter's investment grows, and they add any monthly savings
-		const renterGrowth = renterInvestmentValue * monthlyOpportunityRate;
-		renterInvestmentValue += renterGrowth;
+        // Renter's investment grows, and they add any monthly savings
+        const renterGrowth = renterInvestmentValue * monthlyOpportunityRate;
+        renterInvestmentValue += renterGrowth;
 
-		// If renting is cheaper this month, renter invests the difference
-		if (currentRent < monthlyOwnershipCost) {
-			renterInvestmentValue += monthlyOwnershipCost - currentRent;
-		}
+        // If renting is cheaper this month, renter invests the difference
+        if (currentRent < monthlyOwnershipCost) {
+            renterInvestmentValue += monthlyOwnershipCost - currentRent;
+        }
 
-		// Opportunity cost for buyer = growth of renter's investment portfolio
-		const opportunityCostThisMonth = renterGrowth;
+        // Opportunity cost for buyer = growth of renter's investment portfolio
+        const opportunityCostThisMonth = renterGrowth;
 
-		// Add ownership costs
-		cumulativeOwnership += monthlyOwnershipCost + opportunityCostThisMonth;
+        // Add ownership costs
+        cumulativeOwnership += monthlyOwnershipCost + opportunityCostThisMonth;
 
-		// Mortgage balance reduction
-		const interestPayment = mortgageBalance * monthlyRate;
-		const principalPayment = monthlyMortgagePayment - interestPayment;
-		mortgageBalance = Math.max(0, mortgageBalance - principalPayment);
+        // Mortgage balance reduction
+        const interestPayment = mortgageBalance * monthlyRate;
+        const principalPayment = monthlyMortgagePayment - interestPayment;
+        mortgageBalance = Math.max(0, mortgageBalance - principalPayment);
 
-		// Equity = home value - mortgage balance
-		const equity = homeValue - mortgageBalance;
+        // Equity = home value - mortgage balance
+        const equity = homeValue - mortgageBalance;
 
-		// Sale proceeds = home value - selling costs - mortgage balance
-		const saleCosts = homeValue * (saleCostRate / 100);
-		const saleProceeds = homeValue - saleCosts - mortgageBalance;
+        // Sale proceeds = home value - selling costs - mortgage balance
+        const saleCosts = homeValue * (saleCostRate / 100);
+        const saleProceeds = homeValue - saleCosts - mortgageBalance;
 
-		// Break-even on Sale: when sale proceeds > upfront costs
-		if (breakEvenOnSaleMonth === null && saleProceeds > upfrontCosts) {
-			breakEvenOnSaleMonth = month;
-			breakEvenOnSaleDetails = {
-				homeValue: Math.round(homeValue),
-				saleCosts: Math.round(saleCosts),
-				mortgageBalance: Math.round(mortgageBalance),
-				saleProceeds: Math.round(saleProceeds),
-				upfrontCosts: Math.round(upfrontCosts),
-			};
-		}
+        // Break-even on Sale: when sale proceeds > upfront costs
+        if (breakEvenOnSaleMonth === null && saleProceeds > upfrontCosts) {
+            breakEvenOnSaleMonth = month;
+            breakEvenOnSaleDetails = {
+                homeValue: Math.round(homeValue),
+                saleCosts: Math.round(saleCosts),
+                mortgageBalance: Math.round(mortgageBalance),
+                saleProceeds: Math.round(saleProceeds),
+                upfrontCosts: Math.round(upfrontCosts),
+            };
+        }
 
-		// Equity Recovery Breakeven: when equity > upfront costs
-		if (equityRecoveryMonth === null && equity > upfrontCosts) {
-			equityRecoveryMonth = month;
-			equityRecoveryDetails = {
-				homeValue: Math.round(homeValue),
-				mortgageBalance: Math.round(mortgageBalance),
-				equity: Math.round(equity),
-				upfrontCosts: Math.round(upfrontCosts),
-			};
-		}
+        // Equity Recovery Breakeven: when equity > upfront costs
+        if (equityRecoveryMonth === null && equity > upfrontCosts) {
+            equityRecoveryMonth = month;
+            equityRecoveryDetails = {
+                homeValue: Math.round(homeValue),
+                mortgageBalance: Math.round(mortgageBalance),
+                equity: Math.round(equity),
+                upfrontCosts: Math.round(upfrontCosts),
+            };
+        }
 
-		// Net ownership cost = cumulative payments - equity built
-		const netOwnershipCost = cumulativeOwnership - equity;
+        // Net ownership cost = cumulative payments - equity built
+        const netOwnershipCost = cumulativeOwnership - equity;
 
-		// Net Worth Breakeven: when net ownership cost < cumulative rent
-		if (breakevenMonth === null && netOwnershipCost < cumulativeRent) {
-			breakevenMonth = month;
-			breakevenDetails = {
-				cumulativeRent: Math.round(cumulativeRent),
-				netOwnershipCost: Math.round(netOwnershipCost),
-				cumulativeOwnership: Math.round(cumulativeOwnership),
-				equity: Math.round(equity),
-			};
-		}
+        // Net Worth Breakeven: when net ownership cost < cumulative rent
+        if (breakevenMonth === null && netOwnershipCost < cumulativeRent) {
+            breakevenMonth = month;
+            breakevenDetails = {
+                cumulativeRent: Math.round(cumulativeRent),
+                netOwnershipCost: Math.round(netOwnershipCost),
+                cumulativeOwnership: Math.round(cumulativeOwnership),
+                equity: Math.round(equity),
+            };
+        }
 
-		// Store monthly snapshots for first 48 months (for detailed view when breakeven < 2 years)
-		if (month <= 48) {
-			monthlyBreakdown.push({
-				month,
-				cumulativeRent: Math.round(cumulativeRent),
-				cumulativeOwnership: Math.round(cumulativeOwnership),
-				homeValue: Math.round(homeValue),
-				mortgageBalance: Math.round(mortgageBalance),
-				equity: Math.round(equity),
-				netOwnershipCost: Math.round(netOwnershipCost),
-			});
-		}
+        // Store monthly snapshots for first 48 months (for detailed view when breakeven < 2 years)
+        if (month <= 48) {
+            monthlyBreakdown.push({
+                month,
+                cumulativeRent: Math.round(cumulativeRent),
+                cumulativeOwnership: Math.round(cumulativeOwnership),
+                homeValue: Math.round(homeValue),
+                mortgageBalance: Math.round(mortgageBalance),
+                equity: Math.round(equity),
+                netOwnershipCost: Math.round(netOwnershipCost),
+            });
+        }
 
-		// Store yearly snapshots
-		if (month % 12 === 0) {
-			yearlyBreakdown.push({
-				year: month / 12,
-				cumulativeRent: Math.round(cumulativeRent),
-				cumulativeOwnership: Math.round(cumulativeOwnership),
-				homeValue: Math.round(homeValue),
-				mortgageBalance: Math.round(mortgageBalance),
-				equity: Math.round(equity),
-				netOwnershipCost: Math.round(netOwnershipCost),
-			});
-		}
-	}
+        // Store yearly snapshots
+        if (month % 12 === 0) {
+            yearlyBreakdown.push({
+                year: month / 12,
+                cumulativeRent: Math.round(cumulativeRent),
+                cumulativeOwnership: Math.round(cumulativeOwnership),
+                homeValue: Math.round(homeValue),
+                mortgageBalance: Math.round(mortgageBalance),
+                equity: Math.round(equity),
+                netOwnershipCost: Math.round(netOwnershipCost),
+            });
+        }
+    }
 
-	return {
-		breakevenMonth,
-		breakevenDetails,
-		breakEvenOnSaleMonth,
-		breakEvenOnSaleDetails,
-		equityRecoveryMonth,
-		equityRecoveryDetails,
-		monthlyMortgagePayment: Math.round(monthlyMortgagePayment * 100) / 100,
-		mortgageAmount: Math.round(mortgageAmount),
-		deposit: Math.round(deposit),
-		stampDuty: Math.round(stampDuty),
-		legalFees,
-		purchaseCosts: Math.round(purchaseCosts),
-		upfrontCosts: Math.round(upfrontCosts),
-		yearlyBreakdown,
-		monthlyBreakdown,
-	};
+    return {
+        breakevenMonth,
+        breakevenDetails,
+        breakEvenOnSaleMonth,
+        breakEvenOnSaleDetails,
+        equityRecoveryMonth,
+        equityRecoveryDetails,
+        monthlyMortgagePayment: Math.round(monthlyMortgagePayment * 100) / 100,
+        mortgageAmount: Math.round(mortgageAmount),
+        deposit: Math.round(deposit),
+        stampDuty: Math.round(stampDuty),
+        legalFees,
+        purchaseCosts: Math.round(purchaseCosts),
+        upfrontCosts: Math.round(upfrontCosts),
+        yearlyBreakdown,
+        monthlyBreakdown,
+    };
 }
 
 // =============================================================================
@@ -367,75 +367,75 @@ export function calculateRentVsBuyBreakeven(
 // =============================================================================
 
 export interface RemortgageInputs {
-	outstandingBalance: number;
-	currentRate: number; // Annual rate as percentage
-	newRate: number; // Annual rate as percentage
-	remainingTermMonths: number; // Remaining term in months
-	legalFees?: number; // Default €1,350, user-editable
-	// Advanced options
-	cashback?: number; // Default €0
-	erc?: number; // Early Repayment Charge, default €0
-	// Comparison period for savings calculations (defaults to remainingTermMonths)
-	comparisonPeriodMonths?: number;
+    outstandingBalance: number;
+    currentRate: number; // Annual rate as percentage
+    newRate: number; // Annual rate as percentage
+    remainingTermMonths: number; // Remaining term in months
+    legalFees?: number; // Default €1,350, user-editable
+    // Advanced options
+    cashback?: number; // Default €0
+    erc?: number; // Early Repayment Charge, default €0
+    // Comparison period for savings calculations (defaults to remainingTermMonths)
+    comparisonPeriodMonths?: number;
 }
 
 export interface RemortgageYearlyComparison {
-	year: number;
-	cumulativeSavings: number; // Monthly savings accumulated (gross)
-	netSavings: number; // cumulativeSavings - switchingCosts
-	remainingBalanceCurrent: number; // If stayed with current rate
-	remainingBalanceNew: number; // With new rate
-	interestPaidCurrent: number; // Cumulative interest (current path)
-	interestPaidNew: number; // Cumulative interest (new path)
-	interestSaved: number; // Difference
+    year: number;
+    cumulativeSavings: number; // Monthly savings accumulated (gross)
+    netSavings: number; // cumulativeSavings - switchingCosts
+    remainingBalanceCurrent: number; // If stayed with current rate
+    remainingBalanceNew: number; // With new rate
+    interestPaidCurrent: number; // Cumulative interest (current path)
+    interestPaidNew: number; // Cumulative interest (new path)
+    interestSaved: number; // Difference
 }
 
 export interface RemortgageMonthlyComparison {
-	month: number;
-	cumulativeSavings: number;
-	netSavings: number;
-	remainingBalanceCurrent: number;
-	remainingBalanceNew: number;
-	interestPaidCurrent: number;
-	interestPaidNew: number;
-	interestSaved: number;
+    month: number;
+    cumulativeSavings: number;
+    netSavings: number;
+    remainingBalanceCurrent: number;
+    remainingBalanceNew: number;
+    interestPaidCurrent: number;
+    interestPaidNew: number;
+    interestSaved: number;
 }
 
 // Details at breakeven point for "Why" explanations
 export interface RemortgageBreakevenDetails {
-	monthlySavings: number;
-	breakevenMonths: number;
-	switchingCosts: number;
-	cumulativeSavingsAtBreakeven: number;
+    monthlySavings: number;
+    breakevenMonths: number;
+    switchingCosts: number;
+    cumulativeSavingsAtBreakeven: number;
 }
 
 // Details for total interest saved card
 export interface InterestSavingsDetails {
-	totalInterestCurrent: number; // Total interest if staying
-	totalInterestNew: number; // Total interest if switching
-	interestSaved: number; // Difference
-	switchingCosts: number; // For net calculation
-	netBenefit: number; // interestSaved - switchingCosts
+    totalInterestCurrent: number; // Total interest if staying
+    totalInterestNew: number; // Total interest if switching
+    interestSaved: number; // Difference
+    switchingCosts: number; // For net calculation
+    netBenefit: number; // interestSaved - switchingCosts
 }
 
 export interface RemortgageResult {
-	breakevenMonths: number;
-	breakevenDetails: RemortgageBreakevenDetails | null;
-	currentMonthlyPayment: number;
-	newMonthlyPayment: number;
-	monthlySavings: number;
-	legalFees: number;
-	cashback: number;
-	erc: number;
-	switchingCosts: number; // legalFees - cashback + erc
-	totalSavingsOverTerm: number;
-	yearOneSavings: number;
-	// Comparison period used for savings calculations
-	comparisonPeriodMonths: number;
-	// New fields for enhanced display
-	interestSavingsDetails: InterestSavingsDetails;
-	yearlyBreakdown: RemortgageYearlyComparison[];
-	monthlyBreakdown: RemortgageMonthlyComparison[]; // First 48 months for detailed view
+    breakevenMonths: number;
+    breakevenDetails: RemortgageBreakevenDetails | null;
+    currentMonthlyPayment: number;
+    newMonthlyPayment: number;
+    monthlySavings: number;
+    legalFees: number;
+    cashback: number;
+    erc: number;
+    switchingCosts: number; // legalFees - cashback + erc
+    totalSavingsOverTerm: number;
+    yearOneSavings: number;
+    // Comparison period used for savings calculations
+    comparisonPeriodMonths: number;
+    // New fields for enhanced display
+    interestSavingsDetails: InterestSavingsDetails;
+    yearlyBreakdown: RemortgageYearlyComparison[];
+    monthlyBreakdown: RemortgageMonthlyComparison[]; // First 48 months for detailed view
 }
 
 // =============================================================================
@@ -449,173 +449,173 @@ export interface RemortgageResult {
  * Uses month-by-month simulation to track amortization on both paths.
  */
 export function calculateRemortgageBreakeven(
-	inputs: RemortgageInputs,
+    inputs: RemortgageInputs,
 ): RemortgageResult {
-	const {
-		outstandingBalance,
-		currentRate,
-		newRate,
-		remainingTermMonths,
-		legalFees = ESTIMATED_REMORTGAGE_LEGAL_FEES,
-		cashback = 0,
-		erc = 0,
-		comparisonPeriodMonths: inputComparisonPeriod,
-	} = inputs;
+    const {
+        outstandingBalance,
+        currentRate,
+        newRate,
+        remainingTermMonths,
+        legalFees = ESTIMATED_REMORTGAGE_LEGAL_FEES,
+        cashback = 0,
+        erc = 0,
+        comparisonPeriodMonths: inputComparisonPeriod,
+    } = inputs;
 
-	const remainingMonths = remainingTermMonths;
-	// Use provided comparison period, but cap at remaining term
-	const comparisonPeriodMonths = Math.min(
-		inputComparisonPeriod ?? remainingMonths,
-		remainingMonths,
-	);
+    const remainingMonths = remainingTermMonths;
+    // Use provided comparison period, but cap at remaining term
+    const comparisonPeriodMonths = Math.min(
+        inputComparisonPeriod ?? remainingMonths,
+        remainingMonths,
+    );
 
-	const currentMonthlyPayment = calculateMonthlyPayment(
-		outstandingBalance,
-		currentRate,
-		remainingMonths,
-	);
+    const currentMonthlyPayment = calculateMonthlyPayment(
+        outstandingBalance,
+        currentRate,
+        remainingMonths,
+    );
 
-	const newMonthlyPayment = calculateMonthlyPayment(
-		outstandingBalance,
-		newRate,
-		remainingMonths,
-	);
+    const newMonthlyPayment = calculateMonthlyPayment(
+        outstandingBalance,
+        newRate,
+        remainingMonths,
+    );
 
-	const monthlySavings = currentMonthlyPayment - newMonthlyPayment;
-	const switchingCosts = Math.max(0, legalFees - cashback + erc);
+    const monthlySavings = currentMonthlyPayment - newMonthlyPayment;
+    const switchingCosts = Math.max(0, legalFees - cashback + erc);
 
-	// Monthly interest rates
-	const currentMonthlyRate = currentRate / 100 / 12;
-	const newMonthlyRate = newRate / 100 / 12;
+    // Monthly interest rates
+    const currentMonthlyRate = currentRate / 100 / 12;
+    const newMonthlyRate = newRate / 100 / 12;
 
-	// Track balances and cumulative values
-	let balanceCurrent = outstandingBalance;
-	let balanceNew = outstandingBalance;
-	let cumulativeSavings = 0;
-	let cumulativeInterestCurrent = 0;
-	let cumulativeInterestNew = 0;
+    // Track balances and cumulative values
+    let balanceCurrent = outstandingBalance;
+    let balanceNew = outstandingBalance;
+    let cumulativeSavings = 0;
+    let cumulativeInterestCurrent = 0;
+    let cumulativeInterestNew = 0;
 
-	// Track values at comparison period end
-	let interestCurrentAtComparison = 0;
-	let interestNewAtComparison = 0;
-	let savingsAtComparison = 0;
+    // Track values at comparison period end
+    let interestCurrentAtComparison = 0;
+    let interestNewAtComparison = 0;
+    let savingsAtComparison = 0;
 
-	// Breakeven tracking
-	let breakevenMonths: number = Number.POSITIVE_INFINITY;
-	let breakevenDetails: RemortgageBreakevenDetails | null = null;
+    // Breakeven tracking
+    let breakevenMonths: number = Number.POSITIVE_INFINITY;
+    let breakevenDetails: RemortgageBreakevenDetails | null = null;
 
-	// Yearly breakdown
-	const yearlyBreakdown: RemortgageYearlyComparison[] = [];
-	const monthlyBreakdown: RemortgageMonthlyComparison[] = [];
+    // Yearly breakdown
+    const yearlyBreakdown: RemortgageYearlyComparison[] = [];
+    const monthlyBreakdown: RemortgageMonthlyComparison[] = [];
 
-	// Month-by-month simulation
-	for (let month = 1; month <= remainingMonths; month++) {
-		// Calculate interest for this month on both paths
-		const interestCurrent = balanceCurrent * currentMonthlyRate;
-		const interestNew = balanceNew * newMonthlyRate;
+    // Month-by-month simulation
+    for (let month = 1; month <= remainingMonths; month++) {
+        // Calculate interest for this month on both paths
+        const interestCurrent = balanceCurrent * currentMonthlyRate;
+        const interestNew = balanceNew * newMonthlyRate;
 
-		// Add to cumulative interest
-		cumulativeInterestCurrent += interestCurrent;
-		cumulativeInterestNew += interestNew;
+        // Add to cumulative interest
+        cumulativeInterestCurrent += interestCurrent;
+        cumulativeInterestNew += interestNew;
 
-		// Calculate principal payments
-		const principalCurrent = currentMonthlyPayment - interestCurrent;
-		const principalNew = newMonthlyPayment - interestNew;
+        // Calculate principal payments
+        const principalCurrent = currentMonthlyPayment - interestCurrent;
+        const principalNew = newMonthlyPayment - interestNew;
 
-		// Update balances
-		balanceCurrent = Math.max(0, balanceCurrent - principalCurrent);
-		balanceNew = Math.max(0, balanceNew - principalNew);
+        // Update balances
+        balanceCurrent = Math.max(0, balanceCurrent - principalCurrent);
+        balanceNew = Math.max(0, balanceNew - principalNew);
 
-		// Accumulate monthly savings
-		cumulativeSavings += monthlySavings;
+        // Accumulate monthly savings
+        cumulativeSavings += monthlySavings;
 
-		// Capture values at comparison period end
-		if (month === comparisonPeriodMonths) {
-			interestCurrentAtComparison = cumulativeInterestCurrent;
-			interestNewAtComparison = cumulativeInterestNew;
-			savingsAtComparison = cumulativeSavings;
-		}
+        // Capture values at comparison period end
+        if (month === comparisonPeriodMonths) {
+            interestCurrentAtComparison = cumulativeInterestCurrent;
+            interestNewAtComparison = cumulativeInterestNew;
+            savingsAtComparison = cumulativeSavings;
+        }
 
-		// Check for breakeven (when cumulative savings exceed switching costs)
-		if (
-			breakevenDetails === null &&
-			monthlySavings > 0 &&
-			cumulativeSavings >= switchingCosts
-		) {
-			breakevenMonths = month;
-			breakevenDetails = {
-				monthlySavings: Math.round(monthlySavings * 100) / 100,
-				breakevenMonths: month,
-				switchingCosts,
-				cumulativeSavingsAtBreakeven: Math.round(cumulativeSavings),
-			};
-		}
+        // Check for breakeven (when cumulative savings exceed switching costs)
+        if (
+            breakevenDetails === null &&
+            monthlySavings > 0 &&
+            cumulativeSavings >= switchingCosts
+        ) {
+            breakevenMonths = month;
+            breakevenDetails = {
+                monthlySavings: Math.round(monthlySavings * 100) / 100,
+                breakevenMonths: month,
+                switchingCosts,
+                cumulativeSavingsAtBreakeven: Math.round(cumulativeSavings),
+            };
+        }
 
-		// Store monthly snapshots for first 48 months (for detailed view when breakeven < 2 years)
-		if (month <= 48) {
-			monthlyBreakdown.push({
-				month,
-				cumulativeSavings: Math.round(cumulativeSavings),
-				netSavings: Math.round(cumulativeSavings - switchingCosts),
-				remainingBalanceCurrent: Math.round(balanceCurrent),
-				remainingBalanceNew: Math.round(balanceNew),
-				interestPaidCurrent: Math.round(cumulativeInterestCurrent),
-				interestPaidNew: Math.round(cumulativeInterestNew),
-				interestSaved: Math.round(
-					cumulativeInterestCurrent - cumulativeInterestNew,
-				),
-			});
-		}
+        // Store monthly snapshots for first 48 months (for detailed view when breakeven < 2 years)
+        if (month <= 48) {
+            monthlyBreakdown.push({
+                month,
+                cumulativeSavings: Math.round(cumulativeSavings),
+                netSavings: Math.round(cumulativeSavings - switchingCosts),
+                remainingBalanceCurrent: Math.round(balanceCurrent),
+                remainingBalanceNew: Math.round(balanceNew),
+                interestPaidCurrent: Math.round(cumulativeInterestCurrent),
+                interestPaidNew: Math.round(cumulativeInterestNew),
+                interestSaved: Math.round(
+                    cumulativeInterestCurrent - cumulativeInterestNew,
+                ),
+            });
+        }
 
-		// Store yearly snapshots
-		if (month % 12 === 0) {
-			yearlyBreakdown.push({
-				year: month / 12,
-				cumulativeSavings: Math.round(cumulativeSavings),
-				netSavings: Math.round(cumulativeSavings - switchingCosts),
-				remainingBalanceCurrent: Math.round(balanceCurrent),
-				remainingBalanceNew: Math.round(balanceNew),
-				interestPaidCurrent: Math.round(cumulativeInterestCurrent),
-				interestPaidNew: Math.round(cumulativeInterestNew),
-				interestSaved: Math.round(
-					cumulativeInterestCurrent - cumulativeInterestNew,
-				),
-			});
-		}
-	}
+        // Store yearly snapshots
+        if (month % 12 === 0) {
+            yearlyBreakdown.push({
+                year: month / 12,
+                cumulativeSavings: Math.round(cumulativeSavings),
+                netSavings: Math.round(cumulativeSavings - switchingCosts),
+                remainingBalanceCurrent: Math.round(balanceCurrent),
+                remainingBalanceNew: Math.round(balanceNew),
+                interestPaidCurrent: Math.round(cumulativeInterestCurrent),
+                interestPaidNew: Math.round(cumulativeInterestNew),
+                interestSaved: Math.round(
+                    cumulativeInterestCurrent - cumulativeInterestNew,
+                ),
+            });
+        }
+    }
 
-	// Calculate interest saved over comparison period (not full term)
-	const interestSaved = interestCurrentAtComparison - interestNewAtComparison;
+    // Calculate interest saved over comparison period (not full term)
+    const interestSaved = interestCurrentAtComparison - interestNewAtComparison;
 
-	const interestSavingsDetails: InterestSavingsDetails = {
-		totalInterestCurrent: Math.round(interestCurrentAtComparison),
-		totalInterestNew: Math.round(interestNewAtComparison),
-		interestSaved: Math.round(interestSaved),
-		switchingCosts,
-		netBenefit: Math.round(interestSaved - switchingCosts),
-	};
+    const interestSavingsDetails: InterestSavingsDetails = {
+        totalInterestCurrent: Math.round(interestCurrentAtComparison),
+        totalInterestNew: Math.round(interestNewAtComparison),
+        interestSaved: Math.round(interestSaved),
+        switchingCosts,
+        netBenefit: Math.round(interestSaved - switchingCosts),
+    };
 
-	const yearOneSavings =
-		monthlySavings * Math.min(12, comparisonPeriodMonths) - switchingCosts;
-	const totalSavingsOverTerm = savingsAtComparison - switchingCosts;
+    const yearOneSavings =
+        monthlySavings * Math.min(12, comparisonPeriodMonths) - switchingCosts;
+    const totalSavingsOverTerm = savingsAtComparison - switchingCosts;
 
-	return {
-		breakevenMonths: Math.ceil(breakevenMonths),
-		breakevenDetails,
-		currentMonthlyPayment: Math.round(currentMonthlyPayment * 100) / 100,
-		newMonthlyPayment: Math.round(newMonthlyPayment * 100) / 100,
-		monthlySavings: Math.round(monthlySavings * 100) / 100,
-		legalFees,
-		cashback,
-		erc,
-		switchingCosts,
-		yearOneSavings: Math.round(yearOneSavings),
-		totalSavingsOverTerm: Math.round(totalSavingsOverTerm),
-		comparisonPeriodMonths,
-		interestSavingsDetails,
-		yearlyBreakdown,
-		monthlyBreakdown,
-	};
+    return {
+        breakevenMonths: Math.ceil(breakevenMonths),
+        breakevenDetails,
+        currentMonthlyPayment: Math.round(currentMonthlyPayment * 100) / 100,
+        newMonthlyPayment: Math.round(newMonthlyPayment * 100) / 100,
+        monthlySavings: Math.round(monthlySavings * 100) / 100,
+        legalFees,
+        cashback,
+        erc,
+        switchingCosts,
+        yearOneSavings: Math.round(yearOneSavings),
+        totalSavingsOverTerm: Math.round(totalSavingsOverTerm),
+        comparisonPeriodMonths,
+        interestSavingsDetails,
+        yearlyBreakdown,
+        monthlyBreakdown,
+    };
 }
 
 // =============================================================================
@@ -623,73 +623,73 @@ export function calculateRemortgageBreakeven(
 // =============================================================================
 
 export interface CashbackOption {
-	label: string;
-	rate: number; // Annual rate as percentage (e.g., 3.5 for 3.5%)
-	cashbackType: "percentage" | "flat";
-	cashbackValue: number; // Percentage value (e.g., 2 for 2%) or flat amount in euros
-	cashbackCap?: number; // Optional cap in euros (e.g., 10000 for €10k)
-	fixedPeriodYears?: number; // Optional, for context
+    label: string;
+    rate: number; // Annual rate as percentage (e.g., 3.5 for 3.5%)
+    cashbackType: "percentage" | "flat";
+    cashbackValue: number; // Percentage value (e.g., 2 for 2%) or flat amount in euros
+    cashbackCap?: number; // Optional cap in euros (e.g., 10000 for €10k)
+    fixedPeriodYears?: number; // Optional, for context
 }
 
 export interface CashbackBreakevenInputs {
-	mortgageAmount: number;
-	mortgageTermMonths: number;
-	options: CashbackOption[]; // 2-5 options
+    mortgageAmount: number;
+    mortgageTermMonths: number;
+    options: CashbackOption[]; // 2-5 options
 }
 
 export interface CashbackOptionResult {
-	label: string;
-	rate: number;
-	fixedPeriodYears: number; // 0 = variable
-	monthlyPayment: number;
-	monthlyPaymentDiff: number; // vs cheapest monthly payment (+/- €)
-	cashbackAmount: number; // Actual cashback received (after cap applied)
-	// Over comparison period only:
-	interestPaid: number;
-	principalPaid: number;
-	balanceAtEnd: number; // Remaining balance after comparison period
-	netCost: number; // interestPaid - cashbackAmount
-	adjustedBalance: number; // Balance if cashback was applied to principal at start
+    label: string;
+    rate: number;
+    fixedPeriodYears: number; // 0 = variable
+    monthlyPayment: number;
+    monthlyPaymentDiff: number; // vs cheapest monthly payment (+/- €)
+    cashbackAmount: number; // Actual cashback received (after cap applied)
+    // Over comparison period only:
+    interestPaid: number;
+    principalPaid: number;
+    balanceAtEnd: number; // Remaining balance after comparison period
+    netCost: number; // interestPaid - cashbackAmount
+    adjustedBalance: number; // Balance if cashback was applied to principal at start
 }
 
 export interface CashbackBreakevenPoint {
-	optionAIndex: number;
-	optionBIndex: number;
-	optionALabel: string;
-	optionBLabel: string;
-	breakevenMonth: number | null; // null if never crosses
-	description: string; // e.g., "Option 1 becomes cheaper than Option 2"
+    optionAIndex: number;
+    optionBIndex: number;
+    optionALabel: string;
+    optionBLabel: string;
+    breakevenMonth: number | null; // null if never crosses
+    description: string; // e.g., "Option 1 becomes cheaper than Option 2"
 }
 
 export interface CashbackMonthlyComparison {
-	month: number;
-	netCosts: number[]; // Net cost for each option at this month
-	adjustedBalances: number[]; // Adjusted balance for each option at this month
+    month: number;
+    netCosts: number[]; // Net cost for each option at this month
+    adjustedBalances: number[]; // Adjusted balance for each option at this month
 }
 
 export interface CashbackYearlyComparison {
-	year: number;
-	netCosts: number[]; // Net cost for each option at this year
-	adjustedBalances: number[]; // Adjusted balance for each option at this year
-	interestPaid: number[]; // Cumulative interest for each option
-	principalPaid: number[]; // Cumulative principal for each option
-	balances: number[]; // Remaining balance for each option (without cashback applied)
+    year: number;
+    netCosts: number[]; // Net cost for each option at this year
+    adjustedBalances: number[]; // Adjusted balance for each option at this year
+    interestPaid: number[]; // Cumulative interest for each option
+    principalPaid: number[]; // Cumulative principal for each option
+    balances: number[]; // Remaining balance for each option (without cashback applied)
 }
 
 export interface CashbackBreakevenResult {
-	comparisonPeriodMonths: number;
-	comparisonPeriodYears: number;
-	allVariable: boolean;
-	options: CashbackOptionResult[];
-	cheapestMonthlyIndex: number; // Lowest monthly payment
-	cheapestNetCostIndex: number; // Best net cost over comparison period
-	cheapestAdjustedBalanceIndex: number; // Best adjusted balance over comparison period
-	savingsVsWorst: number; // How much the best saves vs the worst over comparison period (by adjusted balance)
-	breakevens: CashbackBreakevenPoint[];
-	monthlyBreakdown: CashbackMonthlyComparison[];
-	yearlyBreakdown: CashbackYearlyComparison[];
-	/** Extra year of projection beyond comparison period for visibility (null if at term end) */
-	projectionYear: CashbackYearlyComparison | null;
+    comparisonPeriodMonths: number;
+    comparisonPeriodYears: number;
+    allVariable: boolean;
+    options: CashbackOptionResult[];
+    cheapestMonthlyIndex: number; // Lowest monthly payment
+    cheapestNetCostIndex: number; // Best net cost over comparison period
+    cheapestAdjustedBalanceIndex: number; // Best adjusted balance over comparison period
+    savingsVsWorst: number; // How much the best saves vs the worst over comparison period (by adjusted balance)
+    breakevens: CashbackBreakevenPoint[];
+    monthlyBreakdown: CashbackMonthlyComparison[];
+    yearlyBreakdown: CashbackYearlyComparison[];
+    /** Extra year of projection beyond comparison period for visibility (null if at term end) */
+    projectionYear: CashbackYearlyComparison | null;
 }
 
 // =============================================================================
@@ -706,301 +706,306 @@ export interface CashbackBreakevenResult {
  * This ensures a fair comparison since fixed rates only apply during their fixed period.
  */
 export function calculateCashbackBreakeven(
-	inputs: CashbackBreakevenInputs,
+    inputs: CashbackBreakevenInputs,
 ): CashbackBreakevenResult {
-	const { mortgageAmount, mortgageTermMonths, options } = inputs;
+    const { mortgageAmount, mortgageTermMonths, options } = inputs;
 
-	// Determine comparison period based on fixed periods
-	const fixedPeriods = options.map((o) => o.fixedPeriodYears ?? 0);
-	const allVariable = fixedPeriods.every((p) => p === 0);
-	const comparisonPeriodMonths = allVariable
-		? mortgageTermMonths
-		: Math.min(Math.max(...fixedPeriods) * 12, mortgageTermMonths);
-	const comparisonPeriodYears = comparisonPeriodMonths / 12;
+    // Determine comparison period based on fixed periods
+    const fixedPeriods = options.map((o) => o.fixedPeriodYears ?? 0);
+    const allVariable = fixedPeriods.every((p) => p === 0);
+    const comparisonPeriodMonths = allVariable
+        ? mortgageTermMonths
+        : Math.min(Math.max(...fixedPeriods) * 12, mortgageTermMonths);
+    const comparisonPeriodYears = comparisonPeriodMonths / 12;
 
-	// Calculate results for each option over the comparison period
-	const optionResults: CashbackOptionResult[] = options.map((option) => {
-		const monthlyPayment = calculateMonthlyPayment(
-			mortgageAmount,
-			option.rate,
-			mortgageTermMonths,
-		);
+    // Calculate results for each option over the comparison period
+    const optionResults: CashbackOptionResult[] = options.map((option) => {
+        const monthlyPayment = calculateMonthlyPayment(
+            mortgageAmount,
+            option.rate,
+            mortgageTermMonths,
+        );
 
-		const cashbackAmount = calculateCashbackAmount(mortgageAmount, {
-			type: option.cashbackType,
-			value: option.cashbackValue,
-			cap: option.cashbackCap,
-		});
+        const cashbackAmount = calculateCashbackAmount(mortgageAmount, {
+            type: option.cashbackType,
+            value: option.cashbackValue,
+            cap: option.cashbackCap,
+        });
 
-		// Calculate cumulative values over comparison period only
-		const monthlyRate = option.rate / 100 / 12;
-		let balance = mortgageAmount;
-		let cumulativeInterest = 0;
-		let cumulativePrincipal = 0;
+        // Calculate cumulative values over comparison period only
+        const monthlyRate = option.rate / 100 / 12;
+        let balance = mortgageAmount;
+        let cumulativeInterest = 0;
+        let cumulativePrincipal = 0;
 
-		for (let month = 1; month <= comparisonPeriodMonths; month++) {
-			const interestPayment = balance * monthlyRate;
-			const principalPayment = monthlyPayment - interestPayment;
+        for (let month = 1; month <= comparisonPeriodMonths; month++) {
+            const interestPayment = balance * monthlyRate;
+            const principalPayment = monthlyPayment - interestPayment;
 
-			cumulativeInterest += interestPayment;
-			cumulativePrincipal += principalPayment;
-			balance = Math.max(0, balance - principalPayment);
-		}
+            cumulativeInterest += interestPayment;
+            cumulativePrincipal += principalPayment;
+            balance = Math.max(0, balance - principalPayment);
+        }
 
-		// Calculate adjusted balance: simulate cashback applied at start
-		// This shows the balance if cashback was used as a lump-sum overpayment at month 1
-		let adjustedBalance = mortgageAmount - cashbackAmount;
-		for (let month = 1; month <= comparisonPeriodMonths; month++) {
-			const interestPayment = adjustedBalance * monthlyRate;
-			// Same monthly payment, but applied to reduced balance = more principal paid
-			const principalPayment = monthlyPayment - interestPayment;
-			adjustedBalance = Math.max(0, adjustedBalance - principalPayment);
-		}
+        // Calculate adjusted balance: simulate cashback applied at start
+        // This shows the balance if cashback was used as a lump-sum overpayment at month 1
+        let adjustedBalance = mortgageAmount - cashbackAmount;
+        for (let month = 1; month <= comparisonPeriodMonths; month++) {
+            const interestPayment = adjustedBalance * monthlyRate;
+            // Same monthly payment, but applied to reduced balance = more principal paid
+            const principalPayment = monthlyPayment - interestPayment;
+            adjustedBalance = Math.max(0, adjustedBalance - principalPayment);
+        }
 
-		return {
-			label: option.label,
-			rate: option.rate,
-			fixedPeriodYears: option.fixedPeriodYears ?? 0,
-			monthlyPayment: Math.round(monthlyPayment * 100) / 100,
-			monthlyPaymentDiff: 0, // Will be calculated after finding min
-			cashbackAmount: Math.round(cashbackAmount * 100) / 100,
-			interestPaid: Math.round(cumulativeInterest),
-			principalPaid: Math.round(cumulativePrincipal),
-			balanceAtEnd: Math.round(balance),
-			netCost: Math.round(cumulativeInterest - cashbackAmount),
-			adjustedBalance: Math.round(adjustedBalance),
-		};
-	});
+        return {
+            label: option.label,
+            rate: option.rate,
+            fixedPeriodYears: option.fixedPeriodYears ?? 0,
+            monthlyPayment: Math.round(monthlyPayment * 100) / 100,
+            monthlyPaymentDiff: 0, // Will be calculated after finding min
+            cashbackAmount: Math.round(cashbackAmount * 100) / 100,
+            interestPaid: Math.round(cumulativeInterest),
+            principalPaid: Math.round(cumulativePrincipal),
+            balanceAtEnd: Math.round(balance),
+            netCost: Math.round(cumulativeInterest - cashbackAmount),
+            adjustedBalance: Math.round(adjustedBalance),
+        };
+    });
 
-	// Calculate monthly payment diff vs cheapest
-	const minMonthlyPayment = Math.min(
-		...optionResults.map((o) => o.monthlyPayment),
-	);
-	for (const opt of optionResults) {
-		opt.monthlyPaymentDiff =
-			Math.round((opt.monthlyPayment - minMonthlyPayment) * 100) / 100;
-	}
+    // Calculate monthly payment diff vs cheapest
+    const minMonthlyPayment = Math.min(
+        ...optionResults.map((o) => o.monthlyPayment),
+    );
+    for (const opt of optionResults) {
+        opt.monthlyPaymentDiff =
+            Math.round((opt.monthlyPayment - minMonthlyPayment) * 100) / 100;
+    }
 
-	// Find cheapest by monthly payment
-	const cheapestMonthlyIndex = optionResults.reduce(
-		(minIdx, opt, idx, arr) =>
-			opt.monthlyPayment < arr[minIdx].monthlyPayment ? idx : minIdx,
-		0,
-	);
+    // Find cheapest by monthly payment
+    const cheapestMonthlyIndex = optionResults.reduce(
+        (minIdx, opt, idx, arr) =>
+            opt.monthlyPayment < arr[minIdx].monthlyPayment ? idx : minIdx,
+        0,
+    );
 
-	// Find cheapest by net cost over comparison period
-	const cheapestNetCostIndex = optionResults.reduce(
-		(minIdx, opt, idx, arr) =>
-			opt.netCost < arr[minIdx].netCost ? idx : minIdx,
-		0,
-	);
+    // Find cheapest by net cost over comparison period
+    const cheapestNetCostIndex = optionResults.reduce(
+        (minIdx, opt, idx, arr) =>
+            opt.netCost < arr[minIdx].netCost ? idx : minIdx,
+        0,
+    );
 
-	// Find cheapest by adjusted balance over comparison period
-	const cheapestAdjustedBalanceIndex = optionResults.reduce(
-		(minIdx, opt, idx, arr) =>
-			opt.adjustedBalance < arr[minIdx].adjustedBalance ? idx : minIdx,
-		0,
-	);
+    // Find cheapest by adjusted balance over comparison period
+    const cheapestAdjustedBalanceIndex = optionResults.reduce(
+        (minIdx, opt, idx, arr) =>
+            opt.adjustedBalance < arr[minIdx].adjustedBalance ? idx : minIdx,
+        0,
+    );
 
-	// Calculate savings vs worst option (by adjusted balance)
-	const worstAdjustedBalance = Math.max(
-		...optionResults.map((o) => o.adjustedBalance),
-	);
-	const bestAdjustedBalance =
-		optionResults[cheapestAdjustedBalanceIndex].adjustedBalance;
-	const savingsVsWorst = worstAdjustedBalance - bestAdjustedBalance;
+    // Calculate savings vs worst option (by adjusted balance)
+    const worstAdjustedBalance = Math.max(
+        ...optionResults.map((o) => o.adjustedBalance),
+    );
+    const bestAdjustedBalance =
+        optionResults[cheapestAdjustedBalanceIndex].adjustedBalance;
+    const savingsVsWorst = worstAdjustedBalance - bestAdjustedBalance;
 
-	// Calculate monthly and yearly breakdowns for charting
-	const monthlyBreakdown: CashbackMonthlyComparison[] = [];
-	const yearlyBreakdown: CashbackYearlyComparison[] = [];
+    // Calculate monthly and yearly breakdowns for charting
+    const monthlyBreakdown: CashbackMonthlyComparison[] = [];
+    const yearlyBreakdown: CashbackYearlyComparison[] = [];
 
-	// Track cumulative values for each option (regular balances)
-	const balances = options.map(() => mortgageAmount);
-	const cumulativeInterests = options.map(() => 0);
-	const cumulativePrincipals = options.map(() => 0);
-	const cashbackAmounts = optionResults.map((r) => r.cashbackAmount);
+    // Track cumulative values for each option (regular balances)
+    const balances = options.map(() => mortgageAmount);
+    const cumulativeInterests = options.map(() => 0);
+    const cumulativePrincipals = options.map(() => 0);
+    const cashbackAmounts = optionResults.map((r) => r.cashbackAmount);
 
-	// Track adjusted balances (simulating cashback applied at start)
-	const adjustedBalances = options.map(
-		(_, i) => mortgageAmount - cashbackAmounts[i],
-	);
+    // Track adjusted balances (simulating cashback applied at start)
+    const adjustedBalances = options.map(
+        (_, i) => mortgageAmount - cashbackAmounts[i],
+    );
 
-	// Calculate how many months to include for projection (1 extra year if not at term end)
-	const projectionEndMonth = Math.min(
-		comparisonPeriodMonths + 12,
-		mortgageTermMonths,
-	);
-	const hasProjectionYear = projectionEndMonth > comparisonPeriodMonths;
+    // Calculate how many months to include for projection (1 extra year if not at term end)
+    const projectionEndMonth = Math.min(
+        comparisonPeriodMonths + 12,
+        mortgageTermMonths,
+    );
+    const hasProjectionYear = projectionEndMonth > comparisonPeriodMonths;
 
-	for (let month = 1; month <= projectionEndMonth; month++) {
-		// Update each option
-		for (let i = 0; i < options.length; i++) {
-			const monthlyRate = options[i].rate / 100 / 12;
-			const monthlyPayment = optionResults[i].monthlyPayment;
+    for (let month = 1; month <= projectionEndMonth; month++) {
+        // Update each option
+        for (let i = 0; i < options.length; i++) {
+            const monthlyRate = options[i].rate / 100 / 12;
+            const monthlyPayment = optionResults[i].monthlyPayment;
 
-			// Regular balance tracking
-			const interestPayment = balances[i] * monthlyRate;
-			const principalPayment = monthlyPayment - interestPayment;
-			cumulativeInterests[i] += interestPayment;
-			cumulativePrincipals[i] += principalPayment;
-			balances[i] = Math.max(0, balances[i] - principalPayment);
+            // Regular balance tracking
+            const interestPayment = balances[i] * monthlyRate;
+            const principalPayment = monthlyPayment - interestPayment;
+            cumulativeInterests[i] += interestPayment;
+            cumulativePrincipals[i] += principalPayment;
+            balances[i] = Math.max(0, balances[i] - principalPayment);
 
-			// Adjusted balance tracking (same payment applied to reduced balance)
-			const adjustedInterestPayment = adjustedBalances[i] * monthlyRate;
-			const adjustedPrincipalPayment = monthlyPayment - adjustedInterestPayment;
-			adjustedBalances[i] = Math.max(
-				0,
-				adjustedBalances[i] - adjustedPrincipalPayment,
-			);
-		}
+            // Adjusted balance tracking (same payment applied to reduced balance)
+            const adjustedInterestPayment = adjustedBalances[i] * monthlyRate;
+            const adjustedPrincipalPayment =
+                monthlyPayment - adjustedInterestPayment;
+            adjustedBalances[i] = Math.max(
+                0,
+                adjustedBalances[i] - adjustedPrincipalPayment,
+            );
+        }
 
-		// Store monthly data for first 48 months (within comparison period)
-		if (month <= 48 && month <= comparisonPeriodMonths) {
-			monthlyBreakdown.push({
-				month,
-				netCosts: cumulativeInterests.map((interest, i) =>
-					Math.round(interest - cashbackAmounts[i]),
-				),
-				adjustedBalances: adjustedBalances.map((balance) =>
-					Math.round(balance),
-				),
-			});
-		}
+        // Store monthly data for first 48 months (within comparison period)
+        if (month <= 48 && month <= comparisonPeriodMonths) {
+            monthlyBreakdown.push({
+                month,
+                netCosts: cumulativeInterests.map((interest, i) =>
+                    Math.round(interest - cashbackAmounts[i]),
+                ),
+                adjustedBalances: adjustedBalances.map((balance) =>
+                    Math.round(balance),
+                ),
+            });
+        }
 
-		// Store yearly data (within comparison period)
-		if (month % 12 === 0 && month <= comparisonPeriodMonths) {
-			yearlyBreakdown.push({
-				year: month / 12,
-				netCosts: cumulativeInterests.map((interest, i) =>
-					Math.round(interest - cashbackAmounts[i]),
-				),
-				adjustedBalances: adjustedBalances.map((balance) =>
-					Math.round(balance),
-				),
-				interestPaid: cumulativeInterests.map((interest) =>
-					Math.round(interest),
-				),
-				principalPaid: cumulativePrincipals.map((principal) =>
-					Math.round(principal),
-				),
-				balances: balances.map((balance) => Math.round(balance)),
-			});
-		}
-	}
+        // Store yearly data (within comparison period)
+        if (month % 12 === 0 && month <= comparisonPeriodMonths) {
+            yearlyBreakdown.push({
+                year: month / 12,
+                netCosts: cumulativeInterests.map((interest, i) =>
+                    Math.round(interest - cashbackAmounts[i]),
+                ),
+                adjustedBalances: adjustedBalances.map((balance) =>
+                    Math.round(balance),
+                ),
+                interestPaid: cumulativeInterests.map((interest) =>
+                    Math.round(interest),
+                ),
+                principalPaid: cumulativePrincipals.map((principal) =>
+                    Math.round(principal),
+                ),
+                balances: balances.map((balance) => Math.round(balance)),
+            });
+        }
+    }
 
-	// Compute projection year if applicable
-	let projectionYear: CashbackYearlyComparison | null = null;
-	if (hasProjectionYear) {
-		projectionYear = {
-			year: Math.floor(projectionEndMonth / 12),
-			netCosts: cumulativeInterests.map((interest, i) =>
-				Math.round(interest - cashbackAmounts[i]),
-			),
-			adjustedBalances: adjustedBalances.map((balance) => Math.round(balance)),
-			interestPaid: cumulativeInterests.map((interest) => Math.round(interest)),
-			principalPaid: cumulativePrincipals.map((principal) =>
-				Math.round(principal),
-			),
-			balances: balances.map((balance) => Math.round(balance)),
-		};
-	}
+    // Compute projection year if applicable
+    let projectionYear: CashbackYearlyComparison | null = null;
+    if (hasProjectionYear) {
+        projectionYear = {
+            year: Math.floor(projectionEndMonth / 12),
+            netCosts: cumulativeInterests.map((interest, i) =>
+                Math.round(interest - cashbackAmounts[i]),
+            ),
+            adjustedBalances: adjustedBalances.map((balance) =>
+                Math.round(balance),
+            ),
+            interestPaid: cumulativeInterests.map((interest) =>
+                Math.round(interest),
+            ),
+            principalPaid: cumulativePrincipals.map((principal) =>
+                Math.round(principal),
+            ),
+            balances: balances.map((balance) => Math.round(balance)),
+        };
+    }
 
-	// Find breakeven points between options
-	const breakevens: CashbackBreakevenPoint[] = [];
+    // Find breakeven points between options
+    const breakevens: CashbackBreakevenPoint[] = [];
 
-	for (let i = 0; i < options.length; i++) {
-		for (let j = i + 1; j < options.length; j++) {
-			// Check if options ever cross
-			const monthlyBreakevenMonth = findBreakevenMonth(
-				monthlyBreakdown,
-				yearlyBreakdown,
-				i,
-				j,
-			);
+    for (let i = 0; i < options.length; i++) {
+        for (let j = i + 1; j < options.length; j++) {
+            // Check if options ever cross
+            const monthlyBreakevenMonth = findBreakevenMonth(
+                monthlyBreakdown,
+                yearlyBreakdown,
+                i,
+                j,
+            );
 
-			breakevens.push({
-				optionAIndex: i,
-				optionBIndex: j,
-				optionALabel: options[i].label,
-				optionBLabel: options[j].label,
-				breakevenMonth: monthlyBreakevenMonth,
-				description:
-					monthlyBreakevenMonth !== null
-						? `${options[i].label} becomes cheaper than ${options[j].label}`
-						: `${options[i].label} is always ${optionResults[i].netCost <= optionResults[j].netCost ? "cheaper" : "more expensive"} than ${options[j].label}`,
-			});
-		}
-	}
+            breakevens.push({
+                optionAIndex: i,
+                optionBIndex: j,
+                optionALabel: options[i].label,
+                optionBLabel: options[j].label,
+                breakevenMonth: monthlyBreakevenMonth,
+                description:
+                    monthlyBreakevenMonth !== null
+                        ? `${options[i].label} becomes cheaper than ${options[j].label}`
+                        : `${options[i].label} is always ${optionResults[i].netCost <= optionResults[j].netCost ? "cheaper" : "more expensive"} than ${options[j].label}`,
+            });
+        }
+    }
 
-	return {
-		comparisonPeriodMonths,
-		comparisonPeriodYears,
-		allVariable,
-		options: optionResults,
-		cheapestMonthlyIndex,
-		cheapestNetCostIndex,
-		cheapestAdjustedBalanceIndex,
-		savingsVsWorst,
-		breakevens,
-		monthlyBreakdown,
-		yearlyBreakdown,
-		projectionYear,
-	};
+    return {
+        comparisonPeriodMonths,
+        comparisonPeriodYears,
+        allVariable,
+        options: optionResults,
+        cheapestMonthlyIndex,
+        cheapestNetCostIndex,
+        cheapestAdjustedBalanceIndex,
+        savingsVsWorst,
+        breakevens,
+        monthlyBreakdown,
+        yearlyBreakdown,
+        projectionYear,
+    };
 }
 
 /**
  * Find the month when option A becomes cheaper than option B.
  */
 function findBreakevenMonth(
-	monthlyBreakdown: CashbackMonthlyComparison[],
-	yearlyBreakdown: CashbackYearlyComparison[],
-	optionAIndex: number,
-	optionBIndex: number,
+    monthlyBreakdown: CashbackMonthlyComparison[],
+    yearlyBreakdown: CashbackYearlyComparison[],
+    optionAIndex: number,
+    optionBIndex: number,
 ): number | null {
-	// Check monthly data first (first 48 months)
-	for (const data of monthlyBreakdown) {
-		const costA = data.netCosts[optionAIndex];
-		const costB = data.netCosts[optionBIndex];
+    // Check monthly data first (first 48 months)
+    for (const data of monthlyBreakdown) {
+        const costA = data.netCosts[optionAIndex];
+        const costB = data.netCosts[optionBIndex];
 
-		// Skip month 1 - can't determine crossover without previous data
-		if (data.month === 1) {
-			continue;
-		}
+        // Skip month 1 - can't determine crossover without previous data
+        if (data.month === 1) {
+            continue;
+        }
 
-		const prevData = monthlyBreakdown[data.month - 2];
-		const prevCostA = prevData.netCosts[optionAIndex];
-		const prevCostB = prevData.netCosts[optionBIndex];
+        const prevData = monthlyBreakdown[data.month - 2];
+        const prevCostA = prevData.netCosts[optionAIndex];
+        const prevCostB = prevData.netCosts[optionBIndex];
 
-		// A just became cheaper than B
-		if (costA < costB && prevCostA >= prevCostB) {
-			return data.month;
-		}
-		// B just became cheaper than A
-		if (costB < costA && prevCostB >= prevCostA) {
-			return data.month;
-		}
-	}
+        // A just became cheaper than B
+        if (costA < costB && prevCostA >= prevCostB) {
+            return data.month;
+        }
+        // B just became cheaper than A
+        if (costB < costA && prevCostB >= prevCostA) {
+            return data.month;
+        }
+    }
 
-	// Check yearly data for longer terms
-	for (let i = 1; i < yearlyBreakdown.length; i++) {
-		const prevData = yearlyBreakdown[i - 1];
-		const data = yearlyBreakdown[i];
+    // Check yearly data for longer terms
+    for (let i = 1; i < yearlyBreakdown.length; i++) {
+        const prevData = yearlyBreakdown[i - 1];
+        const data = yearlyBreakdown[i];
 
-		const prevCostA = prevData.netCosts[optionAIndex];
-		const prevCostB = prevData.netCosts[optionBIndex];
-		const costA = data.netCosts[optionAIndex];
-		const costB = data.netCosts[optionBIndex];
+        const prevCostA = prevData.netCosts[optionAIndex];
+        const prevCostB = prevData.netCosts[optionBIndex];
+        const costA = data.netCosts[optionAIndex];
+        const costB = data.netCosts[optionBIndex];
 
-		// A just became cheaper than B
-		if (costA < costB && prevCostA >= prevCostB) {
-			// Approximate month within the year
-			return (data.year - 1) * 12 + 6;
-		}
-		// B just became cheaper than A
-		if (costB < costA && prevCostB >= prevCostA) {
-			return (data.year - 1) * 12 + 6;
-		}
-	}
+        // A just became cheaper than B
+        if (costA < costB && prevCostA >= prevCostB) {
+            // Approximate month within the year
+            return (data.year - 1) * 12 + 6;
+        }
+        // B just became cheaper than A
+        if (costB < costA && prevCostB >= prevCostA) {
+            return (data.year - 1) * 12 + 6;
+        }
+    }
 
-	return null;
+    return null;
 }

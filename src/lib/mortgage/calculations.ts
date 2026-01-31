@@ -12,16 +12,16 @@
  * @returns Monthly payment amount
  */
 export function calculateMonthlyPayment(
-	principal: number,
-	annualRate: number,
-	months: number,
+    principal: number,
+    annualRate: number,
+    months: number,
 ): number {
-	if (annualRate === 0) return principal / months;
-	const monthlyRate = annualRate / 100 / 12;
-	return (
-		(principal * monthlyRate * (1 + monthlyRate) ** months) /
-		((1 + monthlyRate) ** months - 1)
-	);
+    if (annualRate === 0) return principal / months;
+    const monthlyRate = annualRate / 100 / 12;
+    return (
+        (principal * monthlyRate * (1 + monthlyRate) ** months) /
+        ((1 + monthlyRate) ** months - 1)
+    );
 }
 
 /**
@@ -34,18 +34,18 @@ export function calculateMonthlyPayment(
  * @returns Remaining balance
  */
 export function calculateRemainingBalance(
-	principal: number,
-	annualRate: number,
-	totalMonths: number,
-	paidMonths: number,
+    principal: number,
+    annualRate: number,
+    totalMonths: number,
+    paidMonths: number,
 ): number {
-	if (paidMonths >= totalMonths) return 0;
-	if (annualRate === 0) return principal * (1 - paidMonths / totalMonths);
+    if (paidMonths >= totalMonths) return 0;
+    if (annualRate === 0) return principal * (1 - paidMonths / totalMonths);
 
-	const monthlyRate = annualRate / 100 / 12;
-	const payment = calculateMonthlyPayment(principal, annualRate, totalMonths);
-	return (
-		principal * (1 + monthlyRate) ** paidMonths -
-		(payment * ((1 + monthlyRate) ** paidMonths - 1)) / monthlyRate
-	);
+    const monthlyRate = annualRate / 100 / 12;
+    const payment = calculateMonthlyPayment(principal, annualRate, totalMonths);
+    return (
+        principal * (1 + monthlyRate) ** paidMonths -
+        (payment * ((1 + monthlyRate) ** paidMonths - 1)) / monthlyRate
+    );
 }

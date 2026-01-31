@@ -7,18 +7,18 @@
  */
 
 import type {
-	DrawdownStage,
-	SelfBuildConfig,
-	SelfBuildPhase,
+    DrawdownStage,
+    SelfBuildConfig,
+    SelfBuildPhase,
 } from "@/lib/schemas/simulate";
 
 /**
  * Drawdown stage with computed cumulative values.
  */
 export type ResolvedDrawdownStage = DrawdownStage & {
-	cumulativeDrawn: number;
-	remainingToDrawn: number;
-	totalApproved: number;
+    cumulativeDrawn: number;
+    remainingToDrawn: number;
+    totalApproved: number;
 };
 
 /**
@@ -26,23 +26,23 @@ export type ResolvedDrawdownStage = DrawdownStage & {
  * Returns 0 if no drawdown occurs in that month.
  */
 export function getDrawdownForMonth(
-	month: number,
-	stages: DrawdownStage[],
+    month: number,
+    stages: DrawdownStage[],
 ): number {
-	const stage = stages.find((s) => s.month === month);
-	return stage?.amount ?? 0;
+    const stage = stages.find((s) => s.month === month);
+    return stage?.amount ?? 0;
 }
 
 /**
  * Get the cumulative amount drawn by a specific month (inclusive).
  */
 export function getCumulativeDrawn(
-	month: number,
-	stages: DrawdownStage[],
+    month: number,
+    stages: DrawdownStage[],
 ): number {
-	return stages
-		.filter((s) => s.month <= month)
-		.reduce((sum, s) => sum + s.amount, 0);
+    return stages
+        .filter((s) => s.month <= month)
+        .reduce((sum, s) => sum + s.amount, 0);
 }
 
 /**
@@ -50,8 +50,8 @@ export function getCumulativeDrawn(
  * Returns 0 if no drawdown stages are configured.
  */
 export function getFinalDrawdownMonth(stages: DrawdownStage[]): number {
-	if (stages.length === 0) return 0;
-	return Math.max(...stages.map((s) => s.month));
+    if (stages.length === 0) return 0;
+    return Math.max(...stages.map((s) => s.month));
 }
 
 /**
@@ -59,7 +59,7 @@ export function getFinalDrawdownMonth(stages: DrawdownStage[]): number {
  * This is the month of the final drawdown.
  */
 export function getConstructionEndMonth(config: SelfBuildConfig): number {
-	return getFinalDrawdownMonth(config.drawdownStages);
+    return getFinalDrawdownMonth(config.drawdownStages);
 }
 
 /**
@@ -67,8 +67,8 @@ export function getConstructionEndMonth(config: SelfBuildConfig): number {
  * This is the final drawdown month + interest-only months.
  */
 export function getInterestOnlyEndMonth(config: SelfBuildConfig): number {
-	const finalDrawdown = getFinalDrawdownMonth(config.drawdownStages);
-	return finalDrawdown + config.interestOnlyMonths;
+    const finalDrawdown = getFinalDrawdownMonth(config.drawdownStages);
+    return finalDrawdown + config.interestOnlyMonths;
 }
 
 /**
@@ -80,21 +80,21 @@ export function getInterestOnlyEndMonth(config: SelfBuildConfig): number {
  * - repayment: After interest-only period ends (full amortization begins)
  */
 export function determinePhase(
-	month: number,
-	config: SelfBuildConfig,
+    month: number,
+    config: SelfBuildConfig,
 ): SelfBuildPhase {
-	const finalDrawdownMonth = getFinalDrawdownMonth(config.drawdownStages);
-	const interestOnlyEndMonth = getInterestOnlyEndMonth(config);
+    const finalDrawdownMonth = getFinalDrawdownMonth(config.drawdownStages);
+    const interestOnlyEndMonth = getInterestOnlyEndMonth(config);
 
-	if (month <= finalDrawdownMonth) {
-		return "construction";
-	}
+    if (month <= finalDrawdownMonth) {
+        return "construction";
+    }
 
-	if (month <= interestOnlyEndMonth) {
-		return "interest_only";
-	}
+    if (month <= interestOnlyEndMonth) {
+        return "interest_only";
+    }
 
-	return "repayment";
+    return "repayment";
 }
 
 /**
@@ -103,18 +103,18 @@ export function determinePhase(
  * Only the explicit interest-only period after construction is interest-only.
  */
 export function isInterestOnlyMonth(
-	month: number,
-	config: SelfBuildConfig,
+    month: number,
+    config: SelfBuildConfig,
 ): boolean {
-	const phase = determinePhase(month, config);
+    const phase = determinePhase(month, config);
 
-	// If using interest + capital during construction, only the explicit interest-only phase counts
-	if (config.constructionRepaymentType === "interest_and_capital") {
-		return phase === "interest_only";
-	}
+    // If using interest + capital during construction, only the explicit interest-only phase counts
+    if (config.constructionRepaymentType === "interest_and_capital") {
+        return phase === "interest_only";
+    }
 
-	// Default: both construction and interest_only phases are interest-only
-	return phase === "construction" || phase === "interest_only";
+    // Default: both construction and interest_only phases are interest-only
+    return phase === "construction" || phase === "interest_only";
 }
 
 /**
@@ -122,11 +122,11 @@ export function isInterestOnlyMonth(
  * During construction/interest-only phase, no principal is paid.
  */
 export function calculateInterestOnlyPayment(
-	balance: number,
-	annualRate: number,
+    balance: number,
+    annualRate: number,
 ): number {
-	const monthlyRate = annualRate / 100 / 12;
-	return balance * monthlyRate;
+    const monthlyRate = annualRate / 100 / 12;
+    return balance * monthlyRate;
 }
 
 /**
@@ -134,12 +134,12 @@ export function calculateInterestOnlyPayment(
  * This is used to recalculate the monthly payment when transitioning to repayment phase.
  */
 export function getRemainingTermFromRepayment(
-	totalTermMonths: number,
-	interestOnlyEndMonth: number,
+    totalTermMonths: number,
+    interestOnlyEndMonth: number,
 ): number {
-	// After interest-only ends, we have the remaining term for full repayment
-	// The interest-only period effectively delays the start of amortization
-	return totalTermMonths - interestOnlyEndMonth;
+    // After interest-only ends, we have the remaining term for full repayment
+    // The interest-only period effectively delays the start of amortization
+    return totalTermMonths - interestOnlyEndMonth;
 }
 
 /**
@@ -147,33 +147,33 @@ export function getRemainingTermFromRepayment(
  * Returns the difference (positive = under-drawn, negative = over-drawn).
  */
 export function validateDrawdownTotal(
-	config: SelfBuildConfig,
-	mortgageAmount: number,
+    config: SelfBuildConfig,
+    mortgageAmount: number,
 ): {
-	isValid: boolean;
-	totalDrawn: number;
-	difference: number;
+    isValid: boolean;
+    totalDrawn: number;
+    difference: number;
 } {
-	const totalDrawn = config.drawdownStages.reduce(
-		(sum, s) => sum + s.amount,
-		0,
-	);
-	const difference = mortgageAmount - totalDrawn;
+    const totalDrawn = config.drawdownStages.reduce(
+        (sum, s) => sum + s.amount,
+        0,
+    );
+    const difference = mortgageAmount - totalDrawn;
 
-	return {
-		isValid: Math.abs(difference) < 1, // Allow for rounding (1 cent)
-		totalDrawn,
-		difference,
-	};
+    return {
+        isValid: Math.abs(difference) < 1, // Allow for rounding (1 cent)
+        totalDrawn,
+        difference,
+    };
 }
 
 /**
  * Check if self-build is enabled and has valid configuration.
  */
 export function isSelfBuildActive(
-	config: SelfBuildConfig | undefined,
+    config: SelfBuildConfig | undefined,
 ): config is SelfBuildConfig {
-	return config?.enabled === true && config.drawdownStages.length > 0;
+    return config?.enabled === true && config.drawdownStages.length > 0;
 }
 
 /**
@@ -181,32 +181,32 @@ export function isSelfBuildActive(
  * This is the first drawdown amount (balance starts at first drawdown, not full amount).
  */
 export function getInitialSelfBuildBalance(config: SelfBuildConfig): number {
-	if (config.drawdownStages.length === 0) return 0;
+    if (config.drawdownStages.length === 0) return 0;
 
-	// Find the first drawdown (should be month 1 typically)
-	const sortedStages = [...config.drawdownStages].sort(
-		(a, b) => a.month - b.month,
-	);
-	return sortedStages[0].amount;
+    // Find the first drawdown (should be month 1 typically)
+    const sortedStages = [...config.drawdownStages].sort(
+        (a, b) => a.month - b.month,
+    );
+    return sortedStages[0].amount;
 }
 
 /**
  * Get drawdown stages with computed cumulative amounts.
  */
 export function getDrawdownStagesWithCumulative(
-	stages: DrawdownStage[],
+    stages: DrawdownStage[],
 ): ResolvedDrawdownStage[] {
-	const sortedStages = [...stages].sort((a, b) => a.month - b.month);
-	const total = sortedStages.reduce((sum, s) => sum + s.amount, 0);
+    const sortedStages = [...stages].sort((a, b) => a.month - b.month);
+    const total = sortedStages.reduce((sum, s) => sum + s.amount, 0);
 
-	let cumulative = 0;
-	return sortedStages.map((stage) => {
-		cumulative += stage.amount;
-		return {
-			...stage,
-			cumulativeDrawn: cumulative,
-			remainingToDrawn: total - cumulative,
-			totalApproved: total,
-		};
-	});
+    let cumulative = 0;
+    return sortedStages.map((stage) => {
+        cumulative += stage.amount;
+        return {
+            ...stage,
+            cumulativeDrawn: cumulative,
+            remainingToDrawn: total - cumulative,
+            totalApproved: total,
+        };
+    });
 }

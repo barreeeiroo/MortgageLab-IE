@@ -4,58 +4,58 @@ import { LOCALE } from "@/lib/constants/site";
  * Short month names for display (Jan, Feb, Mar, etc.)
  */
 export const SHORT_MONTH_NAMES = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
 ] as const;
 
 /**
  * Format a date to short month/year format (e.g., "Feb '26")
  */
 export function formatShortMonthYear(date: Date): string {
-	return date.toLocaleDateString(LOCALE, {
-		month: "short",
-		year: "2-digit",
-	});
+    return date.toLocaleDateString(LOCALE, {
+        month: "short",
+        year: "2-digit",
+    });
 }
 
 /**
  * Format an ISO date string to short month/year format (e.g., "Feb '26")
  */
 export function formatShortMonthYearFromString(
-	isoString: string | undefined,
+    isoString: string | undefined,
 ): string {
-	if (!isoString) return "";
-	return formatShortMonthYear(new Date(isoString));
+    if (!isoString) return "";
+    return formatShortMonthYear(new Date(isoString));
 }
 
 /**
  * Format a date to month/year format with full year (e.g., "Feb 2026")
  */
 export function formatMonthYearShort(date: Date): string {
-	return date.toLocaleDateString(LOCALE, {
-		month: "short",
-		year: "numeric",
-	});
+    return date.toLocaleDateString(LOCALE, {
+        month: "short",
+        year: "numeric",
+    });
 }
 
 /**
  * Format an ISO date string to month/year format with full year (e.g., "Feb 2026")
  */
 export function formatMonthYearShortFromString(
-	isoString: string | undefined,
+    isoString: string | undefined,
 ): string {
-	if (!isoString) return "";
-	return formatMonthYearShort(new Date(isoString));
+    if (!isoString) return "";
+    return formatMonthYearShort(new Date(isoString));
 }
 
 /**
@@ -65,20 +65,20 @@ export function formatMonthYearShortFromString(
  * @param months - 1-indexed month number (1 = start date, 2 = one month later)
  */
 export function addMonthsToDateString(
-	dateStr: string | undefined,
-	months: number,
+    dateStr: string | undefined,
+    months: number,
 ): string {
-	if (!dateStr) return "";
+    if (!dateStr) return "";
 
-	// Parse date components directly to avoid timezone issues
-	const [year, month, day] = dateStr.split("-").map(Number);
+    // Parse date components directly to avoid timezone issues
+    const [year, month, day] = dateStr.split("-").map(Number);
 
-	// Calculate new date (months - 1 because month 1 = start date)
-	const totalMonths = year * 12 + (month - 1) + (months - 1);
-	const newYear = Math.floor(totalMonths / 12);
-	const newMonth = (totalMonths % 12) + 1;
+    // Calculate new date (months - 1 because month 1 = start date)
+    const totalMonths = year * 12 + (month - 1) + (months - 1);
+    const newYear = Math.floor(totalMonths / 12);
+    const newMonth = (totalMonths % 12) + 1;
 
-	return `${newYear}-${String(newMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    return `${newYear}-${String(newMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 /**
@@ -88,16 +88,16 @@ export function addMonthsToDateString(
  * @param monthNumber - 1-indexed month number (1 = first month)
  */
 export function getCalendarYearForMonth(
-	startDate: string | undefined,
-	monthNumber: number,
+    startDate: string | undefined,
+    monthNumber: number,
 ): number | undefined {
-	if (!startDate) return undefined;
+    if (!startDate) return undefined;
 
-	const [startYear, startMonth] = startDate.split("-").map(Number);
+    const [startYear, startMonth] = startDate.split("-").map(Number);
 
-	// Calculate total months from year 0
-	const totalMonths = startYear * 12 + (startMonth - 1) + (monthNumber - 1);
-	return Math.floor(totalMonths / 12);
+    // Calculate total months from year 0
+    const totalMonths = startYear * 12 + (startMonth - 1) + (monthNumber - 1);
+    return Math.floor(totalMonths / 12);
 }
 
 /**
@@ -106,71 +106,71 @@ export function getCalendarYearForMonth(
  * @param monthNumber - 1-indexed month number (1 = first month)
  */
 export function isFirstMonthOfCalendarYear(
-	startDate: string | undefined,
-	monthNumber: number,
+    startDate: string | undefined,
+    monthNumber: number,
 ): boolean {
-	if (!startDate) return false;
-	if (monthNumber === 1) return true; // First month is always a "new year" for tracking
+    if (!startDate) return false;
+    if (monthNumber === 1) return true; // First month is always a "new year" for tracking
 
-	const [startYear, startMonth] = startDate.split("-").map(Number);
+    const [startYear, startMonth] = startDate.split("-").map(Number);
 
-	// Calculate the calendar month (1-12) for this month number
-	const totalMonths = startYear * 12 + (startMonth - 1) + (monthNumber - 1);
-	const calendarMonth = (totalMonths % 12) + 1;
+    // Calculate the calendar month (1-12) for this month number
+    const totalMonths = startYear * 12 + (startMonth - 1) + (monthNumber - 1);
+    const calendarMonth = (totalMonths % 12) + 1;
 
-	return calendarMonth === 1; // January
+    return calendarMonth === 1; // January
 }
 
 /**
  * Calculate age from birth date
  */
 export function calculateAge(birthDate: Date | undefined): number | null {
-	if (!birthDate) return null;
-	const today = new Date();
-	let age = today.getFullYear() - birthDate.getFullYear();
-	const monthDiff = today.getMonth() - birthDate.getMonth();
-	if (
-		monthDiff < 0 ||
-		(monthDiff === 0 && today.getDate() < birthDate.getDate())
-	) {
-		age--;
-	}
-	return age;
+    if (!birthDate) return null;
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+        age--;
+    }
+    return age;
 }
 
 /**
  * Format an ISO date string to a short localized date (e.g., "3 Jan 2026")
  */
 export function formatShortDate(isoString: string | undefined): string {
-	if (!isoString) return "—";
-	const date = new Date(isoString);
-	return date.toLocaleDateString(LOCALE, {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-	});
+    if (!isoString) return "—";
+    const date = new Date(isoString);
+    return date.toLocaleDateString(LOCALE, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    });
 }
 
 /**
  * Format an ISO date string to month/year format (e.g., "January 2026")
  */
 export function formatMonthYear(isoString: string | undefined): string {
-	if (!isoString) return "Not set";
-	const date = new Date(isoString);
-	return date.toLocaleDateString(LOCALE, {
-		month: "long",
-		year: "numeric",
-	});
+    if (!isoString) return "Not set";
+    const date = new Date(isoString);
+    return date.toLocaleDateString(LOCALE, {
+        month: "long",
+        year: "numeric",
+    });
 }
 
 /**
  * Format a Date object to ISO date string (YYYY-MM-DD) without timezone issues
  */
 export function formatDateLocal(date: Date): string {
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, "0");
-	const day = String(date.getDate()).padStart(2, "0");
-	return `${year}-${month}-${day}`;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
 }
 
 /**
@@ -180,11 +180,11 @@ export function formatDateLocal(date: Date): string {
  * @returns Date object for the target month
  */
 export function getCalendarDate(startDate: string, monthOffset: number): Date {
-	const [year, month] = startDate.split("-").map(Number);
-	const totalMonths = year * 12 + (month - 1) + monthOffset;
-	const newYear = Math.floor(totalMonths / 12);
-	const newMonth = totalMonths % 12;
-	return new Date(newYear, newMonth, 1);
+    const [year, month] = startDate.split("-").map(Number);
+    const totalMonths = year * 12 + (month - 1) + monthOffset;
+    const newYear = Math.floor(totalMonths / 12);
+    const newMonth = totalMonths % 12;
+    return new Date(newYear, newMonth, 1);
 }
 
 /**
@@ -192,11 +192,11 @@ export function getCalendarDate(startDate: string, monthOffset: number): Date {
  * @param month - 1-indexed month of mortgage (1 = first month)
  */
 export function formatIncrementalPeriod(month: number): string {
-	const years = Math.floor((month - 1) / 12);
-	const months = ((month - 1) % 12) + 1;
-	if (years === 0) return `Month ${months}`;
-	if (months === 1) return `Year ${years + 1}`;
-	return `Year ${years + 1}, Month ${months}`;
+    const years = Math.floor((month - 1) / 12);
+    const months = ((month - 1) % 12) + 1;
+    if (years === 0) return `Month ${months}`;
+    if (months === 1) return `Year ${years + 1}`;
+    return `Year ${years + 1}, Month ${months}`;
 }
 
 /**
@@ -206,21 +206,21 @@ export function formatIncrementalPeriod(month: number): string {
  * @param options.short - If true, omits the incremental period part (e.g., "Jan 2026" instead of "Jan 2026 (Year 1)")
  */
 export function formatTransitionDate(
-	startDate: string | undefined,
-	month: number,
-	options?: { short?: boolean },
+    startDate: string | undefined,
+    month: number,
+    options?: { short?: boolean },
 ): string {
-	const incremental = formatIncrementalPeriod(month);
+    const incremental = formatIncrementalPeriod(month);
 
-	if (startDate) {
-		const calendarDate = getCalendarDate(startDate, month - 1);
-		const formatted = formatMonthYearShort(calendarDate);
-		if (options?.short) {
-			return formatted;
-		}
-		return `${formatted} (${incremental})`;
-	}
-	return incremental;
+    if (startDate) {
+        const calendarDate = getCalendarDate(startDate, month - 1);
+        const formatted = formatMonthYearShort(calendarDate);
+        if (options?.short) {
+            return formatted;
+        }
+        return `${formatted} (${incremental})`;
+    }
+    return incremental;
 }
 
 /**
@@ -229,7 +229,7 @@ export function formatTransitionDate(
  * @returns Full month name (e.g., "January", "February")
  */
 export function formatMonthName(month: number): string {
-	return new Date(2000, month - 1).toLocaleString(LOCALE, { month: "long" });
+    return new Date(2000, month - 1).toLocaleString(LOCALE, { month: "long" });
 }
 
 /**
@@ -238,7 +238,7 @@ export function formatMonthName(month: number): string {
  * @returns Localized timestamp (e.g., "18/01/2026, 14:30:00")
  */
 export function formatTimestamp(date: Date = new Date()): string {
-	return date.toLocaleString(LOCALE);
+    return date.toLocaleString(LOCALE);
 }
 
 /**
@@ -247,10 +247,10 @@ export function formatTimestamp(date: Date = new Date()): string {
  * @returns Short month and day string
  */
 export function formatMonthDay(date: Date): string {
-	return date.toLocaleDateString(LOCALE, {
-		month: "short",
-		day: "numeric",
-	});
+    return date.toLocaleDateString(LOCALE, {
+        month: "short",
+        day: "numeric",
+    });
 }
 
 /**
@@ -259,5 +259,5 @@ export function formatMonthDay(date: Date): string {
  * @returns Localized date string without time
  */
 export function formatDateOnly(date: Date = new Date()): string {
-	return date.toLocaleDateString(LOCALE);
+    return date.toLocaleDateString(LOCALE);
 }

@@ -1,12 +1,12 @@
 import { useStore } from "@nanostores/react";
 import { useEffect } from "react";
 import {
-	$historyDataState,
-	loadHistoryData,
+    $historyDataState,
+    loadHistoryData,
 } from "@/lib/stores/rates/rates-history-data";
 import {
-	$historyActiveTab,
-	initializeHistoryFilters,
+    $historyActiveTab,
+    initializeHistoryFilters,
 } from "@/lib/stores/rates/rates-history-filters";
 import { RatesTrends } from "./RatesTrends";
 
@@ -16,28 +16,28 @@ import { RatesTrends } from "./RatesTrends";
  * Loading/error states are handled by HistoryTabsIsland.
  */
 export function RatesTrendsIsland() {
-	// Initialize filters synchronously so the correct tab check works on first render
-	initializeHistoryFilters();
+    // Initialize filters synchronously so the correct tab check works on first render
+    initializeHistoryFilters();
 
-	const activeTab = useStore($historyActiveTab);
-	const { loading, error, historyData, lenders, euriborData } =
-		useStore($historyDataState);
+    const activeTab = useStore($historyActiveTab);
+    const { loading, error, historyData, lenders, euriborData } =
+        useStore($historyDataState);
 
-	// Load data on mount
-	useEffect(() => {
-		loadHistoryData();
-	}, []);
+    // Load data on mount
+    useEffect(() => {
+        loadHistoryData();
+    }, []);
 
-	// Don't render if not active, loading, error, or no data
-	if (activeTab !== "trends" || loading || error || historyData.size === 0) {
-		return null;
-	}
+    // Don't render if not active, loading, error, or no data
+    if (activeTab !== "trends" || loading || error || historyData.size === 0) {
+        return null;
+    }
 
-	return (
-		<RatesTrends
-			historyData={historyData}
-			lenders={lenders}
-			euriborData={euriborData}
-		/>
-	);
+    return (
+        <RatesTrends
+            historyData={historyData}
+            lenders={lenders}
+            euriborData={euriborData}
+        />
+    );
 }

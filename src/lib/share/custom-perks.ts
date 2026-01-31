@@ -7,42 +7,42 @@ import type { StoredCustomPerk } from "@/lib/stores/custom-perks";
 
 // Compressed custom perk format for URL (abbreviated keys)
 export interface CompressedCustomPerk {
-	id: string;
-	l: string; // label
-	d?: string; // description
-	i: string; // icon
+    id: string;
+    l: string; // label
+    d?: string; // description
+    i: string; // icon
 }
 
 export function compressCustomPerk(
-	perk: StoredCustomPerk,
+    perk: StoredCustomPerk,
 ): CompressedCustomPerk {
-	return {
-		id: perk.id,
-		l: perk.label,
-		d: perk.description,
-		i: perk.icon,
-	};
+    return {
+        id: perk.id,
+        l: perk.label,
+        d: perk.description,
+        i: perk.icon,
+    };
 }
 
 export function decompressCustomPerk(
-	compressed: CompressedCustomPerk,
+    compressed: CompressedCustomPerk,
 ): StoredCustomPerk {
-	return {
-		id: compressed.id,
-		label: compressed.l,
-		description: compressed.d,
-		icon: compressed.i,
-	};
+    return {
+        id: compressed.id,
+        label: compressed.l,
+        description: compressed.d,
+        icon: compressed.i,
+    };
 }
 
 export function compressCustomPerks(
-	perks: StoredCustomPerk[],
+    perks: StoredCustomPerk[],
 ): CompressedCustomPerk[] {
-	return perks.map(compressCustomPerk);
+    return perks.map(compressCustomPerk);
 }
 
 export function decompressCustomPerks(
-	compressed: CompressedCustomPerk[],
+    compressed: CompressedCustomPerk[],
 ): StoredCustomPerk[] {
-	return compressed.map(decompressCustomPerk);
+    return compressed.map(decompressCustomPerk);
 }

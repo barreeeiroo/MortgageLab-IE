@@ -4,9 +4,9 @@
  */
 
 import {
-	type EuriborFile,
-	EuriborFileSchema,
-	type EuriborTenor,
+    type EuriborFile,
+    EuriborFileSchema,
+    type EuriborTenor,
 } from "@/lib/schemas/euribor";
 import type { RateTimeSeries } from "@/lib/schemas/rate-history";
 import { getPath } from "@/lib/utils/path";
@@ -16,14 +16,14 @@ import { getPath } from "@/lib/utils/path";
  * @returns Euribor file data, or null on error
  */
 export async function fetchEuriborData(): Promise<EuriborFile | null> {
-	try {
-		const res = await fetch(getPath("data/rates/history/_euribor.json"));
-		if (!res.ok) return null;
-		const json = await res.json();
-		return EuriborFileSchema.parse(json);
-	} catch {
-		return null;
-	}
+    try {
+        const res = await fetch(getPath("data/rates/history/_euribor.json"));
+        if (!res.ok) return null;
+        const json = await res.json();
+        return EuriborFileSchema.parse(json);
+    } catch {
+        return null;
+    }
 }
 
 /**
@@ -33,16 +33,16 @@ export async function fetchEuriborData(): Promise<EuriborFile | null> {
  * @returns RateTimeSeries compatible data
  */
 export function getEuriborTimeSeries(
-	data: EuriborFile,
-	tenor: EuriborTenor,
+    data: EuriborFile,
+    tenor: EuriborTenor,
 ): RateTimeSeries {
-	return {
-		rateId: `euribor-${tenor}`,
-		rateName: `Euribor ${tenor}`,
-		lenderId: "_euribor",
-		dataPoints: data.rates.map((rate) => ({
-			timestamp: new Date(rate.date).toISOString(),
-			rate: rate[tenor],
-		})),
-	};
+    return {
+        rateId: `euribor-${tenor}`,
+        rateName: `Euribor ${tenor}`,
+        lenderId: "_euribor",
+        dataPoints: data.rates.map((rate) => ({
+            timestamp: new Date(rate.date).toISOString(),
+            rate: rate[tenor],
+        })),
+    };
 }

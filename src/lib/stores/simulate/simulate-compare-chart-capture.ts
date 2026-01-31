@@ -19,25 +19,25 @@ export const $capturedCompareChartImages = atom<ChartImageData[]>([]);
  * The chart component will handle the actual capture and call the callback.
  */
 export function requestCompareChartCapture(callback: CaptureCallback): void {
-	$pendingCompareChartCapture.set(callback);
+    $pendingCompareChartCapture.set(callback);
 }
 
 /**
  * Complete the capture request with the captured images.
  */
 export function completeCompareChartCapture(images: ChartImageData[]): void {
-	const callback = $pendingCompareChartCapture.get();
-	$capturedCompareChartImages.set(images);
-	$pendingCompareChartCapture.set(null);
-	if (callback) {
-		callback(images);
-	}
+    const callback = $pendingCompareChartCapture.get();
+    $capturedCompareChartImages.set(images);
+    $pendingCompareChartCapture.set(null);
+    if (callback) {
+        callback(images);
+    }
 }
 
 /**
  * Clear any pending capture request.
  */
 export function clearCompareChartCapture(): void {
-	$pendingCompareChartCapture.set(null);
-	$capturedCompareChartImages.set([]);
+    $pendingCompareChartCapture.set(null);
+    $capturedCompareChartImages.set([]);
 }

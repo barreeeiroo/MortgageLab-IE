@@ -11,10 +11,10 @@ let excelJS: typeof import("exceljs") | null = null;
  * Cached after first load.
  */
 export async function getExcelJS() {
-	if (!excelJS) {
-		excelJS = await import("exceljs");
-	}
-	return excelJS;
+    if (!excelJS) {
+        excelJS = await import("exceljs");
+    }
+    return excelJS;
 }
 
 let jspdfModule: typeof import("jspdf") | null = null;
@@ -25,10 +25,10 @@ let autoTableModule: typeof import("jspdf-autotable") | null = null;
  * Cached after first load.
  */
 export async function getJsPDF() {
-	if (!jspdfModule) {
-		jspdfModule = await import("jspdf");
-	}
-	return jspdfModule;
+    if (!jspdfModule) {
+        jspdfModule = await import("jspdf");
+    }
+    return jspdfModule;
 }
 
 /**
@@ -37,10 +37,10 @@ export async function getJsPDF() {
  * Cached after first load.
  */
 export async function getAutoTable() {
-	if (!autoTableModule) {
-		autoTableModule = await import("jspdf-autotable");
-	}
-	return autoTableModule.default;
+    if (!autoTableModule) {
+        autoTableModule = await import("jspdf-autotable");
+    }
+    return autoTableModule.default;
 }
 
 let htmlToImageModule: typeof import("html-to-image") | null = null;
@@ -50,8 +50,8 @@ let htmlToImageModule: typeof import("html-to-image") | null = null;
  * Cached after first load.
  */
 export async function getHtmlToImage() {
-	if (!htmlToImageModule) {
-		htmlToImageModule = await import("html-to-image");
-	}
-	return htmlToImageModule;
+    if (!htmlToImageModule) {
+        htmlToImageModule = await import("html-to-image");
+    }
+    return htmlToImageModule;
 }

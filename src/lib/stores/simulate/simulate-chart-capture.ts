@@ -19,25 +19,25 @@ export const $capturedChartImages = atom<ChartImageData[]>([]);
  * The chart component will handle the actual capture and call the callback.
  */
 export function requestChartCapture(callback: CaptureCallback): void {
-	$pendingChartCapture.set(callback);
+    $pendingChartCapture.set(callback);
 }
 
 /**
  * Complete the capture request with the captured images.
  */
 export function completeChartCapture(images: ChartImageData[]): void {
-	const callback = $pendingChartCapture.get();
-	$capturedChartImages.set(images);
-	$pendingChartCapture.set(null);
-	if (callback) {
-		callback(images);
-	}
+    const callback = $pendingChartCapture.get();
+    $capturedChartImages.set(images);
+    $pendingChartCapture.set(null);
+    if (callback) {
+        callback(images);
+    }
 }
 
 /**
  * Clear any pending capture request.
  */
 export function clearChartCapture(): void {
-	$pendingChartCapture.set(null);
-	$capturedChartImages.set([]);
+    $pendingChartCapture.set(null);
+    $capturedChartImages.set([]);
 }

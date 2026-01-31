@@ -6,8 +6,8 @@
 
 import type { Lender } from "@/lib/schemas/lender";
 import {
-	type RatesHistoryFile,
-	RatesHistoryFileSchema,
+    type RatesHistoryFile,
+    RatesHistoryFileSchema,
 } from "@/lib/schemas/rate-history";
 import { getPath } from "@/lib/utils/path";
 
@@ -17,16 +17,16 @@ import { getPath } from "@/lib/utils/path";
  * @returns History file or null if not found
  */
 export async function fetchLenderHistory(
-	lenderId: string,
+    lenderId: string,
 ): Promise<RatesHistoryFile | null> {
-	try {
-		const res = await fetch(getPath(`data/rates/history/${lenderId}.json`));
-		if (!res.ok) return null;
-		const json = await res.json();
-		return RatesHistoryFileSchema.parse(json);
-	} catch {
-		return null;
-	}
+    try {
+        const res = await fetch(getPath(`data/rates/history/${lenderId}.json`));
+        if (!res.ok) return null;
+        const json = await res.json();
+        return RatesHistoryFileSchema.parse(json);
+    } catch {
+        return null;
+    }
 }
 
 /**
@@ -36,22 +36,22 @@ export async function fetchLenderHistory(
  * @returns Map of lenderId to history file
  */
 export async function fetchMultipleLenderHistory(
-	lenderIds: string[],
+    lenderIds: string[],
 ): Promise<Map<string, RatesHistoryFile>> {
-	const results = await Promise.all(
-		lenderIds.map(async (id) => {
-			const history = await fetchLenderHistory(id);
-			return [id, history] as const;
-		}),
-	);
+    const results = await Promise.all(
+        lenderIds.map(async (id) => {
+            const history = await fetchLenderHistory(id);
+            return [id, history] as const;
+        }),
+    );
 
-	const map = new Map<string, RatesHistoryFile>();
-	for (const [id, history] of results) {
-		if (history) {
-			map.set(id, history);
-		}
-	}
-	return map;
+    const map = new Map<string, RatesHistoryFile>();
+    for (const [id, history] of results) {
+        if (history) {
+            map.set(id, history);
+        }
+    }
+    return map;
 }
 
 /**
@@ -62,12 +62,12 @@ export async function fetchMultipleLenderHistory(
  * @returns Map of lenderId to history file
  */
 export async function fetchAllHistory(
-	lenders: Lender[],
-	includeDiscontinued = false,
+    lenders: Lender[],
+    includeDiscontinued = false,
 ): Promise<Map<string, RatesHistoryFile>> {
-	const filteredLenders = includeDiscontinued
-		? lenders
-		: lenders.filter((l) => !l.discontinued);
+    const filteredLenders = includeDiscontinued
+        ? lenders
+        : lenders.filter((l) => !l.discontinued);
 
-	return fetchMultipleLenderHistory(filteredLenders.map((l) => l.id));
+    return fetchMultipleLenderHistory(filteredLenders.map((l) => l.id));
 }

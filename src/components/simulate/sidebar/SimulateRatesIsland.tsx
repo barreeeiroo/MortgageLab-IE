@@ -3,21 +3,21 @@ import { ArrowDown, Info, Percent, Plus } from "lucide-react";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { canRateBeRepeated } from "@/lib/mortgage/rates";
 import { saveRatesForm } from "@/lib/storage/forms";
@@ -26,23 +26,23 @@ import { $lenders } from "@/lib/stores/lenders";
 import { $overpaymentPolicies } from "@/lib/stores/overpayment-policies";
 import { $rates } from "@/lib/stores/rates/rates-state";
 import {
-	$amortizationSchedule,
-	$bufferSuggestions,
-	$constructionEndMonth,
-	$isSelfBuildActive,
-	$resolvedRatePeriods,
-	$simulationWarnings,
+    $amortizationSchedule,
+    $bufferSuggestions,
+    $constructionEndMonth,
+    $isSelfBuildActive,
+    $resolvedRatePeriods,
+    $simulationWarnings,
 } from "@/lib/stores/simulate/simulate-calculations";
 import {
-	$coveredMonths,
-	$hasRequiredData,
-	$simulationState,
-	$totalMonths,
-	generateRepeatingPeriods,
-	getAffectedOverpaymentsByDurationChange,
-	removeRatePeriod,
-	updateRatePeriod,
-	updateRatePeriodWithOverpaymentAdjustments,
+    $coveredMonths,
+    $hasRequiredData,
+    $simulationState,
+    $totalMonths,
+    generateRepeatingPeriods,
+    getAffectedOverpaymentsByDurationChange,
+    removeRatePeriod,
+    updateRatePeriod,
+    updateRatePeriodWithOverpaymentAdjustments,
 } from "@/lib/stores/simulate/simulate-state";
 import { formatTransitionDate } from "@/lib/utils/date";
 import { getPath } from "@/lib/utils/path";
@@ -51,450 +51,503 @@ import { SimulateEditRatePeriodDialog } from "./SimulateEditRatePeriodDialog";
 import { SimulateRatePeriodEvent } from "./SimulateEventCard";
 
 export function SimulateRatesIsland() {
-	const simulationState = useStore($simulationState);
-	const hasRequiredData = useStore($hasRequiredData);
-	const totalMonths = useStore($totalMonths);
-	const coveredMonths = useStore($coveredMonths);
-	const resolvedRatePeriods = useStore($resolvedRatePeriods);
-	const amortizationSchedule = useStore($amortizationSchedule);
-	const warnings = useStore($simulationWarnings);
-	const bufferSuggestions = useStore($bufferSuggestions);
-	const rates = useStore($rates);
-	const customRates = useStore($customRates);
-	const lenders = useStore($lenders);
-	const overpaymentPolicies = useStore($overpaymentPolicies);
-	const isSelfBuildActive = useStore($isSelfBuildActive);
-	const constructionEndMonth = useStore($constructionEndMonth);
+    const simulationState = useStore($simulationState);
+    const hasRequiredData = useStore($hasRequiredData);
+    const totalMonths = useStore($totalMonths);
+    const coveredMonths = useStore($coveredMonths);
+    const resolvedRatePeriods = useStore($resolvedRatePeriods);
+    const amortizationSchedule = useStore($amortizationSchedule);
+    const warnings = useStore($simulationWarnings);
+    const bufferSuggestions = useStore($bufferSuggestions);
+    const rates = useStore($rates);
+    const customRates = useStore($customRates);
+    const lenders = useStore($lenders);
+    const overpaymentPolicies = useStore($overpaymentPolicies);
+    const isSelfBuildActive = useStore($isSelfBuildActive);
+    const constructionEndMonth = useStore($constructionEndMonth);
 
-	// Check if mortgage duration is fully covered by rate periods
-	// coveredMonths is -1 when last period is "until end", or a number when explicit
-	const isFullyCovered = coveredMonths === -1 || coveredMonths >= totalMonths;
+    // Check if mortgage duration is fully covered by rate periods
+    // coveredMonths is -1 when last period is "until end", or a number when explicit
+    const isFullyCovered = coveredMonths === -1 || coveredMonths >= totalMonths;
 
-	// Check if construction is still in progress (can't remortgage during construction)
-	const isConstructionActive =
-		isSelfBuildActive && constructionEndMonth > 0 && coveredMonths !== -1;
+    // Check if construction is still in progress (can't remortgage during construction)
+    const isConstructionActive =
+        isSelfBuildActive && constructionEndMonth > 0 && coveredMonths !== -1;
 
-	const [editingRatePeriod, setEditingRatePeriod] = useState<
-		(typeof simulationState.ratePeriods)[0] | null
-	>(null);
-	const [editingIsLastPeriod, setEditingIsLastPeriod] = useState(false);
-	const [deletingRatePeriod, setDeletingRatePeriod] = useState<string | null>(
-		null,
-	);
-	const [repeatingPeriodId, setRepeatingPeriodId] = useState<string | null>(
-		null,
-	);
+    const [editingRatePeriod, setEditingRatePeriod] = useState<
+        (typeof simulationState.ratePeriods)[0] | null
+    >(null);
+    const [editingIsLastPeriod, setEditingIsLastPeriod] = useState(false);
+    const [deletingRatePeriod, setDeletingRatePeriod] = useState<string | null>(
+        null,
+    );
+    const [repeatingPeriodId, setRepeatingPeriodId] = useState<string | null>(
+        null,
+    );
 
-	// Navigate to Rates page for adding a new rate period
-	const handleAddRate = () => {
-		const { input, ratePeriods } = simulationState;
+    // Navigate to Rates page for adding a new rate period
+    const handleAddRate = () => {
+        const { input, ratePeriods } = simulationState;
 
-		// Get the last covered month from the amortization schedule
-		const lastCoveredMonth = amortizationSchedule.length;
+        // Get the last covered month from the amortization schedule
+        const lastCoveredMonth = amortizationSchedule.length;
 
-		// Get the remaining balance and monthly payment from the last month
-		const lastMonth = amortizationSchedule[amortizationSchedule.length - 1];
-		const remainingBalance = lastMonth?.closingBalance ?? input.mortgageAmount;
-		const lastMonthlyPayment = lastMonth?.scheduledPayment ?? 0;
+        // Get the remaining balance and monthly payment from the last month
+        const lastMonth = amortizationSchedule[amortizationSchedule.length - 1];
+        const remainingBalance =
+            lastMonth?.closingBalance ?? input.mortgageAmount;
+        const lastMonthlyPayment = lastMonth?.scheduledPayment ?? 0;
 
-		// Get the current lender from the last rate period
-		const lastRatePeriod = ratePeriods[ratePeriods.length - 1];
-		const currentLender = lastRatePeriod?.lenderId ?? "";
+        // Get the current lender from the last rate period
+        const lastRatePeriod = ratePeriods[ratePeriods.length - 1];
+        const currentLender = lastRatePeriod?.lenderId ?? "";
 
-		// Calculate remaining term (from the last covered month to end of mortgage)
-		const remainingMonths = Math.max(
-			0,
-			input.mortgageTermMonths - lastCoveredMonth,
-		);
+        // Calculate remaining term (from the last covered month to end of mortgage)
+        const remainingMonths = Math.max(
+            0,
+            input.mortgageTermMonths - lastCoveredMonth,
+        );
 
-		// Convert cents to euros for the rates form
-		const propertyValue = Math.round(input.propertyValue / 100);
-		// Use remaining balance as the "mortgage amount" for rate comparison
-		const mortgageAmount = Math.round(remainingBalance / 100);
-		// Monthly repayment in euros (from cents)
-		const monthlyRepayment = Math.round(lastMonthlyPayment / 100);
+        // Convert cents to euros for the rates form
+        const propertyValue = Math.round(input.propertyValue / 100);
+        // Use remaining balance as the "mortgage amount" for rate comparison
+        const mortgageAmount = Math.round(remainingBalance / 100);
+        // Monthly repayment in euros (from cents)
+        const monthlyRepayment = Math.round(lastMonthlyPayment / 100);
 
-		// Save form values to localStorage so Rates page can load them
-		saveRatesForm({
-			mode: "remortgage",
-			propertyValue: propertyValue.toString(),
-			mortgageAmount: mortgageAmount.toString(),
-			monthlyRepayment: monthlyRepayment.toString(),
-			mortgageTerm: remainingMonths.toString(),
-			berRating: input.ber,
-			buyerType: "switcher-pdh",
-			currentLender,
-		});
+        // Save form values to localStorage so Rates page can load them
+        saveRatesForm({
+            mode: "remortgage",
+            propertyValue: propertyValue.toString(),
+            mortgageAmount: mortgageAmount.toString(),
+            monthlyRepayment: monthlyRepayment.toString(),
+            mortgageTerm: remainingMonths.toString(),
+            berRating: input.ber,
+            buyerType: "switcher-pdh",
+            currentLender,
+        });
 
-		// Navigate to Rates page with indicator that we're adding to simulation
-		window.location.href = `${getPath("/rates")}?from=simulate-add#remortgage`;
-	};
+        // Navigate to Rates page with indicator that we're adding to simulation
+        window.location.href = `${getPath("/rates")}?from=simulate-add#remortgage`;
+    };
 
-	if (!hasRequiredData) {
-		return null;
-	}
+    if (!hasRequiredData) {
+        return null;
+    }
 
-	const { ratePeriods } = simulationState;
+    const { ratePeriods } = simulationState;
 
-	// Stack-based model: periods are already in order, no sorting needed
-	// resolvedRatePeriods has computed startMonth for each period
+    // Stack-based model: periods are already in order, no sorting needed
+    // resolvedRatePeriods has computed startMonth for each period
 
-	return (
-		<Card className="py-0 gap-0">
-			<CardHeader className="py-3 px-4">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2">
-						<Percent className="h-4 w-4 text-muted-foreground" />
-						<CardTitle className="text-sm font-medium">Rate Periods</CardTitle>
-					</div>
-					{isFullyCovered || isConstructionActive ? (
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<span>
-									<Button
-										variant="ghost"
-										size="sm"
-										className="h-6 gap-1 text-xs px-2"
-										disabled
-									>
-										<Plus className="h-3 w-3" />
-										Add
-									</Button>
-								</span>
-							</TooltipTrigger>
-							<TooltipContent>
-								{isConstructionActive ? (
-									<p>Cannot remortgage during construction</p>
-								) : (
-									<p>Mortgage duration is fully covered</p>
-								)}
-							</TooltipContent>
-						</Tooltip>
-					) : (
-						<Button
-							variant="ghost"
-							size="sm"
-							className="h-6 gap-1 text-xs px-2"
-							onClick={handleAddRate}
-						>
-							<Plus className="h-3 w-3" />
-							Add
-						</Button>
-					)}
-				</div>
-			</CardHeader>
-			<CardContent className="pt-0 px-3 pb-3">
-				{/* Self-build construction warning */}
-				{isConstructionActive && (
-					<Alert className="mb-3 py-2">
-						<Info className="h-4 w-4" />
-						<AlertDescription className="text-xs">
-							Cannot remortgage during construction. You can switch lenders
-							after your final drawdown in month {constructionEndMonth}.
-						</AlertDescription>
-					</Alert>
-				)}
+    return (
+        <Card className="py-0 gap-0">
+            <CardHeader className="py-3 px-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Percent className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">
+                            Rate Periods
+                        </CardTitle>
+                    </div>
+                    {isFullyCovered || isConstructionActive ? (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <span>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 gap-1 text-xs px-2"
+                                        disabled
+                                    >
+                                        <Plus className="h-3 w-3" />
+                                        Add
+                                    </Button>
+                                </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {isConstructionActive ? (
+                                    <p>Cannot remortgage during construction</p>
+                                ) : (
+                                    <p>Mortgage duration is fully covered</p>
+                                )}
+                            </TooltipContent>
+                        </Tooltip>
+                    ) : (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 gap-1 text-xs px-2"
+                            onClick={handleAddRate}
+                        >
+                            <Plus className="h-3 w-3" />
+                            Add
+                        </Button>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent className="pt-0 px-3 pb-3">
+                {/* Self-build construction warning */}
+                {isConstructionActive && (
+                    <Alert className="mb-3 py-2">
+                        <Info className="h-4 w-4" />
+                        <AlertDescription className="text-xs">
+                            Cannot remortgage during construction. You can
+                            switch lenders after your final drawdown in month{" "}
+                            {constructionEndMonth}.
+                        </AlertDescription>
+                    </Alert>
+                )}
 
-				{resolvedRatePeriods.length === 0 ? (
-					<p className="text-sm text-muted-foreground text-center py-4">
-						No rate periods defined.
-					</p>
-				) : (
-					<div className="space-y-1">
-						{resolvedRatePeriods.map((period, index) => {
-							const originalPeriod = ratePeriods.find(
-								(p) => p.id === period.id,
-							);
-							if (!originalPeriod) return null;
-							const periodWarnings = warnings.filter(
-								(w) =>
-									w.month >= period.startMonth &&
-									(period.durationMonths === 0 ||
-										w.month < period.startMonth + period.durationMonths),
-							);
+                {resolvedRatePeriods.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                        No rate periods defined.
+                    </p>
+                ) : (
+                    <div className="space-y-1">
+                        {resolvedRatePeriods.map((period, index) => {
+                            const originalPeriod = ratePeriods.find(
+                                (p) => p.id === period.id,
+                            );
+                            if (!originalPeriod) return null;
+                            const periodWarnings = warnings.filter(
+                                (w) =>
+                                    w.month >= period.startMonth &&
+                                    (period.durationMonths === 0 ||
+                                        w.month <
+                                            period.startMonth +
+                                                period.durationMonths),
+                            );
 
-							// Find the overpayment policy for this period
-							const overpaymentPolicy = period.overpaymentPolicyId
-								? overpaymentPolicies.find(
-										(p) => p.id === period.overpaymentPolicyId,
-									)
-								: undefined;
+                            // Find the overpayment policy for this period
+                            const overpaymentPolicy = period.overpaymentPolicyId
+                                ? overpaymentPolicies.find(
+                                      (p) =>
+                                          p.id === period.overpaymentPolicyId,
+                                  )
+                                : undefined;
 
-							// Stack-based: only allow deleting the last rate period
-							const isLastPeriod = index === resolvedRatePeriods.length - 1;
-							const canDelete = ratePeriods.length > 1 && isLastPeriod;
+                            // Stack-based: only allow deleting the last rate period
+                            const isLastPeriod =
+                                index === resolvedRatePeriods.length - 1;
+                            const canDelete =
+                                ratePeriods.length > 1 && isLastPeriod;
 
-							// Allow trimming variable rate with "until end"
-							const canTrim =
-								isLastPeriod &&
-								period.type === "variable" &&
-								period.durationMonths === 0;
+                            // Allow trimming variable rate with "until end"
+                            const canTrim =
+                                isLastPeriod &&
+                                period.type === "variable" &&
+                                period.durationMonths === 0;
 
-							// Allow extending variable rate with defined duration to "until end"
-							const canExtend =
-								isLastPeriod &&
-								period.type === "variable" &&
-								period.durationMonths > 0;
+                            // Allow extending variable rate with defined duration to "until end"
+                            const canExtend =
+                                isLastPeriod &&
+                                period.type === "variable" &&
+                                period.durationMonths > 0;
 
-							// Check if this rate can be repeated (only for last period)
-							const rateForRepeatCheck = period.isCustom
-								? customRates.find((r) => r.id === period.rateId)
-								: rates.find(
-										(r) =>
-											r.id === period.rateId && r.lenderId === period.lenderId,
-									);
-							const canRepeat =
-								isLastPeriod && canRateBeRepeated(rateForRepeatCheck);
+                            // Check if this rate can be repeated (only for last period)
+                            const rateForRepeatCheck = period.isCustom
+                                ? customRates.find(
+                                      (r) => r.id === period.rateId,
+                                  )
+                                : rates.find(
+                                      (r) =>
+                                          r.id === period.rateId &&
+                                          r.lenderId === period.lenderId,
+                                  );
+                            const canRepeat =
+                                isLastPeriod &&
+                                canRateBeRepeated(rateForRepeatCheck);
 
-							// Calculate transition month for next period
-							const nextPeriodStartMonth =
-								period.durationMonths === 0
-									? null
-									: period.startMonth + period.durationMonths;
-							const showTransition =
-								!isLastPeriod &&
-								nextPeriodStartMonth !== null &&
-								period.durationMonths > 0;
+                            // Calculate transition month for next period
+                            const nextPeriodStartMonth =
+                                period.durationMonths === 0
+                                    ? null
+                                    : period.startMonth + period.durationMonths;
+                            const showTransition =
+                                !isLastPeriod &&
+                                nextPeriodStartMonth !== null &&
+                                period.durationMonths > 0;
 
-							return (
-								<div key={period.id}>
-									<SimulateRatePeriodEvent
-										period={period}
-										warnings={periodWarnings}
-										overpaymentPolicy={overpaymentPolicy}
-										propertyValue={simulationState.input.propertyValue}
-										amortizationSchedule={amortizationSchedule}
-										isFirstRate={index === 0}
-										isLastPeriod={isLastPeriod}
-										canRepeat={canRepeat}
-										onEdit={() => {
-											setEditingRatePeriod(originalPeriod);
-											setEditingIsLastPeriod(isLastPeriod);
-										}}
-										onDelete={
-											canDelete
-												? () => setDeletingRatePeriod(period.id)
-												: undefined
-										}
-										onTrim={
-											canTrim
-												? (durationMonths: number) =>
-														updateRatePeriod(period.id, { durationMonths })
-												: undefined
-										}
-										onExtend={
-											canExtend
-												? () =>
-														updateRatePeriod(period.id, { durationMonths: 0 })
-												: undefined
-										}
-										onRepeatUntilEnd={
-											canRepeat
-												? () => setRepeatingPeriodId(period.id)
-												: undefined
-										}
-									/>
-									{showTransition && nextPeriodStartMonth && (
-										<div className="flex items-center gap-2 py-1.5 px-2">
-											<ArrowDown className="h-3 w-3 text-muted-foreground" />
-											<span className="text-xs text-muted-foreground">
-												{formatTransitionDate(
-													simulationState.input.startDate,
-													nextPeriodStartMonth,
-												)}
-											</span>
-											{/* Buffer suggestion warning */}
-											{(() => {
-												const suggestion = bufferSuggestions.find(
-													(s) => s.afterIndex === index && !s.isTrailing,
-												);
-												return suggestion ? (
-													<SimulateBufferSuggestion suggestion={suggestion} />
-												) : null;
-											})()}
-										</div>
-									)}
-								</div>
-							);
-						})}
-						{/* Trailing buffer suggestion for uncovered fixed periods */}
-						{!isFullyCovered &&
-							(() => {
-								const trailingSuggestion = bufferSuggestions.find(
-									(s) => s.isTrailing,
-								);
-								if (!trailingSuggestion) return null;
+                            return (
+                                <div key={period.id}>
+                                    <SimulateRatePeriodEvent
+                                        period={period}
+                                        warnings={periodWarnings}
+                                        overpaymentPolicy={overpaymentPolicy}
+                                        propertyValue={
+                                            simulationState.input.propertyValue
+                                        }
+                                        amortizationSchedule={
+                                            amortizationSchedule
+                                        }
+                                        isFirstRate={index === 0}
+                                        isLastPeriod={isLastPeriod}
+                                        canRepeat={canRepeat}
+                                        onEdit={() => {
+                                            setEditingRatePeriod(
+                                                originalPeriod,
+                                            );
+                                            setEditingIsLastPeriod(
+                                                isLastPeriod,
+                                            );
+                                        }}
+                                        onDelete={
+                                            canDelete
+                                                ? () =>
+                                                      setDeletingRatePeriod(
+                                                          period.id,
+                                                      )
+                                                : undefined
+                                        }
+                                        onTrim={
+                                            canTrim
+                                                ? (durationMonths: number) =>
+                                                      updateRatePeriod(
+                                                          period.id,
+                                                          { durationMonths },
+                                                      )
+                                                : undefined
+                                        }
+                                        onExtend={
+                                            canExtend
+                                                ? () =>
+                                                      updateRatePeriod(
+                                                          period.id,
+                                                          { durationMonths: 0 },
+                                                      )
+                                                : undefined
+                                        }
+                                        onRepeatUntilEnd={
+                                            canRepeat
+                                                ? () =>
+                                                      setRepeatingPeriodId(
+                                                          period.id,
+                                                      )
+                                                : undefined
+                                        }
+                                    />
+                                    {showTransition && nextPeriodStartMonth && (
+                                        <div className="flex items-center gap-2 py-1.5 px-2">
+                                            <ArrowDown className="h-3 w-3 text-muted-foreground" />
+                                            <span className="text-xs text-muted-foreground">
+                                                {formatTransitionDate(
+                                                    simulationState.input
+                                                        .startDate,
+                                                    nextPeriodStartMonth,
+                                                )}
+                                            </span>
+                                            {/* Buffer suggestion warning */}
+                                            {(() => {
+                                                const suggestion =
+                                                    bufferSuggestions.find(
+                                                        (s) =>
+                                                            s.afterIndex ===
+                                                                index &&
+                                                            !s.isTrailing,
+                                                    );
+                                                return suggestion ? (
+                                                    <SimulateBufferSuggestion
+                                                        suggestion={suggestion}
+                                                    />
+                                                ) : null;
+                                            })()}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                        {/* Trailing buffer suggestion for uncovered fixed periods */}
+                        {!isFullyCovered &&
+                            (() => {
+                                const trailingSuggestion =
+                                    bufferSuggestions.find((s) => s.isTrailing);
+                                if (!trailingSuggestion) return null;
 
-								const lastPeriod =
-									resolvedRatePeriods[resolvedRatePeriods.length - 1];
-								const nextMonth =
-									lastPeriod.startMonth + lastPeriod.durationMonths;
+                                const lastPeriod =
+                                    resolvedRatePeriods[
+                                        resolvedRatePeriods.length - 1
+                                    ];
+                                const nextMonth =
+                                    lastPeriod.startMonth +
+                                    lastPeriod.durationMonths;
 
-								return (
-									<div className="flex items-center gap-2 py-1.5 px-2">
-										<ArrowDown className="h-3 w-3 text-muted-foreground" />
-										<span className="text-xs text-muted-foreground">
-											{formatTransitionDate(
-												simulationState.input.startDate,
-												nextMonth,
-											)}
-										</span>
-										<SimulateBufferSuggestion suggestion={trailingSuggestion} />
-									</div>
-								);
-							})()}
-					</div>
-				)}
-			</CardContent>
+                                return (
+                                    <div className="flex items-center gap-2 py-1.5 px-2">
+                                        <ArrowDown className="h-3 w-3 text-muted-foreground" />
+                                        <span className="text-xs text-muted-foreground">
+                                            {formatTransitionDate(
+                                                simulationState.input.startDate,
+                                                nextMonth,
+                                            )}
+                                        </span>
+                                        <SimulateBufferSuggestion
+                                            suggestion={trailingSuggestion}
+                                        />
+                                    </div>
+                                );
+                            })()}
+                    </div>
+                )}
+            </CardContent>
 
-			{/* Edit Rate Period Dialog */}
-			{editingRatePeriod && (
-				<SimulateEditRatePeriodDialog
-					open={!!editingRatePeriod}
-					onOpenChange={(open) => !open && setEditingRatePeriod(null)}
-					onSave={(period) => {
-						// Check if duration is being shortened and overpayments are affected
-						const { ratePeriods, overpaymentConfigs } = simulationState;
-						const affectedOverpayments =
-							getAffectedOverpaymentsByDurationChange(
-								ratePeriods,
-								editingRatePeriod.id,
-								period.durationMonths,
-								totalMonths,
-								overpaymentConfigs,
-							);
+            {/* Edit Rate Period Dialog */}
+            {editingRatePeriod && (
+                <SimulateEditRatePeriodDialog
+                    open={!!editingRatePeriod}
+                    onOpenChange={(open) => !open && setEditingRatePeriod(null)}
+                    onSave={(period) => {
+                        // Check if duration is being shortened and overpayments are affected
+                        const { ratePeriods, overpaymentConfigs } =
+                            simulationState;
+                        const affectedOverpayments =
+                            getAffectedOverpaymentsByDurationChange(
+                                ratePeriods,
+                                editingRatePeriod.id,
+                                period.durationMonths,
+                                totalMonths,
+                                overpaymentConfigs,
+                            );
 
-						const hasAffectedOverpayments =
-							affectedOverpayments.toDelete.length > 0 ||
-							affectedOverpayments.toAdjust.length > 0;
+                        const hasAffectedOverpayments =
+                            affectedOverpayments.toDelete.length > 0 ||
+                            affectedOverpayments.toAdjust.length > 0;
 
-						if (hasAffectedOverpayments) {
-							// Use the special update function that handles overpayment adjustments
-							const newEndMonth =
-								period.durationMonths === 0
-									? totalMonths
-									: (resolvedRatePeriods.find(
-											(p) => p.id === editingRatePeriod.id,
-										)?.startMonth ?? 1) +
-										period.durationMonths -
-										1;
+                        if (hasAffectedOverpayments) {
+                            // Use the special update function that handles overpayment adjustments
+                            const newEndMonth =
+                                period.durationMonths === 0
+                                    ? totalMonths
+                                    : (resolvedRatePeriods.find(
+                                          (p) => p.id === editingRatePeriod.id,
+                                      )?.startMonth ?? 1) +
+                                      period.durationMonths -
+                                      1;
 
-							updateRatePeriodWithOverpaymentAdjustments(
-								editingRatePeriod.id,
-								period,
-								{
-									toDelete: affectedOverpayments.toDelete.map((o) => o.id),
-									toAdjust: affectedOverpayments.toAdjust.map((o) => ({
-										id: o.id,
-										newEndMonth,
-									})),
-								},
-							);
-						} else {
-							updateRatePeriod(editingRatePeriod.id, period);
-						}
-						setEditingRatePeriod(null);
-					}}
-					rates={rates}
-					customRates={customRates}
-					lenders={lenders}
-					totalMonths={totalMonths}
-					mortgageAmount={simulationState.input.mortgageAmount}
-					propertyValue={simulationState.input.propertyValue}
-					editingPeriod={editingRatePeriod}
-					isLastPeriod={editingIsLastPeriod}
-					startDate={simulationState.input.startDate}
-					periodStartMonth={
-						resolvedRatePeriods.find((p) => p.id === editingRatePeriod.id)
-							?.startMonth ?? 1
-					}
-					ratePeriods={simulationState.ratePeriods}
-					overpaymentConfigs={simulationState.overpaymentConfigs}
-				/>
-			)}
+                            updateRatePeriodWithOverpaymentAdjustments(
+                                editingRatePeriod.id,
+                                period,
+                                {
+                                    toDelete: affectedOverpayments.toDelete.map(
+                                        (o) => o.id,
+                                    ),
+                                    toAdjust: affectedOverpayments.toAdjust.map(
+                                        (o) => ({
+                                            id: o.id,
+                                            newEndMonth,
+                                        }),
+                                    ),
+                                },
+                            );
+                        } else {
+                            updateRatePeriod(editingRatePeriod.id, period);
+                        }
+                        setEditingRatePeriod(null);
+                    }}
+                    rates={rates}
+                    customRates={customRates}
+                    lenders={lenders}
+                    totalMonths={totalMonths}
+                    mortgageAmount={simulationState.input.mortgageAmount}
+                    propertyValue={simulationState.input.propertyValue}
+                    editingPeriod={editingRatePeriod}
+                    isLastPeriod={editingIsLastPeriod}
+                    startDate={simulationState.input.startDate}
+                    periodStartMonth={
+                        resolvedRatePeriods.find(
+                            (p) => p.id === editingRatePeriod.id,
+                        )?.startMonth ?? 1
+                    }
+                    ratePeriods={simulationState.ratePeriods}
+                    overpaymentConfigs={simulationState.overpaymentConfigs}
+                />
+            )}
 
-			{/* Delete Rate Period Confirmation */}
-			<AlertDialog
-				open={!!deletingRatePeriod}
-				onOpenChange={(open) => !open && setDeletingRatePeriod(null)}
-			>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Delete Rate Period?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This will remove this rate period from your simulation. This
-							action cannot be undone.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction
-							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-							onClick={() => {
-								if (deletingRatePeriod) {
-									removeRatePeriod(deletingRatePeriod);
-									setDeletingRatePeriod(null);
-								}
-							}}
-						>
-							Delete
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+            {/* Delete Rate Period Confirmation */}
+            <AlertDialog
+                open={!!deletingRatePeriod}
+                onOpenChange={(open) => !open && setDeletingRatePeriod(null)}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Rate Period?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will remove this rate period from your
+                            simulation. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={() => {
+                                if (deletingRatePeriod) {
+                                    removeRatePeriod(deletingRatePeriod);
+                                    setDeletingRatePeriod(null);
+                                }
+                            }}
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
-			{/* Repeat Rate Period Confirmation */}
-			<AlertDialog
-				open={!!repeatingPeriodId}
-				onOpenChange={(open) => !open && setRepeatingPeriodId(null)}
-			>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Repeat Fixed Rate Until End</AlertDialogTitle>
-						<AlertDialogDescription>
-							This will generate rate periods to repeat this fixed rate until
-							the end of your mortgage. Do you want to include 1-month variable
-							buffer periods between each fixed term?
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter className="flex-col sm:flex-row gap-2">
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction
-							className="border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
-							onClick={() => {
-								if (repeatingPeriodId) {
-									generateRepeatingPeriods(
-										repeatingPeriodId,
-										rates,
-										customRates,
-										lenders,
-										false,
-									);
-									setRepeatingPeriodId(null);
-								}
-							}}
-						>
-							Without Buffers
-						</AlertDialogAction>
-						<AlertDialogAction
-							onClick={() => {
-								if (repeatingPeriodId) {
-									generateRepeatingPeriods(
-										repeatingPeriodId,
-										rates,
-										customRates,
-										lenders,
-										true,
-									);
-									setRepeatingPeriodId(null);
-								}
-							}}
-						>
-							With Variable Buffers
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
-		</Card>
-	);
+            {/* Repeat Rate Period Confirmation */}
+            <AlertDialog
+                open={!!repeatingPeriodId}
+                onOpenChange={(open) => !open && setRepeatingPeriodId(null)}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Repeat Fixed Rate Until End
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will generate rate periods to repeat this fixed
+                            rate until the end of your mortgage. Do you want to
+                            include 1-month variable buffer periods between each
+                            fixed term?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+                            onClick={() => {
+                                if (repeatingPeriodId) {
+                                    generateRepeatingPeriods(
+                                        repeatingPeriodId,
+                                        rates,
+                                        customRates,
+                                        lenders,
+                                        false,
+                                    );
+                                    setRepeatingPeriodId(null);
+                                }
+                            }}
+                        >
+                            Without Buffers
+                        </AlertDialogAction>
+                        <AlertDialogAction
+                            onClick={() => {
+                                if (repeatingPeriodId) {
+                                    generateRepeatingPeriods(
+                                        repeatingPeriodId,
+                                        rates,
+                                        customRates,
+                                        lenders,
+                                        true,
+                                    );
+                                    setRepeatingPeriodId(null);
+                                }
+                            }}
+                        >
+                            With Variable Buffers
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </Card>
+    );
 }

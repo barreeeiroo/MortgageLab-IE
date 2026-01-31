@@ -4,8 +4,8 @@
 
 import type { MortgageRate } from "@/lib/schemas/rate";
 import {
-	calculateMonthlyPayment,
-	calculateRemainingBalance,
+    calculateMonthlyPayment,
+    calculateRemainingBalance,
 } from "./calculations";
 
 /**
@@ -18,31 +18,31 @@ import {
  * @returns Monthly payment for the follow-on period, or undefined if not applicable
  */
 export function calculateMonthlyFollowOn(
-	rate: MortgageRate,
-	variableRate: MortgageRate | undefined,
-	principal: number,
-	totalTermMonths: number,
+    rate: MortgageRate,
+    variableRate: MortgageRate | undefined,
+    principal: number,
+    totalTermMonths: number,
 ): number | undefined {
-	if (rate.type !== "fixed" || !rate.fixedTerm) return undefined;
-	if (!variableRate) return undefined;
+    if (rate.type !== "fixed" || !rate.fixedTerm) return undefined;
+    if (!variableRate) return undefined;
 
-	const fixedMonths = rate.fixedTerm * 12;
-	const remainingMonths = totalTermMonths - fixedMonths;
+    const fixedMonths = rate.fixedTerm * 12;
+    const remainingMonths = totalTermMonths - fixedMonths;
 
-	if (remainingMonths <= 0) return undefined;
+    if (remainingMonths <= 0) return undefined;
 
-	const remainingBalance = calculateRemainingBalance(
-		principal,
-		rate.rate,
-		totalTermMonths,
-		fixedMonths,
-	);
+    const remainingBalance = calculateRemainingBalance(
+        principal,
+        rate.rate,
+        totalTermMonths,
+        fixedMonths,
+    );
 
-	return calculateMonthlyPayment(
-		remainingBalance,
-		variableRate.rate,
-		remainingMonths,
-	);
+    return calculateMonthlyPayment(
+        remainingBalance,
+        variableRate.rate,
+        remainingMonths,
+    );
 }
 
 /**
@@ -56,18 +56,18 @@ export function calculateMonthlyFollowOn(
  * @returns Total amount repayable over the full term
  */
 export function calculateTotalRepayable(
-	rate: MortgageRate,
-	monthlyPayment: number,
-	monthlyFollowOn: number | undefined,
-	totalTermMonths: number,
+    rate: MortgageRate,
+    monthlyPayment: number,
+    monthlyFollowOn: number | undefined,
+    totalTermMonths: number,
 ): number {
-	if (rate.type === "fixed" && rate.fixedTerm && monthlyFollowOn) {
-		const fixedMonths = rate.fixedTerm * 12;
-		const remainingMonths = totalTermMonths - fixedMonths;
-		return monthlyPayment * fixedMonths + monthlyFollowOn * remainingMonths;
-	}
+    if (rate.type === "fixed" && rate.fixedTerm && monthlyFollowOn) {
+        const fixedMonths = rate.fixedTerm * 12;
+        const remainingMonths = totalTermMonths - fixedMonths;
+        return monthlyPayment * fixedMonths + monthlyFollowOn * remainingMonths;
+    }
 
-	return monthlyPayment * totalTermMonths;
+    return monthlyPayment * totalTermMonths;
 }
 
 /**
@@ -81,19 +81,19 @@ export function calculateTotalRepayable(
  * @returns LTV after the fixed term ends
  */
 export function calculateFollowOnLtv(
-	principal: number,
-	annualRate: number,
-	totalMonths: number,
-	fixedMonths: number,
-	originalLtv: number,
+    principal: number,
+    annualRate: number,
+    totalMonths: number,
+    fixedMonths: number,
+    originalLtv: number,
 ): number {
-	const remainingBalance = calculateRemainingBalance(
-		principal,
-		annualRate,
-		totalMonths,
-		fixedMonths,
-	);
-	return (remainingBalance / principal) * originalLtv;
+    const remainingBalance = calculateRemainingBalance(
+        principal,
+        annualRate,
+        totalMonths,
+        fixedMonths,
+    );
+    return (remainingBalance / principal) * originalLtv;
 }
 
 /**
@@ -104,9 +104,9 @@ export function calculateFollowOnLtv(
  * @returns Cost of credit as a percentage, or undefined if totalRepayable is undefined
  */
 export function calculateCostOfCreditPercent(
-	totalRepayable: number | undefined,
-	principal: number,
+    totalRepayable: number | undefined,
+    principal: number,
 ): number | undefined {
-	if (totalRepayable === undefined) return undefined;
-	return ((totalRepayable - principal) / principal) * 100;
+    if (totalRepayable === undefined) return undefined;
+    return ((totalRepayable - principal) / principal) * 100;
 }

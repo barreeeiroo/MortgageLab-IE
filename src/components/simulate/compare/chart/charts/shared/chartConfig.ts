@@ -1,10 +1,10 @@
 import type { ChartConfig } from "@/components/ui/chart";
 import {
-	formatChartCurrency as _formatChartCurrency,
-	formatChartCurrencyShort as _formatChartCurrencyShort,
-	CHART_ANIMATION_DURATION,
-	formatChartPercentage,
-	formatChartTerm,
+    formatChartCurrency as _formatChartCurrency,
+    formatChartCurrencyShort as _formatChartCurrencyShort,
+    CHART_ANIMATION_DURATION,
+    formatChartPercentage,
+    formatChartTerm,
 } from "@/lib/utils/chart";
 import type { CompareSimulationData } from "../../types";
 
@@ -21,32 +21,32 @@ export const formatTerm = formatChartTerm;
  * Create a dynamic chart config based on the simulations being compared
  */
 export function createCompareChartConfig(
-	simulations: CompareSimulationData[],
+    simulations: CompareSimulationData[],
 ): ChartConfig {
-	const config: ChartConfig = {};
+    const config: ChartConfig = {};
 
-	for (const sim of simulations) {
-		config[`${sim.id}_balance`] = {
-			label: `${sim.name} - Balance`,
-			color: sim.color,
-		};
-		config[`${sim.id}_interest`] = {
-			label: `${sim.name} - Interest`,
-			color: sim.color,
-		};
-		config[`${sim.id}_principal`] = {
-			label: `${sim.name} - Principal`,
-			color: sim.color,
-		};
-		config[`${sim.id}_total`] = {
-			label: `${sim.name} - Total`,
-			color: sim.color,
-		};
-		config[`${sim.id}_payment`] = {
-			label: `${sim.name} - Payment`,
-			color: sim.color,
-		};
-	}
+    for (const sim of simulations) {
+        config[`${sim.id}_balance`] = {
+            label: `${sim.name} - Balance`,
+            color: sim.color,
+        };
+        config[`${sim.id}_interest`] = {
+            label: `${sim.name} - Interest`,
+            color: sim.color,
+        };
+        config[`${sim.id}_principal`] = {
+            label: `${sim.name} - Principal`,
+            color: sim.color,
+        };
+        config[`${sim.id}_total`] = {
+            label: `${sim.name} - Total`,
+            color: sim.color,
+        };
+        config[`${sim.id}_payment`] = {
+            label: `${sim.name} - Payment`,
+            color: sim.color,
+        };
+    }
 
-	return config;
+    return config;
 }

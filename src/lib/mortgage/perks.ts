@@ -21,11 +21,11 @@ export type { CashbackConfig } from "@/lib/schemas/perk";
  * Returns null if perk is not found or has no cashback configuration.
  */
 export function getCashbackConfig(
-	perkId: string,
-	perks: Perk[],
+    perkId: string,
+    perks: Perk[],
 ): CashbackConfig | null {
-	const perk = perks.find((p) => p.id === perkId);
-	return perk?.cashback ?? null;
+    const perk = perks.find((p) => p.id === perkId);
+    return perk?.cashback ?? null;
 }
 
 // =============================================================================
@@ -40,22 +40,22 @@ export function getCashbackConfig(
  * @returns The cashback amount in euros
  */
 export function calculateCashbackAmount(
-	mortgageAmount: number,
-	config: CashbackConfig,
+    mortgageAmount: number,
+    config: CashbackConfig,
 ): number {
-	let amount: number;
+    let amount: number;
 
-	if (config.type === "flat") {
-		amount = config.value;
-	} else {
-		// Percentage-based
-		amount = mortgageAmount * (config.value / 100);
-	}
+    if (config.type === "flat") {
+        amount = config.value;
+    } else {
+        // Percentage-based
+        amount = mortgageAmount * (config.value / 100);
+    }
 
-	// Apply cap if specified
-	if (config.cap !== undefined && amount > config.cap) {
-		amount = config.cap;
-	}
+    // Apply cap if specified
+    if (config.cap !== undefined && amount > config.cap) {
+        amount = config.cap;
+    }
 
-	return amount;
+    return amount;
 }

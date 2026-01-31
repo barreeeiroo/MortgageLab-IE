@@ -6,22 +6,22 @@
  */
 
 import {
-	calculateMonthlyPayment,
-	calculateRemainingBalance,
+    calculateMonthlyPayment,
+    calculateRemainingBalance,
 } from "./calculations";
 
 /**
  * Configuration for APRC calculation, varies by lender
  */
 export interface AprcConfig {
-	/** Loan amount used for APRC calculation (e.g., €100,000 or €250,000) */
-	loanAmount: number;
-	/** Total mortgage term in months (e.g., 240 for 20 years) */
-	termMonths: number;
-	/** Valuation fee paid upfront (deducted from loan) */
-	valuationFee: number;
-	/** Security release fee paid at end of loan term */
-	securityReleaseFee: number;
+    /** Loan amount used for APRC calculation (e.g., €100,000 or €250,000) */
+    loanAmount: number;
+    /** Total mortgage term in months (e.g., 240 for 20 years) */
+    termMonths: number;
+    /** Valuation fee paid upfront (deducted from loan) */
+    valuationFee: number;
+    /** Security release fee paid at end of loan term */
+    securityReleaseFee: number;
 }
 
 /**
@@ -38,90 +38,92 @@ export interface AprcConfig {
  * @returns APRC as a percentage, rounded to 2 decimal places
  */
 export function calculateAprc(
-	fixedRate: number,
-	fixedTermMonths: number,
-	followOnRate: number,
-	config: AprcConfig,
+    fixedRate: number,
+    fixedTermMonths: number,
+    followOnRate: number,
+    config: AprcConfig,
 ): number {
-	const totalMonths = config.termMonths;
-	const variableMonths = totalMonths - fixedTermMonths;
+    const totalMonths = config.termMonths;
+    const variableMonths = totalMonths - fixedTermMonths;
 
-	// Calculate payment schedule (rounded to cents as in practice)
-	const fixedPayment =
-		Math.round(
-			calculateMonthlyPayment(config.loanAmount, fixedRate, totalMonths) * 100,
-		) / 100;
+    // Calculate payment schedule (rounded to cents as in practice)
+    const fixedPayment =
+        Math.round(
+            calculateMonthlyPayment(config.loanAmount, fixedRate, totalMonths) *
+                100,
+        ) / 100;
 
-	// Build cash flows: drawdown (negative), then repayments (positive)
-	// Per EU directive: net amount = loan amount - fees deducted at drawdown
-	const netLoanAmount = config.loanAmount - config.valuationFee;
-	const cashFlows: number[] = [-netLoanAmount];
+    // Build cash flows: drawdown (negative), then repayments (positive)
+    // Per EU directive: net amount = loan amount - fees deducted at drawdown
+    const netLoanAmount = config.loanAmount - config.valuationFee;
+    const cashFlows: number[] = [-netLoanAmount];
 
-	if (variableMonths <= 0) {
-		// Pure fixed/variable rate for entire term - no rate change
-		for (let i = 0; i < totalMonths - 1; i++) {
-			cashFlows.push(fixedPayment);
-		}
-		// Final payment includes the security release fee
-		cashFlows.push(fixedPayment + config.securityReleaseFee);
-	} else {
-		// Fixed period followed by variable period
-		const balanceAfterFixed = calculateRemainingBalance(
-			config.loanAmount,
-			fixedRate,
-			totalMonths,
-			fixedTermMonths,
-		);
+    if (variableMonths <= 0) {
+        // Pure fixed/variable rate for entire term - no rate change
+        for (let i = 0; i < totalMonths - 1; i++) {
+            cashFlows.push(fixedPayment);
+        }
+        // Final payment includes the security release fee
+        cashFlows.push(fixedPayment + config.securityReleaseFee);
+    } else {
+        // Fixed period followed by variable period
+        const balanceAfterFixed = calculateRemainingBalance(
+            config.loanAmount,
+            fixedRate,
+            totalMonths,
+            fixedTermMonths,
+        );
 
-		const variablePayment =
-			Math.round(
-				calculateMonthlyPayment(
-					balanceAfterFixed,
-					followOnRate,
-					variableMonths,
-				) * 100,
-			) / 100;
+        const variablePayment =
+            Math.round(
+                calculateMonthlyPayment(
+                    balanceAfterFixed,
+                    followOnRate,
+                    variableMonths,
+                ) * 100,
+            ) / 100;
 
-		for (let i = 0; i < fixedTermMonths; i++) {
-			cashFlows.push(fixedPayment);
-		}
+        for (let i = 0; i < fixedTermMonths; i++) {
+            cashFlows.push(fixedPayment);
+        }
 
-		for (let i = 0; i < variableMonths - 1; i++) {
-			cashFlows.push(variablePayment);
-		}
+        for (let i = 0; i < variableMonths - 1; i++) {
+            cashFlows.push(variablePayment);
+        }
 
-		// Final payment includes the security release fee
-		cashFlows.push(variablePayment + config.securityReleaseFee);
-	}
+        // Final payment includes the security release fee
+        cashFlows.push(variablePayment + config.securityReleaseFee);
+    }
 
-	// Newton-Raphson to find monthly rate where NPV = 0
-	let monthlyRate = fixedRate / 100 / 12; // Initial guess
-	const tolerance = 1e-12;
-	const maxIterations = 200;
+    // Newton-Raphson to find monthly rate where NPV = 0
+    let monthlyRate = fixedRate / 100 / 12; // Initial guess
+    const tolerance = 1e-12;
+    const maxIterations = 200;
 
-	for (let iter = 0; iter < maxIterations; iter++) {
-		let npv = 0;
-		let npvDerivative = 0;
+    for (let iter = 0; iter < maxIterations; iter++) {
+        let npv = 0;
+        let npvDerivative = 0;
 
-		for (let i = 0; i < cashFlows.length; i++) {
-			const discountFactor = (1 + monthlyRate) ** i;
-			npv += cashFlows[i] / discountFactor;
-			if (i > 0) {
-				npvDerivative -= (i * cashFlows[i]) / (1 + monthlyRate) ** (i + 1);
-			}
-		}
+        for (let i = 0; i < cashFlows.length; i++) {
+            const discountFactor = (1 + monthlyRate) ** i;
+            npv += cashFlows[i] / discountFactor;
+            if (i > 0) {
+                npvDerivative -=
+                    (i * cashFlows[i]) / (1 + monthlyRate) ** (i + 1);
+            }
+        }
 
-		if (Math.abs(npv) < tolerance) break;
-		if (Math.abs(npvDerivative) < tolerance) break;
+        if (Math.abs(npv) < tolerance) break;
+        if (Math.abs(npvDerivative) < tolerance) break;
 
-		monthlyRate = monthlyRate - npv / npvDerivative;
-	}
+        monthlyRate = monthlyRate - npv / npvDerivative;
+    }
 
-	// Convert to effective annual rate (compounded) per EU directive
-	const effectiveAnnualRate = (1 + monthlyRate) ** 12 - 1;
+    // Convert to effective annual rate (compounded) per EU directive
+    const effectiveAnnualRate = (1 + monthlyRate) ** 12 - 1;
 
-	// Convert to percentage and round to 2 decimal places
-	return Math.round(effectiveAnnualRate * 10000) / 100;
+    // Convert to percentage and round to 2 decimal places
+    return Math.round(effectiveAnnualRate * 10000) / 100;
 }
 
 /**
@@ -137,35 +139,35 @@ export function calculateAprc(
  * @returns Inferred follow-on rate as a percentage, rounded to 2 decimal places
  */
 export function inferFollowOnRate(
-	fixedRate: number,
-	fixedTermMonths: number,
-	observedAprc: number,
-	config: AprcConfig,
+    fixedRate: number,
+    fixedTermMonths: number,
+    observedAprc: number,
+    config: AprcConfig,
 ): number {
-	let low = 0.01;
-	let high = 15.0;
-	const tolerance = 0.001;
-	const maxIterations = 100;
+    let low = 0.01;
+    let high = 15.0;
+    const tolerance = 0.001;
+    const maxIterations = 100;
 
-	for (let i = 0; i < maxIterations; i++) {
-		const mid = (low + high) / 2;
-		const calculatedAprc = calculateAprc(
-			fixedRate,
-			fixedTermMonths,
-			mid,
-			config,
-		);
+    for (let i = 0; i < maxIterations; i++) {
+        const mid = (low + high) / 2;
+        const calculatedAprc = calculateAprc(
+            fixedRate,
+            fixedTermMonths,
+            mid,
+            config,
+        );
 
-		if (Math.abs(calculatedAprc - observedAprc) < tolerance) {
-			return Math.round(mid * 100) / 100;
-		}
+        if (Math.abs(calculatedAprc - observedAprc) < tolerance) {
+            return Math.round(mid * 100) / 100;
+        }
 
-		if (calculatedAprc < observedAprc) {
-			low = mid;
-		} else {
-			high = mid;
-		}
-	}
+        if (calculatedAprc < observedAprc) {
+            low = mid;
+        } else {
+            high = mid;
+        }
+    }
 
-	return Math.round(((low + high) / 2) * 100) / 100;
+    return Math.round(((low + high) / 2) * 100) / 100;
 }

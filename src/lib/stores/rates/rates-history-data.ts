@@ -16,21 +16,21 @@ import type { RatesHistoryFile } from "@/lib/schemas/rate-history";
  */
 
 export interface HistoryDataState {
-	loading: boolean;
-	error: string | null;
-	historyData: Map<string, RatesHistoryFile>;
-	lenders: Lender[];
-	perks: Perk[];
-	euriborData: EuriborFile | null;
+    loading: boolean;
+    error: string | null;
+    historyData: Map<string, RatesHistoryFile>;
+    lenders: Lender[];
+    perks: Perk[];
+    euriborData: EuriborFile | null;
 }
 
 const DEFAULT_STATE: HistoryDataState = {
-	loading: true,
-	error: null,
-	historyData: new Map(),
-	lenders: [],
-	perks: [],
-	euriborData: null,
+    loading: true,
+    error: null,
+    historyData: new Map(),
+    lenders: [],
+    perks: [],
+    euriborData: null,
 };
 
 // Main data state atom
@@ -44,64 +44,64 @@ let dataLoadPromise: Promise<void> | null = null;
  * Safe to call multiple times - will only fetch once.
  */
 export async function loadHistoryData(): Promise<void> {
-	// If already loading, wait for existing promise
-	if (dataLoadPromise) {
-		return dataLoadPromise;
-	}
+    // If already loading, wait for existing promise
+    if (dataLoadPromise) {
+        return dataLoadPromise;
+    }
 
-	// If already loaded successfully, return immediately
-	const current = $historyDataState.get();
-	if (!current.loading && current.historyData.size > 0) {
-		return;
-	}
+    // If already loaded successfully, return immediately
+    const current = $historyDataState.get();
+    if (!current.loading && current.historyData.size > 0) {
+        return;
+    }
 
-	// Start loading
-	$historyDataState.set({
-		...current,
-		loading: true,
-		error: null,
-	});
+    // Start loading
+    $historyDataState.set({
+        ...current,
+        loading: true,
+        error: null,
+    });
 
-	dataLoadPromise = (async () => {
-		try {
-			// First fetch lenders, then history (history needs lenders)
-			// Euribor and perks can be fetched in parallel with history
-			const lenderData = await fetchLendersData();
-			const [history, euriborData, perksData] = await Promise.all([
-				fetchAllHistory(lenderData),
-				fetchEuriborData(),
-				fetchPerksData(),
-			]);
+    dataLoadPromise = (async () => {
+        try {
+            // First fetch lenders, then history (history needs lenders)
+            // Euribor and perks can be fetched in parallel with history
+            const lenderData = await fetchLendersData();
+            const [history, euriborData, perksData] = await Promise.all([
+                fetchAllHistory(lenderData),
+                fetchEuriborData(),
+                fetchPerksData(),
+            ]);
 
-			$historyDataState.set({
-				loading: false,
-				error: null,
-				historyData: history,
-				lenders: lenderData,
-				perks: perksData,
-				euriborData,
-			});
-		} catch (_err) {
-			$historyDataState.set({
-				loading: false,
-				error: "Failed to load historical data",
-				historyData: new Map(),
-				lenders: [],
-				perks: [],
-				euriborData: null,
-			});
-		}
-	})();
+            $historyDataState.set({
+                loading: false,
+                error: null,
+                historyData: history,
+                lenders: lenderData,
+                perks: perksData,
+                euriborData,
+            });
+        } catch (_err) {
+            $historyDataState.set({
+                loading: false,
+                error: "Failed to load historical data",
+                historyData: new Map(),
+                lenders: [],
+                perks: [],
+                euriborData: null,
+            });
+        }
+    })();
 
-	return dataLoadPromise;
+    return dataLoadPromise;
 }
 
 /**
  * Check if data has been loaded
  */
 export function isHistoryDataLoaded(): boolean {
-	const state = $historyDataState.get();
-	return !state.loading && state.historyData.size > 0;
+    const state = $historyDataState.get();
+    return !state.loading && state.historyData.size > 0;
 }
 
 /**
@@ -109,6 +109,6 @@ export function isHistoryDataLoaded(): boolean {
  * @internal
  */
 export function __resetHistoryDataState(): void {
-	dataLoadPromise = null;
-	$historyDataState.set(DEFAULT_STATE);
+    dataLoadPromise = null;
+    $historyDataState.set(DEFAULT_STATE);
 }

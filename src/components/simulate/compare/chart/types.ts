@@ -4,6 +4,6 @@
 
 // Re-export chart types from the store
 export type {
-	CompareChartDataPoint,
-	CompareSimulationData,
+    CompareChartDataPoint,
+    CompareSimulationData,
 } from "@/lib/stores/simulate/simulate-compare-calculations";

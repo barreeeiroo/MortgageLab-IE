@@ -12,10 +12,10 @@ import { formatMonthYearShort } from "@/lib/utils/date";
  * @param showDecimals Whether to show decimal places
  */
 export function formatCurrencyForExport(
-	value: number,
-	showDecimals = false,
+    value: number,
+    showDecimals = false,
 ): string {
-	return formatCurrency(value, { showCents: showDecimals });
+    return formatCurrency(value, { showCents: showDecimals });
 }
 
 /**
@@ -24,7 +24,7 @@ export function formatCurrencyForExport(
  * @param value Value in euros
  */
 export function formatCurrencyRaw(value: number): number {
-	return value;
+    return value;
 }
 
 /**
@@ -33,7 +33,7 @@ export function formatCurrencyRaw(value: number): number {
  * @param decimals Number of decimal places
  */
 export function formatPercentForExport(value: number, decimals = 2): string {
-	return `${(value * 100).toFixed(decimals)}%`;
+    return `${(value * 100).toFixed(decimals)}%`;
 }
 
 /**
@@ -42,26 +42,26 @@ export function formatPercentForExport(value: number, decimals = 2): string {
  * @param value Decimal value (e.g., 0.035 for 3.5%)
  */
 export function formatPercentRaw(value: number): number {
-	return value;
+    return value;
 }
 
 /**
  * Formats date for export in DD/MM/YYYY format (Irish standard).
  */
 export function formatDateForExport(date: Date | string): string {
-	const d = typeof date === "string" ? new Date(date) : date;
-	const day = String(d.getDate()).padStart(2, "0");
-	const month = String(d.getMonth() + 1).padStart(2, "0");
-	const year = d.getFullYear();
-	return `${day}/${month}/${year}`;
+    const d = typeof date === "string" ? new Date(date) : date;
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
 }
 
 /**
  * Formats month/year for export (e.g., "Jan 2026").
  */
 export function formatMonthYearForExport(date: Date | string): string {
-	const d = typeof date === "string" ? new Date(date) : date;
-	return formatMonthYearShort(d);
+    const d = typeof date === "string" ? new Date(date) : date;
+    return formatMonthYearShort(d);
 }
 
 /**
@@ -69,20 +69,20 @@ export function formatMonthYearForExport(date: Date | string): string {
  * @param months Total months
  */
 export function formatTermForExport(months: number): string {
-	const years = Math.floor(months / 12);
-	const remainingMonths = months % 12;
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
 
-	if (remainingMonths === 0) {
-		return `${years} year${years !== 1 ? "s" : ""}`;
-	}
-	return `${years}y ${remainingMonths}m`;
+    if (remainingMonths === 0) {
+        return `${years} year${years !== 1 ? "s" : ""}`;
+    }
+    return `${years}y ${remainingMonths}m`;
 }
 
 /**
  * Formats a number with thousand separators for display.
  */
 export function formatNumberForExport(value: number, decimals = 0): string {
-	return formatNumber(value, decimals);
+    return formatNumber(value, decimals);
 }
 
 /**
@@ -90,13 +90,13 @@ export function formatNumberForExport(value: number, decimals = 0): string {
  * that jsPDF's default Helvetica font doesn't support.
  */
 export function sanitizeForPDF(text: string): string {
-	return text
-		.replace(/\u2264/g, "<=") // ≤
-		.replace(/\u2265/g, ">=") // ≥
-		.replace(/\u2013/g, "-") // en-dash –
-		.replace(/\u2014/g, "-") // em-dash —
-		.replace(/\u2018/g, "'") // left single quote '
-		.replace(/\u2019/g, "'") // right single quote '
-		.replace(/\u201C/g, '"') // left double quote "
-		.replace(/\u201D/g, '"'); // right double quote "
+    return text
+        .replace(/\u2264/g, "<=") // ≤
+        .replace(/\u2265/g, ">=") // ≥
+        .replace(/\u2013/g, "-") // en-dash –
+        .replace(/\u2014/g, "-") // em-dash —
+        .replace(/\u2018/g, "'") // left single quote '
+        .replace(/\u2019/g, "'") // right single quote '
+        .replace(/\u201C/g, '"') // left double quote "
+        .replace(/\u201D/g, '"'); // right double quote "
 }

@@ -2,10 +2,10 @@ import { atom } from "nanostores";
 import { fetchLenderHistory } from "@/lib/data/history";
 import type { MortgageRate } from "@/lib/schemas/rate";
 import type {
-	RateChange,
-	RateFieldChange,
-	RatesHistoryFile,
-	RateTimeSeries,
+    RateChange,
+    RateFieldChange,
+    RatesHistoryFile,
+    RateTimeSeries,
 } from "@/lib/schemas/rate-history";
 
 // Atoms for history data (loaded on-demand per lender)
@@ -21,38 +21,40 @@ const historyFetchPromises = new Map<string, Promise<void>>();
  * Returns cached data if already loaded.
  */
 export async function fetchLenderHistoryData(
-	lenderId: string,
+    lenderId: string,
 ): Promise<RatesHistoryFile | null> {
-	const existing = $historyByLender.get().get(lenderId);
-	if (existing) return existing;
+    const existing = $historyByLender.get().get(lenderId);
+    if (existing) return existing;
 
-	// Deduplicate concurrent requests
-	const existingPromise = historyFetchPromises.get(lenderId);
-	if (existingPromise) {
-		await existingPromise;
-		return $historyByLender.get().get(lenderId) ?? null;
-	}
+    // Deduplicate concurrent requests
+    const existingPromise = historyFetchPromises.get(lenderId);
+    if (existingPromise) {
+        await existingPromise;
+        return $historyByLender.get().get(lenderId) ?? null;
+    }
 
-	const fetchPromise = (async () => {
-		$historyLoading.set(true);
-		try {
-			const history = await fetchLenderHistory(lenderId);
-			if (history) {
-				const newMap = new Map($historyByLender.get());
-				newMap.set(lenderId, history);
-				$historyByLender.set(newMap);
-			}
-		} catch (err) {
-			$historyError.set(err instanceof Error ? err : new Error(String(err)));
-		} finally {
-			$historyLoading.set(false);
-			historyFetchPromises.delete(lenderId);
-		}
-	})();
+    const fetchPromise = (async () => {
+        $historyLoading.set(true);
+        try {
+            const history = await fetchLenderHistory(lenderId);
+            if (history) {
+                const newMap = new Map($historyByLender.get());
+                newMap.set(lenderId, history);
+                $historyByLender.set(newMap);
+            }
+        } catch (err) {
+            $historyError.set(
+                err instanceof Error ? err : new Error(String(err)),
+            );
+        } finally {
+            $historyLoading.set(false);
+            historyFetchPromises.delete(lenderId);
+        }
+    })();
 
-	historyFetchPromises.set(lenderId, fetchPromise);
-	await fetchPromise;
-	return $historyByLender.get().get(lenderId) ?? null;
+    historyFetchPromises.set(lenderId, fetchPromise);
+    await fetchPromise;
+    return $historyByLender.get().get(lenderId) ?? null;
 }
 
 // === Pure Query Functions ===
@@ -62,54 +64,55 @@ export async function fetchLenderHistoryData(
  * Starts from baseline, applies changesets up to target date.
  */
 export function reconstructRatesAtDate(
-	history: RatesHistoryFile,
-	targetDate: Date,
+    history: RatesHistoryFile,
+    targetDate: Date,
 ): MortgageRate[] {
-	const targetTs = targetDate.getTime();
-	const baselineTs = new Date(history.baseline.timestamp).getTime();
+    const targetTs = targetDate.getTime();
+    const baselineTs = new Date(history.baseline.timestamp).getTime();
 
-	// If target is before baseline, return empty
-	if (targetTs < baselineTs) {
-		return [];
-	}
+    // If target is before baseline, return empty
+    if (targetTs < baselineTs) {
+        return [];
+    }
 
-	// Start with baseline
-	const rateMap = new Map<string, MortgageRate>(
-		history.baseline.rates.map((r) => [r.id, { ...r }]),
-	);
+    // Start with baseline
+    const rateMap = new Map<string, MortgageRate>(
+        history.baseline.rates.map((r) => [r.id, { ...r }]),
+    );
 
-	// Sort changesets by timestamp to ensure correct chronological processing
-	const sortedChangesets = [...history.changesets].sort(
-		(a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-	);
+    // Sort changesets by timestamp to ensure correct chronological processing
+    const sortedChangesets = [...history.changesets].sort(
+        (a, b) =>
+            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    );
 
-	// Apply changesets up to and including target date
-	for (const changeset of sortedChangesets) {
-		const changesetTs = new Date(changeset.timestamp).getTime();
-		if (changesetTs > targetTs) {
-			break; // Past target date
-		}
+    // Apply changesets up to and including target date
+    for (const changeset of sortedChangesets) {
+        const changesetTs = new Date(changeset.timestamp).getTime();
+        if (changesetTs > targetTs) {
+            break; // Past target date
+        }
 
-		for (const op of changeset.operations) {
-			switch (op.op) {
-				case "add":
-					rateMap.set(op.rate.id, op.rate);
-					break;
-				case "remove":
-					rateMap.delete(op.id);
-					break;
-				case "update": {
-					const existing = rateMap.get(op.id);
-					if (existing) {
-						rateMap.set(op.id, { ...existing, ...op.changes });
-					}
-					break;
-				}
-			}
-		}
-	}
+        for (const op of changeset.operations) {
+            switch (op.op) {
+                case "add":
+                    rateMap.set(op.rate.id, op.rate);
+                    break;
+                case "remove":
+                    rateMap.delete(op.id);
+                    break;
+                case "update": {
+                    const existing = rateMap.get(op.id);
+                    if (existing) {
+                        rateMap.set(op.id, { ...existing, ...op.changes });
+                    }
+                    break;
+                }
+            }
+        }
+    }
 
-	return Array.from(rateMap.values());
+    return Array.from(rateMap.values());
 }
 
 /**
@@ -117,110 +120,114 @@ export function reconstructRatesAtDate(
  * Returns data points for trend charts.
  */
 export function getRateTimeSeries(
-	history: RatesHistoryFile,
-	rateId: string,
+    history: RatesHistoryFile,
+    rateId: string,
 ): RateTimeSeries | null {
-	const dataPoints: RateTimeSeries["dataPoints"] = [];
-	let rateName = "";
-	let lenderId = "";
+    const dataPoints: RateTimeSeries["dataPoints"] = [];
+    let rateName = "";
+    let lenderId = "";
 
-	// Check if rate exists in baseline
-	const baselineRate = history.baseline.rates.find((r) => r.id === rateId);
-	if (baselineRate) {
-		rateName = baselineRate.name;
-		lenderId = baselineRate.lenderId;
-		dataPoints.push({
-			timestamp: history.baseline.timestamp,
-			rate: baselineRate.rate,
-			apr: baselineRate.apr,
-		});
-	}
+    // Check if rate exists in baseline
+    const baselineRate = history.baseline.rates.find((r) => r.id === rateId);
+    if (baselineRate) {
+        rateName = baselineRate.name;
+        lenderId = baselineRate.lenderId;
+        dataPoints.push({
+            timestamp: history.baseline.timestamp,
+            rate: baselineRate.rate,
+            apr: baselineRate.apr,
+        });
+    }
 
-	// Track current rate values
-	let currentRate = baselineRate?.rate;
-	let currentApr = baselineRate?.apr;
-	let rateExists = !!baselineRate;
+    // Track current rate values
+    let currentRate = baselineRate?.rate;
+    let currentApr = baselineRate?.apr;
+    let rateExists = !!baselineRate;
 
-	// Sort changesets by timestamp to ensure correct chronological processing
-	const sortedChangesets = [...history.changesets].sort(
-		(a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-	);
+    // Sort changesets by timestamp to ensure correct chronological processing
+    const sortedChangesets = [...history.changesets].sort(
+        (a, b) =>
+            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    );
 
-	// Walk through changesets
-	for (const changeset of sortedChangesets) {
-		for (const op of changeset.operations) {
-			if (op.op === "add" && op.rate.id === rateId) {
-				rateName = op.rate.name;
-				lenderId = op.rate.lenderId;
-				currentRate = op.rate.rate;
-				currentApr = op.rate.apr;
-				rateExists = true;
-				dataPoints.push({
-					timestamp: changeset.timestamp,
-					rate: currentRate,
-					apr: currentApr,
-				});
-			} else if (op.op === "remove" && op.id === rateId) {
-				rateExists = false;
-				// Rate was removed - could add a marker if needed
-			} else if (op.op === "update" && op.id === rateId) {
-				const hasRateChange =
-					op.changes.rate !== undefined && op.changes.rate !== currentRate;
-				const hasAprChange =
-					op.changes.apr !== undefined && op.changes.apr !== currentApr;
+    // Walk through changesets
+    for (const changeset of sortedChangesets) {
+        for (const op of changeset.operations) {
+            if (op.op === "add" && op.rate.id === rateId) {
+                rateName = op.rate.name;
+                lenderId = op.rate.lenderId;
+                currentRate = op.rate.rate;
+                currentApr = op.rate.apr;
+                rateExists = true;
+                dataPoints.push({
+                    timestamp: changeset.timestamp,
+                    rate: currentRate,
+                    apr: currentApr,
+                });
+            } else if (op.op === "remove" && op.id === rateId) {
+                rateExists = false;
+                // Rate was removed - could add a marker if needed
+            } else if (op.op === "update" && op.id === rateId) {
+                const hasRateChange =
+                    op.changes.rate !== undefined &&
+                    op.changes.rate !== currentRate;
+                const hasAprChange =
+                    op.changes.apr !== undefined &&
+                    op.changes.apr !== currentApr;
 
-				if (op.changes.rate !== undefined) currentRate = op.changes.rate;
-				if (op.changes.apr !== undefined) currentApr = op.changes.apr;
-				if (op.changes.name) rateName = op.changes.name;
+                if (op.changes.rate !== undefined)
+                    currentRate = op.changes.rate;
+                if (op.changes.apr !== undefined) currentApr = op.changes.apr;
+                if (op.changes.name) rateName = op.changes.name;
 
-				// Only add data point if rate or apr changed
-				if (
-					rateExists &&
-					currentRate !== undefined &&
-					(hasRateChange || hasAprChange)
-				) {
-					dataPoints.push({
-						timestamp: changeset.timestamp,
-						rate: currentRate,
-						apr: currentApr,
-					});
-				}
-			}
-		}
-	}
+                // Only add data point if rate or apr changed
+                if (
+                    rateExists &&
+                    currentRate !== undefined &&
+                    (hasRateChange || hasAprChange)
+                ) {
+                    dataPoints.push({
+                        timestamp: changeset.timestamp,
+                        rate: currentRate,
+                        apr: currentApr,
+                    });
+                }
+            }
+        }
+    }
 
-	if (dataPoints.length === 0) return null;
+    if (dataPoints.length === 0) return null;
 
-	return { rateId, rateName, lenderId, dataPoints };
+    return { rateId, rateName, lenderId, dataPoints };
 }
 
 // Fields to track for changes (excluding 'id' and 'lenderId' which don't change)
 const TRACKED_FIELDS: (keyof MortgageRate)[] = [
-	"rate",
-	"apr",
-	"name",
-	"minLtv",
-	"maxLtv",
-	"buyerTypes",
-	"berEligible",
-	"perks",
-	"fixedTerm",
-	"minLoan",
-	"newBusiness",
-	"warning",
+    "rate",
+    "apr",
+    "name",
+    "minLtv",
+    "maxLtv",
+    "buyerTypes",
+    "berEligible",
+    "perks",
+    "fixedTerm",
+    "minLoan",
+    "newBusiness",
+    "warning",
 ];
 
 /**
  * Compares two values for equality (handles arrays and primitives)
  */
 function valuesEqual(a: unknown, b: unknown): boolean {
-	if (Array.isArray(a) && Array.isArray(b)) {
-		if (a.length !== b.length) return false;
-		const sortedA = [...a].sort();
-		const sortedB = [...b].sort();
-		return sortedA.every((val, idx) => val === sortedB[idx]);
-	}
-	return a === b;
+    if (Array.isArray(a) && Array.isArray(b)) {
+        if (a.length !== b.length) return false;
+        const sortedA = [...a].sort();
+        const sortedB = [...b].sort();
+        return sortedA.every((val, idx) => val === sortedB[idx]);
+    }
+    return a === b;
 }
 
 /**
@@ -228,27 +235,27 @@ function valuesEqual(a: unknown, b: unknown): boolean {
  * Returns an array of field changes for non-equal fields.
  */
 function detectFieldChanges(
-	existing: MortgageRate,
-	changes: Partial<MortgageRate>,
+    existing: MortgageRate,
+    changes: Partial<MortgageRate>,
 ): RateFieldChange[] {
-	const fieldChanges: RateFieldChange[] = [];
+    const fieldChanges: RateFieldChange[] = [];
 
-	for (const field of TRACKED_FIELDS) {
-		if (!(field in changes)) continue;
+    for (const field of TRACKED_FIELDS) {
+        if (!(field in changes)) continue;
 
-		const previousValue = existing[field];
-		const newValue = changes[field];
+        const previousValue = existing[field];
+        const newValue = changes[field];
 
-		if (!valuesEqual(previousValue, newValue)) {
-			fieldChanges.push({
-				field,
-				previousValue,
-				newValue,
-			});
-		}
-	}
+        if (!valuesEqual(previousValue, newValue)) {
+            fieldChanges.push({
+                field,
+                previousValue,
+                newValue,
+            });
+        }
+    }
 
-	return fieldChanges;
+    return fieldChanges;
 }
 
 /**
@@ -256,135 +263,152 @@ function detectFieldChanges(
  * Useful for "what changed" views.
  */
 export function getRateChanges(
-	history: RatesHistoryFile,
-	startDate?: Date,
-	endDate?: Date,
+    history: RatesHistoryFile,
+    startDate?: Date,
+    endDate?: Date,
 ): RateChange[] {
-	const changes: RateChange[] = [];
-	const start = startDate ? startDate.getTime() : 0;
-	const end = endDate ? endDate.getTime() : Number.POSITIVE_INFINITY;
+    const changes: RateChange[] = [];
+    const start = startDate ? startDate.getTime() : 0;
+    const end = endDate ? endDate.getTime() : Number.POSITIVE_INFINITY;
 
-	let previousRates: Map<string, MortgageRate> | null = null;
+    let previousRates: Map<string, MortgageRate> | null = null;
 
-	// Initialize with baseline if it's before our range
-	const baselineTs = new Date(history.baseline.timestamp).getTime();
-	if (baselineTs < start) {
-		previousRates = new Map(history.baseline.rates.map((r) => [r.id, r]));
-	} else if (baselineTs >= start && baselineTs <= end) {
-		// Baseline is in range - all rates are "added"
-		for (const rate of history.baseline.rates) {
-			changes.push({
-				rateId: rate.id,
-				rateName: rate.name,
-				timestamp: history.baseline.timestamp,
-				previousRate: null,
-				newRate: rate.rate,
-				changeType: "added",
-			});
-		}
-		previousRates = new Map(history.baseline.rates.map((r) => [r.id, r]));
-	}
+    // Initialize with baseline if it's before our range
+    const baselineTs = new Date(history.baseline.timestamp).getTime();
+    if (baselineTs < start) {
+        previousRates = new Map(history.baseline.rates.map((r) => [r.id, r]));
+    } else if (baselineTs >= start && baselineTs <= end) {
+        // Baseline is in range - all rates are "added"
+        for (const rate of history.baseline.rates) {
+            changes.push({
+                rateId: rate.id,
+                rateName: rate.name,
+                timestamp: history.baseline.timestamp,
+                previousRate: null,
+                newRate: rate.rate,
+                changeType: "added",
+            });
+        }
+        previousRates = new Map(history.baseline.rates.map((r) => [r.id, r]));
+    }
 
-	// Sort changesets by timestamp to ensure correct chronological processing
-	const sortedChangesets = [...history.changesets].sort(
-		(a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-	);
+    // Sort changesets by timestamp to ensure correct chronological processing
+    const sortedChangesets = [...history.changesets].sort(
+        (a, b) =>
+            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    );
 
-	// Walk through changesets
-	for (const changeset of sortedChangesets) {
-		const changesetTs = new Date(changeset.timestamp).getTime();
+    // Walk through changesets
+    for (const changeset of sortedChangesets) {
+        const changesetTs = new Date(changeset.timestamp).getTime();
 
-		// Skip changesets before our range but track state
-		if (changesetTs < start) {
-			if (!previousRates) {
-				previousRates = new Map(history.baseline.rates.map((r) => [r.id, r]));
-			}
-			// Apply changeset to track current state
-			for (const op of changeset.operations) {
-				if (op.op === "add") {
-					previousRates.set(op.rate.id, op.rate);
-				} else if (op.op === "remove") {
-					previousRates.delete(op.id);
-				} else if (op.op === "update") {
-					const existing = previousRates.get(op.id);
-					if (existing) {
-						previousRates.set(op.id, { ...existing, ...op.changes });
-					}
-				}
-			}
-			continue;
-		}
+        // Skip changesets before our range but track state
+        if (changesetTs < start) {
+            if (!previousRates) {
+                previousRates = new Map(
+                    history.baseline.rates.map((r) => [r.id, r]),
+                );
+            }
+            // Apply changeset to track current state
+            for (const op of changeset.operations) {
+                if (op.op === "add") {
+                    previousRates.set(op.rate.id, op.rate);
+                } else if (op.op === "remove") {
+                    previousRates.delete(op.id);
+                } else if (op.op === "update") {
+                    const existing = previousRates.get(op.id);
+                    if (existing) {
+                        previousRates.set(op.id, {
+                            ...existing,
+                            ...op.changes,
+                        });
+                    }
+                }
+            }
+            continue;
+        }
 
-		// Stop after our range
-		if (changesetTs > end) break;
+        // Stop after our range
+        if (changesetTs > end) break;
 
-		// Ensure previousRates is initialized
-		if (!previousRates) {
-			previousRates = new Map(history.baseline.rates.map((r) => [r.id, r]));
-		}
+        // Ensure previousRates is initialized
+        if (!previousRates) {
+            previousRates = new Map(
+                history.baseline.rates.map((r) => [r.id, r]),
+            );
+        }
 
-		// Record changes from this changeset
-		for (const op of changeset.operations) {
-			if (op.op === "add") {
-				changes.push({
-					rateId: op.rate.id,
-					rateName: op.rate.name,
-					timestamp: changeset.timestamp,
-					previousRate: null,
-					newRate: op.rate.rate,
-					changeType: "added",
-				});
-				previousRates.set(op.rate.id, op.rate);
-			} else if (op.op === "remove") {
-				const existing = previousRates.get(op.id);
-				changes.push({
-					rateId: op.id,
-					rateName: existing?.name ?? op.id,
-					timestamp: changeset.timestamp,
-					previousRate: existing?.rate ?? null,
-					newRate: null,
-					changeType: "removed",
-				});
-				previousRates.delete(op.id);
-			} else if (op.op === "update") {
-				const existing = previousRates.get(op.id);
-				if (existing) {
-					// Detect all field changes
-					const fieldChanges = detectFieldChanges(existing, op.changes);
+        // Record changes from this changeset
+        for (const op of changeset.operations) {
+            if (op.op === "add") {
+                changes.push({
+                    rateId: op.rate.id,
+                    rateName: op.rate.name,
+                    timestamp: changeset.timestamp,
+                    previousRate: null,
+                    newRate: op.rate.rate,
+                    changeType: "added",
+                });
+                previousRates.set(op.rate.id, op.rate);
+            } else if (op.op === "remove") {
+                const existing = previousRates.get(op.id);
+                changes.push({
+                    rateId: op.id,
+                    rateName: existing?.name ?? op.id,
+                    timestamp: changeset.timestamp,
+                    previousRate: existing?.rate ?? null,
+                    newRate: null,
+                    changeType: "removed",
+                });
+                previousRates.delete(op.id);
+            } else if (op.op === "update") {
+                const existing = previousRates.get(op.id);
+                if (existing) {
+                    // Detect all field changes
+                    const fieldChanges = detectFieldChanges(
+                        existing,
+                        op.changes,
+                    );
 
-					// Only create a change entry if there are actual changes
-					if (fieldChanges.length > 0) {
-						const rateChange = fieldChanges.find((fc) => fc.field === "rate");
-						const hasRateChange = !!rateChange;
+                    // Only create a change entry if there are actual changes
+                    if (fieldChanges.length > 0) {
+                        const rateChange = fieldChanges.find(
+                            (fc) => fc.field === "rate",
+                        );
+                        const hasRateChange = !!rateChange;
 
-						// Calculate rate change metrics if rate changed
-						let changeAmount: number | undefined;
-						let changePercent: number | undefined;
-						if (hasRateChange && typeof rateChange.newValue === "number") {
-							changeAmount = rateChange.newValue - existing.rate;
-							changePercent = (changeAmount / existing.rate) * 100;
-						}
+                        // Calculate rate change metrics if rate changed
+                        let changeAmount: number | undefined;
+                        let changePercent: number | undefined;
+                        if (
+                            hasRateChange &&
+                            typeof rateChange.newValue === "number"
+                        ) {
+                            changeAmount = rateChange.newValue - existing.rate;
+                            changePercent =
+                                (changeAmount / existing.rate) * 100;
+                        }
 
-						changes.push({
-							rateId: op.id,
-							rateName: op.changes.name ?? existing.name,
-							timestamp: changeset.timestamp,
-							previousRate: existing.rate,
-							newRate: hasRateChange
-								? (rateChange.newValue as number)
-								: existing.rate,
-							changeType: "changed",
-							changeAmount,
-							changePercent,
-							fieldChanges,
-						});
-					}
+                        changes.push({
+                            rateId: op.id,
+                            rateName: op.changes.name ?? existing.name,
+                            timestamp: changeset.timestamp,
+                            previousRate: existing.rate,
+                            newRate: hasRateChange
+                                ? (rateChange.newValue as number)
+                                : existing.rate,
+                            changeType: "changed",
+                            changeAmount,
+                            changePercent,
+                            fieldChanges,
+                        });
+                    }
 
-					previousRates.set(op.id, { ...existing, ...op.changes });
-				}
-			}
-		}
-	}
+                    previousRates.set(op.id, { ...existing, ...op.changes });
+                }
+            }
+        }
+    }
 
-	return changes;
+    return changes;
 }

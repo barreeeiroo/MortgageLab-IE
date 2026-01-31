@@ -4,30 +4,30 @@
  */
 
 import {
-	MAX_TERM_MONTHS,
-	MAX_TERM_YEARS,
-	MIN_TERM_MONTHS,
-	MIN_TERM_YEARS,
+    MAX_TERM_MONTHS,
+    MAX_TERM_YEARS,
+    MIN_TERM_MONTHS,
+    MIN_TERM_YEARS,
 } from "@/lib/constants/term";
 
 /**
  * Split total months into years and remaining months
  */
 export function splitTerm(totalMonths: number): {
-	years: number;
-	months: number;
+    years: number;
+    months: number;
 } {
-	return {
-		years: Math.floor(totalMonths / 12),
-		months: totalMonths % 12,
-	};
+    return {
+        years: Math.floor(totalMonths / 12),
+        months: totalMonths % 12,
+    };
 }
 
 /**
  * Combine years and months into total months
  */
 export function combineTerm(years: number, months: number): number {
-	return years * 12 + months;
+    return years * 12 + months;
 }
 
 /**
@@ -36,27 +36,27 @@ export function combineTerm(years: number, months: number): number {
  * @param options.compact - Use abbreviated format ("30y 6m" vs "30 years 6 months")
  */
 export function formatTermDisplay(
-	totalMonths: number,
-	options?: { compact?: boolean },
+    totalMonths: number,
+    options?: { compact?: boolean },
 ): string {
-	const { years, months } = splitTerm(totalMonths);
+    const { years, months } = splitTerm(totalMonths);
 
-	if (months === 0) {
-		return options?.compact ? `${years} yrs` : `${years} years`;
-	}
+    if (months === 0) {
+        return options?.compact ? `${years} yrs` : `${years} years`;
+    }
 
-	if (options?.compact) {
-		return `${years}y ${months}m`;
-	}
+    if (options?.compact) {
+        return `${years}y ${months}m`;
+    }
 
-	return `${years} years ${months} months`;
+    return `${years} years ${months} months`;
 }
 
 /**
  * Validate term is within allowed bounds
  */
 export function isValidTerm(totalMonths: number): boolean {
-	return totalMonths >= MIN_TERM_MONTHS && totalMonths <= MAX_TERM_MONTHS;
+    return totalMonths >= MIN_TERM_MONTHS && totalMonths <= MAX_TERM_MONTHS;
 }
 
 /**
@@ -65,8 +65,8 @@ export function isValidTerm(totalMonths: number): boolean {
  * @param minYears - Optional minimum years (defaults to MIN_TERM_YEARS)
  */
 export function isValidTermYears(
-	years: number,
-	minYears: number = MIN_TERM_YEARS,
+    years: number,
+    minYears: number = MIN_TERM_YEARS,
 ): boolean {
-	return years >= minYears && years <= MAX_TERM_YEARS;
+    return years >= minYears && years <= MAX_TERM_YEARS;
 }

@@ -1,64 +1,67 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
-	"vcs": {
-		"enabled": true,
-		"clientKind": "git",
-		"useIgnoreFile": true
-	},
-	"files": {
-		"includes": [
-			"**",
-			"!!**/dist",
-			"!!**/*.astro",
-			"!!data",
-			"!!.claude",
-			"!!coverage",
-			"!!playwright-report",
-			"!!test-results"
-		],
-		"ignoreUnknown": true
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"correctness": {
-				"noUndeclaredDependencies": "error"
-			},
-			"suspicious": {
-				"noEmptyBlockStatements": "error",
-				"noVar": "error"
-			},
-			"style": {
-				"noExportedImports": "error",
-				"noUnusedTemplateLiteral": "error"
-			},
-			"performance": {
-				"noBarrelFile": "error",
-				"noDelete": "error"
-			}
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	},
-	"assist": {
-		"enabled": true,
-		"actions": {
-			"source": {
-				"organizeImports": "on"
-			}
-		}
-	},
-	"css": {
-		"parser": {
-			"tailwindDirectives": true
-		}
-	}
+    "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "includes": [
+            "**",
+            "!!**/dist",
+            "!!**/*.astro",
+            "!!data",
+            "!!.claude",
+            "!!coverage",
+            "!!playwright-report",
+            "!!test-results"
+        ],
+        "ignoreUnknown": true
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "correctness": {
+                "noUndeclaredDependencies": "error"
+            },
+            "suspicious": {
+                "noEmptyBlockStatements": "error",
+                "noImplicitAnyLet": "error",
+                "noVar": "error"
+            },
+            "style": {
+                "noExportedImports": "error",
+                "noUnusedTemplateLiteral": "error"
+            },
+            "performance": {
+                "noBarrelFile": "error",
+                "noDelete": "error"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "double",
+            "semicolons": "always"
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
+    "css": {
+        "parser": {
+            "tailwindDirectives": true
+        }
+    }
 }

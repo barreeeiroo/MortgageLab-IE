@@ -5,19 +5,19 @@
 
 import { formatTimestamp } from "@/lib/utils/date";
 import {
-	downloadFile,
-	type ExportPage,
-	generateExportFilename,
+    downloadFile,
+    type ExportPage,
+    generateExportFilename,
 } from "../types";
 import { getHtmlToImage } from "./loaders";
 
 export interface ChartImageOptions {
-	/** Scale factor for higher resolution (default: 2 for retina) */
-	pixelRatio?: number;
-	/** Background color (default: white) */
-	backgroundColor?: string;
-	/** Quality for JPEG (0-1, default: 0.95) */
-	quality?: number;
+    /** Scale factor for higher resolution (default: 2 for retina) */
+    pixelRatio?: number;
+    /** Background color (default: white) */
+    backgroundColor?: string;
+    /** Quality for JPEG (0-1, default: 0.95) */
+    quality?: number;
 }
 
 /**
@@ -29,16 +29,16 @@ export interface ChartImageOptions {
  * @returns Base64 data URL of the PNG image
  */
 export async function elementToPngDataUrl(
-	element: HTMLElement,
-	options?: ChartImageOptions,
+    element: HTMLElement,
+    options?: ChartImageOptions,
 ): Promise<string> {
-	const htmlToImage = await getHtmlToImage();
+    const htmlToImage = await getHtmlToImage();
 
-	return htmlToImage.toPng(element, {
-		pixelRatio: options?.pixelRatio ?? 2,
-		backgroundColor: options?.backgroundColor ?? "#ffffff",
-		quality: options?.quality ?? 0.95,
-	});
+    return htmlToImage.toPng(element, {
+        pixelRatio: options?.pixelRatio ?? 2,
+        backgroundColor: options?.backgroundColor ?? "#ffffff",
+        quality: options?.quality ?? 0.95,
+    });
 }
 
 /**
@@ -51,16 +51,16 @@ export async function elementToPngDataUrl(
  * @returns Base64 data URL of the JPEG image
  */
 export async function elementToJpegDataUrl(
-	element: HTMLElement,
-	options?: ChartImageOptions,
+    element: HTMLElement,
+    options?: ChartImageOptions,
 ): Promise<string> {
-	const htmlToImage = await getHtmlToImage();
+    const htmlToImage = await getHtmlToImage();
 
-	return htmlToImage.toJpeg(element, {
-		pixelRatio: options?.pixelRatio ?? 1.5,
-		backgroundColor: options?.backgroundColor ?? "#ffffff",
-		quality: options?.quality ?? 0.92,
-	});
+    return htmlToImage.toJpeg(element, {
+        pixelRatio: options?.pixelRatio ?? 1.5,
+        backgroundColor: options?.backgroundColor ?? "#ffffff",
+        quality: options?.quality ?? 0.92,
+    });
 }
 
 /**
@@ -71,22 +71,22 @@ export async function elementToJpegDataUrl(
  * @returns Blob containing the PNG image
  */
 export async function elementToPngBlob(
-	element: HTMLElement,
-	options?: ChartImageOptions,
+    element: HTMLElement,
+    options?: ChartImageOptions,
 ): Promise<Blob> {
-	const htmlToImage = await getHtmlToImage();
+    const htmlToImage = await getHtmlToImage();
 
-	const blob = await htmlToImage.toBlob(element, {
-		pixelRatio: options?.pixelRatio ?? 2,
-		backgroundColor: options?.backgroundColor ?? "#ffffff",
-		quality: options?.quality ?? 0.95,
-	});
+    const blob = await htmlToImage.toBlob(element, {
+        pixelRatio: options?.pixelRatio ?? 2,
+        backgroundColor: options?.backgroundColor ?? "#ffffff",
+        quality: options?.quality ?? 0.95,
+    });
 
-	if (!blob) {
-		throw new Error("Failed to generate image blob");
-	}
+    if (!blob) {
+        throw new Error("Failed to generate image blob");
+    }
 
-	return blob;
+    return blob;
 }
 
 /**
@@ -97,25 +97,25 @@ export async function elementToPngBlob(
  * @param options Configuration options
  */
 export async function downloadChartAsPng(
-	element: HTMLElement,
-	page: ExportPage,
-	options?: ChartImageOptions,
+    element: HTMLElement,
+    page: ExportPage,
+    options?: ChartImageOptions,
 ): Promise<void> {
-	const blob = await elementToPngBlob(element, options);
-	const filename = generateExportFilename(page, "png");
-	downloadFile(blob, filename);
+    const blob = await elementToPngBlob(element, options);
+    const filename = generateExportFilename(page, "png");
+    downloadFile(blob, filename);
 }
 
 /**
  * Downloads a DOM element as PNG with a custom filename.
  */
 export async function downloadChartAsPngWithFilename(
-	element: HTMLElement,
-	filename: string,
-	options?: ChartImageOptions,
+    element: HTMLElement,
+    filename: string,
+    options?: ChartImageOptions,
 ): Promise<void> {
-	const blob = await elementToPngBlob(element, options);
-	downloadFile(blob, filename);
+    const blob = await elementToPngBlob(element, options);
+    downloadFile(blob, filename);
 }
 
 /**
@@ -127,22 +127,22 @@ export async function downloadChartAsPngWithFilename(
  * @returns Array of base64 data URLs
  */
 export async function captureMultipleCharts(
-	elements: HTMLElement[],
-	options?: ChartImageOptions,
+    elements: HTMLElement[],
+    options?: ChartImageOptions,
 ): Promise<string[]> {
-	const results: string[] = [];
+    const results: string[] = [];
 
-	for (const element of elements) {
-		const dataUrl = await elementToPngDataUrl(element, options);
-		results.push(dataUrl);
-	}
+    for (const element of elements) {
+        const dataUrl = await elementToPngDataUrl(element, options);
+        results.push(dataUrl);
+    }
 
-	return results;
+    return results;
 }
 
 export interface ChartExportWithBrandingOptions extends ChartImageOptions {
-	/** Title to display at the top of the exported image */
-	title: string;
+    /** Title to display at the top of the exported image */
+    title: string;
 }
 
 /**
@@ -154,87 +154,87 @@ export interface ChartExportWithBrandingOptions extends ChartImageOptions {
  * @param options Configuration options including title
  */
 export async function downloadChartWithBranding(
-	element: HTMLElement,
-	page: ExportPage,
-	options: ChartExportWithBrandingOptions,
+    element: HTMLElement,
+    page: ExportPage,
+    options: ChartExportWithBrandingOptions,
 ): Promise<void> {
-	const { title, ...imageOptions } = options;
-	const timestamp = formatTimestamp();
-	const bgColor = imageOptions.backgroundColor ?? "#ffffff";
+    const { title, ...imageOptions } = options;
+    const timestamp = formatTimestamp();
+    const bgColor = imageOptions.backgroundColor ?? "#ffffff";
 
-	// Get the parent to restore later
-	const parent = element.parentElement;
-	const nextSibling = element.nextSibling;
+    // Get the parent to restore later
+    const parent = element.parentElement;
+    const nextSibling = element.nextSibling;
 
-	// Temporarily disable dark mode for capture (white background needs dark text)
-	const isDarkMode = document.documentElement.classList.contains("dark");
-	if (isDarkMode) {
-		document.documentElement.classList.remove("dark");
-	}
+    // Temporarily disable dark mode for capture (white background needs dark text)
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    if (isDarkMode) {
+        document.documentElement.classList.remove("dark");
+    }
 
-	// Create wrapper that will contain title + element + footer
-	const wrapper = document.createElement("div");
-	wrapper.style.cssText = `
+    // Create wrapper that will contain title + element + footer
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText = `
 		background: ${bgColor};
 		padding: 24px;
 		font-family: system-ui, -apple-system, sans-serif;
 	`;
 
-	// Create title
-	const titleEl = document.createElement("div");
-	titleEl.style.cssText = `
+    // Create title
+    const titleEl = document.createElement("div");
+    titleEl.style.cssText = `
 		font-size: 18px;
 		font-weight: 600;
 		color: #111;
 		margin-bottom: 16px;
 		text-align: center;
 	`;
-	titleEl.textContent = title;
+    titleEl.textContent = title;
 
-	// Create footer
-	const footerEl = document.createElement("div");
-	footerEl.style.cssText = `
+    // Create footer
+    const footerEl = document.createElement("div");
+    footerEl.style.cssText = `
 		font-size: 11px;
 		color: #666;
 		margin-top: 16px;
 		text-align: center;
 	`;
-	footerEl.innerHTML = `Generated by <span style="color: #0000EE;">MortgageLab.ie</span> on ${timestamp}`;
+    footerEl.innerHTML = `Generated by <span style="color: #0000EE;">MortgageLab.ie</span> on ${timestamp}`;
 
-	// Assemble: move the actual element into wrapper temporarily
-	wrapper.appendChild(titleEl);
-	wrapper.appendChild(element);
-	wrapper.appendChild(footerEl);
+    // Assemble: move the actual element into wrapper temporarily
+    wrapper.appendChild(titleEl);
+    wrapper.appendChild(element);
+    wrapper.appendChild(footerEl);
 
-	// Insert wrapper where element was
-	if (parent) {
-		if (nextSibling) {
-			parent.insertBefore(wrapper, nextSibling);
-		} else {
-			parent.appendChild(wrapper);
-		}
-	} else {
-		document.body.appendChild(wrapper);
-	}
+    // Insert wrapper where element was
+    if (parent) {
+        if (nextSibling) {
+            parent.insertBefore(wrapper, nextSibling);
+        } else {
+            parent.appendChild(wrapper);
+        }
+    } else {
+        document.body.appendChild(wrapper);
+    }
 
-	try {
-		const blob = await elementToPngBlob(wrapper, imageOptions);
-		const filename = generateExportFilename(page, "png");
-		downloadFile(blob, filename);
-	} finally {
-		// Restore: move element back to original position
-		if (parent) {
-			if (nextSibling) {
-				parent.insertBefore(element, nextSibling);
-			} else {
-				parent.appendChild(element);
-			}
-		}
-		// Remove the wrapper
-		wrapper.remove();
-		// Restore dark mode if it was active
-		if (isDarkMode) {
-			document.documentElement.classList.add("dark");
-		}
-	}
+    try {
+        const blob = await elementToPngBlob(wrapper, imageOptions);
+        const filename = generateExportFilename(page, "png");
+        downloadFile(blob, filename);
+    } finally {
+        // Restore: move element back to original position
+        if (parent) {
+            if (nextSibling) {
+                parent.insertBefore(element, nextSibling);
+            } else {
+                parent.appendChild(element);
+            }
+        }
+        // Remove the wrapper
+        wrapper.remove();
+        // Restore dark mode if it was active
+        if (isDarkMode) {
+            document.documentElement.classList.add("dark");
+        }
+    }
 }

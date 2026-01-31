@@ -7,18 +7,18 @@ export type EuriborTenor = (typeof EURIBOR_TENORS)[number];
  * Single row: date + rate for each tenor
  */
 export const EuriborRateSchema = z.object({
-	date: z.string(), // ISO date: "2025-12-01"
-	"1M": z.number(), // 1-month rate
-	"3M": z.number(), // 3-month rate
-	"6M": z.number(), // 6-month rate
-	"12M": z.number(), // 12-month rate
+    date: z.string(), // ISO date: "2025-12-01"
+    "1M": z.number(), // 1-month rate
+    "3M": z.number(), // 3-month rate
+    "6M": z.number(), // 6-month rate
+    "12M": z.number(), // 12-month rate
 });
 export type EuriborRate = z.infer<typeof EuriborRateSchema>;
 
 export const EuriborFileSchema = z.object({
-	lastScrapedAt: z.iso.datetime(),
-	lastUpdatedAt: z.iso.datetime(),
-	ratesHash: z.string(),
-	rates: z.array(EuriborRateSchema),
+    lastScrapedAt: z.iso.datetime(),
+    lastUpdatedAt: z.iso.datetime(),
+    ratesHash: z.string(),
+    rates: z.array(EuriborRateSchema),
 });
 export type EuriborFile = z.infer<typeof EuriborFileSchema>;
