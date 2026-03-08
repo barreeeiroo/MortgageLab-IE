@@ -1,8 +1,8 @@
 {
 	"lenderId": "aib",
-	"lastScrapedAt": "2026-03-07T08:07:13.356Z",
-	"lastUpdatedAt": "2026-03-07T08:07:13.356Z",
-	"ratesHash": "22d3fcc813408ca7a737301b32bc36092277e73b24f9aa8e36ee183314b42e09",
+	"lastScrapedAt": "2026-03-08T08:07:46.101Z",
+	"lastUpdatedAt": "2026-03-08T08:07:46.101Z",
+	"ratesHash": "cce9f5e22d7301d25fe6bda9861ce703268241628bd38396da2fdb76901d9664",
 	"rates": [
 		{
 			"id": "aib-variable-50",
@@ -1403,7 +1403,7 @@
 			"lenderId": "aib",
 			"type": "fixed",
 			"rate": 8.1,
-			"apr": 6.68,
+			"apr": 6.69,
 			"fixedTerm": 5,
 			"minLtv": 0,
 			"maxLtv": 70,
