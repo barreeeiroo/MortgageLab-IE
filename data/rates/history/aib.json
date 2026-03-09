@@ -2623,6 +2623,20 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-03-09T08:15:13.603Z",
+			"afterHash": "22d3fcc813408ca7a737301b32bc36092277e73b24f9aa8e36ee183314b42e09",
+			"operations": [
+				{
+					"op": "update",
+					"id": "aib-btl-fixed-5yr",
+					"changes": {
+						"id": "aib-btl-fixed-5yr",
+						"apr": 6.68
+					}
+				}
+			]
 		}
 	]
 }
