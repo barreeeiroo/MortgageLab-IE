@@ -1617,6 +1617,20 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-03-27T08:17:41.647Z",
+			"afterHash": "0f84f1455dda73c98959d15b43e8e42ba002e5c1920f8e797fae5b9ecac4cb2e",
+			"operations": [
+				{
+					"op": "remove",
+					"id": "avant-follow-on-variable-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-follow-on-variable-90"
+				}
+			]
 		}
 	]
 }

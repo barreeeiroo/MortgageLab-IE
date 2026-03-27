@@ -1,8 +1,8 @@
 {
 	"lenderId": "avant",
-	"lastScrapedAt": "2026-03-26T08:19:53.928Z",
-	"lastUpdatedAt": "2026-03-10T08:13:05.338Z",
-	"ratesHash": "3e19102f36f4924b75bae265db7d0a9942311401839ace484e433b765bd31a06",
+	"lastScrapedAt": "2026-03-27T08:17:41.647Z",
+	"lastUpdatedAt": "2026-03-27T08:17:41.647Z",
+	"ratesHash": "0f84f1455dda73c98959d15b43e8e42ba002e5c1920f8e797fae5b9ecac4cb2e",
 	"rates": [
 		{
 			"id": "avant-flex-80",
@@ -511,36 +511,6 @@
 			"perks": [
 				"cashback-2pct"
 			]
-		},
-		{
-			"id": "avant-follow-on-variable-70",
-			"name": "Follow-On Variable - LTV ≤70%",
-			"lenderId": "avant",
-			"type": "variable",
-			"rate": 3.75,
-			"apr": 3.84,
-			"minLtv": 0,
-			"maxLtv": 70,
-			"buyerTypes": [
-				"switcher-pdh"
-			],
-			"newBusiness": false,
-			"perks": []
-		},
-		{
-			"id": "avant-follow-on-variable-90",
-			"name": "Follow-On Variable - LTV ≤90%",
-			"lenderId": "avant",
-			"type": "variable",
-			"rate": 3.95,
-			"apr": 4.05,
-			"minLtv": 70,
-			"maxLtv": 90,
-			"buyerTypes": [
-				"switcher-pdh"
-			],
-			"newBusiness": false,
-			"perks": []
 		},
 		{
 			"id": "avant-one-15yr-60",
