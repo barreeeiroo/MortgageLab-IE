@@ -661,6 +661,220 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-03-28T08:13:11.255Z",
+			"afterHash": "6e36d240578ed269c1ff68a873e32c211fbb2aafbef22179406e80e296259e05",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ics-variable-60",
+					"changes": {
+						"id": "ics-variable-60",
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-60",
+					"changes": {
+						"id": "ics-fixed-3yr-60",
+						"rate": 4.8,
+						"apr": 4.39
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-60",
+					"changes": {
+						"id": "ics-fixed-5yr-60",
+						"rate": 4.9,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-70",
+					"changes": {
+						"id": "ics-variable-70",
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-70",
+					"changes": {
+						"id": "ics-fixed-3yr-70",
+						"rate": 4.8,
+						"apr": 4.39
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-70",
+					"changes": {
+						"id": "ics-fixed-5yr-70",
+						"rate": 4.9,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-80",
+					"changes": {
+						"id": "ics-variable-80",
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-80",
+					"changes": {
+						"id": "ics-fixed-3yr-80",
+						"rate": 4.85,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-80",
+					"changes": {
+						"id": "ics-fixed-5yr-80",
+						"rate": 4.95,
+						"apr": 4.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-90",
+					"changes": {
+						"id": "ics-variable-90",
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-90",
+					"changes": {
+						"id": "ics-fixed-3yr-90",
+						"rate": 4.85,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-90",
+					"changes": {
+						"id": "ics-fixed-5yr-90",
+						"rate": 4.95,
+						"apr": 4.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-60",
+					"changes": {
+						"id": "ics-existing-variable-60",
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-60",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-60",
+						"rate": 4.85,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-60",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-60",
+						"rate": 4.9,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-70",
+					"changes": {
+						"id": "ics-existing-variable-70",
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-70",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-70",
+						"rate": 4.85,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-70",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-70",
+						"rate": 4.9,
+						"apr": 4.53
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-80",
+					"changes": {
+						"id": "ics-existing-variable-80",
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-80",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-80",
+						"rate": 4.85,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-80",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-80",
+						"rate": 4.95,
+						"apr": 4.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-90",
+					"changes": {
+						"id": "ics-existing-variable-90",
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-90",
+						"rate": 4.85,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-90",
+						"rate": 4.95,
+						"apr": 4.55
+					}
+				}
+			]
 		}
 	]
 }
