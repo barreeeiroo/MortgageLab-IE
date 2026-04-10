@@ -1631,6 +1631,30 @@
 					"id": "avant-follow-on-variable-90"
 				}
 			]
+		},
+		{
+			"timestamp": "2026-04-10T08:33:39.666Z",
+			"afterHash": "fc7c427384a93099a34d8b24e0c66ec8b540ef79ffbd3ac8fb69dbd7a6b1743c",
+			"operations": [
+				{
+					"op": "update",
+					"id": "avant-flex-80",
+					"changes": {
+						"id": "avant-flex-80",
+						"rate": 3.47,
+						"apr": 3.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-flex-90",
+					"changes": {
+						"id": "avant-flex-90",
+						"rate": 3.67,
+						"apr": 3.76
+					}
+				}
+			]
 		}
 	]
 }
