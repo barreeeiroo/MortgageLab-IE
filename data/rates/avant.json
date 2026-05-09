@@ -1,16 +1,16 @@
 {
 	"lenderId": "avant",
-	"lastScrapedAt": "2026-05-08T08:34:08.725Z",
-	"lastUpdatedAt": "2026-04-10T08:33:39.666Z",
-	"ratesHash": "fc7c427384a93099a34d8b24e0c66ec8b540ef79ffbd3ac8fb69dbd7a6b1743c",
+	"lastScrapedAt": "2026-05-09T08:35:12.114Z",
+	"lastUpdatedAt": "2026-05-09T08:35:12.114Z",
+	"ratesHash": "d97ce665201a55c72d75002b4f63746fa4761d35655c96b9778a3befe334ba08",
 	"rates": [
 		{
 			"id": "avant-flex-80",
 			"name": "Flex Mortgage - LTV ≤80%",
 			"lenderId": "avant",
 			"type": "variable",
-			"rate": 3.47,
-			"apr": 3.55,
+			"rate": 3.65,
+			"apr": 3.74,
 			"minLtv": 0,
 			"maxLtv": 80,
 			"buyerTypes": [
@@ -25,8 +25,8 @@
 			"name": "Flex Mortgage - LTV ≤90%",
 			"lenderId": "avant",
 			"type": "variable",
-			"rate": 3.67,
-			"apr": 3.76,
+			"rate": 3.85,
+			"apr": 3.94,
 			"minLtv": 80,
 			"maxLtv": 90,
 			"buyerTypes": [

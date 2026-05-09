@@ -1655,6 +1655,30 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-05-09T08:35:12.114Z",
+			"afterHash": "d97ce665201a55c72d75002b4f63746fa4761d35655c96b9778a3befe334ba08",
+			"operations": [
+				{
+					"op": "update",
+					"id": "avant-flex-80",
+					"changes": {
+						"id": "avant-flex-80",
+						"rate": 3.65,
+						"apr": 3.74
+					}
+				},
+				{
+					"op": "update",
+					"id": "avant-flex-90",
+					"changes": {
+						"id": "avant-flex-90",
+						"rate": 3.85,
+						"apr": 3.94
+					}
+				}
+			]
 		}
 	]
 }
