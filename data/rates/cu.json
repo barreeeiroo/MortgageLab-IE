@@ -1,24 +1,7 @@
 {
 	"lenderId": "cu",
-	"lastScrapedAt": "2026-06-08T09:38:41.193Z",
-	"lastUpdatedAt": "2026-06-08T09:38:41.193Z",
-	"ratesHash": "f00f8d40d96aa15ca9bbf00d4833bc9aa342693765563dfd29cc6cb3bcdf838a",
-	"rates": [
-		{
-			"id": "cu-capped-variable",
-			"name": "Capped Variable Rate (3yr cap)",
-			"lenderId": "cu",
-			"type": "variable",
-			"rate": 3.85,
-			"apr": 3.92,
-			"minLtv": 0,
-			"maxLtv": 90,
-			"buyerTypes": [
-				"ftb",
-				"mover",
-				"switcher-pdh"
-			],
-			"perks": []
-		}
-	]
+	"lastScrapedAt": "2026-06-09T09:11:20.003Z",
+	"lastUpdatedAt": "2026-06-09T09:11:20.003Z",
+	"ratesHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+	"rates": []
 }

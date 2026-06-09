@@ -327,6 +327,56 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-06-09T09:11:20.479Z",
+			"afterHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+			"operations": [
+				{
+					"op": "remove",
+					"id": "haven-variable-50"
+				},
+				{
+					"op": "remove",
+					"id": "haven-variable-80"
+				},
+				{
+					"op": "remove",
+					"id": "haven-variable-90"
+				},
+				{
+					"op": "remove",
+					"id": "haven-fixed-1yr"
+				},
+				{
+					"op": "remove",
+					"id": "haven-fixed-2yr"
+				},
+				{
+					"op": "remove",
+					"id": "haven-fixed-3yr"
+				},
+				{
+					"op": "remove",
+					"id": "haven-green-fixed-4yr"
+				},
+				{
+					"op": "remove",
+					"id": "haven-fixed-5yr"
+				},
+				{
+					"op": "remove",
+					"id": "haven-fixed-7yr"
+				},
+				{
+					"op": "remove",
+					"id": "haven-fixed-10yr"
+				},
+				{
+					"op": "remove",
+					"id": "haven-variable"
+				}
+			]
 		}
 	]
 }
