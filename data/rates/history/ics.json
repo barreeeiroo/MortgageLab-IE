@@ -875,6 +875,84 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-06-30T09:09:58.435Z",
+			"afterHash": "232fafe5a4758cb3a5d0888136d8073c8020e0a85293abae30b46b0870fbafd5",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-60",
+					"changes": {
+						"id": "ics-fixed-3yr-60",
+						"rate": 5.15,
+						"apr": 5.08
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-60",
+					"changes": {
+						"id": "ics-fixed-5yr-60",
+						"rate": 5.2,
+						"apr": 5.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-70",
+					"changes": {
+						"id": "ics-fixed-3yr-70",
+						"rate": 5.15,
+						"apr": 5.08
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-70",
+					"changes": {
+						"id": "ics-fixed-5yr-70",
+						"rate": 5.2,
+						"apr": 5.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-80",
+					"changes": {
+						"id": "ics-fixed-3yr-80",
+						"rate": 5.2,
+						"apr": 5.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-80",
+					"changes": {
+						"id": "ics-fixed-5yr-80",
+						"rate": 5.25,
+						"apr": 5.16
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-3yr-90",
+					"changes": {
+						"id": "ics-fixed-3yr-90",
+						"rate": 5.2,
+						"apr": 5.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-fixed-5yr-90",
+					"changes": {
+						"id": "ics-fixed-5yr-90",
+						"rate": 5.25,
+						"apr": 5.16
+					}
+				}
+			]
 		}
 	]
 }
