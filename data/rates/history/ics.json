@@ -953,6 +953,156 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-07-01T09:11:16.767Z",
+			"afterHash": "40176f3cf4b12fdec2ebbcd7b287ecd7633ca68384dd4699177260784b16bddf",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ics-variable-60",
+					"changes": {
+						"id": "ics-variable-60",
+						"rate": 4.35,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-70",
+					"changes": {
+						"id": "ics-variable-70",
+						"rate": 4.35,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-80",
+					"changes": {
+						"id": "ics-variable-80",
+						"rate": 4.35,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-90",
+					"changes": {
+						"id": "ics-variable-90",
+						"rate": 4.35,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-60",
+					"changes": {
+						"id": "ics-existing-variable-60",
+						"rate": 4.35,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-60",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-60",
+						"rate": 5.15,
+						"apr": 5.08
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-60",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-60",
+						"rate": 5.2,
+						"apr": 5.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-70",
+					"changes": {
+						"id": "ics-existing-variable-70",
+						"rate": 4.35,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-70",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-70",
+						"rate": 5.15,
+						"apr": 5.08
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-70",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-70",
+						"rate": 5.2,
+						"apr": 5.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-80",
+					"changes": {
+						"id": "ics-existing-variable-80",
+						"rate": 4.35,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-80",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-80",
+						"rate": 5.2,
+						"apr": 5.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-80",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-80",
+						"rate": 5.25,
+						"apr": 5.16
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-90",
+					"changes": {
+						"id": "ics-existing-variable-90",
+						"rate": 4.35,
+						"apr": 5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ics-existing-fixed-3yr-90",
+						"rate": 5.2,
+						"apr": 5.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ics-existing-fixed-5yr-90",
+						"rate": 5.25,
+						"apr": 5.16
+					}
+				}
+			]
 		}
 	]
 }
