@@ -1,8 +1,8 @@
 {
 	"lenderId": "ics",
-	"lastScrapedAt": "2026-07-01T09:11:16.767Z",
-	"lastUpdatedAt": "2026-07-01T09:11:16.767Z",
-	"ratesHash": "40176f3cf4b12fdec2ebbcd7b287ecd7633ca68384dd4699177260784b16bddf",
+	"lastScrapedAt": "2026-07-02T09:06:05.760Z",
+	"lastUpdatedAt": "2026-07-02T09:06:05.760Z",
+	"ratesHash": "c2821db2953c4b7977dbeced0b0492746beeb0a65aca267d6ca4dd5a429a7790",
 	"rates": [
 		{
 			"id": "ics-variable-60",
@@ -409,8 +409,8 @@
 			"name": "Buy-to-Let Individual Interest Only - LTV ≤60%",
 			"lenderId": "ics",
 			"type": "variable",
-			"rate": 5.3,
-			"apr": 5.61,
+			"rate": 5.55,
+			"apr": 5.88,
 			"minLtv": 0,
 			"maxLtv": 60,
 			"buyerTypes": [
@@ -424,8 +424,8 @@
 			"name": "Buy-to-Let Individual Interest Only - LTV ≤70%",
 			"lenderId": "ics",
 			"type": "variable",
-			"rate": 5.45,
-			"apr": 5.77,
+			"rate": 5.7,
+			"apr": 6.04,
 			"minLtv": 60,
 			"maxLtv": 70,
 			"buyerTypes": [
@@ -439,8 +439,8 @@
 			"name": "Buy-to-Let Individual Capital & Interest - LTV ≤60%",
 			"lenderId": "ics",
 			"type": "variable",
-			"rate": 5.3,
-			"apr": 5.61,
+			"rate": 5.55,
+			"apr": 5.88,
 			"minLtv": 0,
 			"maxLtv": 60,
 			"buyerTypes": [
@@ -454,8 +454,8 @@
 			"name": "Buy-to-Let Individual Capital & Interest - LTV ≤70%",
 			"lenderId": "ics",
 			"type": "variable",
-			"rate": 5.45,
-			"apr": 5.77,
+			"rate": 5.7,
+			"apr": 6.05,
 			"minLtv": 60,
 			"maxLtv": 70,
 			"buyerTypes": [
@@ -469,8 +469,8 @@
 			"name": "Buy-to-Let Individual Flexi-Mortgage - LTV ≤60%",
 			"lenderId": "ics",
 			"type": "variable",
-			"rate": 5.3,
-			"apr": 5.6,
+			"rate": 5.7,
+			"apr": 5.87,
 			"minLtv": 0,
 			"maxLtv": 60,
 			"buyerTypes": [
@@ -484,8 +484,8 @@
 			"name": "Buy-to-Let Individual Flexi-Mortgage - LTV ≤70%",
 			"lenderId": "ics",
 			"type": "variable",
-			"rate": 5.45,
-			"apr": 5.76,
+			"rate": 5.55,
+			"apr": 6.03,
 			"minLtv": 60,
 			"maxLtv": 70,
 			"buyerTypes": [
@@ -499,8 +499,8 @@
 			"name": "Buy-to-Let Individual Capital & Interest - LTV ≤50%",
 			"lenderId": "ics",
 			"type": "variable",
-			"rate": 5.45,
-			"apr": 5.91,
+			"rate": 5.7,
+			"apr": 6.19,
 			"minLtv": 0,
 			"maxLtv": 50,
 			"buyerTypes": [

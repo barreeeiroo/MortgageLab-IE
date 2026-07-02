@@ -1103,6 +1103,75 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-07-02T09:06:05.760Z",
+			"afterHash": "c2821db2953c4b7977dbeced0b0492746beeb0a65aca267d6ca4dd5a429a7790",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ics-btl-individual-io-60",
+					"changes": {
+						"id": "ics-btl-individual-io-60",
+						"rate": 5.55,
+						"apr": 5.88
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-io-70",
+					"changes": {
+						"id": "ics-btl-individual-io-70",
+						"rate": 5.7,
+						"apr": 6.04
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-ci-60",
+					"changes": {
+						"id": "ics-btl-individual-ci-60",
+						"rate": 5.55,
+						"apr": 5.88
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-ci-70",
+					"changes": {
+						"id": "ics-btl-individual-ci-70",
+						"rate": 5.7,
+						"apr": 6.05
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-flexi-60",
+					"changes": {
+						"id": "ics-btl-individual-flexi-60",
+						"rate": 5.7,
+						"apr": 5.87
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-flexi-70",
+					"changes": {
+						"id": "ics-btl-individual-flexi-70",
+						"rate": 5.55,
+						"apr": 6.03
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-ci-50",
+					"changes": {
+						"id": "ics-btl-individual-ci-50",
+						"rate": 5.7,
+						"apr": 6.19
+					}
+				}
+			]
 		}
 	]
 }
