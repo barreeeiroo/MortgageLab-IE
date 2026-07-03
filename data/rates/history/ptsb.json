@@ -4354,6 +4354,180 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-07-03T10:33:09.987Z",
+			"afterHash": "bf09aeb62d2895af13e37ee841b994f2f61bfee1e255322e2087f58767a5fb12",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-2yr-60",
+					"changes": {
+						"id": "ptsb-fixed-2yr-60",
+						"apr": 4.46
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-fixed-3yr-80",
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-fixed-3yr-90",
+						"apr": 4.59
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-fixed-5yr-60",
+						"apr": 4.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-60",
+						"apr": 4.23
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-60",
+						"apr": 4.02
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-80",
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-fixed-7yr-80",
+						"apr": 3.97
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-60",
+						"apr": 4.23
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-60",
+						"apr": 4.02
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-80",
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-60",
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-80",
+						"apr": 4.32
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-90",
+						"apr": 4.51
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-60",
+						"apr": 3.97
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-50",
+					"changes": {
+						"id": "ptsb-variable-50",
+						"apr": 4.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-60",
+					"changes": {
+						"id": "ptsb-variable-60",
+						"apr": 4.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-variable-90",
+					"changes": {
+						"id": "ptsb-variable-90",
+						"apr": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-btl-variable-50",
+					"changes": {
+						"id": "ptsb-btl-variable-50",
+						"apr": 5.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-btl-variable-60",
+					"changes": {
+						"id": "ptsb-btl-variable-60",
+						"apr": 5.8
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-btl-fixed-3yr-70",
+					"changes": {
+						"id": "ptsb-btl-fixed-3yr-70",
+						"apr": 5.94
+					}
+				}
+			]
 		}
 	]
 }
