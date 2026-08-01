@@ -1172,6 +1172,139 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-08-01T09:55:52.822Z",
+			"afterHash": "5c790c8bad60363b4b005e439ad221e6bb49b84b488fb9740868b83048e40929",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ics-variable-60",
+					"changes": {
+						"id": "ics-variable-60",
+						"rate": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-70",
+					"changes": {
+						"id": "ics-variable-70",
+						"rate": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-80",
+					"changes": {
+						"id": "ics-variable-80",
+						"rate": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-variable-90",
+					"changes": {
+						"id": "ics-variable-90",
+						"rate": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-60",
+					"changes": {
+						"id": "ics-existing-variable-60",
+						"rate": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-70",
+					"changes": {
+						"id": "ics-existing-variable-70",
+						"rate": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-80",
+					"changes": {
+						"id": "ics-existing-variable-80",
+						"rate": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-existing-variable-90",
+					"changes": {
+						"id": "ics-existing-variable-90",
+						"rate": 4.85
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-io-60",
+					"changes": {
+						"id": "ics-btl-individual-io-60",
+						"rate": 5.8,
+						"apr": 6.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-io-70",
+					"changes": {
+						"id": "ics-btl-individual-io-70",
+						"rate": 5.9,
+						"apr": 6.26
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-ci-60",
+					"changes": {
+						"id": "ics-btl-individual-ci-60",
+						"rate": 5.7,
+						"apr": 6.05
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-ci-70",
+					"changes": {
+						"id": "ics-btl-individual-ci-70",
+						"rate": 5.8,
+						"apr": 6.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-flexi-60",
+					"changes": {
+						"id": "ics-btl-individual-flexi-60",
+						"rate": 5.8,
+						"apr": 6.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-flexi-70",
+					"changes": {
+						"id": "ics-btl-individual-flexi-70",
+						"rate": 5.9,
+						"apr": 6.24
+					}
+				},
+				{
+					"op": "update",
+					"id": "ics-btl-individual-ci-50",
+					"changes": {
+						"id": "ics-btl-individual-ci-50",
+						"rate": 5.9,
+						"apr": 6.41
+					}
+				}
+			]
 		}
 	]
 }
