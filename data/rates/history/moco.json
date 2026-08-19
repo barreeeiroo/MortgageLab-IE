@@ -612,6 +612,111 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-08-19T08:33:41.765Z",
+			"afterHash": "4c5da7f70c72350b1da6b0417ce37ebcd68be51e1d38af8926932af95f4be1ce",
+			"operations": [
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-50",
+					"changes": {
+						"id": "moco-fixed-3yr-50",
+						"rate": 3.7,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-60",
+					"changes": {
+						"id": "moco-fixed-3yr-60",
+						"rate": 3.7,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-70",
+					"changes": {
+						"id": "moco-fixed-3yr-70",
+						"rate": 3.75,
+						"apr": 4.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-80",
+					"changes": {
+						"id": "moco-fixed-3yr-80",
+						"rate": 3.85,
+						"apr": 4.18
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-90",
+					"changes": {
+						"id": "moco-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.25
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-50",
+					"changes": {
+						"id": "moco-fixed-5yr-50",
+						"rate": 3.7,
+						"apr": 4.05
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-60",
+					"changes": {
+						"id": "moco-fixed-5yr-60",
+						"rate": 3.7,
+						"apr": 4.05
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-70",
+					"changes": {
+						"id": "moco-fixed-5yr-70",
+						"rate": 3.75,
+						"apr": 4.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-80",
+					"changes": {
+						"id": "moco-fixed-5yr-80",
+						"rate": 3.85,
+						"apr": 4.12
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-90",
+					"changes": {
+						"id": "moco-fixed-5yr-90",
+						"rate": 4.05,
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-variable-svr",
+					"changes": {
+						"id": "moco-variable-svr",
+						"rate": 4.21,
+						"apr": 4.3
+					}
+				}
+			]
 		}
 	]
 }
