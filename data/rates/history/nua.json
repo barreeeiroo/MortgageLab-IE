@@ -1465,6 +1465,408 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-09-16T13:07:12.713Z",
+			"afterHash": "9f4d2df084d83d89bbcb90abba97aed7e4011db029d1df00945a424551c6d6fc",
+			"operations": [
+				{
+					"op": "update",
+					"id": "nua-ftb-fixed-5yr-60",
+					"changes": {
+						"id": "nua-ftb-fixed-5yr-60",
+						"rate": 4.6,
+						"apr": 4.99
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ftb-fixed-5yr-70",
+					"changes": {
+						"id": "nua-ftb-fixed-5yr-70",
+						"rate": 4.9,
+						"apr": 5.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ftb-fixed-5yr-80",
+					"changes": {
+						"id": "nua-ftb-fixed-5yr-80",
+						"rate": 5.69,
+						"apr": 5.56
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ftb-fixed-5yr-90",
+					"changes": {
+						"id": "nua-ftb-fixed-5yr-90",
+						"rate": 5.69,
+						"apr": 5.56
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ftb-fixed-3yr-90",
+					"changes": {
+						"id": "nua-ftb-fixed-3yr-90",
+						"rate": 5.69,
+						"apr": 5.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ftb-fixed-3yr-60",
+					"changes": {
+						"id": "nua-ftb-fixed-3yr-60",
+						"rate": 4.55,
+						"apr": 5.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ftb-fixed-3yr-70",
+					"changes": {
+						"id": "nua-ftb-fixed-3yr-70",
+						"rate": 4.85,
+						"apr": 5.17
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ftb-fixed-3yr-80",
+					"changes": {
+						"id": "nua-ftb-fixed-3yr-80",
+						"rate": 5.69,
+						"apr": 5.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ssb-fixed-5yr-90",
+					"changes": {
+						"id": "nua-ssb-fixed-5yr-90",
+						"rate": 5.69,
+						"apr": 5.56
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ssb-fixed-3yr-60",
+					"changes": {
+						"id": "nua-ssb-fixed-3yr-60",
+						"rate": 4.55,
+						"apr": 5.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ssb-fixed-3yr-70",
+					"changes": {
+						"id": "nua-ssb-fixed-3yr-70",
+						"rate": 4.85,
+						"apr": 5.17
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ssb-fixed-3yr-80",
+					"changes": {
+						"id": "nua-ssb-fixed-3yr-80",
+						"rate": 5.69,
+						"apr": 5.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ssb-fixed-5yr-60",
+					"changes": {
+						"id": "nua-ssb-fixed-5yr-60",
+						"rate": 4.6,
+						"apr": 4.99
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ssb-fixed-5yr-70",
+					"changes": {
+						"id": "nua-ssb-fixed-5yr-70",
+						"rate": 4.9,
+						"apr": 5.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ssb-fixed-5yr-80",
+					"changes": {
+						"id": "nua-ssb-fixed-5yr-80",
+						"rate": 5.69,
+						"apr": 5.56
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-ssb-fixed-3yr-90",
+					"changes": {
+						"id": "nua-ssb-fixed-3yr-90",
+						"rate": 5.69,
+						"apr": 5.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-fixed-3yr-90",
+					"changes": {
+						"id": "nua-switcher-fixed-3yr-90",
+						"rate": 5.69,
+						"apr": 5.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-extra-fixed-3yr-80",
+					"changes": {
+						"id": "nua-switcher-extra-fixed-3yr-80",
+						"rate": 5.95,
+						"apr": 5.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-extra-fixed-5yr-80",
+					"changes": {
+						"id": "nua-switcher-extra-fixed-5yr-80",
+						"rate": 5.95,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-one-fixed-3yr-80",
+					"changes": {
+						"id": "nua-switcher-one-fixed-3yr-80",
+						"rate": 5.95,
+						"apr": 5.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-fixed-3yr-60",
+					"changes": {
+						"id": "nua-switcher-fixed-3yr-60",
+						"rate": 4.55,
+						"apr": 5.07
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-fixed-3yr-70",
+					"changes": {
+						"id": "nua-switcher-fixed-3yr-70",
+						"rate": 4.85,
+						"apr": 5.17
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-fixed-3yr-80",
+					"changes": {
+						"id": "nua-switcher-fixed-3yr-80",
+						"rate": 5.69,
+						"apr": 5.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-fixed-5yr-60",
+					"changes": {
+						"id": "nua-switcher-fixed-5yr-60",
+						"rate": 4.6,
+						"apr": 4.99
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-fixed-5yr-70",
+					"changes": {
+						"id": "nua-switcher-fixed-5yr-70",
+						"rate": 4.9,
+						"apr": 5.15
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-fixed-5yr-80",
+					"changes": {
+						"id": "nua-switcher-fixed-5yr-80",
+						"rate": 5.69,
+						"apr": 5.56
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-extra-fixed-3yr-60",
+					"changes": {
+						"id": "nua-switcher-extra-fixed-3yr-60",
+						"rate": 5.75,
+						"apr": 5.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-extra-fixed-3yr-70",
+					"changes": {
+						"id": "nua-switcher-extra-fixed-3yr-70",
+						"rate": 5.75,
+						"apr": 5.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-extra-fixed-5yr-60",
+					"changes": {
+						"id": "nua-switcher-extra-fixed-5yr-60",
+						"rate": 5.95,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-extra-fixed-5yr-70",
+					"changes": {
+						"id": "nua-switcher-extra-fixed-5yr-70",
+						"rate": 5.95,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-one-fixed-3yr-60",
+					"changes": {
+						"id": "nua-switcher-one-fixed-3yr-60",
+						"rate": 5.95,
+						"apr": 5.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-one-fixed-3yr-70",
+					"changes": {
+						"id": "nua-switcher-one-fixed-3yr-70",
+						"rate": 5.95,
+						"apr": 5.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-one-fixed-5yr-60",
+					"changes": {
+						"id": "nua-switcher-one-fixed-5yr-60",
+						"rate": 5.95,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-one-fixed-5yr-70",
+					"changes": {
+						"id": "nua-switcher-one-fixed-5yr-70",
+						"rate": 5.95,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-one-fixed-5yr-80",
+					"changes": {
+						"id": "nua-switcher-one-fixed-5yr-80",
+						"rate": 5.95,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-freedom-fixed-3yr-75",
+					"changes": {
+						"id": "nua-switcher-freedom-fixed-3yr-75",
+						"rate": 5.95,
+						"apr": 5.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-freedom-fixed-5yr-75",
+					"changes": {
+						"id": "nua-switcher-freedom-fixed-5yr-75",
+						"rate": 5.95,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-homeplus-fixed-5yr-50",
+					"changes": {
+						"id": "nua-switcher-homeplus-fixed-5yr-50",
+						"rate": 5.55,
+						"apr": 5.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-homeplus-fixed-3yr-50",
+					"changes": {
+						"id": "nua-switcher-homeplus-fixed-3yr-50",
+						"rate": 5.3,
+						"apr": 5.32
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-homeplus-fixed-3yr-60",
+					"changes": {
+						"id": "nua-switcher-homeplus-fixed-3yr-60",
+						"rate": 5.3,
+						"apr": 5.32
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-homeplus-fixed-3yr-70",
+					"changes": {
+						"id": "nua-switcher-homeplus-fixed-3yr-70",
+						"rate": 5.8,
+						"apr": 5.49
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-homeplus-fixed-5yr-60",
+					"changes": {
+						"id": "nua-switcher-homeplus-fixed-5yr-60",
+						"rate": 5.55,
+						"apr": 5.48
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-homeplus-fixed-5yr-70",
+					"changes": {
+						"id": "nua-switcher-homeplus-fixed-5yr-70",
+						"rate": 5.95,
+						"apr": 5.69
+					}
+				},
+				{
+					"op": "update",
+					"id": "nua-switcher-fixed-5yr-90",
+					"changes": {
+						"id": "nua-switcher-fixed-5yr-90",
+						"rate": 5.69,
+						"apr": 5.56
+					}
+				}
+			]
 		}
 	]
 }
