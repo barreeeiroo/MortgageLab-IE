@@ -2903,6 +2903,324 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-09-30T14:36:05.421Z",
+			"afterHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+			"operations": [
+				{
+					"op": "remove",
+					"id": "aib-variable-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-variable-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-variable-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-variable-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-variable"
+				},
+				{
+					"op": "remove",
+					"id": "aib-variable-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-1yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-1yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-1yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-1yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-1yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-1yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-2yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-2yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-2yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-2yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-2yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-2yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-3yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-3yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-3yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-3yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-3yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-3yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-4yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-4yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-4yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-4yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-4yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-4yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-5yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-5yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-5yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-5yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-5yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-5yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-7yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-7yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-7yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-7yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-7yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-7yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-10yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-10yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-10yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-10yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-10yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-fixed-10yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-5yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-5yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-5yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-5yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-5yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-5yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-hv-fixed-4yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-hv-fixed-4yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-hv-fixed-4yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-hv-fixed-4yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-hv-fixed-4yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-hv-fixed-4yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-btl-variable"
+				},
+				{
+					"op": "remove",
+					"id": "aib-btl-fixed-1yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-btl-fixed-2yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-btl-fixed-3yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-btl-fixed-4yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-btl-fixed-5yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-2yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-2yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-2yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-2yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-2yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-fixed-2yr-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-a-fixed-3yr-50"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-a-fixed-3yr-50-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-a-fixed-3yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-a-fixed-3yr-80-switcher"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-a-fixed-3yr"
+				},
+				{
+					"op": "remove",
+					"id": "aib-green-a-fixed-3yr-switcher"
+				}
+			]
 		}
 	]
 }
