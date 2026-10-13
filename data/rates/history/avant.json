@@ -1799,6 +1799,180 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-10-13T15:33:16.530Z",
+			"afterHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+			"operations": [
+				{
+					"op": "remove",
+					"id": "avant-one-15yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-15yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-15yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-15yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-20yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-20yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-20yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-20yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-25yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-25yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-25yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-25yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-30yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-30yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-30yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-one-30yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-3yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-3yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-3yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-3yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-4yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-4yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-4yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-4yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-5yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-5yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-5yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-5yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-7yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-7yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-7yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-7yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-10yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-10yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-10yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-fixed-10yr-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-flex-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-flex-90"
+				},
+				{
+					"op": "remove",
+					"id": "avant-highvalue-4yr-60"
+				},
+				{
+					"op": "remove",
+					"id": "avant-highvalue-4yr-70"
+				},
+				{
+					"op": "remove",
+					"id": "avant-highvalue-4yr-80"
+				},
+				{
+					"op": "remove",
+					"id": "avant-highvalue-4yr-90"
+				}
+			]
 		}
 	]
 }
