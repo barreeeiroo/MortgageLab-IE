@@ -50,3 +50,7 @@ Validate with `bun run rates:validate-history`.
 - **Buyer types**: `ftb`, `mover`, `btl`, `switcher-pdh`, `switcher-btl`
 - **Follow-on rates**: Fixed rates need corresponding variable follow-on
 - **LTV**: Percentages 0-100, not decimals
+- **0-rate guard**: A provider parsing 0 rates never overwrites its JSON - the
+  existing file is kept untouched so `lastScrapedAt` goes stale and signals a
+  broken scraper needing manual attention. It doesn't fail the run, so GHA
+  still commits other lenders' changes.

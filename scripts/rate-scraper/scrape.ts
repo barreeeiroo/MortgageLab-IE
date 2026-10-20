@@ -23,9 +23,11 @@ interface RateDiff {
     updated: number;
 }
 
+type ScrapeStatus = "ok" | "no-rates" | "failed";
+
 interface LenderResult {
     lenderId: string;
-    success: boolean;
+    status: ScrapeStatus;
     diff: RateDiff | null;
 }
 
@@ -98,8 +100,6 @@ async function scrapeProvider(
 
     try {
         const newRates = await provider.scrape();
-        const now = new Date().toISOString();
-        const newHash = computeRatesHash(newRates);
 
         const outputPath = join(
             import.meta.dir,
@@ -109,6 +109,28 @@ async function scrapeProvider(
 
         // Read existing file to check for changes
         const existing = await readExistingRatesFile(outputPath);
+
+        // Never persist an empty rates array. A provider parsing 0 rates
+        // almost certainly means the lender's website changed and the scraper
+        // needs fixing - keep the existing data untouched so lastScrapedAt
+        // goes stale and signals that a manual check is needed.
+        if (newRates.length === 0) {
+            console.warn(
+                `\nWARNING: Parsed 0 rates from ${provider.name} - the website likely changed and the scraper needs updating`,
+            );
+            if (existing) {
+                console.warn(
+                    `Keeping existing data (${existing.rates.length} rates, last scraped ${existing.lastScrapedAt})`,
+                );
+            } else {
+                console.warn("No existing data to keep");
+            }
+            console.warn(`NOT writing: ${outputPath}\n`);
+            return { lenderId, status: "no-rates", diff: null };
+        }
+
+        const now = new Date().toISOString();
+        const newHash = computeRatesHash(newRates);
 
         let lastUpdatedAt: string;
         let diff: RateDiff | null = null;
@@ -161,15 +183,15 @@ async function scrapeProvider(
         console.log(`Rates hash: ${ratesFile.ratesHash}`);
         console.log(`Output written to: ${outputPath}`);
 
-        return { lenderId, success: true, diff };
+        return { lenderId, status: "ok", diff };
     } catch (error) {
         console.error("Failed to scrape rates:", error);
-        return { lenderId, success: false, diff: null };
+        return { lenderId, status: "failed", diff: null };
     }
 }
 
 function formatCommitDescription(results: LenderResult[]): string {
-    const changed = results.filter((r) => r.success && r.diff !== null);
+    const changed = results.filter((r) => r.status === "ok" && r.diff !== null);
 
     if (changed.length === 0) {
         return "";
@@ -214,9 +236,15 @@ async function main() {
         console.log(`\n${"=".repeat(60)}`);
         console.log("SUMMARY");
         console.log("=".repeat(60));
-        const successful = results.filter((r) => r.success);
-        const failed = results.filter((r) => !r.success);
+        const successful = results.filter((r) => r.status === "ok");
+        const noRates = results.filter((r) => r.status === "no-rates");
+        const failed = results.filter((r) => r.status === "failed");
         console.log(`Successful: ${successful.length}/${results.length}`);
+        if (noRates.length > 0) {
+            console.log(
+                `No rates parsed (existing data kept, needs manual check): ${noRates.map((r) => r.lenderId).join(", ")}`,
+            );
+        }
         if (failed.length > 0) {
             console.log(`Failed: ${failed.map((r) => r.lenderId).join(", ")}`);
         }
@@ -232,7 +260,9 @@ async function main() {
             console.log(`\nUpdates written to: ${updatesPath}`);
         }
 
-        if (results.some((r) => !r.success)) {
+        // Only hard failures exit non-zero - a provider parsing 0 rates keeps
+        // its existing data and must not block the commit of other lenders
+        if (failed.length > 0) {
             process.exit(1);
         }
         return;
@@ -258,7 +288,7 @@ async function main() {
     }
 
     const result = await scrapeProvider(lenderId, provider);
-    if (!result.success) {
+    if (result.status === "failed") {
         process.exit(1);
     }
 }
