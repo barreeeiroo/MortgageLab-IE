@@ -34,13 +34,21 @@ test.describe("Rates Page - Filtering", () => {
         const initialCount = await getTableRowCount(page);
         expect(initialCount).toBeGreaterThan(0);
 
+        // Pick a lender dynamically from the current table data - rate data
+        // is scraped daily and any given lender may have no rates available
+        const firstLender = (await getColumnValues(page, "Lender")).find(
+            (value) => value.length > 0,
+        );
+        expect(
+            firstLender,
+            "table should show at least one lender",
+        ).toBeTruthy();
+
         // Open lender filter dropdown
         await clickColumnFilter(page, "Lender");
 
-        // Select AIB from the dropdown (shown as "Allied Irish Banks" in dropdown)
-        await page
-            .getByRole("menuitemcheckbox", { name: /allied irish/i })
-            .click();
+        // Select that lender from the dropdown (shown by full name)
+        await page.getByRole("menuitemcheckbox", { name: firstLender }).click();
 
         // Close the dropdown by clicking elsewhere
         await page.keyboard.press("Escape");
@@ -50,9 +58,9 @@ test.describe("Rates Page - Filtering", () => {
         const lenderValues = await getColumnValues(page, "Lender");
         expect(lenderValues.length).toBeGreaterThan(0);
 
-        // Verify EVERY row shows Allied Irish Banks
+        // Verify EVERY row shows the selected lender
         for (const lender of lenderValues) {
-            expect(lender.toLowerCase()).toContain("allied irish");
+            expect(lender.toLowerCase()).toContain(firstLender.toLowerCase());
         }
     });
 
