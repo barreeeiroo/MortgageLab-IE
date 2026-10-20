@@ -39,10 +39,9 @@ test.describe("Rates Page - Filtering", () => {
         const firstLender = (await getColumnValues(page, "Lender")).find(
             (value) => value.length > 0,
         );
-        expect(
-            firstLender,
-            "table should show at least one lender",
-        ).toBeTruthy();
+        if (!firstLender) {
+            throw new Error("table should show at least one lender");
+        }
 
         // Open lender filter dropdown
         await clickColumnFilter(page, "Lender");

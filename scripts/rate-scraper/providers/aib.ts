@@ -7,6 +7,7 @@ import {
 } from "@/lib/constants/ber";
 import type { BuyerType } from "@/lib/schemas/buyer";
 import type { MortgageRate } from "@/lib/schemas/rate";
+import { fetchHtml } from "../utils/fetch";
 import {
     parseLtvFromName,
     parsePercentageOrThrow,
@@ -277,8 +278,7 @@ function validateStructure(html: string): StructureValidation {
 
 async function fetchAndParseRates(): Promise<MortgageRate[]> {
     console.log("Fetching rates page...");
-    const response = await fetch(RATES_URL);
-    const html = await response.text();
+    const html = await fetchHtml(RATES_URL);
 
     console.log("Parsing HTML content with Cheerio...");
     const rates = parseRatesFromHtml(html);

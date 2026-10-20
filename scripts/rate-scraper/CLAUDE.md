@@ -54,3 +54,6 @@ Validate with `bun run rates:validate-history`.
   existing file is kept untouched so `lastScrapedAt` goes stale and signals a
   broken scraper needing manual attention. It doesn't fail the run, so GHA
   still commits other lenders' changes.
+- **Bot protection**: AIB, EBS, Haven and Avant serve 403s to `fetch()` even
+  with browser headers (TLS fingerprint blocking). Their providers must use
+  `fetchHtml()` from `utils/fetch.ts`, which fetches via curl.
