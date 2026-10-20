@@ -22,6 +22,7 @@ React components (src/components/) should be thin presentation layers. Extract p
 - **Linter/formatter**: Biome - run `bun run lint:fix` before commits
 - **Path alias**: `@/*` → `./src/*`
 - **Testing**: Vitest for unit tests (`bun run test:unit`), Playwright for E2E (`bun run test:e2e`)
+- **E2E gotcha**: Tests run via `astro preview`, which serves the existing `dist/` without rebuilding - run `bun run build` first when app code has changed, or tests run against stale output
 
 ## Architecture
 
