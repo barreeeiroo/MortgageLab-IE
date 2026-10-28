@@ -93,7 +93,12 @@ function parseRatesFromHtml(html: string): MortgageRate[] {
 
     // Find all h4 headings and process each section
     $("h4").each((_, heading) => {
-        const headingText = $(heading).text().toLowerCase();
+        const headingText = $(heading).text().trim().toLowerCase();
+
+        // Skip empty spacer headings - their nextAll("table").first() would
+        // grab a later section's table and parse it with the wrong flags
+        // (e.g. BTL rates emitted as owner-occupier)
+        if (!headingText) return;
 
         // Skip irrelevant sections
         if (
@@ -109,6 +114,10 @@ function parseRatesFromHtml(html: string): MortgageRate[] {
             isExistingSection = true;
         } else if (headingText.includes("existing")) {
             isExistingSection = true;
+            isExistingBtlSection = false;
+        } else if (headingText.includes("new")) {
+            // New business section resets any existing-customer flags
+            isExistingSection = false;
             isExistingBtlSection = false;
         }
 

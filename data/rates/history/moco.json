@@ -717,6 +717,111 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-10-28T21:08:12.425Z",
+			"afterHash": "95b5e9faf486a9e4c63ca863c6fef75e00e3e65379e676a46fbb1f0ab4b63cd4",
+			"operations": [
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-50",
+					"changes": {
+						"id": "moco-fixed-3yr-50",
+						"rate": 4.1,
+						"apr": 4.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-60",
+					"changes": {
+						"id": "moco-fixed-3yr-60",
+						"rate": 4.1,
+						"apr": 4.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-70",
+					"changes": {
+						"id": "moco-fixed-3yr-70",
+						"rate": 4.15,
+						"apr": 4.57
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-80",
+					"changes": {
+						"id": "moco-fixed-3yr-80",
+						"rate": 4.25,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-3yr-90",
+					"changes": {
+						"id": "moco-fixed-3yr-90",
+						"rate": 4.45,
+						"apr": 4.66
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-50",
+					"changes": {
+						"id": "moco-fixed-5yr-50",
+						"rate": 4.1,
+						"apr": 4.46
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-60",
+					"changes": {
+						"id": "moco-fixed-5yr-60",
+						"rate": 4.1,
+						"apr": 4.46
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-70",
+					"changes": {
+						"id": "moco-fixed-5yr-70",
+						"rate": 4.15,
+						"apr": 4.49
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-80",
+					"changes": {
+						"id": "moco-fixed-5yr-80",
+						"rate": 4.25,
+						"apr": 4.54
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-fixed-5yr-90",
+					"changes": {
+						"id": "moco-fixed-5yr-90",
+						"rate": 4.45,
+						"apr": 4.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "moco-variable-svr",
+					"changes": {
+						"id": "moco-variable-svr",
+						"rate": 4.61,
+						"apr": 4.72
+					}
+				}
+			]
 		}
 	]
 }

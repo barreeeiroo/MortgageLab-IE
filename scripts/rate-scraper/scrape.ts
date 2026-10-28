@@ -192,8 +192,11 @@ async function scrapeProvider(
 
 function formatCommitDescription(results: LenderResult[]): string {
     const changed = results.filter((r) => r.status === "ok" && r.diff !== null);
+    const degraded = results.filter(
+        (r) => r.status === "failed" || r.status === "no-rates",
+    );
 
-    if (changed.length === 0) {
+    if (changed.length === 0 && degraded.length === 0) {
         return "";
     }
 
@@ -205,6 +208,11 @@ function formatCommitDescription(results: LenderResult[]): string {
         if (diff.updated > 0) parts.push(`${diff.updated} updated`);
         if (diff.removed > 0) parts.push(`${diff.removed} removed`);
         lines.push(`- ${lenderId}: ${parts.join(", ")}`);
+    }
+    for (const { lenderId, status } of degraded) {
+        lines.push(
+            `- ${lenderId}: scrape ${status === "failed" ? "failed" : "parsed 0 rates"}, existing data kept (stale lastScrapedAt, needs manual check)`,
+        );
     }
 
     return lines.join("\n");
@@ -260,10 +268,18 @@ async function main() {
             console.log(`\nUpdates written to: ${updatesPath}`);
         }
 
-        // Only hard failures exit non-zero - a provider parsing 0 rates keeps
-        // its existing data and must not block the commit of other lenders
-        if (failed.length > 0) {
+        // A partially failed run still commits: failed/no-rates lenders keep
+        // their existing data (stale lastScrapedAt signals a manual check),
+        // while healthy lenders' updates must not be held hostage. Only a
+        // total failure - nothing succeeded - exits non-zero.
+        if (successful.length === 0) {
+            console.error("\nAll providers failed - nothing to commit");
             process.exit(1);
+        }
+        if (failed.length > 0) {
+            console.warn(
+                `\nWARNING: ${failed.length} provider(s) failed but continuing so other lenders commit`,
+            );
         }
         return;
     }

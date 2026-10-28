@@ -55,5 +55,11 @@ Validate with `bun run rates:validate-history`.
   broken scraper needing manual attention. It doesn't fail the run, so GHA
   still commits other lenders' changes.
 - **Bot protection**: AIB, EBS, Haven and Avant serve 403s to `fetch()` even
-  with browser headers (TLS fingerprint blocking). Their providers must use
-  `fetchHtml()` from `utils/fetch.ts`, which fetches via curl.
+  with browser headers (TLS fingerprint blocking), and from datacenter IPs
+  (GitHub runners) they 403 curl too. Their providers must use `fetchHtml()`
+  from `utils/fetch.ts`, which tries curl → fetch() → headful Chromium via
+  Playwright (spawning Xvfb when there is no DISPLAY). Headless Chromium also
+  gets 403 - the sites detect automation; headful is required.
+- **Empty headings**: PTSB's page contains empty `<h4>` spacer headings; the
+  provider maps each h4 to its next table, so empty headings must be skipped
+  or a later section's table gets parsed with the wrong section flags.

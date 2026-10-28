@@ -4528,6 +4528,525 @@
 					}
 				}
 			]
+		},
+		{
+			"timestamp": "2026-10-28T21:04:34.187Z",
+			"afterHash": "bb46a0e736561b6a3c62a3c97dc230c8b28fea8b3f3990d12d7756c3a37ad722",
+			"operations": [
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-fixed-3yr-60",
+						"rate": 3.9,
+						"apr": 4.37
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-fixed-3yr-80",
+						"rate": 4.05,
+						"apr": 4.49
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-fixed-3yr-90",
+						"rate": 4.25,
+						"apr": 4.7
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-60",
+					"changes": {
+						"id": "ptsb-fixed-4yr-60",
+						"rate": 3.2,
+						"apr": 4.04
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-80",
+					"changes": {
+						"id": "ptsb-fixed-4yr-80",
+						"rate": 3.45,
+						"apr": 4.21
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-4yr-90",
+					"changes": {
+						"id": "ptsb-fixed-4yr-90",
+						"rate": 3.7,
+						"apr": 4.43
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-fixed-5yr-60",
+						"rate": 3.75,
+						"apr": 4.21
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-fixed-5yr-80",
+						"rate": 3.9,
+						"apr": 4.34
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-fixed-5yr-90",
+						"rate": 4.1,
+						"apr": 4.55
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-60",
+						"rate": 3.7,
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-80",
+						"rate": 3.85,
+						"apr": 4.43
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-60",
+						"rate": 3.6,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-80",
+						"rate": 3.75,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-green-fixed-5yr-90",
+						"rate": 3.95,
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-fixed-7yr-60",
+						"rate": 3.6,
+						"apr": 4.02
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-fixed-7yr-80",
+						"rate": 3.75,
+						"apr": 4.16
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-fixed-7yr-90",
+						"rate": 3.95,
+						"apr": 4.36
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-60",
+						"rate": 3.7,
+						"apr": 4.31
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-80",
+						"rate": 3.8,
+						"apr": 4.41
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.64
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-60",
+						"rate": 3.6,
+						"apr": 4.14
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-80",
+						"rate": 3.7,
+						"apr": 4.24
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-fixed-5yr-90",
+						"rate": 3.95,
+						"apr": 4.47
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-60",
+						"rate": 3.55,
+						"apr": 4.26
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-80",
+						"rate": 3.75,
+						"apr": 4.4
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-3yr-90",
+						"rate": 3.95,
+						"apr": 4.6
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-60",
+						"rate": 3.5,
+						"apr": 4.09
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-80",
+						"rate": 3.65,
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-hv-green-fixed-5yr-90",
+						"rate": 3.85,
+						"apr": 4.42
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-60",
+						"rate": 3.9,
+						"apr": 4.33
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-80",
+						"rate": 4.05,
+						"apr": 4.45
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-3yr-90",
+						"rate": 4.25,
+						"apr": 4.66
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-60",
+						"rate": 3.75,
+						"apr": 4.17
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-80",
+						"rate": 3.9,
+						"apr": 4.3
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-5yr-90",
+						"rate": 4.1,
+						"apr": 4.5
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-3yr-60",
+						"rate": 3.7,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-3yr-80",
+						"rate": 3.85,
+						"apr": 4.39
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.59
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-60",
+						"rate": 3.6,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-80",
+						"rate": 3.75,
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-green-fixed-5yr-90",
+						"rate": 3.95,
+						"apr": 4.43
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-60",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-60",
+						"rate": 3.6,
+						"apr": 3.98
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-80",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-80",
+						"rate": 3.75,
+						"apr": 4.11
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-fixed-7yr-90",
+					"changes": {
+						"id": "ptsb-existing-fixed-7yr-90",
+						"rate": 3.95,
+						"apr": 4.32
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-60",
+						"rate": 3.7,
+						"apr": 4.27
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-80",
+						"rate": 3.8,
+						"apr": 4.37
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-3yr-90",
+						"rate": 4.05,
+						"apr": 4.59
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-60",
+						"rate": 3.6,
+						"apr": 4.1
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-80",
+						"rate": 3.7,
+						"apr": 4.2
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-fixed-5yr-90",
+						"rate": 3.95,
+						"apr": 4.43
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-3yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-60",
+						"rate": 3.55,
+						"apr": 4.22
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-3yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-80",
+						"rate": 3.75,
+						"apr": 4.35
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-3yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-3yr-90",
+						"rate": 3.95,
+						"apr": 4.56
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-60",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-60",
+						"rate": 3.5,
+						"apr": 4.05
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-80",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-80",
+						"rate": 3.65,
+						"apr": 4.17
+					}
+				},
+				{
+					"op": "update",
+					"id": "ptsb-existing-hv-green-fixed-5yr-90",
+					"changes": {
+						"id": "ptsb-existing-hv-green-fixed-5yr-90",
+						"rate": 3.85,
+						"apr": 4.38
+					}
+				}
+			]
 		}
 	]
 }
