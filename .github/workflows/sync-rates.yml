@@ -12,6 +12,8 @@ permissions:
 jobs:
   scrape-rates:
     runs-on: ubuntu-latest
+    # Fail fast and visibly instead of hanging until GitHub's 6h job timeout
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,6 +48,8 @@ jobs:
         run: bun run rates:validate-history
 
       - name: Upload rates artifacts
+        # always() so partial results survive a failed scrape for debugging
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lender-rates

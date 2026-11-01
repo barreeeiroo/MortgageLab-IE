@@ -95,6 +95,21 @@ async function getBrowser(): Promise<import("@playwright/test").Browser> {
     return browserPromise;
 }
 
+/**
+ * Close the shared browser and Xvfb. Call once the scraper is done with all
+ * providers so nothing keeps the process (or CI job) lingering.
+ */
+export async function closeBrowser(): Promise<void> {
+    const pending = browserPromise;
+    browserPromise = null;
+    if (pending) {
+        const browser = await pending.catch(() => null);
+        await browser?.close().catch(() => undefined);
+    }
+    xvfbProcess?.kill();
+    xvfbProcess = null;
+}
+
 async function fetchWithBrowser(url: string): Promise<string> {
     const browser = await getBrowser();
     const context = await browser.newContext({
@@ -173,11 +188,14 @@ export async function fetchHtml(url: string): Promise<string> {
     }
 
     try {
+        // Hard timeout: bot protection sometimes parks the TCP connection
+        // instead of answering, and an unbounded fetch() hangs the run
         const response = await fetch(url, {
             headers: {
                 "User-Agent": BROWSER_USER_AGENT,
                 Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             },
+            signal: AbortSignal.timeout(30_000),
         });
         if (response.ok) {
             const html = await response.text();

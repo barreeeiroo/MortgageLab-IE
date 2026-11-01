@@ -14,6 +14,7 @@ import { icsProvider } from "./providers/ics";
 import { mocoProvider } from "./providers/moco";
 import { nuaProvider } from "./providers/nua";
 import { ptsbProvider } from "./providers/ptsb";
+import { closeBrowser } from "./utils/fetch";
 import { computeRatesHash } from "./utils/hash";
 import type { LenderProvider } from "./utils/types";
 
@@ -73,6 +74,21 @@ const providers: Record<string, LenderProvider> = {
     ptsb: ptsbProvider,
 };
 
+/** Hard wall-clock cap per lender so one hung connection can't stall the run. */
+const PROVIDER_TIMEOUT_MS = 10 * 60 * 1000;
+
+function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+    return Promise.race([
+        promise,
+        new Promise<never>((_, reject) =>
+            setTimeout(
+                () => reject(new Error(`${label} timed out after 10 minutes`)),
+                PROVIDER_TIMEOUT_MS,
+            ),
+        ),
+    ]);
+}
+
 async function readExistingRatesFile(
     filePath: string,
 ): Promise<RatesFile | null> {
@@ -99,7 +115,10 @@ async function scrapeProvider(
     console.log(`URL: ${provider.url}\n`);
 
     try {
-        const newRates = await provider.scrape();
+        const newRates = await withTimeout(
+            provider.scrape(),
+            `${provider.name} scrape`,
+        );
 
         const outputPath = join(
             import.meta.dir,
@@ -272,16 +291,19 @@ async function main() {
         // their existing data (stale lastScrapedAt signals a manual check),
         // while healthy lenders' updates must not be held hostage. Only a
         // total failure - nothing succeeded - exits non-zero.
-        if (successful.length === 0) {
+        const exitCode = successful.length === 0 ? 1 : 0;
+        if (exitCode === 1) {
             console.error("\nAll providers failed - nothing to commit");
-            process.exit(1);
-        }
-        if (failed.length > 0) {
+        } else if (failed.length > 0) {
             console.warn(
                 `\nWARNING: ${failed.length} provider(s) failed but continuing so other lenders commit`,
             );
         }
-        return;
+        // Clean up the fallback browser/Xvfb and force exit - a parked socket
+        // from an aborted provider must never keep the process (or CI job)
+        // lingering until the job timeout kills it
+        await closeBrowser();
+        process.exit(exitCode);
     }
 
     if (!lenderId) {
@@ -304,9 +326,8 @@ async function main() {
     }
 
     const result = await scrapeProvider(lenderId, provider);
-    if (result.status === "failed") {
-        process.exit(1);
-    }
+    await closeBrowser();
+    process.exit(result.status === "failed" ? 1 : 0);
 }
 
 main();

@@ -60,6 +60,12 @@ Validate with `bun run rates:validate-history`.
   from `utils/fetch.ts`, which tries curl → fetch() → headful Chromium via
   Playwright (spawning Xvfb when there is no DISPLAY). Headless Chromium also
   gets 403 - the sites detect automation; headful is required.
+- **Hang protection**: every fetch tier and provider scrape is time-boxed
+  (`fetch()` gets `AbortSignal.timeout`, providers a 10-minute wall clock in
+  `scrape.ts`), and `main()` ends with `closeBrowser()` + explicit
+  `process.exit`. Akamai sometimes parks TCP connections instead of answering,
+  and one unbounded `fetch()` once hung the GHA job for its full 6h timeout.
+  The sync-rates job also sets `timeout-minutes: 45` as a last resort.
 - **Empty headings**: PTSB's page contains empty `<h4>` spacer headings; the
   provider maps each h4 to its next table, so empty headings must be skipped
   or a later section's table gets parsed with the wrong section flags.
