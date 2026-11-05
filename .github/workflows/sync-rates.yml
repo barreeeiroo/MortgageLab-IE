@@ -32,10 +32,18 @@ jobs:
 
       # Chromium + Xvfb for fetchHtml()'s last-resort tier: some lenders
       # 403 both curl and fetch() from datacenter IPs, and only a headful
-      # real browser gets through
-      - name: Install Playwright Chromium and Xvfb
+      # real browser gets through. Best-effort installs: if one fails
+      # (runner image rolls occasionally break apt/npm), the scrape still
+      # runs - the affected lenders just degrade to "failed" and keep their
+      # existing data instead of the whole sync being skipped.
+      - name: Install Playwright Chromium
+        continue-on-error: true
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Xvfb
+        continue-on-error: true
         run: |
-          bunx playwright install --with-deps chromium
+          sudo apt-get update
           sudo apt-get install -y xvfb
 
       - name: Scrape all lender rates
