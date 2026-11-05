@@ -60,6 +60,10 @@ Validate with `bun run rates:validate-history`.
   from `utils/fetch.ts`, which tries curl → fetch() → headful Chromium via
   Playwright (spawning Xvfb when there is no DISPLAY). Headless Chromium also
   gets 403 - the sites detect automation; headful is required.
+- **Runner pin**: sync-rates.yml pins `ubuntu-24.04` - `ubuntu-latest`
+  rolled to 26.04 (Nov 2026), which Playwright doesn't support, killing
+  `playwright install --with-deps`. Bump the pin once a Playwright release
+  covers 26.04.
 - **Hang protection**: every fetch tier and provider scrape is time-boxed
   (`fetch()` gets `AbortSignal.timeout`, providers a 10-minute wall clock in
   `scrape.ts`), and `main()` ends with `closeBrowser()` + explicit

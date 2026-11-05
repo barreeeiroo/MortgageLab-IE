@@ -11,7 +11,9 @@ permissions:
 
 jobs:
   scrape-rates:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest rolled to 26.04 (Nov 2026), which Playwright
+    # does not support yet - the headful fetch fallback needs its system deps
+    runs-on: ubuntu-24.04
     # Fail fast and visibly instead of hanging until GitHub's 6h job timeout
     timeout-minutes: 45
     steps:
@@ -64,7 +66,7 @@ jobs:
           path: data/rates/
 
   scrape-euribor:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -86,7 +88,7 @@ jobs:
 
   commit:
     needs: [scrape-rates, scrape-euribor]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
