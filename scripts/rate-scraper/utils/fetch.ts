@@ -18,7 +18,7 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 
 const BROWSER_USER_AGENT =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36";
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36";
 
 let browserPromise: Promise<import("@playwright/test").Browser> | null = null;
 let xvfbProcess: ReturnType<typeof spawn> | null = null;
@@ -130,8 +130,11 @@ async function fetchWithBrowser(url: string): Promise<string> {
             timeout: 45_000,
         });
         if (!response || !response.ok()) {
+            // Include a body snippet: Akamai deny pages name the edge rule
+            // via their reference number, which tells bot-deny from IP deny
+            const body = await response?.text().catch(() => "");
             throw new Error(
-                `browser (HTTP ${response?.status() ?? "no response"})`,
+                `browser (HTTP ${response?.status() ?? "no response"}): ${body.slice(0, 300)}`,
             );
         }
         // Give JS-rendered content a moment to settle before reading the DOM
