@@ -134,7 +134,7 @@ async function fetchWithBrowser(url: string): Promise<string> {
         if (!response || !response.ok()) {
             // Include a body snippet: Akamai deny pages name the edge rule
             // via their reference number, which tells bot-deny from IP deny
-            const body = await response?.text().catch(() => "");
+            const body = (await response?.text().catch(() => "")) ?? "";
             throw new Error(
                 `browser (HTTP ${response?.status() ?? "no response"}): ${body.slice(0, 300)}`,
             );
