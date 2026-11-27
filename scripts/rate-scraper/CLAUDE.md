@@ -60,6 +60,16 @@ Validate with `bun run rates:validate-history`.
   from `utils/fetch.ts`, which tries curl → fetch() → headful Chromium via
   Playwright (spawning Xvfb when there is no DISPLAY). Headless Chromium also
   gets 403 - the sites detect automation; headful is required.
+- **AIB Group datacenter deny** (confirmed 2026-11-27 via probe run): AIB,
+  EBS and Haven (all AIB Group, one Akamai config) categorically deny GitHub
+  runner IPs since ~2026-10-28 - even a headful real Chromium under Xvfb gets
+  an edge-level Akamai "Access Denied" 403, regardless of UA version. No
+  client-side change fixes CI for these three; refresh them from a residential
+  IP (`bun run rates:scrape aib` etc. - the browser tier passes there) and
+  push manually. Avant is separate and still passes in CI. Failed curl/fetch
+  hits also put the IP in a short deny window that briefly 403s the browser
+  tier. Wayback snapshots are too stale to fall back on (ebs Jul 2026, haven
+  Jun 2026).
 - **Runner pin**: sync-rates.yml pins `ubuntu-24.04` - `ubuntu-latest`
   rolled to 26.04 (Nov 2026), which Playwright doesn't support, killing
   `playwright install --with-deps`. Bump the pin once a Playwright release
