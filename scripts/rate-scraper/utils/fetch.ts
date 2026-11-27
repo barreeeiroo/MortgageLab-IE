@@ -24,8 +24,10 @@ let browserPromise: Promise<import("@playwright/test").Browser> | null = null;
 let xvfbProcess: ReturnType<typeof spawn> | null = null;
 
 async function commandExists(command: string): Promise<boolean> {
+    // `which`, not `<cmd> -version`: Xvfb has no -version flag and exits 1,
+    // which used to make every check fail and silently degrade to headless
     try {
-        await execFileAsync(command, ["-version"], { timeout: 5000 });
+        await execFileAsync("which", [command], { timeout: 5000 });
         return true;
     } catch {
         return false;
